@@ -1,3 +1,5 @@
+<link rel="shortcut icon" href="img/logo.png">
+
 <?php
 session_start();
 require_once '../back/conexao.php';

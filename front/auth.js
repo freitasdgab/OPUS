@@ -5,32 +5,56 @@ const btnModoLogin = document.getElementById('btnModoLogin');
 const btnSubmit = document.getElementById('btnSubmit');
 const inputNome = document.getElementById('nome');
 const inputConfirmar = document.getElementById('confirme_senha');
+const authForm = document.getElementById('authForm');
+const inputSenha = document.getElementById('senha');
 
 btnModoLogin.addEventListener('click', () => {
     if (authAction.value === 'cadastro') {
-        // MUDANDO PARA MODO: LOGIN
         authAction.value = 'login';
         groupNome.style.display = 'none';
         groupConfirmar.style.display = 'none';
         
-        // Remove obrigatoriedade para o navegador não barrar o envio do login
         inputNome.removeAttribute('required');
         inputConfirmar.removeAttribute('required');
         
         btnSubmit.textContent = 'LOGAR';
         btnModoLogin.textContent = 'QUERO ME CADASTRAR';
     } else {
-        // MUDANDO PARA MODO: CADASTRO
         authAction.value = 'cadastro';
         groupNome.style.display = 'flex';
         groupConfirmar.style.display = 'flex';
         
-        // Ativa obrigatoriedade para o cadastro
         inputNome.setAttribute('required', '');
         inputConfirmar.setAttribute('required', '');
         
-        btnSubmit.textContent = 'ENTRAR';
+        btnSubmit.textContent = 'CADASTRAR-SE';
         btnModoLogin.textContent = 'LOGAR';
+    }
+});
+
+// --- VALIDAÇÃO DE SENHA FORTE NO CADASTRO ---
+authForm.addEventListener('submit', (e) => {
+    if (authAction.value === 'cadastro') {
+        const senha = inputSenha.value;
+        
+        // Expressão regular para validar os critérios da senha
+        const regexLetraMaiuscula = /[A-Z]/;
+        const regexLetraMinuscula = /[a-z]/;
+        const regexNumero = /[0-9]/;
+        const regexCaractereEspecial = /[!@#$%^&*(),.?":{}|<>_+\-=\[\]\\\/]/;
+
+        let erros = [];
+
+        if (senha.length < 8) erros.push("Ter pelo menos 8 caracteres.");
+        if (!regexLetraMaiuscula.test(senha)) erros.push("Conter pelo menos uma letra maiúscula.");
+        if (!regexLetraMinuscula.test(senha)) erros.push("Conter pelo menos uma letra minúscula.");
+        if (!regexNumero.test(senha)) erros.push("Conter pelo menos um número.");
+        if (!regexCaractereEspecial.test(senha)) erros.push("Conter pelo menos um caractere especial (ex: @, #, $, %, !, *).");
+
+        if (erros.length > 0) {
+            e.preventDefault(); // Impede o envio do formulário
+            alert("Sua senha precisa melhorar nos seguintes pontos:\n\n- " + erros.join("\n- "));
+        }
     }
 });
 

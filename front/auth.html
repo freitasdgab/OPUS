@@ -8,6 +8,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="img/logo.png">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <link rel="stylesheet" href="intro.css"> 
     <link rel="stylesheet" href="auth.css">
@@ -30,24 +33,50 @@
 
             <div class="card-input">
                 <div class="input-group" id="group-nome">
-                    <label for="nome">NOME:</label>
-                    <input type="text" id="nome" name="nome" placeholder="Seu nome completo" required>
+                    <label for="nome"><i class="fa-solid fa-user"></i> NOME:</label>
+                    <div class="input-with-icon">
+                        <input type="text" id="nome" name="nome" placeholder="Seu nome completo" required>
+                    </div>
                 </div>
 
                 <div class="input-group">
-                    <label for="email">EMAIL:</label>
-                    <input type="email" id="email" name="email" required placeholder="seuemail@exemplo.com">
+                    <label for="email"><i class="fa-solid fa-envelope"></i> EMAIL:</label>
+                    <div class="input-with-icon">
+                        <input type="email" id="email" name="email" required placeholder="seuemail@exemplo.com">
+                    </div>
                 </div>
 
-                <div class="input-group">
-                    <label for="senha">SENHA:</label>
-                    <input type="password" id="senha" name="senha" required placeholder="******">
+                <div class="input-group" id="group-senha">
+                    <label for="senha"><i class="fa-solid fa-lock"></i> SENHA:</label>
+                    <div class="input-with-icon">
+                        <input type="password" id="senha" name="senha" required placeholder="******">
+                        <button type="button" class="toggle-password" onclick="togglePasswordVisibility('senha', this)">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="strength-bar-container" id="strength-container" style="display: none;">
+                        <div id="strength-bar" class="strength-bar"></div>
+                        <span id="strength-text" class="strength-text">Senha fraca</span>
+                    </div>
                 </div>
 
                 <div class="input-group" id="group-confirmar">
-                    <label for="confirme_senha">CONFIRME A SENHA:</label>
-                    <input type="password" id="confirme_senha" name="confirme_senha" placeholder="******" required>
+                    <label for="confirme_senha"><i class="fa-solid fa-shield-halved"></i> CONFIRME A SENHA:</label>
+                    <div class="input-with-icon">
+                        <input type="password" id="confirme_senha" name="confirme_senha" placeholder="******" required>
+                        <button type="button" class="toggle-password" onclick="togglePasswordVisibility('confirme_senha', this)">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                        
+                    </div>
                 </div>
+                
+            </div>
+
+            <div id="password-requirements" class="password-requirements" style="display: block;">
+                
+             
+                
             </div>
 
             <div class="buttons-group">
@@ -58,5 +87,20 @@
     </div>
 
     <script src="auth.js"></script>
+    <script>
+        function togglePasswordVisibility(inputId, button) {
+            const input = document.getElementById(inputId);
+            const icon = button.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
 </body>
 </html>

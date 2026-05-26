@@ -1,0 +1,153 @@
+/* ranking.css */
+.ranking-container {
+    background: rgba(15, 15, 20, 0.85);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    max-width: 800px;
+    margin: 0 auto;
+    color: #fff;
+}
+
+.ranking-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.ranking-header h1 {
+    font-family: 'Orbitron', sans-serif;
+    color: #1a36ca;
+    text-shadow: 0 0 10px rgba(26, 54, 202, 0.5);
+}
+
+/* --- PÓDIO ESTILO DUOLINGO --- */
+.podium {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 15px;
+    margin-bottom: 50px;
+    min-height: 250px;
+}
+
+.podium-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100px;
+}
+
+.podium-avatar {
+    width: 60px;
+    height: 60px;
+    background: #2a2a35;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 10px;
+    border: 3px solid;
+    position: relative;
+}
+
+.podium-name {
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.podium-xp {
+    font-size: 12px;
+    color: #aaa;
+    margin-bottom: 10px;
+}
+
+.podium-bar {
+    width: 100%;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    justify-content: center;
+    padding-top: 15px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    color: #000;
+    box-shadow: inset 0 -10px 0 rgba(0,0,0,0.2);
+}
+
+/* Posições do Pódio */
+.rank-2 .podium-avatar { border-color: #C0C0C0; }
+.rank-2 .podium-bar { height: 120px; background: linear-gradient(to bottom, #E0E0E0, #C0C0C0); }
+
+.rank-1 .podium-avatar { border-color: #FFD700; width: 80px; height: 80px; }
+.rank-1 .podium-bar { height: 160px; background: linear-gradient(to bottom, #FFE066, #FFD700); }
+.rank-1 .crown { position: absolute; top: -25px; color: #FFD700; font-size: 24px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); }
+
+.rank-3 .podium-avatar { border-color: #CD7F32; }
+.rank-3 .podium-bar { height: 90px; background: linear-gradient(to bottom, #E6984C, #CD7F32); }
+
+/* --- LISTA DE USUÁRIOS --- */
+.ranking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ranking-row {
+    display: flex;
+    align-items: center;
+    background: #2a2a35;
+    padding: 15px 20px;
+    border-radius: 12px;
+    transition: transform 0.2s;
+}
+
+.ranking-row:hover {
+    transform: scale(1.02);
+    background: #3a3a48;
+}
+
+.ranking-row.is-me {
+    background: rgba(26, 54, 202, 0.15);
+    border: 1px solid #1a36ca;
+    box-shadow: 0 0 15px rgba(26, 54, 202, 0.3);
+}
+
+.row-pos {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+    width: 40px;
+    color: #888;
+}
+
+.ranking-row.is-me .row-pos { color: #1a36ca; }
+
+.row-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+}
+
+.row-name { flex-grow: 1; font-weight: 600; font-size: 16px; }
+.row-xp { font-weight: bold; color: #FFD700; }
+
+.my-status {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 10px;
+    background: #1a36ca;
+    border-radius: 8px;
+    font-weight: bold;
+}
