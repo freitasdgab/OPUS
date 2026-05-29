@@ -3,7 +3,7 @@ session_start();
 require_once 'conexao.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../front/auth.html");
+    header("Location: ../front/pages/auth.html");
     exit();
 }
 
@@ -22,6 +22,6 @@ $email = $user['email'];
 // SIMULAÇÃO DO ENVIO:
 echo "<script>
     alert('Simulação: Um link de redefinição de senha seria enviado agora para o e-mail [ " . $email . " ]. \\n\\nPara funcionar de verdade no XAMPP, é necessário instalar o PHPMailer e configurar o SMTP do Gmail.');
-    window.location.href='../front/perfil.php';
+    window.location.href='../front/pages/perfil.php';
 </script>";
 ?>

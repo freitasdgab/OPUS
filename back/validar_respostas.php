@@ -4,7 +4,7 @@ require_once 'conexao.php';
 
 // Verifica se o usuário está devidamente logado
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../front/auth.html");
+    header("Location: ../front/pages/auth.html");
     exit();
 }
 
@@ -14,7 +14,7 @@ $licao = intval($_POST['licao'] ?? 0);
 $respostas_usuario = $_POST['resposta'] ?? []; // Pega o array de respostas do formulário
 
 if ($capitulo == 0 || $licao == 0) {
-    echo "<script>alert('Dados da lição inválidos.'); window.location.href='../front/dashboard.php';</script>";
+    echo "<script>alert('Dados da lição inválidos.'); window.location.href='../front/pages/dashboard.php';</script>";
     exit();
 }
 
@@ -85,7 +85,7 @@ if ($acertos == $total_perguntas && $total_perguntas > 0) {
 
     echo "<script>
             alert('Excelente! Você acertou todas as questões. +50 XP ganho.{$msg_bonus}');
-            window.location.href='../front/dashboard.php';
+            window.location.href='../front/pages/dashboard.php';
           </script>";
 } else {
     // Se errar qualquer questão, volta para tentar de novo

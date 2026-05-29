@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_nome'] = $user['nome'];
                 $_SESSION['jornada_escolhida'] = 'Java'; 
 
-                header("Location: ../front/dashboard.php");
+                header("Location: ../front/pages/dashboard.php");
                 exit();
             }
         }
@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ($novo_id, 4, 'trancado', 0),
                 ($novo_id, 5, 'trancado', 0)");
 
-            header("Location: ../front/dashboard.php");
+            header("Location: ../front/pages/dashboard.php");
             exit();
         } else {
             echo "<script>alert('Erro ao criar sua conta no banco de dados.'); window.history.back();</script>";

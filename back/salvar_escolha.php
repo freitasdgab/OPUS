@@ -10,9 +10,9 @@ if (!empty($linguagem)) {
     // $sql = "UPDATE usuarios SET trilha = '$linguagem' WHERE id = " . $_SESSION['user_id'];
 
     // 3. Leva para a tela inicial do programa
-    header("Location: ../front/dashboard.html"); 
+    header("Location: ../front/pages/dashboard.php"); 
     exit();
 } else {
-    header("Location: ../front/selecao.html");
+    header("Location: ../front/pages/selecao.html");
 }
 ?>

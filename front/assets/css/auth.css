@@ -1,0 +1,284 @@
+/* --- RESET E ESTRUTURA GERAL --- */
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+    overflow: hidden; /* Remove de vez a barra de rolagem */
+}
+
+#bg-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+}
+
+/* --- NOVO: CONTAINER LADO A LADO --- */
+.main-wrapper {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 50px; /* Espaço entre o mascote e o form */
+    width: 90%;
+    max-width: 1100px;
+}
+
+/* --- MASCOTE --- */
+.opi-side {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.opi-img {
+    width: 100%;
+    max-width: 400px; /* Limita o tamanho máximo da foto */
+    height: auto;
+    filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.5));
+    animation: float 3s ease-in-out infinite; /* Animação flutuante sutil */
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+    100% { transform: translateY(0px); }
+}
+
+/* --- CONTAINER DO FORMULÁRIO --- */
+.auth-container {
+    flex: 1;
+    background: rgba(20, 20, 28, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(26, 54, 202, 0.4);
+    border-radius: 16px;
+    padding: 25px 35px; /* Padding reduzido para caber na tela */
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem; /* Texto levemente menor */
+    color: #fff;
+    margin-top: 0;
+    margin-bottom: 20px;
+    line-height: 1.4;
+    text-align: center;
+}
+
+/* --- INPUTS --- */
+.card-input {
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* Reduzido o espaço entre os campos */
+}
+
+.input-group {
+    text-align: left;
+    width: 100%;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #aeb9f8;
+    text-transform: uppercase;
+}
+
+.input-group label i {
+    margin-right: 6px;
+    color: #4d66f5;
+}
+
+.input-with-icon {
+    position: relative;
+    width: 100%;
+}
+
+.input-with-icon input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(26, 54, 202, 0.5);
+    color: #fff;
+    padding: 10px 15px; /* Altura do campo reduzida */
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: 0.3s ease;
+    box-sizing: border-box;
+}
+
+.input-with-icon input:focus {
+    border-color: #4d66f5;
+    box-shadow: 0 0 10px rgba(77, 102, 245, 0.3);
+}
+
+.input-with-icon input[type="password"],
+.input-with-icon input[type="text"] {
+    padding-right: 40px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: #4d66f5;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0;
+}
+
+.toggle-password:hover {
+    color: #fff;
+}
+
+/* --- BOTÕES DE AÇÃO --- */
+.buttons-group {
+    display: flex;
+    justify-content: center; /* Centraliza os botões */
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.btn-auth {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: 0.3s ease;
+    border: none;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.btn-auth.primary {
+    background: #1a36ca;
+    color: #fff;
+}
+
+.btn-auth.primary:hover {
+    background: #324edc;
+    box-shadow: 0 0 12px rgba(26, 54, 202, 0.6);
+}
+
+.btn-auth.secondary {
+    background: transparent;
+    border: 1px solid #1a36ca;
+    color: #aeb9f8;
+}
+
+.btn-auth.secondary:hover {
+    background: rgba(26, 54, 202, 0.15);
+    color: #fff;
+}
+
+/* Responsividade Básica para telas menores que 800px (Celulares) */
+@media (max-width: 800px) {
+    .main-wrapper {
+        flex-direction: column;
+        gap: 20px;
+    }
+    .opi-img {
+        max-width: 150px; /* Mascote menor no celular */
+    }
+    body {
+        overflow-y: auto; /* Devolve a rolagem apenas no celular */
+    }
+}
+/* --- CONTAINER PRINCIPAL (Centralizado) --- */
+.main-wrapper {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    /* Removemos o gap, pois usaremos position absolute no mascote */
+}
+
+/* --- CONTAINER DO FORMULÁRIO (No centro da tela) --- */
+.auth-container {
+    position: relative; /* Importante para ancorar o mascote nela */
+    background: rgba(20, 20, 28, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(26, 54, 202, 0.4);
+    border-radius: 16px;
+    padding: 25px 35px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    z-index: 20; /* Fica por cima do mascote se precisar sobrepor */
+}
+
+/* --- MASCOTE (Posicionado ao lado da caixa) --- */
+.opi-side {
+    position: absolute;
+    /* Ancora o lado direito do mascote no lado esquerdo da caixa */
+    right: calc(50% + 220px); /* 50% é o meio, + metade da largura da caixa (420/2 = 210px) + um espacinho */
+    top: 50%;
+    transform: translateY(-50%); /* Centraliza verticalmente junto com a caixa */
+    z-index: 15;
+    pointer-events: none; /* Impede que a imagem roube cliques do fundo */
+}
+
+.opi-img {
+    width: 100%;
+    max-width: 350px; /* Diminuído para não ficar desproporcional */
+    height: auto;
+    filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.5));
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+    100% { transform: translateY(0px); }
+}
+
+/* Responsividade Básica para telas menores que 800px (Celulares) */
+@media (max-width: 800px) {
+    .main-wrapper {
+        flex-direction: column;
+    }
+    .opi-side {
+        position: relative; /* Volta para o fluxo normal no celular */
+        right: auto;
+        top: auto;
+        transform: none;
+        margin-bottom: 20px;
+    }
+    .opi-img {
+        max-width: 150px; /* Mascote menor no celular */
+        animation: none; /* Opcional: remove animação no mobile para não pular muito */
+    }
+    body {
+        overflow-y: auto;
+    }
+    .auth-container {
+        max-width: 90%;
+    }
+}

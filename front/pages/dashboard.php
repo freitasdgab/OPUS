@@ -1,8 +1,8 @@
-<link rel="shortcut icon" href="img/logo.png">
+<link rel="shortcut icon" href="../assets/img/logo.png">
 
 <?php
 session_start();
-require_once '../back/conexao.php';
+require_once '../../back/conexao.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: auth.html");
@@ -49,7 +49,7 @@ $porcentagem_total = ($concluidas / 5) * 100;
     <title>Painel de Progresso - Opus</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
     
     <style>
         .unit-list { max-height: 600px; overflow-y: auto; padding-right: 8px; }
@@ -175,7 +175,7 @@ $porcentagem_total = ($concluidas / 5) * 100;
                 </div>
                 <div class="user-info">
                     <span><?php echo htmlspecialchars($dados_user['nome'] ?? 'Usuário'); ?></span>
-                    <img src="opi.png" alt="Avatar" class="avatar">
+                    <img src="../assets/img/logo.png" alt="Avatar" class="avatar">
                 </div>
             </header>
 
@@ -255,6 +255,6 @@ $porcentagem_total = ($concluidas / 5) * 100;
             </section>
         </main>
     </div>
-    <script src="script.js"></script> 
+    <script src="../assets/js/script.js"></script> 
 </body>
 </html>

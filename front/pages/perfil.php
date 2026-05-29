@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../back/conexao.php';
+require_once '../../back/conexao.php';
 
 // Verifica se está logado
 if (!isset($_SESSION['user_id'])) {
@@ -17,7 +17,15 @@ $stmt_user->execute();
 $dados_user = $stmt_user->get_result()->fetch_assoc();
 
 // Define a foto padrão caso o usuário ainda não tenha enviado uma
-$foto_perfil = !empty($dados_user['foto_perfil']) ? $dados_user['foto_perfil'] : 'img/default-avatar.png';
+$foto_perfil = !empty($dados_user['foto_perfil']) ? $dados_user['foto_perfil'] : 'assets/img/opi pulando feliz.png';
+
+// Função auxiliar para resolver o caminho relativo correto do avatar
+function obterCaminhoAvatar($path) {
+    if (strpos($path, 'assets/') === 0) {
+        return '../' . $path;
+    }
+    return '../../' . $path;
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -28,9 +36,9 @@ $foto_perfil = !empty($dados_user['foto_perfil']) ? $dados_user['foto_perfil'] :
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="shortcut icon" href="img/logo.png">
+    <link rel="shortcut icon" href="../assets/img/logo.png">
     
-    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
     
     <style>
         /* Trava a tela para não rolar */
@@ -222,7 +230,7 @@ $foto_perfil = !empty($dados_user['foto_perfil']) ? $dados_user['foto_perfil'] :
                 </div>
                 <div class="user-info">
                     <span><?php echo htmlspecialchars($dados_user['nome'] ?? 'Usuário'); ?></span>
-                    <img src="../<?php echo htmlspecialchars($foto_perfil); ?>" alt="Avatar" class="avatar">
+                    <img src="<?php echo htmlspecialchars(obterCaminhoAvatar($foto_perfil)); ?>" alt="Avatar" class="avatar">
                 </div>
             </header>
 
@@ -235,13 +243,13 @@ $foto_perfil = !empty($dados_user['foto_perfil']) ? $dados_user['foto_perfil'] :
                     <div class="perfil-grid">
                         
                         <div class="perfil-card avatar-section">
-                            <img src="../<?php echo htmlspecialchars($foto_perfil); ?>" alt="Sua Foto" class="foto-preview-grande">
+                            <img src="<?php echo htmlspecialchars(obterCaminhoAvatar($foto_perfil)); ?>" alt="Sua Foto" class="foto-preview-grande">
                             
                             <div class="info-badge">
                                 <i class="fa-solid fa-envelope"></i> <?php echo htmlspecialchars($dados_user['email']); ?>
                             </div>
 
-                            <form action="../back/atualizar_perfil.php" method="POST" enctype="multipart/form-data" style="width: 100%;">
+                            <form action="../../back/atualizar_perfil.php" method="POST" enctype="multipart/form-data" style="width: 100%;">
                                 <input type="hidden" name="action" value="atualizar_foto">
                                 <div class="file-upload-wrapper">
                                     <input type="file" name="foto" accept="image/*" required>
@@ -249,7 +257,7 @@ $foto_perfil = !empty($dados_user['foto_perfil']) ? $dados_user['foto_perfil'] :
                                 <button type="submit" class="btn-custom btn-primary"><i class="fa-solid fa-upload"></i> Alterar Avatar</button>
                             </form>
 
-                            <a href="../back/logout.php" style="text-decoration: none; width: 100%;">
+                             <a href="../../back/logout.php" style="text-decoration: none; width: 100%;">
                                 <button class="btn-custom btn-danger"><i class="fa-solid fa-right-from-bracket"></i> Sair do Opus</button>
                             </a>
                         </div>
@@ -260,7 +268,7 @@ $foto_perfil = !empty($dados_user['foto_perfil']) ? $dados_user['foto_perfil'] :
                                 <div class="perfil-card-header">
                                     <i class="fa-solid fa-user-pen"></i> Editar Dados Pessoais
                                 </div>
-                                <form action="../back/atualizar_perfil.php" method="POST">
+                                <form action="../../back/atualizar_perfil.php" method="POST">
                                     <input type="hidden" name="action" value="atualizar_nome">
                                     <div class="form-group">
                                         <label for="novo_nome">Nome de Exibição</label>
@@ -277,7 +285,7 @@ $foto_perfil = !empty($dados_user['foto_perfil']) ? $dados_user['foto_perfil'] :
                                 <p class="security-text">
                                     Para proteger sua conta, a alteração de senha é feita através de um link seguro. Clique no botão abaixo para receber as instruções no seu e-mail cadastrado.
                                 </p>
-                                <form action="../back/solicitar_senha.php" method="POST">
+                                <form action="../../back/solicitar_senha.php" method="POST">
                                     <button type="submit" class="btn-custom btn-success"><i class="fa-solid fa-key"></i> Solicitar Troca de Senha</button>
                                 </form>
                             </div>
@@ -289,6 +297,6 @@ $foto_perfil = !empty($dados_user['foto_perfil']) ? $dados_user['foto_perfil'] :
             </section>
         </main>
     </div>
-    <script src="script.js"></script> 
+    <script src="../assets/js/script.js"></script> 
 </body>
 </html>

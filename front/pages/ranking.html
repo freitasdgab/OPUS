@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ranking Global - Opus</title>
-    <link rel="shortcut icon" href="img/logo.png">
+    <link rel="shortcut icon" href="../assets/img/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
     
     <style>
         .ranking-container { background: rgba(20, 20, 28, 0.7); border: 1px solid rgba(26, 54, 202, 0.2); border-radius: 16px; padding: 30px; max-width: 900px; margin: 0 auto; color: #fff; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
@@ -66,7 +66,7 @@
                 </div>
                 <div class="user-info">
                     <span id="top-name">...</span>
-                    <img src="opi.png" alt="Avatar" class="avatar">
+                    <img src="../assets/img/logo.png" alt="Avatar" class="avatar">
                 </div>
             </header>
 
@@ -82,11 +82,11 @@
         </main>
     </div>
     
-    <script src="script.js"></script>
+    <script src="../assets/js/script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Aponta corretamente para a pasta back/
-            fetch('../back/api_ranking.php')
+            fetch('../../back/api_ranking.php')
                 .then(response => response.json())
                 .then(data => {
                     if (data.error === "unauthorized") { window.location.href = "auth.html"; return; }

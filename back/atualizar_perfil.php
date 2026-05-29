@@ -3,7 +3,7 @@ session_start();
 require_once 'conexao.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../front/auth.html");
+    header("Location: ../front/pages/auth.html");
     exit();
 }
 
@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bind_param("si", $novo_nome, $user_id);
             $stmt->execute();
             $_SESSION['user_nome'] = $novo_nome; // Atualiza a sessão também
-            echo "<script>alert('Nome atualizado com sucesso!'); window.location.href='../front/perfil.php';</script>";
+            echo "<script>alert('Nome atualizado com sucesso!'); window.location.href='../front/pages/perfil.php';</script>";
         }
     }
 
@@ -45,12 +45,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt->bind_param("si", $caminho_banco, $user_id);
                     $stmt->execute();
                     
-                    echo "<script>alert('Foto atualizada com sucesso!'); window.location.href='../front/perfil.php';</script>";
+                    echo "<script>alert('Foto atualizada com sucesso!'); window.location.href='../front/pages/perfil.php';</script>";
                 } else {
-                    echo "<script>alert('Erro ao salvar a imagem na pasta.'); window.location.href='../front/perfil.php';</script>";
+                    echo "<script>alert('Erro ao salvar a imagem na pasta.'); window.location.href='../front/pages/perfil.php';</script>";
                 }
             } else {
-                echo "<script>alert('Formato inválido. Use JPG, PNG ou GIF.'); window.location.href='../front/perfil.php';</script>";
+                echo "<script>alert('Formato inválido. Use JPG, PNG ou GIF.'); window.location.href='../front/pages/perfil.php';</script>";
             }
         }
     }
