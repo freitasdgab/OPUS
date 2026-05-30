@@ -223,11 +223,17 @@ while ($row = $result_perguntas->fetch_assoc()) {
         <div class="quiz-column">
             <h2>DESAFIO DE FIXAÇÃO</h2>
 
-            <form action="../../back/validar_respostas.php" method="POST">
+            <form action="resultado.php" method="POST" id="quiz-form" onsubmit="calcularAcertos(event)">
+                
                 <input type="hidden" name="licao_id" value="<?php echo $licao_id; ?>">
+                
+                <input type="hidden" name="acertos" id="input_acertos" value="0">
+                <input type="hidden" name="cap" value="<?php echo $unidade_atual; ?>">
+                <input type="hidden" name="licao" value="<?php echo $licao_atual; ?>">
 
                 <?php foreach ($perguntas as $index => $p): $q_num = $index + 1; ?>
-                    <div class="question-box">
+                    
+                    <div class="question-box" data-correct="<?php echo $p['alternativa_correta']; ?>">
                         <p><?php echo $q_num . ". " . htmlspecialchars($p['pergunta_texto']); ?></p>
                         
                         <div class="options-group">
@@ -254,6 +260,27 @@ while ($row = $result_perguntas->fetch_assoc()) {
         </div>
 
     </div>
+
+    <script>
+    function calcularAcertos(event) {
+        event.preventDefault(); 
+        
+        let totalAcertos = 0;
+        const boxes = document.querySelectorAll('.question-box');
+        
+        boxes.forEach(box => {
+            const respostaCorreta = box.getAttribute('data-correct').trim();
+            const selecionado = box.querySelector('input[type="radio"]:checked');
+            
+            if (selecionado && selecionado.value === respostaCorreta) {
+                totalAcertos++;
+            }
+        });
+        
+        document.getElementById('input_acertos').value = totalAcertos;
+        document.getElementById('quiz-form').submit();
+    }
+    </script>
 
 </body>
 </html>

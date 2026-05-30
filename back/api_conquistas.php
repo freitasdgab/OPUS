@@ -1,23 +1,40 @@
 <?php
 session_start();
+header('Content-Type: application/json');
 require_once 'conexao.php';
+
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(["erro" => "Não autenticado"]);
+    exit();
+}
 
 $user_id = $_SESSION['user_id'];
 
-// Lista de troféus configurados
+// 1. Lista de todos os troféus disponíveis no Opus
 $todos_trofeus = [
-    ['slug' => 'precisao_absoluta', 'nome' => 'Precisão Absoluta', 'desc' => 'Complete 3 lições sem erros.'],
-    ['slug' => 'lenda_vacilou', 'nome' => 'A Lenda Vacilou', 'desc' => 'Quebre sua sequência perfeita.'],
-    ['slug' => 'lenda_opus', 'nome' => 'Lenda do OPUS', 'desc' => 'Conclua todos os capítulos.'],
-    ['slug' => 'primeiro_codigo', 'nome' => 'Primeiro Código', 'desc' => 'Domine os fundamentos.'],
-    ['slug' => 'mestre_escolhas', 'nome' => 'Mestre das Escolhas', 'desc' => 'Domine estruturas de decisão.'],
-    ['slug' => 'loop_infinito', 'nome' => 'Loop Infinito', 'desc' => 'Domine ciclos de repetição.'],
-    ['slug' => 'arquitetura_dados', 'nome' => 'Arquitetura de Dados', 'desc' => 'Domine arrays e matrizes.']
+    ["slug" => "primeiro_passo", "nome" => "Primeiro Passo", "desc" => "Concluiu sua primeira lição."],
+    ["slug" => "perfeicao", "nome" => "Mente Brilhante", "desc" => "Acertou 3/3 em um desafio."],
+    ["slug" => "capitulo_1", "nome" => "Fundamentos", "desc" => "Terminou o Capítulo 1."],
+    ["slug" => "capitulo_2", "nome" => "Caminhos Lógicos", "desc" => "Dominou as Estruturas de Decisão no Cap. 2."],
+    ["slug" => "capitulo_3", "nome" => "Mestre da Repetição", "desc" => "Dominou os Loops no Capítulo 3."],
+    ["slug" => "capitulo_4", "nome" => "Senhor dos Arrays", "desc" => "Dominou Arrays e Matrizes no Capítulo 4."],
+    ["slug" => "capitulo_5", "nome" => "Arquiteto Java", "desc" => "Concluiu POO no Capítulo 5. Você é o mestre!"],
+    ["slug" => "fogo_3", "nome" => "Em Chamas", "desc" => "Alcançou 3 Dias de Fogo."]
 ];
 
-// Busca o que o usuário já conquistou
+// 2. Busca no banco de dados quais troféus ESTE usuário já ganhou
 $conquistados = [];
-$res = $conn->query("SELECT trofeu_slug FROM user_trofeus WHERE user_id = $user_id");
-while($row = $res->fetch_assoc()) { $conquistados[] = $row['trofeu_slug']; }
+$stmt = $conn->query("SELECT trofeu_slug FROM user_trofeus WHERE user_id = $user_id");
 
-echo json_encode(['lista' => $todos_trofeus, 'conquistados' => $conquistados]);
+if ($stmt) {
+    while ($row = $stmt->fetch_assoc()) {
+        $conquistados[] = $row['trofeu_slug'];
+    }
+}
+
+// 3. Devolve os dados prontos para o JavaScript pintar a tela
+echo json_encode([
+    "lista" => $todos_trofeus,
+    "conquistados" => $conquistados
+]);
+?>

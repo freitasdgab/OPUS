@@ -7,7 +7,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght=700;900&family=Poppins:wght=300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="../assets/img/logo.png">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -60,6 +60,12 @@
                             <div id="strength-bar" class="strength-bar"></div>
                             <span id="strength-text" class="strength-text">Senha fraca</span>
                         </div>
+                        
+                        <div id="esqueceu-senha-container" style="display: none; text-align: right; margin-top: 8px;">
+                            <a href="esqueceu_senha.php" style="color: #4d66f5; font-size: 0.85rem; text-decoration: none; font-family: 'Poppins', sans-serif; font-weight: 500; transition: color 0.3s;">
+                                Esqueceu sua senha?
+                            </a>
+                        </div>
                     </div>
 
                     <div class="input-group" id="group-confirmar">
@@ -86,6 +92,7 @@
 
     <script src="../assets/js/auth.js"></script>
     <script>
+        // Função do olhinho da senha
         function togglePasswordVisibility(inputId, button) {
             const input = document.getElementById(inputId);
             const icon = button.querySelector('i');
@@ -99,6 +106,19 @@
                 icon.classList.add('fa-eye');
             }
         }
+
+        // Script inteligente que monitora se a tela está em "login" ou "cadastro"
+        // e mostra/esconde o link de esquecer a senha automaticamente
+        setInterval(function() {
+            var acao = document.getElementById('authAction').value;
+            var linkEsqueceu = document.getElementById('esqueceu-senha-container');
+            
+            if (acao === 'login') {
+                linkEsqueceu.style.display = 'block'; // Mostra no Login
+            } else {
+                linkEsqueceu.style.display = 'none';  // Esconde no Cadastro
+            }
+        }, 100);
     </script>
 </body>
 </html>

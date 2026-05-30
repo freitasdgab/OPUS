@@ -1,5 +1,3 @@
-<link rel="shortcut icon" href="../assets/img/logo.png">
-
 <?php
 session_start();
 require_once '../../back/conexao.php';
@@ -11,13 +9,13 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// 1. Busca os dados do usuário
-$stmt_user = $conn->prepare("SELECT nome, xp, trofeus, dificuldade FROM usuarios WHERE id = ?");
+// 1. Busca apenas as configurações de exibição da tela do dashboard (o restante vai para o topbar.php)
+$stmt_user = $conn->prepare("SELECT dificuldade FROM usuarios WHERE id = ?");
 $stmt_user->bind_param("i", $user_id);
 $stmt_user->execute();
 $dados_user = $stmt_user->get_result()->fetch_assoc();
 
-// 2. Busca o status das unidades
+// 2. Busca o status das unidades para montar o grid de capítulos
 $unidades = [];
 $result_progresso = $conn->query("SELECT unidade_numero, status, licoes_concluidas FROM progresso_usuario WHERE usuario_id = $user_id ORDER BY unidade_numero ASC");
 
@@ -36,7 +34,7 @@ $nomes_unidades = [
     5 => ["titulo" => "Capítulo 5: Introdução à POO"]
 ];
 
-// Cálculo de progresso total (quantos capítulos estão 100% completos)
+// Cálculo de progresso total
 $concluidas_res = $conn->query("SELECT COUNT(*) as total FROM progresso_usuario WHERE usuario_id = $user_id AND status = 'completo' AND unidade_numero <= 5");
 $concluidas = $concluidas_res ? $concluidas_res->fetch_assoc()['total'] : 0;
 $porcentagem_total = ($concluidas / 5) * 100; 
@@ -50,38 +48,61 @@ $porcentagem_total = ($concluidas / 5) * 100;
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="shortcut icon" href="../assets/img/logo.png">
     
     <style>
-        .unit-list { max-height: 600px; overflow-y: auto; padding-right: 8px; }
-        .unit-list::-webkit-scrollbar { width: 6px; }
-        .unit-list::-webkit-scrollbar-thumb { background: rgba(26, 54, 202, 0.4); border-radius: 4px; }
+        /* FORÇAR O CONTAINER A USAR 100% DA TELA E IGNORAR O DASHBOARD.CSS ANTIGO */
+        .dashboard-grid, .curriculum-column {
+            width: 100% !important;
+            max-width: 100% !important;
+            display: block !important;
+        }
+
+        /* DISTRIBUIÇÃO DOS CAPÍTULOS NA TELA (GRID LADO A LADO) */
+        .unit-list { 
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 25px; 
+            padding: 10px;
+            margin-top: 30px;
+            width: 100%;
+        }
 
         /* Container do Capítulo */
         .capitulo-container {
             background: rgba(20, 20, 28, 0.7);
             border: 1px solid rgba(26, 54, 202, 0.2);
             border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 25px;
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+        
+        .capitulo-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(26, 54, 202, 0.3);
+        }
+
         .capitulo-header h2 {
             font-family: 'Orbitron', sans-serif;
             font-size: 1.1rem;
             color: #fff;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             text-transform: uppercase;
             letter-spacing: 1px;
             border-left: 4px solid #1a36ca;
             padding-left: 10px;
+            min-height: 45px;
         }
 
-        /* Alinhamento dos Módulos em Trilha (Estilo Duolingo) */
+        /* Alinhamento dos Módulos em Trilha */
         .trail-flex {
             display: flex;
-            justify-content: center;
-            gap: 40px;
+            justify-content: space-evenly;
             align-items: center;
-            padding: 10px 0;
+            width: 100%;
         }
 
         /* Estilo base da Bolinha do Módulo */
@@ -95,13 +116,13 @@ $porcentagem_total = ($concluidas / 5) * 100;
         }
         
         .circle-button {
-            width: 70px;
-            height: 70px;
+            width: 65px;
+            height: 65px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             position: relative;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
             transition: all 0.3s ease;
@@ -110,23 +131,20 @@ $porcentagem_total = ($concluidas / 5) * 100;
         .modulo-node span {
             font-family: 'Poppins', sans-serif;
             font-size: 0.85rem;
-            margin-top: 8px;
+            margin-top: 10px;
             font-weight: 600;
             color: #a0a0b0;
         }
 
-        /* ESTADOS DO MÓDULO (Completo, Atual e Trancado) */
-        
-        /* 1. Concluído (Verde ou Azul Brilhante) */
+        /* ESTADOS DO MÓDULO */
         .modulo-node.completed .circle-button {
             background: linear-gradient(135deg, #10b981, #059669);
             border: 3px solid #34d399;
             box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
         }
         .modulo-node.completed span { color: #34d399; }
-        .modulo-node.completed:hover { transform: scale(1.08); }
+        .modulo-node.completed:hover { transform: scale(1.1); }
 
-        /* 2. Módulo Atual / Em progresso (Tema Azul da sua ID Visual) */
         .modulo-node.current .circle-button {
             background: linear-gradient(135deg, #1a36ca, #0a1b80);
             border: 3px solid #4d66f5;
@@ -134,12 +152,11 @@ $porcentagem_total = ($concluidas / 5) * 100;
             animation: pulse 2s infinite;
         }
         .modulo-node.current span { color: #4d66f5; }
-        .modulo-node.current:hover { transform: scale(1.08); }
+        .modulo-node.current:hover { transform: scale(1.1); }
 
-        /* 3. Trancado (Cinza opaco) */
         .modulo-node.locked {
             cursor: not-allowed;
-            opacity: 0.5;
+            opacity: 0.4;
         }
         .modulo-node.locked .circle-button {
             background: #2a2a35;
@@ -162,30 +179,24 @@ $porcentagem_total = ($concluidas / 5) * 100;
             <nav class="menu">
                 <a href="dashboard.php" class="nav-link active"><i class="fa-solid fa-chart-line"></i> Progresso</a>
                 <a href="conquistas.php" class="nav-link"><i class="fa-solid fa-award"></i> Conquistas</a>
-<a href="ranking.html" class="nav-link"><i class="fa-solid fa-ranking-star"></i> Ranking</a>                <a href="perfil.php" class="nav-link"><i class="fa-solid fa-user"></i> Perfil</a>
+                <a href="ranking.php" class="nav-link"><i class="fa-solid fa-ranking-star"></i> Ranking</a>
+                <a href="perfil.php" class="nav-link"><i class="fa-solid fa-user"></i> Perfil</a>
             </nav>
         </aside>
 
         <main class="main-content">
-            <header class="top-bar">
-                <div class="stats">
-                    <div class="stat-box difficulty"><i class="fa-solid fa-fire"></i> <?php echo $dados_user['dificuldade'] ?? 'Iniciante'; ?> <small>Dificuldade</small></div>
-                    <div class="stat-box trophies"><i class="fa-solid fa-trophy"></i> <?php echo $dados_user['trofeus'] ?? 0; ?> <small>Troféus</small></div>
-                    <div class="stat-box xp"><i class="fa-solid fa-star"></i> <?php echo number_format($dados_user['xp'] ?? 0); ?> <small>Total XP</small></div>
-                </div>
-                <div class="user-info">
-                    <span><?php echo htmlspecialchars($dados_user['nome'] ?? 'Usuário'); ?></span>
-                    <img src="../assets/img/logo.png" alt="Avatar" class="avatar">
-                </div>
-            </header>
+            
+            <?php include '../../back/topbar.php'; ?>
 
             <section class="dashboard-grid">
                 <div class="curriculum-column">
-                    <div class="path-header">
-                        <h1>Meu Caminho em Java</h1>
-                        <div class="progress-wrapper">
-                            <div class="bar-bg"><div class="bar-fill" style="width: <?php echo $porcentagem_total; ?>%;"></div></div>
-                            <span><?php echo round($porcentagem_total); ?>% Concluído</span>
+                    <div class="path-header" style="text-align: center; margin-bottom: 20px;">
+                        <h1 style="font-family: 'Orbitron'; color: #fff; font-size: 2rem;">Meu Caminho em Java</h1>
+                        <div class="progress-wrapper" style="max-width: 600px; margin: 15px auto;">
+                            <div class="bar-bg" style="background: rgba(255,255,255,0.1); height: 12px; border-radius: 10px; overflow: hidden;">
+                                <div class="bar-fill" style="background: #4d66f5; height: 100%; width: <?php echo $porcentagem_total; ?>%; transition: width 1s ease;"></div>
+                            </div>
+                            <span style="color: #a0a0b0; font-size: 0.9rem; margin-top: 8px; display: block;"><?php echo round($porcentagem_total); ?>% Concluído</span>
                         </div>
                     </div>
 
@@ -202,7 +213,6 @@ $porcentagem_total = ($concluidas / 5) * 100;
                                 <div class="trail-flex">
                                     <?php for ($mod = 1; $mod <= 3; $mod++): 
                                         
-                                        // 1. Define a regra de bloqueio inteligente das bolinhas
                                         $classe_modulo = "locked";
                                         $icone_modulo = "fa-lock";
                                         $is_clicavel = false;

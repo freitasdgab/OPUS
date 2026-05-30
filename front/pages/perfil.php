@@ -10,8 +10,8 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Busca todos os dados do usuário para preencher o perfil e a barra superior
-$stmt_user = $conn->prepare("SELECT nome, email, xp, trofeus, dificuldade, foto_perfil FROM usuarios WHERE id = ?");
+// Busca apenas os dados necessários para a tela de perfil
+$stmt_user = $conn->prepare("SELECT nome, email, dificuldade, foto_perfil FROM usuarios WHERE id = ?");
 $stmt_user->bind_param("i", $user_id);
 $stmt_user->execute();
 $dados_user = $stmt_user->get_result()->fetch_assoc();
@@ -19,12 +19,18 @@ $dados_user = $stmt_user->get_result()->fetch_assoc();
 // Define a foto padrão caso o usuário ainda não tenha enviado uma
 $foto_perfil = !empty($dados_user['foto_perfil']) ? $dados_user['foto_perfil'] : 'assets/img/opi pulando feliz.png';
 
-// Função auxiliar para resolver o caminho relativo correto do avatar
+// NOVA FUNÇÃO AUXILIAR PREPARADA PARA BASE64
 function obterCaminhoAvatar($path) {
+    // Se a string começar com "data:image", significa que é Base64 do banco. O HTML lê isso direto!
+    if (strpos($path, 'data:image') === 0) {
+        return $path;
+    }
+    // Se for o avatar padrão
     if (strpos($path, 'assets/') === 0) {
         return '../' . $path;
     }
-    return '../../' . $path;
+    // Caso de falha, retorna a imagem padrão
+    return '../assets/img/opi pulando feliz.png';
 }
 ?>
 <!DOCTYPE html>
@@ -179,12 +185,12 @@ function obterCaminhoAvatar($path) {
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        .btn-primary { background: linear-gradient(135deg, #1a36ca, #4d66f5); color: white; }
+        .btn-primary { background: linear-gradient(135deg, #3a1aca, #3a1aca); color: white; }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(26, 54, 202, 0.6); }
-        .btn-danger { background: #ca1a1a; color: white; margin-top: 10px; }
-        .btn-danger:hover { background: #f54d4d; }
-        .btn-success { background: #10b981; color: white; }
-        .btn-success:hover { background: #34d399; }
+        .btn-danger { background: #3a1aca; color: white; margin-top: 10px; }
+        .btn-danger:hover { background: #281677; }
+        .btn-success { background: #3a1aca; color: white; }
+        .btn-success:hover { background: #281677; }
         
         .file-upload-wrapper { margin-bottom: 10px; width: 100%; text-align: center; }
         .file-upload-wrapper input[type="file"] { font-size: 0.75rem; color: #a0a0b0; }
@@ -215,24 +221,14 @@ function obterCaminhoAvatar($path) {
             <nav class="menu">
                 <a href="dashboard.php" class="nav-link"><i class="fa-solid fa-chart-line"></i> Progresso</a>
                 <a href="conquistas.php" class="nav-link"><i class="fa-solid fa-award"></i> Conquistas</a>
-                <a href="ranking.html" class="nav-link"><i class="fa-solid fa-ranking-star"></i> Ranking</a>
+                <a href="ranking.php" class="nav-link"><i class="fa-solid fa-ranking-star"></i> Ranking</a>
                 <a href="perfil.php" class="nav-link active"><i class="fa-solid fa-user"></i> Perfil</a>
             </nav>
         </aside>
 
         <main class="main-content">
             
-            <header class="top-bar">
-                <div class="stats">
-                    <div class="stat-box difficulty"><i class="fa-solid fa-fire"></i> <?php echo htmlspecialchars($dados_user['dificuldade'] ?? 'Iniciante'); ?> <small>Dificuldade</small></div>
-                    <div class="stat-box trophies"><i class="fa-solid fa-trophy"></i> <?php echo htmlspecialchars($dados_user['trofeus'] ?? 0); ?> <small>Troféus</small></div>
-                    <div class="stat-box xp"><i class="fa-solid fa-star"></i> <?php echo number_format($dados_user['xp'] ?? 0); ?> <small>Total XP</small></div>
-                </div>
-                <div class="user-info">
-                    <span><?php echo htmlspecialchars($dados_user['nome'] ?? 'Usuário'); ?></span>
-                    <img src="<?php echo htmlspecialchars(obterCaminhoAvatar($foto_perfil)); ?>" alt="Avatar" class="avatar">
-                </div>
-            </header>
+            <?php include '../../back/topbar.php'; ?>
 
             <section class="dashboard-grid">
                 <div class="curriculum-column">
@@ -279,7 +275,7 @@ function obterCaminhoAvatar($path) {
                             </div>
 
                             <div class="perfil-card">
-                                <div class="perfil-card-header" style="color: #10b981; border-bottom-color: rgba(16, 185, 129, 0.2);">
+                                <div class="perfil-card-header" style="color: #655bf0; border-bottom-color: rgba(79, 43, 238, 0.2);">
                                     <i class="fa-solid fa-shield-halved"></i> Segurança e Senha
                                 </div>
                                 <p class="security-text">

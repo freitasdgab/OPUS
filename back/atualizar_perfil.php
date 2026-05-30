@@ -2,6 +2,7 @@
 session_start();
 require_once 'conexao.php';
 
+// Verifica se está logado
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../front/pages/auth.html");
     exit();
@@ -10,49 +11,47 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 $action = $_POST['action'] ?? '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// 1. LÓGICA PARA ATUALIZAR A FOTO EM BASE64
+if ($action === 'atualizar_foto' && isset($_FILES['foto'])) {
+    $foto = $_FILES['foto'];
     
-    // ATUALIZAR NOME
-    if ($action === 'atualizar_nome') {
-        $novo_nome = htmlspecialchars(trim($_POST['novo_nome']));
+    // Verifica se não houve erro no upload
+    if ($foto['error'] === UPLOAD_ERR_OK) {
         
-        if (!empty($novo_nome)) {
-            $stmt = $conn->prepare("UPDATE usuarios SET nome = ? WHERE id = ?");
-            $stmt->bind_param("si", $novo_nome, $user_id);
-            $stmt->execute();
-            $_SESSION['user_nome'] = $novo_nome; // Atualiza a sessão também
-            echo "<script>alert('Nome atualizado com sucesso!'); window.location.href='../front/pages/perfil.php';</script>";
-        }
+        // Pega o tipo da imagem (ex: image/png, image/jpeg)
+        $tipo = mime_content_type($foto['tmp_name']);
+        
+        // Lê o arquivo e converte para Base64
+        $conteudo = file_get_contents($foto['tmp_name']);
+        $base64 = 'data:' . $tipo . ';base64,' . base64_encode($conteudo);
+        
+        // Salva a string gigante direto no banco de dados
+        $stmt = $conn->prepare("UPDATE usuarios SET foto_perfil = ? WHERE id = ?");
+        $stmt->bind_param("si", $base64, $user_id);
+        $stmt->execute();
     }
-
-    // ATUALIZAR FOTO DE PERFIL
-    elseif ($action === 'atualizar_foto') {
-        if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
-            
-            $extensao = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
-            $permitidos = ['jpg', 'jpeg', 'png', 'gif'];
-            
-            if (in_array($extensao, $permitidos)) {
-                // Cria um nome único para não sobrepor outras imagens
-                $novo_nome_img = uniqid("perfil_") . "." . $extensao;
-                // Define o caminho (garanta que a pasta 'uploads' exista na raiz do projeto)
-                $caminho_destino = "../uploads/" . $novo_nome_img;
-                
-                if (move_uploaded_file($_FILES['foto']['tmp_name'], $caminho_destino)) {
-                    // Salva no banco o caminho relativo
-                    $caminho_banco = "uploads/" . $novo_nome_img;
-                    $stmt = $conn->prepare("UPDATE usuarios SET foto_perfil = ? WHERE id = ?");
-                    $stmt->bind_param("si", $caminho_banco, $user_id);
-                    $stmt->execute();
-                    
-                    echo "<script>alert('Foto atualizada com sucesso!'); window.location.href='../front/pages/perfil.php';</script>";
-                } else {
-                    echo "<script>alert('Erro ao salvar a imagem na pasta.'); window.location.href='../front/pages/perfil.php';</script>";
-                }
-            } else {
-                echo "<script>alert('Formato inválido. Use JPG, PNG ou GIF.'); window.location.href='../front/pages/perfil.php';</script>";
-            }
-        }
-    }
+    
+    // Redireciona de volta para o perfil
+    header("Location: ../front/pages/perfil.php");
+    exit();
 }
+
+// 2. LÓGICA PARA ATUALIZAR O NOME
+if ($action === 'atualizar_nome' && isset($_POST['novo_nome'])) {
+    $novo_nome = trim($_POST['novo_nome']);
+    
+    if (!empty($novo_nome)) {
+        $stmt = $conn->prepare("UPDATE usuarios SET nome = ? WHERE id = ?");
+        $stmt->bind_param("si", $novo_nome, $user_id);
+        $stmt->execute();
+    }
+    
+    // Redireciona de volta para o perfil
+    header("Location: ../front/pages/perfil.php");
+    exit();
+}
+
+// Se tentarem acessar a página direto, manda pro perfil
+header("Location: ../front/pages/perfil.php");
+exit();
 ?>
