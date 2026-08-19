@@ -52,9 +52,19 @@ if ($acertos == 3) {
     $conn->query("INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES ($user_id, 'perfeicao')");
 }
 
-// Troféu 3: Fundamentos (Se ele estava na Lição 3 do Capítulo 1 e passou)
-if ($cap_atual == 1 && $licao_atual == 3 && $acertos > 0) {
-    $conn->query("INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES ($user_id, 'capitulo_1')");
+// Troféus de Conclusão de Capítulos (Lição 3 de cada capítulo com acertos > 0)
+if ($licao_atual == 3 && $acertos > 0) {
+    if ($cap_atual == 1) {
+        $conn->query("INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES ($user_id, 'capitulo_1')");
+    } elseif ($cap_atual == 2) {
+        $conn->query("INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES ($user_id, 'capitulo_2')");
+    } elseif ($cap_atual == 3) {
+        $conn->query("INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES ($user_id, 'capitulo_3')");
+    } elseif ($cap_atual == 4) {
+        $conn->query("INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES ($user_id, 'capitulo_4')");
+    } elseif ($cap_atual == 5) {
+        $conn->query("INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES ($user_id, 'capitulo_5')");
+    }
 }
 
 // Atualiza o contador de troféus totais na tabela 'usuarios' para a barra superior mostrar o número certo
@@ -63,24 +73,25 @@ $conn->query("UPDATE usuarios SET trofeus = (SELECT COUNT(*) FROM user_trofeus W
 // ==========================================
 
 
-// 3. Lógica para Avançar de Fase Automaticamente
-$res_prog = $conn->query("SELECT * FROM progresso_usuario WHERE usuario_id = $user_id AND unidade_numero = $cap_atual");
-$progresso = $res_prog->fetch_assoc();
+// 3. Lógica para Avançar de Fase Automaticamente (Só avança se o usuário tiver acertado pelo menos 1 questão)
+if ($acertos > 0) {
+    $res_prog = $conn->query("SELECT * FROM progresso_usuario WHERE usuario_id = $user_id AND unidade_numero = $cap_atual");
+    $progresso = $res_prog->fetch_assoc();
 
-if ($progresso && $progresso['status'] == 'corrente' && $progresso['licoes_concluidas'] == ($licao_atual - 1)) {
-    
-    if ($licao_atual == 3) {
-        // Se era a lição 3, ele terminou o capítulo!
-        $conn->query("UPDATE progresso_usuario SET status = 'completo', licoes_concluidas = 3 WHERE usuario_id = $user_id AND unidade_numero = $cap_atual");
-        
-        // Destravar o próximo capítulo (se existir, são 5 no total)
-        if ($cap_atual < 5) {
-            $prox_cap = $cap_atual + 1;
-            $conn->query("UPDATE progresso_usuario SET status = 'corrente' WHERE usuario_id = $user_id AND unidade_numero = $prox_cap AND status = 'trancado'");
+    if ($progresso && $progresso['status'] == 'corrente' && $progresso['licoes_concluidas'] == ($licao_atual - 1)) {
+        if ($licao_atual == 3) {
+            // Se era a lição 3, ele terminou o capítulo!
+            $conn->query("UPDATE progresso_usuario SET status = 'completo', licoes_concluidas = 3 WHERE usuario_id = $user_id AND unidade_numero = $cap_atual");
+            
+            // Destravar o próximo capítulo (se existir, são 5 no total)
+            if ($cap_atual < 5) {
+                $prox_cap = $cap_atual + 1;
+                $conn->query("UPDATE progresso_usuario SET status = 'corrente' WHERE usuario_id = $user_id AND unidade_numero = $prox_cap AND status = 'trancado'");
+            }
+        } else {
+            // Apenas avança para a próxima lição dentro do mesmo capítulo
+            $conn->query("UPDATE progresso_usuario SET licoes_concluidas = $licao_atual WHERE usuario_id = $user_id AND unidade_numero = $cap_atual");
         }
-    } else {
-        // Apenas avança para a próxima lição dentro do mesmo capítulo
-        $conn->query("UPDATE progresso_usuario SET licoes_concluidas = $licao_atual WHERE usuario_id = $user_id AND unidade_numero = $cap_atual");
     }
 }
 
@@ -93,6 +104,7 @@ if ($licao_atual == 3) {
     $prox_cap_link = $cap_atual + 1;
 }
 $is_curso_finalizado = ($cap_atual == 5 && $licao_atual == 3);
+
 ?>
 
 <!DOCTYPE html>
@@ -162,12 +174,18 @@ $is_curso_finalizado = ($cap_atual == 5 && $licao_atual == 3);
                     <div class="buttons">
                         <a href="dashboard.php" class="btn-action btn-dash"><i class="fa-solid fa-house"></i> Dashboard</a>
                         
-                        <?php if (!$is_curso_finalizado && $acertos > 0): ?>
-                            <a href="licao.php?cap=<?php echo $prox_cap_link; ?>&licao=<?php echo $prox_licao; ?>" class="btn-action btn-next">
-                                Próxima Lição <i class="fa-solid fa-arrow-right"></i>
+                        <?php if ($acertos > 0): ?>
+                            <?php if (!$is_curso_finalizado): ?>
+                                <a href="licao.php?cap=<?php echo $prox_cap_link; ?>&licao=<?php echo $prox_licao; ?>" class="btn-action btn-next">
+                                    Próxima Lição <i class="fa-solid fa-arrow-right"></i>
+                                </a>
+                            <?php else: ?>
+                                <a href="conquistas.php" class="btn-action btn-next">Ver Troféu! <i class="fa-solid fa-trophy"></i></a>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <a href="licao.php?cap=<?php echo $cap_atual; ?>&licao=<?php echo $licao_atual; ?>" class="btn-action btn-next">
+                                Tentar Novamente <i class="fa-solid fa-rotate-right"></i>
                             </a>
-                        <?php elseif ($is_curso_finalizado): ?>
-                            <a href="conquistas.php" class="btn-action btn-next">Ver Troféu! <i class="fa-solid fa-trophy"></i></a>
                         <?php endif; ?>
                     </div>
                 </div>

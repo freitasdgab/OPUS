@@ -194,9 +194,13 @@ $porcentagem_total = ($concluidas / 5) * 100;
                         <h1 style="font-family: 'Orbitron'; color: #fff; font-size: 2rem;">Meu Caminho em Java</h1>
                         <div class="progress-wrapper" style="max-width: 600px; margin: 15px auto;">
                             <div class="bar-bg" style="background: rgba(255,255,255,0.1); height: 12px; border-radius: 10px; overflow: hidden;">
-                                <div class="bar-fill" style="background: #4d66f5; height: 100%; width: <?php echo $porcentagem_total; ?>%; transition: width 1s ease;"></div>
+                                <div class="bar-fill" style="background: <?php echo $porcentagem_total == 100 ? 'linear-gradient(90deg, #ffd700, #ffa500)' : '#4d66f5'; ?>; height: 100%; width: <?php echo $porcentagem_total; ?>%; transition: width 1s ease; box-shadow: <?php echo $porcentagem_total == 100 ? '0 0 15px rgba(255, 215, 0, 0.6)' : 'none'; ?>;"></div>
                             </div>
-                            <span style="color: #a0a0b0; font-size: 0.9rem; margin-top: 8px; display: block;"><?php echo round($porcentagem_total); ?>% Concluído</span>
+                            <?php if ($porcentagem_total == 100): ?>
+                                <span style="color: #ffd700; font-size: 1rem; margin-top: 8px; display: block; font-weight: 700; font-family: 'Orbitron', sans-serif; text-shadow: 0 0 10px rgba(255,215,0,0.3);"><i class="fa-solid fa-trophy"></i> CAMINHO CONCLUÍDO! 100% 🏆</span>
+                            <?php else: ?>
+                                <span style="color: #a0a0b0; font-size: 0.9rem; margin-top: 8px; display: block;"><?php echo round($porcentagem_total); ?>% Concluído</span>
+                            <?php endif; ?>
                         </div>
                     </div>
 
