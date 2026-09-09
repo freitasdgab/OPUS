@@ -1,0 +1,138 @@
+/* --- ESTILOS GERAIS --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    font-family: 'Poppins', sans-serif;
+    background-color: #121212;
+    color: #ffffff;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#bg-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* --- LAYOUT DA TELA --- */
+.wrapper {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.left-side {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+/* Brilho verde sutil atrás dos mascotes */
+.left-side::before {
+    content: '';
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(0, 230, 118, 0.12) 0%, rgba(0,0,0,0) 70%);
+    z-index: -1;
+}
+
+.mascots-img {
+    max-width: 90%;
+    height: auto;
+    object-fit: contain;
+    animation: float 4s ease-in-out infinite;
+}
+
+.right-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding-left: 50px;
+}
+
+/* --- TIPOGRAFIA --- */
+.title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 3rem;
+    letter-spacing: 3px;
+    line-height: 1.2;
+    color: #ffffff;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.title .brand {
+    color: #1a36ca;
+    text-shadow: 0 0 15px rgba(26, 54, 202, 0.6);
+    font-weight: 900;
+}
+
+.description {
+    font-size: 1.1rem;
+    color: #cccccc;
+    max-width: 450px;
+    line-height: 1.6;
+    margin-bottom: 40px;
+    font-weight: 300;
+}
+
+/* Botão Começar */
+.btn-start {
+    display: inline-block;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.3rem;
+    background-color: #1a36ca;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 15px 50px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(26, 54, 202, 0.4);
+    transition: all 0.3s ease;
+    letter-spacing: 2px;
+}
+
+.btn-start:hover {
+    background-color: #264be3;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(38, 75, 227, 0.6);
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+/* Responsividade */
+@media (max-width: 900px) {
+    .wrapper { flex-direction: column; text-align: center; }
+    .right-side { padding-left: 0; align-items: center; margin-top: 30px; }
+    .title { font-size: 2.2rem; }
+    .description { font-size: 1rem; max-width: 100%; }
+}
