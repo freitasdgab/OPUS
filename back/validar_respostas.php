@@ -60,9 +60,9 @@ if ($acertos == $total_perguntas && $total_perguntas > 0) {
         if ($licao == $licoes_feitas + 1) {
             $novas_licoes = $licoes_feitas + 1;
 
-            if ($novas_licoes >= 3) {
+            if ($novas_licoes >= 5) {
                 // Capítulo completo
-                $stmt_up = $conn->prepare("UPDATE progresso_usuario SET licoes_concluidas = 3, status = 'completo' WHERE usuario_id = ? AND unidade_numero = ?");
+                $stmt_up = $conn->prepare("UPDATE progresso_usuario SET licoes_concluidas = 5, status = 'completo' WHERE usuario_id = ? AND unidade_numero = ?");
                 $stmt_up->bind_param("ii", $user_id, $capitulo);
                 $stmt_up->execute();
 
@@ -79,6 +79,10 @@ if ($acertos == $total_perguntas && $total_perguntas > 0) {
                 $stmt_inc = $conn->prepare("UPDATE progresso_usuario SET licoes_concluidas = ? WHERE usuario_id = ? AND unidade_numero = ?");
                 $stmt_inc->bind_param("iii", $novas_licoes, $user_id, $capitulo);
                 $stmt_inc->execute();
+
+                if ($novas_licoes == 3) {
+                    $msg_bonus = " 🎁 Baú de Recompensas liberado na Dashboard!";
+                }
             }
 
      // +50 XP, +1 troféu

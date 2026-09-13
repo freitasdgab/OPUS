@@ -85,7 +85,8 @@ if (!$ja_processado) {
         $conn->query("INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES ($user_id, 'perfeicao')");
     }
 
-    if ($licao_atual == 3 && $acertos > 0) {
+    // Troféu do capítulo ao completar a 5ª lição
+    if ($licao_atual == 5 && $acertos > 0) {
         if ($cap_atual == 1) {
             $conn->query("INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES ($user_id, 'capitulo_1')");
         } elseif ($cap_atual == 2) {
@@ -106,8 +107,8 @@ if (!$ja_processado) {
         $progresso = $res_prog->fetch_assoc();
 
         if ($progresso && $progresso['status'] == 'corrente' && $progresso['licoes_concluidas'] == ($licao_atual - 1)) {
-            if ($licao_atual == 3) {
-                $conn->query("UPDATE progresso_usuario SET status = 'completo', licoes_concluidas = 3 WHERE usuario_id = $user_id AND unidade_numero = $cap_atual");
+            if ($licao_atual == 5) {
+                $conn->query("UPDATE progresso_usuario SET status = 'completo', licoes_concluidas = 5 WHERE usuario_id = $user_id AND unidade_numero = $cap_atual");
 
                 if ($cap_atual < 5) {
                     $prox_cap = $cap_atual + 1;
@@ -124,11 +125,12 @@ if (!$ja_processado) {
 $prox_licao = $licao_atual + 1;
 $prox_cap_link = $cap_atual;
 
-if ($licao_atual == 3) {
+if ($licao_atual == 5) {
     $prox_licao = 1;
     $prox_cap_link = $cap_atual + 1;
 }
-$is_curso_finalizado = ($cap_atual == 5 && $licao_atual == 3);
+$is_curso_finalizado = ($cap_atual == 5 && $licao_atual == 5);
+$liberou_bau = ($licao_atual == 3 && $acertos > 0);
 
 $status_atual = opus_sincronizar_jogador($conn, $user_id);
 $vidas_restantes = (int) $status_atual['vidas'];
@@ -149,33 +151,67 @@ $vidas_restantes = (int) $status_atual['vidas'];
         }
         .result-card {
             background: rgba(20, 20, 28, 0.9); border: 2px solid <?php echo $cor_tema; ?>; 
-            border-radius: 20px; padding: 40px; text-align: center; max-width: 500px;
+            border-radius: 20px; padding: 40px; text-align: center; max-width: 520px; width: 100%;
             box-shadow: 0 0 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(26, 54, 202, 0.2);
         }
         .mascote-img {
-            width: 220px; /* Tamanho ligeiramente maior para o PNG dar mais impacto */
+            width: 220px;
             height: auto;
             margin: 0 auto 20px auto;
             display: block;
             background: transparent;
             border: none;
-            /* Sombra projetada que acompanha o recorte do PNG */
             filter: drop-shadow(0px 15px 15px rgba(0, 0, 0, 0.6));
         }
         .result-title {
             font-family: 'Orbitron', sans-serif; font-size: 2rem; color: #fff; margin-bottom: 10px;
         }
         .result-message {
-            font-family: 'Poppins', sans-serif; color: #a0a0b0; font-size: 1.1rem; margin-bottom: 30px;
+            font-family: 'Poppins', sans-serif; color: #a0a0b0; font-size: 1.1rem; margin-bottom: 25px;
         }
         .xp-box {
-            background: rgba(26, 54, 202, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 30px;
+            background: rgba(26, 54, 202, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 25px;
             font-family: 'Orbitron'; font-size: 1.5rem; color: #a7b7e6; border: 1px solid <?php echo $cor_tema; ?>;
         }
-        .buttons { display: flex; gap: 15px; justify-content: center; }
+        
+        /* BANNER DE BAÚ DESBLOQUEADO */
+        .bau-unlocked-banner {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.18), rgba(255, 150, 0, 0.08));
+            border: 2px solid #ffd700;
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-align: left;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.25);
+            animation: pulse 2s infinite;
+        }
+        .bau-banner-icon {
+            font-size: 34px;
+            color: #ffd700;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
+            flex-shrink: 0;
+        }
+        .bau-banner-text h3 {
+            margin: 0 0 4px 0;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.05rem;
+            color: #ffd700;
+        }
+        .bau-banner-text p {
+            margin: 0;
+            font-size: 0.88rem;
+            color: #d0d0d8;
+            line-height: 1.4;
+        }
+
+        .buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
         .btn-action {
             padding: 12px 25px; font-family: 'Orbitron'; font-weight: bold; border-radius: 8px;
             text-decoration: none; border: none; cursor: pointer; transition: 0.3s;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
         }
         .btn-next { background: <?php echo $cor_tema; ?>; color: #fff; }
         .btn-next:hover { transform: scale(1.05); filter: brightness(1.2); box-shadow: 0 0 15px <?php echo $cor_tema; ?>; }
@@ -199,6 +235,19 @@ $vidas_restantes = (int) $status_atual['vidas'];
                     <div class="xp-box">
                         +<?php echo $xp_ganho; ?> XP
                     </div>
+
+                    <?php if ($liberou_bau): ?>
+                        <div class="bau-unlocked-banner">
+                            <div class="bau-banner-icon">
+                                <i class="fa-solid fa-gift"></i>
+                            </div>
+                            <div class="bau-banner-text">
+                                <h3>Baú de Recompensas Liberado!</h3>
+                                <p>Você concluiu a 3ª lição e liberou o Baú de Recompensas na Dashboard. Resgate vidas extras e XP!</p>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
                     <?php if ($perdeu_vida): ?>
                         <p class="result-message" style="color:#ff8a8a;">
                             <i class="fa-solid fa-heart-crack"></i>
@@ -209,12 +258,18 @@ $vidas_restantes = (int) $status_atual['vidas'];
                     <?php endif; ?>
 
                     <div class="buttons">
-                        <a href="dashboard.php" class="btn-action btn-dash"><i class="fa-solid fa-house"></i> Dashboard</a>
+                        <?php if ($liberou_bau): ?>
+                            <a href="dashboard.php" class="btn-action btn-dash" style="background: linear-gradient(135deg, #ffd700, #ff9600); color: #1a1a24; border: none; font-weight: 900; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);">
+                                <i class="fa-solid fa-gift"></i> Abrir Baú na Dashboard
+                            </a>
+                        <?php else: ?>
+                            <a href="dashboard.php" class="btn-action btn-dash"><i class="fa-solid fa-house"></i> Dashboard</a>
+                        <?php endif; ?>
                         
                         <?php if ($acertos > 0): ?>
                             <?php if (!$is_curso_finalizado): ?>
                                 <a href="licao.php?cap=<?php echo $prox_cap_link; ?>&licao=<?php echo $prox_licao; ?>" class="btn-action btn-next">
-                                    Próxima Lição <i class="fa-solid fa-arrow-right"></i>
+                                    <?php echo ($licao_atual == 5) ? 'Próximo Capítulo' : 'Próxima Lição'; ?> <i class="fa-solid fa-arrow-right"></i>
                                 </a>
                             <?php else: ?>
                                 <a href="conquistas.php" class="btn-action btn-next">Ver Troféu! <i class="fa-solid fa-trophy"></i></a>

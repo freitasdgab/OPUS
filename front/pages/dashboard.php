@@ -93,6 +93,28 @@ foreach ($unidades as $u) {
 $total_licoes_curso = 25;
 $progresso_porcentagem = min(100, (int) round(($total_licoes_feitas / $total_licoes_curso) * 100));
 
+// 5. BAÚS DE RECOMPENSA RESGATADOS PELO USUÁRIO
+$baus_resgatados = [];
+$conn->query("CREATE TABLE IF NOT EXISTS `bau_recompensas` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `usuario_id` INT(11) NOT NULL,
+    `unidade_numero` INT(11) NOT NULL,
+    `tipo_recompensa` VARCHAR(50) NOT NULL DEFAULT 'misto',
+    `xp_ganho` INT(11) NOT NULL DEFAULT 50,
+    `vidas_ganhas` INT(11) NOT NULL DEFAULT 0,
+    `resgatado_em` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uq_user_unidade` (`usuario_id`, `unidade_numero`),
+    KEY `idx_usuario` (`usuario_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
+
+$res_baus = $conn->query("SELECT unidade_numero FROM bau_recompensas WHERE usuario_id = $user_id");
+if ($res_baus) {
+    while ($rb = $res_baus->fetch_assoc()) {
+        $baus_resgatados[] = (int) $rb['unidade_numero'];
+    }
+}
+
 // Configuração dos Capítulos
 $nomes_unidades = [
     1 => [
@@ -418,22 +440,69 @@ $nomes_unidades = [
         }
         @keyframes bounce { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -8px); } }
 
+        /* BAÚ DE RECOMPENSAS NO MEIO DA TRILHA */
         .reward-chest-container {
-            margin: 10px 0 45px 0; display: flex; flex-direction: column; align-items: center;
-            animation: floatNode 4s ease-in-out infinite; animation-delay: 1s; z-index: 1;
+            margin: 15px 0 45px 0; display: flex; flex-direction: column; align-items: center;
+            position: relative; z-index: 2; animation: floatNode 4s ease-in-out infinite;
         }
         .chest-node {
-            width: 80px; height: 70px; border-radius: 15px; display: flex; align-items: center;
-            justify-content: center; font-size: 32px; transition: all 0.3s;
+            width: 84px; height: 74px; border-radius: 18px; display: flex; align-items: center;
+            justify-content: center; font-size: 32px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative; user-select: none;
         }
-        .chest-node.locked { background: #3a3a45; color: #5a5a65; box-shadow: 0 6px 0 #2a2a35; }
-        .chest-node.completed { background: linear-gradient(145deg, #ffd700, #ffaa00); color: #fff; box-shadow: 0 6px 0 #cc8800; }
+        .chest-node.locked {
+            background: #2a2a35; color: #5a5a68; box-shadow: 0 6px 0 #1e1e28; cursor: pointer;
+        }
+        .chest-node.locked:hover {
+            transform: scale(1.03); color: #707080;
+        }
+        .chest-node.available {
+            background: linear-gradient(145deg, #ffd700, #ff9600);
+            color: #fff; box-shadow: 0 8px 0 #cc7000, 0 0 25px rgba(255, 215, 0, 0.6);
+            cursor: pointer; animation: chestPulse 1.8s infinite;
+        }
+        .chest-node.available:hover {
+            transform: translateY(-6px) scale(1.08);
+            box-shadow: 0 12px 0 #cc7000, 0 0 35px rgba(255, 215, 0, 0.9);
+        }
+        .chest-node.available:active {
+            transform: translateY(4px); box-shadow: 0 2px 0 #cc7000;
+        }
+        .chest-node.claimed {
+            background: #202430; color: #707888; border: 2px solid rgba(88, 204, 2, 0.3);
+            box-shadow: 0 6px 0 #151820; cursor: pointer;
+        }
+        .chest-node.claimed:hover {
+            transform: scale(1.03); border-color: rgba(88, 204, 2, 0.6);
+        }
+        .chest-tag-done {
+            position: absolute; bottom: -12px; font-size: 0.65rem; font-weight: 900;
+            background: #58cc02; color: #fff; padding: 2px 8px; border-radius: 10px;
+            text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+            white-space: nowrap;
+        }
+        .chest-balloon {
+            position: absolute; top: -40px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(90deg, #ffd700, #ff9600); color: #1e1e24;
+            padding: 6px 14px; border-radius: 12px; font-weight: 900; font-size: 0.75rem;
+            text-transform: uppercase; animation: bounce 1.8s ease-in-out infinite;
+            white-space: nowrap; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .chest-balloon::after {
+            content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
+            border-width: 6px 6px 0; border-style: solid; border-color: #ff9600 transparent transparent;
+        }
+        @keyframes chestPulse {
+            0%, 100% { filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.5)); transform: scale(1); }
+            50% { filter: drop-shadow(0 0 22px rgba(255, 215, 0, 0.95)); transform: scale(1.04); }
+        }
+
         .logic-hologram { position: absolute; top: -25px; font-size: 20px; color: #58cc02; opacity: 0; }
-        .chest-node.completed .logic-hologram { opacity: 1; animation: logicFloat 2s infinite alternate; }
+        .chest-node.available .logic-hologram { opacity: 1; animation: logicFloat 2s infinite alternate; }
         
         @keyframes logicFloat {
-            0% { transform: translateY(0) scale(1); text-shadow: 0 0 5px #58cc02; }
-            100% { transform: translateY(-10px) scale(1.2); text-shadow: 0 0 15px #58cc02; }
+            0% { transform: translateY(0) scale(1); text-shadow: 0 0 5px #ffd700; color: #ffd700; }
+            100% { transform: translateY(-10px) scale(1.2); text-shadow: 0 0 15px #ffd700; color: #ffd700; }
         }
 
         .mascote-lateral { position: absolute; width: 140px; z-index: 2; pointer-events: none; animation: floatMascote 4s ease-in-out infinite; top: 35%; }
@@ -442,10 +511,10 @@ $nomes_unidades = [
         @keyframes floatMascote { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
         @media (max-width: 1024px) { .mascote-lateral { display: none; } }
 
-        /* MODAL GUIA */
+        /* MODAIS */
         .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 9999; opacity: 0; transition: 0.3s;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 9999; opacity: 0; transition: 0.3s;
         }
         .modal-overlay.active { display: flex; opacity: 1; }
         .modal-box { background: #1e1e24; width: 90%; max-width: 500px; border-radius: 20px; overflow: hidden; transform: scale(0.9); transition: 0.3s; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
@@ -456,6 +525,50 @@ $nomes_unidades = [
         .close-btn-modal { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.2); border: none; color: #fff; width: 35px; height: 35px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; transition: 0.2s; }
         .close-btn-modal:hover { background: rgba(0,0,0,0.4); transform: scale(1.1); }
         .modal-body { padding: 30px; color: #d0d0d5; font-size: 1.1rem; line-height: 1.6; }
+        .code-box { background: #111115; border-left: 4px solid #1cb0f6; padding: 15px; border-radius: 8px; font-family: monospace; margin-top: 15px; color: #a5d6a7; }
+
+        /* MODAL DO BAÚ DE RECOMPENSAS */
+        .modal-bau-box {
+            background: #181824; width: 90%; max-width: 480px; border-radius: 24px;
+            overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.85);
+            border: 2px solid #3a3a4c; text-align: center; padding: 35px 28px;
+            position: relative; transform: scale(0.85); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-overlay.active .modal-bau-box { transform: scale(1); }
+        .modal-bau-icon-wrapper {
+            width: 110px; height: 110px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.25) 0%, rgba(255, 150, 0, 0.05) 70%);
+            border: 3px solid #ffd700; display: flex; justify-content: center; align-items: center;
+            font-size: 50px; color: #ffd700; margin: 0 auto 20px auto;
+            box-shadow: 0 0 35px rgba(255, 215, 0, 0.45);
+            animation: pulse 2s infinite;
+        }
+        .modal-bau-title { font-family: 'Orbitron', sans-serif; font-size: 1.6rem; font-weight: 900; color: #fff; margin-bottom: 6px; }
+        .modal-bau-sub { font-size: 0.95rem; color: #a5a5ac; font-weight: 600; margin-bottom: 25px; }
+
+        .reward-cards-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 25px;
+        }
+        .reward-card {
+            background: #222230; border: 1px solid #38384a; border-radius: 16px;
+            padding: 16px 12px; display: flex; flex-direction: column; align-items: center; gap: 6px;
+            transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .reward-card:hover { transform: translateY(-3px); border-color: #ffd700; }
+        .reward-card .rc-icon { font-size: 30px; margin-bottom: 2px; }
+        .reward-card .rc-val { font-size: 1.2rem; font-weight: 900; color: #fff; font-family: 'Orbitron', sans-serif; }
+        .reward-card .rc-lbl { font-size: 0.75rem; color: #8e95a1; font-weight: 700; text-transform: uppercase; }
+
+        .btn-claim-chest {
+            background: #58cc02; border: none; border-bottom: 5px solid #45a300;
+            color: #fff; width: 100%; padding: 14px 20px; border-radius: 16px;
+            font-size: 1.05rem; font-weight: 900; text-transform: uppercase;
+            letter-spacing: 0.8px; cursor: pointer; transition: 0.1s;
+            box-shadow: 0 4px 15px rgba(88, 204, 2, 0.4);
+        }
+        .btn-claim-chest:hover { filter: brightness(1.1); transform: translateY(-2px); }
+        .btn-claim-chest:active { transform: translateY(4px); border-bottom: 2px solid #45a300; }
+        .btn-claim-chest:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         .code-box { background: #111115; border-left: 4px solid #1cb0f6; padding: 15px; border-radius: 8px; font-family: monospace; margin-top: 15px; color: #a5d6a7; }
     </style>
 </head>
@@ -553,13 +666,34 @@ $nomes_unidades = [
 
                                         <?php 
                                         if ($mod == 3): 
-                                            $reward_class = ($licoes_feitas >= 3 || $status_cap_banco === 'completo') ? 'completed' : 'locked';
+                                            $is_elegivel_bau = ($licoes_feitas >= 3 || $status_cap_banco === 'completo');
+                                            $is_resgatado_bau = in_array($num_cap, $baus_resgatados, true);
+
+                                            if ($is_resgatado_bau) {
+                                                $chest_state = "claimed";
+                                            } elseif ($is_elegivel_bau) {
+                                                $chest_state = "available";
+                                            } else {
+                                                $chest_state = "locked";
+                                            }
                                         ?>
                                             <div class="reward-chest-container <?php echo $pos_class; ?>" style="margin-left: 0; margin-right: 80px;">
-                                                <div class="chest-node <?php echo $reward_class; ?>">
-                                                    <i class="fa-solid fa-box-open"></i>
-                                                    <i class="fa-solid fa-code logic-hologram"></i>
-                                                </div>
+                                                <?php if ($chest_state === 'available'): ?>
+                                                    <div class="chest-balloon"><i class="fa-solid fa-gift"></i> ABRIR BAÚ!</div>
+                                                    <div class="chest-node available" id="chestNode_<?php echo $num_cap; ?>" onclick="abrirModalBau(<?php echo $num_cap; ?>, '<?php echo htmlspecialchars($info['titulo']); ?>')">
+                                                        <i class="fa-solid fa-gift"></i>
+                                                        <i class="fa-solid fa-sparkles logic-hologram"></i>
+                                                    </div>
+                                                <?php elseif ($chest_state === 'claimed'): ?>
+                                                    <div class="chest-node claimed" id="chestNode_<?php echo $num_cap; ?>" onclick="avisoBauColetado(<?php echo $num_cap; ?>)">
+                                                        <i class="fa-solid fa-box-open"></i>
+                                                        <span class="chest-tag-done"><i class="fa-solid fa-check"></i> Coletado</span>
+                                                    </div>
+                                                <?php else: ?>
+                                                    <div class="chest-node locked" id="chestNode_<?php echo $num_cap; ?>" onclick="avisoBauTrancado(<?php echo $num_cap; ?>)">
+                                                        <i class="fa-solid fa-lock"></i>
+                                                    </div>
+                                                <?php endif; ?>
                                             </div>
                                         <?php endif; ?>
 
@@ -736,9 +870,150 @@ $nomes_unidades = [
         </div>
     </div>
 
+    <!-- Modal do Baú de Recompensas -->
+    <div id="modalBauRecompensa" class="modal-overlay">
+        <div class="modal-bau-box">
+            <button class="close-btn-modal" onclick="fecharModalBau()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-bau-icon-wrapper">
+                <i class="fa-solid fa-gift" id="modalBauIconePrincipal"></i>
+            </div>
+            <h2 class="modal-bau-title" id="modalBauTitle">Baú de Recompensas!</h2>
+            <p class="modal-bau-sub" id="modalBauSub">Unidade X · Recompensa de Meio de Trilha</p>
+
+            <div id="rewardContainerPre">
+                <p style="color: #d0d0d8; font-size: 1rem; line-height: 1.5; margin-bottom: 25px;">
+                    Você atingiu a metade desta unidade! Abra este baú misterioso para resgatar <strong>XP Bônus</strong> e <strong>Corações de Vida</strong> para continuar sua jornada.
+                </p>
+            </div>
+
+            <div id="rewardContainerPos" style="display: none;">
+                <div class="reward-cards-grid">
+                    <div class="reward-card">
+                        <i class="fa-solid fa-bolt rc-icon" style="color: #ffc800;"></i>
+                        <div class="rc-val" id="resgateXpVal">+50 XP</div>
+                        <div class="rc-lbl">Bônus de XP</div>
+                    </div>
+                    <div class="reward-card" id="resgateVidaCard">
+                        <i class="fa-solid fa-heart rc-icon" id="resgateVidaIcon" style="color: #ef4444;"></i>
+                        <div class="rc-val" id="resgateVidaVal">+1 Coração</div>
+                        <div class="rc-lbl" id="resgateVidaLbl">Vida Bônus</div>
+                    </div>
+                </div>
+                <p id="resgateDetalheTxt" style="color: #58cc02; font-weight: 700; font-size: 0.95rem; margin-bottom: 20px;"></p>
+            </div>
+
+            <button class="btn-claim-chest" id="btnResgatarBau" onclick="resgatarRecompensaBau()">
+                <i class="fa-solid fa-box-open"></i> ABRIR BAÚ DE RECOMPENSA
+            </button>
+            <button class="btn-claim-chest" id="btnFecharBauPronto" onclick="fecharModalBau()" style="display: none; background: #1cb0f6; border-bottom-color: #148bc4;">
+                <i class="fa-solid fa-check"></i> CONTINUAR APRENDENDO
+            </button>
+        </div>
+    </div>
+
     <script src="../assets/js/script.js"></script> 
     
     <script>
+        let capAtualBau = 0;
+
+        function abrirModalBau(cap, titulo) {
+            capAtualBau = cap;
+            document.getElementById('modalBauTitle').innerText = 'Baú de Recompensas!';
+            document.getElementById('modalBauSub').innerText = titulo + ' · Recompensa de Meio de Trilha';
+            document.getElementById('rewardContainerPre').style.display = 'block';
+            document.getElementById('rewardContainerPos').style.display = 'none';
+            document.getElementById('btnResgatarBau').style.display = 'block';
+            document.getElementById('btnResgatarBau').innerHTML = '<i class="fa-solid fa-box-open"></i> ABRIR BAÚ DE RECOMPENSA';
+            document.getElementById('btnResgatarBau').disabled = false;
+            document.getElementById('btnFecharBauPronto').style.display = 'none';
+            
+            const modal = document.getElementById('modalBauRecompensa');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
+        }
+
+        function fecharModalBau() {
+            const modal = document.getElementById('modalBauRecompensa');
+            modal.classList.remove('active');
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
+
+        function avisoBauColetado(cap) {
+            alert('Você já abriu e coletou a recompensa deste baú da Unidade ' + cap + '!');
+        }
+
+        function avisoBauTrancado(cap) {
+            alert('🔒 Complete pelo menos 3 lições da Unidade ' + cap + ' para desbloquear e abrir este baú de recompensa!');
+        }
+
+        function resgatarRecompensaBau() {
+            const btn = document.getElementById('btnResgatarBau');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Abrindo Baú...';
+
+            fetch('../../back/resgatar_bau.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'unidade_numero=' + encodeURIComponent(capAtualBau)
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (!data.success) {
+                    alert(data.mensagem || 'Não foi possível resgatar o baú.');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> TENTAR NOVAMENTE';
+                    return;
+                }
+
+                // Exibe resultados
+                document.getElementById('rewardContainerPre').style.display = 'none';
+                document.getElementById('rewardContainerPos').style.display = 'block';
+                document.getElementById('resgateXpVal').innerText = '+' + data.xp_ganho + ' XP';
+                
+                if (data.vidas_ganhas > 0) {
+                    document.getElementById('resgateVidaVal').innerText = '+1 Coração';
+                    document.getElementById('resgateVidaLbl').innerText = 'Vida Recuperada';
+                    document.getElementById('resgateVidaIcon').className = 'fa-solid fa-heart rc-icon';
+                    document.getElementById('resgateVidaIcon').style.color = '#ef4444';
+                } else {
+                    document.getElementById('resgateVidaVal').innerText = 'XP Bônus Max';
+                    document.getElementById('resgateVidaLbl').innerText = 'Vidas já cheias';
+                    document.getElementById('resgateVidaIcon').className = 'fa-solid fa-star rc-icon';
+                    document.getElementById('resgateVidaIcon').style.color = '#ffc800';
+                }
+
+                document.getElementById('resgateDetalheTxt').innerText = data.detalhe || data.mensagem;
+                btn.style.display = 'none';
+                document.getElementById('btnFecharBauPronto').style.display = 'block';
+
+                // Atualiza o nó do baú na trilha
+                const chestNode = document.getElementById('chestNode_' + capAtualBau);
+                if (chestNode) {
+                    chestNode.className = 'chest-node claimed';
+                    chestNode.onclick = function() { avisoBauColetado(capAtualBau); };
+                    chestNode.innerHTML = '<i class="fa-solid fa-box-open"></i><span class="chest-tag-done"><i class="fa-solid fa-check"></i> Coletado</span>';
+                    const balloon = chestNode.parentElement.querySelector('.chest-balloon');
+                    if (balloon) balloon.remove();
+                }
+
+                // Atualiza Topbar Vidas e XP em tempo real
+                const topbarXp = document.querySelector('.topbar-stat.stat-xp span');
+                if (topbarXp && data.xp_total) {
+                    topbarXp.innerText = Number(data.xp_total).toLocaleString('pt-BR');
+                }
+                const topbarVida = document.querySelector('.topbar-stat.stat-vida span');
+                if (topbarVida && typeof data.vidas_atual !== 'undefined') {
+                    topbarVida.innerText = data.vidas_atual;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Erro de conexão ao abrir o baú.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-box-open"></i> ABRIR BAÚ DE RECOMPENSA';
+            });
+        }
+
         function abrirGuia(btn) {
             const titulo = btn.getAttribute('data-titulo');
             const nome = btn.getAttribute('data-nome');
@@ -772,9 +1047,13 @@ $nomes_unidades = [
         }
 
         window.onclick = function(event) {
-            const modal = document.getElementById('modalGuia');
-            if (event.target == modal) {
+            const modalG = document.getElementById('modalGuia');
+            if (event.target == modalG) {
                 fecharGuia();
+            }
+            const modalB = document.getElementById('modalBauRecompensa');
+            if (event.target == modalB) {
+                fecharModalBau();
             }
         }
     </script>
