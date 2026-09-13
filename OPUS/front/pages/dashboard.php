@@ -373,15 +373,7 @@ $porcentagem_total = ($concluidas / 5) * 100;
 </head>
 <body>
     <div class="app-container">
-        <aside class="sidebar">
-            <div class="logo">OPUS</div>
-            <nav class="menu">
-                <a href="dashboard.php" class="nav-link active"><i class="fa-solid fa-house"></i> Aprender</a>
-                <a href="conquistas.php" class="nav-link"><i class="fa-solid fa-award"></i> Missões</a>
-                <a href="ranking.php" class="nav-link"><i class="fa-solid fa-shield-halved"></i> Ligas</a>
-                <a href="perfil.php" class="nav-link"><i class="fa-solid fa-user"></i> Perfil</a>
-            </nav>
-        </aside>
+        <?php include '../../back/sidebar.php'; ?>
 
         <main class="main-content">
             <?php include '../../back/topbar.php'; ?>

@@ -188,15 +188,7 @@ if (!isset($_SESSION['user_id'])) {
     <canvas id="bg-canvas"></canvas>
 
     <div class="app-container">
-        <aside class="sidebar">
-            <div class="logo">OPUS</div>
-            <nav class="menu">
-                <a href="dashboard.php" class="nav-link"><i class="fa-solid fa-chart-line"></i> Progresso</a>
-                <a href="conquistas.php" class="nav-link active"><i class="fa-solid fa-award"></i> Conquistas</a>
-                <a href="ranking.php" class="nav-link"><i class="fa-solid fa-ranking-star"></i> Ranking</a>
-                <a href="perfil.php" class="nav-link"><i class="fa-solid fa-user"></i> Perfil</a>
-            </nav>
-        </aside>
+        <?php include '../../back/sidebar.php'; ?>
 
         <main class="main-content">
             

@@ -30,4 +30,4 @@ try {
          <p><strong>Código $codigo:</strong> $detalhe$dica</p>
          <p style='margin-top:20px;opacity:.7;font-size:.9em'>Verifique se o XAMPP está ativo (Apache + MySQL) e se o banco <code>opus</code> foi importado.</p>");
 }
-?>
+?>
