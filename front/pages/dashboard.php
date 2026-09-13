@@ -8,13 +8,18 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 require_once '../../back/jogador_status.php';
+require_once '../../back/ligas_logic.php';
+require_once '../../back/missoes_logic.php';
 
-$user_id = $_SESSION['user_id'];
+$user_id = (int) $_SESSION['user_id'];
 $status_jogador = opus_sincronizar_jogador($conn, $user_id);
 $vidas_atual = (int) $status_jogador['vidas'];
 $sem_vidas = ($vidas_atual <= 0);
+$dias_fogo = (int) ($status_jogador['dias_fogo'] ?? 0);
+$total_trofeus = (int) ($status_jogador['trofeus'] ?? 0);
+$xp_total = (int) ($status_jogador['xp'] ?? 0);
 
-// Busca progresso
+// Busca progresso das unidades
 $unidades = [];
 $result_progresso = $conn->query("SELECT unidade_numero, status, licoes_concluidas FROM progresso_usuario WHERE usuario_id = $user_id ORDER BY unidade_numero ASC");
 
@@ -24,7 +29,71 @@ if ($result_progresso) {
     }
 }
 
-// Configuração dos Capítulos com Guias Personalizados e Mascote por Cor
+// 1. DADOS REAIS DE LIGA DO USUÁRIO
+$minha_liga = liga_garantir_usuario($conn, $user_id);
+$divisao_usuario = $minha_liga['divisao'] ?? 'bronze';
+$cfg_liga = liga_config($divisao_usuario);
+$posicao_usuario = 1;
+$total_grupo = 1;
+$minha_zona = 'neutro';
+$xp_semana_usuario = (int) ($minha_liga['xp_semana'] ?? 0);
+
+if (!empty($minha_liga['grupo_id'])) {
+    $stmt_membros = $conn->prepare("
+        SELECT usuario_id, xp_semana 
+        FROM ligas_usuario 
+        WHERE grupo_id = ? 
+        ORDER BY xp_semana DESC, usuario_id ASC
+    ");
+    $stmt_membros->bind_param("i", $minha_liga['grupo_id']);
+    $stmt_membros->execute();
+    $membros_grupo = $stmt_membros->get_result()->fetch_all(MYSQLI_ASSOC);
+
+    $total_grupo = count($membros_grupo);
+    if ($total_grupo > 0) {
+        $zonas = liga_calcular_zonas($total_grupo);
+
+        foreach ($membros_grupo as $idx => $m) {
+            if ((int) $m['usuario_id'] === $user_id) {
+                $posicao_usuario = $idx + 1;
+                break;
+            }
+        }
+
+        if ($posicao_usuario <= $zonas['sobe'] && $cfg_liga['sobe']) {
+            $minha_zona = 'sobe';
+        } elseif ($posicao_usuario > ($total_grupo - $zonas['desce']) && $cfg_liga['desce']) {
+            $minha_zona = 'desce';
+        } else {
+            $minha_zona = 'neutro';
+        }
+    }
+}
+
+// 2. DADOS REAIS DE MISSÕES DIÁRIAS DO USUÁRIO
+$missoes_hoje = missoes_obter_hoje($conn, $user_id);
+
+// 3. DADOS DE ATIVIDADE DE HOJE (OFENSIVA)
+$hoje_data = date('Y-m-d');
+$stmt_ult = $conn->prepare("SELECT ultima_atividade FROM usuarios WHERE id = ?");
+$stmt_ult->bind_param("i", $user_id);
+$stmt_ult->execute();
+$row_ult = $stmt_ult->get_result()->fetch_assoc();
+$praticou_hoje = (!empty($row_ult['ultima_atividade']) && $row_ult['ultima_atividade'] === $hoje_data);
+
+// 4. PROGRESSO GERAL DO CURSO
+$total_licoes_feitas = 0;
+foreach ($unidades as $u) {
+    if (($u['status'] ?? '') === 'completo') {
+        $total_licoes_feitas += 5;
+    } else {
+        $total_licoes_feitas += (int) ($u['licoes_concluidas'] ?? 0);
+    }
+}
+$total_licoes_curso = 25;
+$progresso_porcentagem = min(100, (int) round(($total_licoes_feitas / $total_licoes_curso) * 100));
+
+// Configuração dos Capítulos
 $nomes_unidades = [
     1 => [
         "titulo" => "Unidade 1",
@@ -72,10 +141,6 @@ $nomes_unidades = [
         "guia_codigo" => 'class Usuario {<br>&nbsp;&nbsp;&nbsp;&nbsp;public $nome = "Aluno";<br>}<br>$user = new Usuario();<br>echo $user->nome;'
     ]
 ];
-
-$concluidas_res = $conn->query("SELECT COUNT(*) as total FROM progresso_usuario WHERE usuario_id = $user_id AND status = 'completo' AND unidade_numero <= 5");
-$concluidas = $concluidas_res ? $concluidas_res->fetch_assoc()['total'] : 0;
-$porcentagem_total = ($concluidas / 5) * 100; 
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -100,86 +165,216 @@ $porcentagem_total = ($concluidas / 5) * 100;
         .modulo-node::before, .modulo-node::after,
         .main-content::before, .main-content::after {
             display: none !important;
-            content: none !important;
-            background: none !important;
-            border: none !important;
-            width: 0 !important;
-            height: 0 !important;
         }
 
-        .dashboard-grid, .curriculum-column {
-            width: 100% !important;
-            max-width: 100% !important;
-            display: block !important;
-            background: transparent !important;
+        /* GRID PRINCIPAL: 100% DA TELA E ESPALHADA PELOS CANTOS */
+        @media (min-width: 1024px) {
+            .dashboard-grid {
+                display: flex !important;
+                flex-direction: row !important;
+                justify-content: space-between !important; 
+                align-items: flex-start !important;
+                gap: 40px !important;
+                max-width: 100% !important; 
+                width: 100% !important; 
+                margin: 20px 0 !important;
+                padding: 0 40px; 
+                box-sizing: border-box;
+            }
+            .curriculum-column {
+                flex: 1 !important; 
+                display: flex;
+                flex-direction: column;
+                align-items: center; 
+            }
+            .widgets-column {
+                width: 360px !important; 
+                flex: none !important;
+                /* CÓDIGO PARA DEIXAR A COLUNA FIXA */
+                position: sticky;
+                top: 20px; /* Distância do topo da tela. Aumente se tiver uma barra superior cobrindo. */
+                height: max-content; /* Garante que ela só ocupe o espaço necessário e não desça junto */
+            }
         }
 
-        .unit-list { 
+        /* COLUNA DIREITA E PADRONIZAÇÃO DE WIDGETS */
+        .widgets-column {
             display: flex;
             flex-direction: column;
+            gap: 20px;
+        }
+
+        @media (max-width: 1023px) {
+            .dashboard-grid { padding: 0 16px; margin-top: 20px; justify-content: center !important; }
+            .curriculum-column { width: 100%; flex: auto !important; }
+            .widgets-column { width: 100%; max-width: 600px; margin: 0 auto; flex: auto !important; position: static; }
+        }
+
+        .widget-box {
+            background: #1e1e24;
+            border: 2px solid #3a3a45;
+            border-radius: 16px;
+            padding: 20px 24px;
+            box-shadow: 0 6px 0 #2a2a35;
+            color: #fff;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .widget-box:hover {
+            border-color: #4a4a58;
+        }
+
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 50px; 
-            padding: 10px;
-            margin-top: 20px;
-            width: 100%;
+            margin-bottom: 16px;
+        }
+        .widget-header h3 { font-size: 1.15rem; font-weight: 800; margin: 0; display: flex; align-items: center; gap: 8px; }
+        .widget-header a {
+            color: #1cb0f6; text-decoration: none; font-weight: 700;
+            font-size: 0.88rem; text-transform: uppercase; display: flex; align-items: center; gap: 4px;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+        .widget-header a:hover { color: #58cc02; transform: translateX(2px); }
+
+        /* WIDGET DE VIDAS ZERADAS */
+        .widget-vidas {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.08);
+            box-shadow: 0 6px 0 rgba(239, 68, 68, 0.3);
+        }
+        .vidas-body { display: flex; align-items: center; gap: 18px; }
+        .vidas-icon { font-size: 40px; color: #ef4444; flex-shrink: 0; animation: pulse 2s infinite; }
+        .vidas-info h4 { margin: 0 0 4px 0; font-size: 1.1rem; font-weight: 800; color: #fecaca; }
+        .vidas-info p { margin: 0; font-size: 0.9rem; color: #a5a5ac; font-weight: 600; }
+        .vidas-info span { color: #ef4444; font-weight: 800; }
+
+        /* WIDGET DE OFENSIVA / SEQUÊNCIA */
+        .widget-ofensiva {
+            background: linear-gradient(145deg, #221d28 0%, #1a1722 100%);
+            border-color: #523528;
+            box-shadow: 0 6px 0 #3a2218;
+        }
+        .ofensiva-body { display: flex; align-items: center; gap: 16px; }
+        .ofensiva-icon-box {
+            width: 54px; height: 54px; border-radius: 14px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 26px; background: rgba(255, 150, 0, 0.15);
+            color: #ff9600; border: 1px solid rgba(255, 150, 0, 0.3);
+            flex-shrink: 0; box-shadow: 0 0 15px rgba(255, 150, 0, 0.15);
+        }
+        .ofensiva-info { flex: 1; min-width: 0; }
+        .ofensiva-info h4 { margin: 0 0 4px 0; font-size: 1.15rem; font-weight: 800; color: #fff; }
+        .ofensiva-status { margin: 0; font-size: 0.85rem; font-weight: 700; line-height: 1.3; }
+        .ofensiva-ativo { color: #58cc02; }
+        .ofensiva-pendente { color: #ffc800; }
+
+        /* WIDGET DE LIGAS DINÂMICO */
+        .ranking-body { display: flex; align-items: center; gap: 16px; }
+        .ranking-icon {
+            width: 56px; height: 56px; border-radius: 14px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 26px; color: #fff; flex-shrink: 0;
+        }
+        .ranking-info { flex: 1; min-width: 0; }
+        .ranking-info h4 { margin: 0 0 3px 0; font-size: 1.1rem; font-weight: 800; color: #fff; }
+        .ranking-info p { margin: 0 0 6px 0; font-size: 0.9rem; color: #a5a5ac; font-weight: 600; }
+        .ranking-info strong { color: #ffc800; font-size: 1.05rem; font-weight: 900; }
+
+        .badge-zona {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 0.72rem; font-weight: 800; padding: 3px 9px;
+            border-radius: 20px; text-transform: uppercase; letter-spacing: 0.4px;
+        }
+        .badge-sobe { background: rgba(88, 204, 2, 0.15); color: #58cc02; border: 1px solid rgba(88, 204, 2, 0.3); }
+        .badge-desce { background: rgba(255, 75, 75, 0.15); color: #ff4b4b; border: 1px solid rgba(255, 75, 75, 0.3); }
+        .badge-neutro { background: rgba(142, 142, 161, 0.15); color: #a0a0b0; border: 1px solid rgba(142, 142, 161, 0.3); }
+
+        .widget-footer-info {
+            margin-top: 14px; padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.85rem; color: #a0a0b0; font-weight: 700;
+        }
+
+        /* WIDGET DE MISSÕES DIÁRIAS DINÂMICAS */
+        .missao-item { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+        .missao-item:last-child { margin-bottom: 0; }
+        .missao-icon { font-size: 24px; width: 34px; text-align: center; flex-shrink: 0; }
+        .missao-info { flex: 1; min-width: 0; }
+        .missao-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .missao-info h4 { margin: 0; font-size: 0.92rem; font-weight: 700; color: #e5e5e5; }
+        
+        .badge-concluido {
+            font-size: 0.72rem; font-weight: 800; color: #58cc02;
+            display: inline-flex; align-items: center; gap: 4px;
+            background: rgba(88, 204, 2, 0.15); padding: 2px 8px; border-radius: 12px;
+        }
+
+        .progress-bar-bg {
+            background: #2a2a35; height: 16px; border-radius: 8px;
+            width: 100%; position: relative; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .progress-bar-fill {
+            height: 100%; border-radius: 8px;
+            transition: width 0.5s ease;
+        }
+        .progress-text {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 0.72rem; font-weight: 800; color: #fff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        /* WIDGET DE PROGRESSO GERAL */
+        .progresso-stats-row {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px;
+        }
+        .progresso-stat-card {
+            background: #25252e; border: 1px solid #333340; border-radius: 12px;
+            padding: 10px 12px; text-align: center;
+        }
+        .progresso-stat-card .val {
+            font-size: 1.15rem; font-weight: 900; font-family: 'Orbitron', sans-serif;
+            color: #1cb0f6; margin-bottom: 2px;
+        }
+        .progresso-stat-card .lbl {
+            font-size: 0.75rem; color: #8e95a1; font-weight: 700; text-transform: uppercase;
+        }
+
+        /* AJUSTES DA TRILHA DE APRENDIZADO */
+        .unit-list { 
+            display: flex; flex-direction: column; align-items: center;
+            gap: 40px; width: 100%; max-width: 800px;
         }
 
         .capitulo-container {
             width: 100%;
-            max-width: 650px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            display: flex; flex-direction: column; align-items: center;
             position: relative;
         }
 
-        /* HEADER DO CAPÍTULO */
         .capitulo-header {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 24px 30px;
-            border-radius: 20px;
-            color: #fff;
-            box-shadow: 0 6px 0px rgba(0,0,0,0.15);
-            margin-bottom: 30px;
-            position: relative;
-            z-index: 10;
+            width: 100%; display: flex; justify-content: space-between; align-items: center;
+            padding: 24px 30px; border-radius: 20px; color: #fff;
+            box-shadow: 0 6px 0px rgba(0,0,0,0.15); margin-bottom: 30px;
+            position: relative; z-index: 10;
         }
-
-        .capitulo-header-text h2 { font-size: 1.6rem; font-weight: 800; margin: 0; letter-spacing: 0.5px; }
+        .capitulo-header-text h2 { font-size: 1.6rem; font-weight: 800; margin: 0; }
         .capitulo-header-text h3 { font-size: 1.1rem; font-weight: 600; margin: 0; opacity: 0.9; }
 
-        /* BOTÃO GUIA */
         .btn-guia {
-            background: transparent;
-            border: 2px solid rgba(255, 255, 255, 0.4);
-            border-bottom: 4px solid rgba(255, 255, 255, 0.4);
-            color: #fff;
-            padding: 10px 24px;
-            border-radius: 16px;
-            font-weight: 800;
-            font-size: 1rem;
-            text-transform: uppercase;
-            text-decoration: none;
-            transition: all 0.1s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
+            background: transparent; border: 2px solid rgba(255, 255, 255, 0.4);
+            border-bottom: 4px solid rgba(255, 255, 255, 0.4); color: #fff;
+            padding: 10px 24px; border-radius: 16px; font-weight: 800; font-size: 1rem;
+            text-transform: uppercase; cursor: pointer; transition: 0.1s; display: flex; gap: 10px; align-items: center;
         }
         .btn-guia:active { transform: translateY(2px); border-bottom: 2px solid rgba(255, 255, 255, 0.4); }
 
-        /* TRILHA DE MÓDULOS SEM LINHAS */
         .trail-flex {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            position: relative;
-            padding: 20px 0;
-            background: none !important;
+            display: flex; flex-direction: column; align-items: center;
+            width: 100%; position: relative; padding: 20px 0;
         }
 
         @keyframes floatNode {
@@ -194,181 +389,74 @@ $porcentagem_total = ($concluidas / 5) * 100;
         .pos-4 { margin-left: 0px; animation-delay: 1.6s !important; }
 
         .modulo-node {
-            text-decoration: none;
-            position: relative;
-            z-index: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 35px;
+            text-decoration: none; position: relative; z-index: 1; display: flex;
+            justify-content: center; align-items: center; margin-bottom: 35px;
             animation: floatNode 3.5s ease-in-out infinite;
         }
 
         .circle-button {
-            width: 75px;
-            height: 75px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            position: relative;
-            transition: transform 0.1s ease;
-            color: #fff;
+            width: 75px; height: 75px; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 28px; position: relative; transition: 0.1s; color: #fff;
         }
-
-        .modulo-node.locked .circle-button { 
-            background: #3a3a45; 
-            color: #6a6a75; 
-            box-shadow: 0 6px 0 #2a2a35; 
-        }
-
-        .modulo-node.completed:active .circle-button { 
-            transform: translateY(4px); 
-        }
-
-        .modulo-node.current .circle-button { color: #fff; }
-        .modulo-node.current:active .circle-button { transform: translateY(4px); }
+        .modulo-node.locked .circle-button { background: #3a3a45; color: #6a6a75; box-shadow: 0 6px 0 #2a2a35; }
+        .modulo-node.completed:active .circle-button, .modulo-node.current:active .circle-button { transform: translateY(4px); }
         
         .active-ring {
-            width: 105px; height: 105px;
-            border-radius: 50%;
-            background: #2a2a35;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 105px; height: 105px; border-radius: 50%; background: #2a2a35;
+            display: flex; align-items: center; justify-content: center;
         }
 
         .start-balloon {
-            position: absolute;
-            top: -65px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #fff;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-weight: 800;
-            text-transform: uppercase;
-            animation: bounce 2s ease-in-out infinite;
-            white-space: nowrap;
-            z-index: 10;
+            position: absolute; top: -65px; left: 50%; transform: translateX(-50%);
+            color: #fff; padding: 12px 20px; border-radius: 12px; font-weight: 800;
+            text-transform: uppercase; animation: bounce 2s ease-in-out infinite;
+            white-space: nowrap; z-index: 10;
         }
         .start-balloon::after {
-            content: ''; position: absolute;
-            bottom: -8px; left: 50%;
-            transform: translateX(-50%);
+            content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
             border-width: 8px 8px 0; border-style: solid;
         }
         @keyframes bounce { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -8px); } }
 
         .reward-chest-container {
-            position: relative;
-            z-index: 1;
-            margin: 10px 0 45px 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            animation: floatNode 4s ease-in-out infinite;
-            animation-delay: 1s;
+            margin: 10px 0 45px 0; display: flex; flex-direction: column; align-items: center;
+            animation: floatNode 4s ease-in-out infinite; animation-delay: 1s; z-index: 1;
         }
-
         .chest-node {
-            width: 80px; height: 70px;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            position: relative;
-            transition: all 0.3s;
+            width: 80px; height: 70px; border-radius: 15px; display: flex; align-items: center;
+            justify-content: center; font-size: 32px; transition: all 0.3s;
         }
-
         .chest-node.locked { background: #3a3a45; color: #5a5a65; box-shadow: 0 6px 0 #2a2a35; }
-        .chest-node.completed {
-            background: linear-gradient(145deg, #ffd700, #ffaa00);
-            color: #fff;
-            box-shadow: 0 6px 0 #cc8800;
-        }
-
-        .logic-hologram {
-            position: absolute;
-            top: -25px;
-            font-size: 20px;
-            color: #58cc02;
-            opacity: 0;
-            transition: all 0.3s;
-        }
-        .chest-node.completed .logic-hologram {
-            opacity: 1;
-            animation: logicFloat 2s infinite alternate;
-        }
-
+        .chest-node.completed { background: linear-gradient(145deg, #ffd700, #ffaa00); color: #fff; box-shadow: 0 6px 0 #cc8800; }
+        .logic-hologram { position: absolute; top: -25px; font-size: 20px; color: #58cc02; opacity: 0; }
+        .chest-node.completed .logic-hologram { opacity: 1; animation: logicFloat 2s infinite alternate; }
+        
         @keyframes logicFloat {
             0% { transform: translateY(0) scale(1); text-shadow: 0 0 5px #58cc02; }
             100% { transform: translateY(-10px) scale(1.2); text-shadow: 0 0 15px #58cc02; }
         }
 
-        /* MASCOTE LATERAL DA TRILHA */
-        .mascote-lateral {
-            position: absolute;
-            width: 140px;
-            z-index: 2;
-            pointer-events: none;
-            animation: floatMascote 4s ease-in-out infinite;
-            top: 35%;
-        }
-
-        .mascote-esquerda { left: 10px; }
-        .mascote-direita { right: 10px; }
-
-        @keyframes floatMascote {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-12px); }
-        }
-
-        @media (max-width: 768px) {
-            .mascote-lateral { display: none; }
-        }
+        .mascote-lateral { position: absolute; width: 140px; z-index: 2; pointer-events: none; animation: floatMascote 4s ease-in-out infinite; top: 35%; }
+        .mascote-esquerda { left: -40px; } 
+        .mascote-direita { right: -40px; }
+        @keyframes floatMascote { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
+        @media (max-width: 1024px) { .mascote-lateral { display: none; } }
 
         /* MODAL GUIA */
         .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(5px);
-            display: none; align-items: center; justify-content: center;
-            z-index: 9999; opacity: 0; transition: opacity 0.3s ease;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 9999; opacity: 0; transition: 0.3s;
         }
         .modal-overlay.active { display: flex; opacity: 1; }
-        
-        .modal-box {
-            background: #1e1e24;
-            width: 90%; max-width: 500px;
-            border-radius: 20px;
-            overflow: hidden;
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-        }
+        .modal-box { background: #1e1e24; width: 90%; max-width: 500px; border-radius: 20px; overflow: hidden; transform: scale(0.9); transition: 0.3s; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
         .modal-overlay.active .modal-box { transform: scale(1); }
-
         .modal-header { padding: 25px; color: #fff; position: relative; }
         .modal-header h2 { margin: 0; font-size: 1.8rem; font-weight: 900; }
         .modal-header h3 { margin: 0; font-size: 1.1rem; font-weight: 600; opacity: 0.9; }
-        
-        .close-btn-modal {
-            position: absolute; top: 20px; right: 20px;
-            background: rgba(0,0,0,0.2); border: none; color: #fff;
-            width: 35px; height: 35px; border-radius: 50%;
-            font-size: 1.2rem; cursor: pointer; transition: 0.2s;
-        }
+        .close-btn-modal { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.2); border: none; color: #fff; width: 35px; height: 35px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; transition: 0.2s; }
         .close-btn-modal:hover { background: rgba(0,0,0,0.4); transform: scale(1.1); }
-
         .modal-body { padding: 30px; color: #d0d0d5; font-size: 1.1rem; line-height: 1.6; }
-        .code-box {
-            background: #111115; border-left: 4px solid #1cb0f6;
-            padding: 15px; border-radius: 8px; font-family: monospace;
-            margin-top: 15px; color: #a5d6a7;
-        }
+        .code-box { background: #111115; border-left: 4px solid #1cb0f6; padding: 15px; border-radius: 8px; font-family: monospace; margin-top: 15px; color: #a5d6a7; }
     </style>
 </head>
 <body>
@@ -378,19 +466,9 @@ $porcentagem_total = ($concluidas / 5) * 100;
         <main class="main-content">
             <?php include '../../back/topbar.php'; ?>
 
-            <?php if ($vidas_atual <= 0): ?>
-                <div class="lives-empty-banner" style="background:rgba(239,68,68,0.12);border:1px solid #ef4444;color:#fecaca;padding:12px 16px;border-radius:12px;margin-bottom:24px;font-weight:600;">
-                    <i class="fa-solid fa-heart-crack"></i>
-                    Você está sem vidas. Cada coração volta a cada 5 horas
-                    <?php if (!empty($status_jogador['proxima_vida_texto'])): ?>
-                        (<?php echo htmlspecialchars($status_jogador['proxima_vida_texto']); ?>).
-                    <?php else: ?>
-                        e voltar às lições.
-                    <?php endif; ?>
-                </div>
-            <?php endif; ?>
-
             <section class="dashboard-grid">
+                
+                <!-- COLUNA DA TRILHA DE APRENDIZADO -->
                 <div class="curriculum-column">
                     <div class="unit-list">
                         <?php foreach ($nomes_unidades as $num_cap => $info): 
@@ -493,10 +571,154 @@ $porcentagem_total = ($concluidas / 5) * 100;
                         <?php endforeach; ?>
                     </div>
                 </div>
+
+                <!-- COLUNA DIREITA (WIDGETS) -->
+                <div class="widgets-column">
+                    
+                    <?php if ($vidas_atual <= 0): ?>
+                    <!-- WIDGET DE VIDAS ZERADAS -->
+                    <div class="widget-box widget-vidas">
+                        <div class="widget-header">
+                            <h3 style="color: #fecaca;"><i class="fa-solid fa-heart-crack"></i> Vidas Esgotadas</h3>
+                        </div>
+                        <div class="vidas-body">
+                            <div class="vidas-icon">
+                                <i class="fa-solid fa-heart-crack"></i>
+                            </div>
+                            <div class="vidas-info">
+                                <h4>Você ficou sem vidas!</h4>
+                                <p>Próxima vida em: <span>
+                                    <?php echo !empty($status_jogador['proxima_vida_texto']) ? htmlspecialchars($status_jogador['proxima_vida_texto']) : '05:00'; ?>
+                                </span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
+                    <!-- WIDGET DE OFENSIVA / SEQUÊNCIA DIÁRIA -->
+                    <div class="widget-box widget-ofensiva">
+                        <div class="widget-header">
+                            <h3><i class="fa-solid fa-fire-flame-curved" style="color: #ff9600;"></i> Ofensiva</h3>
+                            <span style="font-size: 0.85rem; color: #ff9600; font-weight: 800;">
+                                <?php echo $dias_fogo; ?> <?= $dias_fogo === 1 ? 'dia' : 'dias'; ?>
+                            </span>
+                        </div>
+                        <div class="ofensiva-body">
+                            <div class="ofensiva-icon-box">
+                                <i class="fa-solid fa-fire"></i>
+                            </div>
+                            <div class="ofensiva-info">
+                                <h4><?php echo $dias_fogo; ?> <?= $dias_fogo === 1 ? 'Dia de Fogo' : 'Dias de Fogo'; ?></h4>
+                                <?php if ($praticou_hoje): ?>
+                                    <p class="ofensiva-status ofensiva-ativo">
+                                        <i class="fa-solid fa-circle-check"></i> Praticou hoje! Chama protegida.
+                                    </p>
+                                <?php else: ?>
+                                    <p class="ofensiva-status ofensiva-pendente">
+                                        <i class="fa-solid fa-hourglass-half"></i> Pratique hoje para manter sua sequência!
+                                    </p>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- WIDGET DE LIGAS COM DADOS REAIS -->
+                    <div class="widget-box">
+                        <div class="widget-header">
+                            <h3><i class="fa-solid fa-shield-halved" style="color: <?php echo $cfg_liga['corClara']; ?>;"></i> Ligas</h3>
+                            <a href="ligas.php">Ver Placar <i class="fa-solid fa-chevron-right" style="font-size: 0.75rem;"></i></a>
+                        </div>
+                        <div class="ranking-body">
+                            <div class="ranking-icon" style="background: linear-gradient(135deg, <?php echo $cfg_liga['corClara']; ?>, <?php echo $cfg_liga['cor']; ?>); box-shadow: 0 4px 14px <?php echo $cfg_liga['cor']; ?>50;">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <div class="ranking-info">
+                                <h4>Divisão <?php echo htmlspecialchars($cfg_liga['nome']); ?></h4>
+                                <p>Sua posição: <strong>#<?php echo $posicao_usuario; ?></strong> de <?php echo $total_grupo; ?> alunos</p>
+                                
+                                <?php if ($minha_zona === 'sobe'): ?>
+                                    <span class="badge-zona badge-sobe"><i class="fa-solid fa-arrow-up"></i> Zona de Subida</span>
+                                <?php elseif ($minha_zona === 'desce'): ?>
+                                    <span class="badge-zona badge-desce"><i class="fa-solid fa-arrow-down"></i> Zona de Rebaixamento</span>
+                                <?php else: ?>
+                                    <span class="badge-zona badge-neutro"><i class="fa-solid fa-shield"></i> Zona Segura</span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <div class="widget-footer-info">
+                            <span><i class="fa-solid fa-bolt" style="color: #ffc800;"></i> <strong><?php echo number_format($xp_semana_usuario, 0, ',', '.'); ?> XP</strong> nesta semana</span>
+                            <span style="color: #8e95a1; font-size: 0.8rem;">Divisão <?php echo htmlspecialchars($cfg_liga['nome']); ?></span>
+                        </div>
+                    </div>
+
+                    <!-- WIDGET DE MISSÕES DIÁRIAS COM DADOS REAIS -->
+                    <div class="widget-box">
+                        <div class="widget-header">
+                            <h3><i class="fa-solid fa-award" style="color: #ffc800;"></i> Missões Diárias</h3>
+                            <a href="conquistas.php">Ver Tudo <i class="fa-solid fa-chevron-right" style="font-size: 0.75rem;"></i></a>
+                        </div>
+                        
+                        <?php foreach ($missoes_hoje as $m): ?>
+                        <div class="missao-item">
+                            <div class="missao-icon" style="color: <?php echo $m['cor']; ?>;">
+                                <i class="fa-solid <?php echo $m['icone']; ?>"></i>
+                            </div>
+                            <div class="missao-info">
+                                <div class="missao-header-row">
+                                    <h4><?php echo htmlspecialchars($m['titulo']); ?></h4>
+                                    <?php if ($m['completo']): ?>
+                                        <span class="badge-concluido"><i class="fa-solid fa-circle-check"></i> Feito</span>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="progress-bar-bg">
+                                    <div class="progress-bar-fill" style="width: <?php echo $m['porcentagem']; ?>%; background: <?php echo $m['cor']; ?>;"></div>
+                                    <div class="progress-text">
+                                        <?php echo min($m['atual'], $m['meta']); ?> / <?php echo $m['meta']; ?><?php echo !empty($m['unidade']) ? ' ' . $m['unidade'] : ''; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+
+                    </div> <!-- Fim Widget de Missões -->
+
+                    <!-- WIDGET DE PROGRESSO GERAL DO ALUNO -->
+                    <div class="widget-box">
+                        <div class="widget-header">
+                            <h3><i class="fa-solid fa-bars-progress" style="color: #1cb0f6;"></i> Meu Progresso</h3>
+                            <a href="perfil.php">Perfil <i class="fa-solid fa-chevron-right" style="font-size: 0.75rem;"></i></a>
+                        </div>
+                        
+                        <div style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; color: #a5a5ac;">
+                                <span>Trilha do Curso</span>
+                                <span style="color: #1cb0f6; font-weight: 800;"><?php echo $progresso_porcentagem; ?>%</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill" style="width: <?php echo $progresso_porcentagem; ?>%; background: #1cb0f6;"></div>
+                                <div class="progress-text"><?php echo $total_licoes_feitas; ?> / <?php echo $total_licoes_curso; ?> Lições</div>
+                            </div>
+                        </div>
+
+                        <div class="progresso-stats-row">
+                            <div class="progresso-stat-card">
+                                <div class="val" style="color: #ffc800;"><?php echo number_format($xp_total, 0, ',', '.'); ?></div>
+                                <div class="lbl">XP Total</div>
+                            </div>
+                            <div class="progresso-stat-card">
+                                <div class="val" style="color: #eab308;"><?php echo $total_trofeus; ?> / 8</div>
+                                <div class="lbl">Troféus</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div> <!-- Fim widgets-column -->
+
             </section>
         </main>
     </div>
 
+    <!-- Modal do Guia -->
     <div id="modalGuia" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-header" id="modalHeaderBg">

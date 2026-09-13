@@ -3,6 +3,7 @@ session_start();
 require_once 'conexao.php';
 require_once 'jogador_status.php';
 require_once 'ligas_logic.php';
+require_once 'missoes_logic.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../front/pages/auth.html");
@@ -85,7 +86,8 @@ $stmt_xp = $conn->prepare("UPDATE usuarios SET xp = xp + 50, trofeus = trofeus +
 $stmt_xp->bind_param("i", $user_id);
 $stmt_xp->execute();
 
-liga_registrar_xp($conn, $user_id, 50);   
+liga_registrar_xp($conn, $user_id, 50);
+missoes_registrar_progresso($conn, $user_id, 50, $acertos);   
 
             // Atualiza streak
             atualizar_streak($conn, $user_id);

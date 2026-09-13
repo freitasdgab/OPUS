@@ -3,6 +3,8 @@ session_start();
 require_once '../../back/conexao.php';
 require_once '../../back/jogador_status.php';
 require_once '../../back/mascotes_capitulos.php';
+require_once '../../back/ligas_logic.php';
+require_once '../../back/missoes_logic.php';
 
 if (!isset($_SESSION['user_id']) || !isset($_POST['acertos'])) {
     header("Location: dashboard.php");
@@ -55,6 +57,9 @@ if (!$ja_processado) {
     $stmt_xp = $conn->prepare("UPDATE usuarios SET xp = xp + ? WHERE id = ?");
     $stmt_xp->bind_param("ii", $xp_ganho, $user_id);
     $stmt_xp->execute();
+
+    liga_registrar_xp($conn, $user_id, $xp_ganho);
+    missoes_registrar_progresso($conn, $user_id, $xp_ganho, $acertos);
 
     opus_atualizar_fogo($conn, $user_id);
 

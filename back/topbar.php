@@ -108,8 +108,8 @@ $titulo_vidas = $proxima_vida_texto !== '' ? $proxima_vida_texto : ($vidas_top .
 
 <header class="top-bar">
     <div class="topbar-stats">
-        <!-- LIGA / TROFÉUS -->
-        <a href="ranking.php" class="topbar-stat stat-liga" title="Sua Liga Atual">
+        <!-- LIGA / DIVISÃO -->
+        <a href="ligas.php" class="topbar-stat stat-liga" title="Sua Divisão / Liga Atual">
             <i class="fa-solid fa-shield-halved"></i>
             <span><?php echo htmlspecialchars($liga_nome_top); ?></span>
         </a>
