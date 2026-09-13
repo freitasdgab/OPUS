@@ -12,7 +12,7 @@ require_once '../../back/jogador_status.php';
 $user_id = $_SESSION['user_id'];
 $status_jogador = opus_sincronizar_jogador($conn, $user_id);
 $vidas_atual = (int) $status_jogador['vidas'];
-$sem_vidas = ($vidas_atual <= 0) || (isset($_GET['sem_vidas']));
+$sem_vidas = ($vidas_atual <= 0);
 
 // Busca progresso
 $unidades = [];
@@ -381,7 +381,7 @@ $porcentagem_total = ($concluidas / 5) * 100;
             <?php if ($vidas_atual <= 0): ?>
                 <div class="lives-empty-banner" style="background:rgba(239,68,68,0.12);border:1px solid #ef4444;color:#fecaca;padding:12px 16px;border-radius:12px;margin-bottom:24px;font-weight:600;">
                     <i class="fa-solid fa-heart-crack"></i>
-                    Você está sem vidas. Aguarde 24 horas para recuperar 1 coração
+                    Você está sem vidas. Cada coração volta a cada 5 horas
                     <?php if (!empty($status_jogador['proxima_vida_texto'])): ?>
                         (<?php echo htmlspecialchars($status_jogador['proxima_vida_texto']); ?>).
                     <?php else: ?>

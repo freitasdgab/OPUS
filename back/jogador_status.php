@@ -57,31 +57,41 @@ function opus_sincronizar_jogador(mysqli $conn, int $user_id): array {
     $proxima = $u['vidas_proxima_em'] ?? null;
     $agora = new DateTime();
 
-    if ($vidas < 3 && !empty($proxima)) {
-        $quando = new DateTime($proxima);
-        $mudou = false;
+    if ($vidas < 3) {
+        if (!empty($proxima)) {
+            $quando = new DateTime($proxima);
+            $mudou = false;
 
-        while ($vidas < 3 && $quando <= $agora) {
-            $vidas++;
-            $mudou = true;
-            if ($vidas >= 3) {
-                $quando = null;
-                break;
+            while ($vidas < 3 && $quando <= $agora) {
+                $vidas++;
+                $mudou = true;
+                if ($vidas >= 3) {
+                    $quando = null;
+                    break;
+                }
+                $quando->modify('+5 hours');
             }
-            $quando->modify('+24 hours');
-        }
 
-        if ($mudou) {
-            if ($quando === null) {
-                $up = $conn->prepare("UPDATE usuarios SET vidas = ?, vidas_proxima_em = NULL WHERE id = ?");
-                $up->bind_param("ii", $vidas, $user_id);
-            } else {
-                $proxima_str = $quando->format('Y-m-d H:i:s');
-                $up = $conn->prepare("UPDATE usuarios SET vidas = ?, vidas_proxima_em = ? WHERE id = ?");
-                $up->bind_param("isi", $vidas, $proxima_str, $user_id);
+            if ($mudou) {
+                if ($quando === null) {
+                    $up = $conn->prepare("UPDATE usuarios SET vidas = ?, vidas_proxima_em = NULL WHERE id = ?");
+                    $up->bind_param("ii", $vidas, $user_id);
+                } else {
+                    $proxima_str = $quando->format('Y-m-d H:i:s');
+                    $up = $conn->prepare("UPDATE usuarios SET vidas = ?, vidas_proxima_em = ? WHERE id = ?");
+                    $up->bind_param("isi", $vidas, $proxima_str, $user_id);
+                }
+                $up->execute();
+                $proxima = $quando ? $quando->format('Y-m-d H:i:s') : null;
             }
+        } else {
+            // Se o jogador está com menos de 3 vidas mas não possui timer agendado no banco, inicia timer de 5h
+            $quando = (new DateTime())->modify('+5 hours');
+            $proxima_str = $quando->format('Y-m-d H:i:s');
+            $up = $conn->prepare("UPDATE usuarios SET vidas_proxima_em = ? WHERE id = ?");
+            $up->bind_param("si", $proxima_str, $user_id);
             $up->execute();
-            $proxima = $quando ? $quando->format('Y-m-d H:i:s') : null;
+            $proxima = $proxima_str;
         }
     }
 
@@ -127,6 +137,10 @@ function opus_sincronizar_jogador(mysqli $conn, int $user_id): array {
 }
 
 function opus_perder_vida(mysqli $conn, int $user_id): int {
+    if ($user_id <= 0) {
+        return 0;
+    }
+
     $status = opus_sincronizar_jogador($conn, $user_id);
     $vidas = (int) $status['vidas'];
 
@@ -138,7 +152,7 @@ function opus_perder_vida(mysqli $conn, int $user_id): int {
     $proxima = $status['vidas_proxima_em'];
 
     if ($vidas < 3 && empty($proxima)) {
-        $proxima = (new DateTime('+24 hours'))->format('Y-m-d H:i:s');
+        $proxima = (new DateTime('+5 hours'))->format('Y-m-d H:i:s');
         $up = $conn->prepare("UPDATE usuarios SET vidas = ?, vidas_proxima_em = ? WHERE id = ?");
         $up->bind_param("isi", $vidas, $proxima, $user_id);
     } else {

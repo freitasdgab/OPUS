@@ -63,7 +63,7 @@ if (!$ja_processado) {
         $perdeu_vida = true;
         $mensagem .= " Você perdeu 1 vida.";
         if ($vidas_restantes <= 0) {
-            $mensagem .= " Sem vidas: a próxima volta em 24 horas.";
+            $mensagem .= " Sem vidas: cada coração volta a cada 5 horas.";
         }
     }
 } else {
@@ -198,8 +198,8 @@ $vidas_restantes = (int) $status_atual['vidas'];
                         <p class="result-message" style="color:#ff8a8a;">
                             <i class="fa-solid fa-heart-crack"></i>
                             <?php echo $vidas_restantes > 0
-                                ? "Vidas restantes: {$vidas_restantes}/3. A próxima vida volta em 24h."
-                                : "Você ficou sem vidas. Aguarde 24h para recuperar 1 coração."; ?>
+                                ? "Vidas restantes: {$vidas_restantes}/3. Cada coração volta a cada 5h."
+                                : "Você ficou sem vidas. Aguarde 5h para recuperar cada coração."; ?>
                         </p>
                     <?php endif; ?>
 

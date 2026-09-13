@@ -75,8 +75,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit();
         }
 
-        // Insere o usuário zerado no banco
-        $stmt_insert = $conn->prepare("INSERT INTO usuarios (nome, email, senha, xp, trofeus, dificuldade) VALUES (?, ?, ?, 0, 0, 'Iniciante')");
+        // Garante que as colunas de jogador existam
+        require_once 'jogador_status.php';
+        opus_ensure_player_columns($conn);
+
+        // Insere o usuário com 3 vidas e status zerado no banco
+        $stmt_insert = $conn->prepare("INSERT INTO usuarios (nome, email, senha, xp, trofeus, dificuldade, vidas, vidas_proxima_em, dias_fogo) VALUES (?, ?, ?, 0, 0, 'Iniciante', 3, NULL, 0)");
         $stmt_insert->bind_param("sss", $nome, $email, $senha);
 
         if ($stmt_insert->execute()) {
