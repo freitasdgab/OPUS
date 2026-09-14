@@ -10,27 +10,44 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Busca apenas os dados necessários para a tela de perfil
-$stmt_user = $conn->prepare("SELECT nome, email, dificuldade, foto_perfil FROM usuarios WHERE id = ?");
+// Busca todos os dados do usuário para preencher as estatísticas
+$stmt_user = $conn->prepare("SELECT * FROM usuarios WHERE id = ?");
 $stmt_user->bind_param("i", $user_id);
 $stmt_user->execute();
 $dados_user = $stmt_user->get_result()->fetch_assoc();
 
-// Define a foto padrão caso o usuário ainda não tenha enviado uma
+// Define a foto padrão
 $foto_perfil = !empty($dados_user['foto_perfil']) ? $dados_user['foto_perfil'] : 'assets/img/opi pulando feliz.png';
 
-// NOVA FUNÇÃO AUXILIAR PREPARADA PARA BASE64
 function obterCaminhoAvatar($path) {
-    // Se a string começar com "data:image", significa que é Base64 do banco. O HTML lê isso direto!
-    if (strpos($path, 'data:image') === 0) {
-        return $path;
-    }
-    // Se for o avatar padrão
-    if (strpos($path, 'assets/') === 0) {
-        return '../' . $path;
-    }
-    // Caso de falha, retorna a imagem padrão
+    if (strpos($path, 'data:image') === 0) return $path;
+    if (strpos($path, 'assets/') === 0) return '../' . $path;
     return '../assets/img/opi pulando feliz.png';
+}
+
+// ------------------------------------------------------------------
+// DADOS DE ESTATÍSTICAS E DATA
+// ------------------------------------------------------------------
+$xp_total = isset($dados_user['xp']) ? $dados_user['xp'] : 515; 
+$dias_ofensiva = isset($dados_user['ofensiva']) ? $dados_user['ofensiva'] : 2;
+
+// Lógica de Ligas (Apenas as que você mencionou)
+$ligas_validas = ['Bronze', 'Prata', 'Ouro', 'Diamante'];
+$divisao = isset($dados_user['divisao']) && in_array($dados_user['divisao'], $ligas_validas) ? $dados_user['divisao'] : 'Bronze';
+
+// Pega o @ de usuário (simulando caso não tenha salvo um username específico)
+$nome_completo = isset($dados_user['nome']) ? $dados_user['nome'] : 'Usuário Opus';
+$username = strtolower(str_replace(' ', '', $nome_completo)) . $user_id;
+
+// Formata a data "Por aqui desde..."
+$meses = ['', 'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+if (!empty($dados_user['data_criacao'])) {
+    $timestamp = strtotime($dados_user['data_criacao']);
+    $mes_idx = (int)date('n', $timestamp);
+    $ano = date('Y', $timestamp);
+    $membro_desde = "Por aqui desde " . $meses[$mes_idx] . " de " . $ano;
+} else {
+    $membro_desde = "Por aqui desde maio de 2026";
 }
 ?>
 <!DOCTYPE html>
@@ -40,179 +57,282 @@ function obterCaminhoAvatar($path) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meu Perfil - Opus</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="shortcut icon" href="../assets/img/logo.png">
-    
     <link rel="stylesheet" href="../assets/css/dashboard.css">
     
     <style>
-        /* Trava a tela para não rolar */
+        /* =========================================
+           ESTILO DUOLINGO DARK MODE (Fiel à Foto)
+           ========================================= */
+        :root {
+            --bg-dark: #131f24;
+            --border-color: #37464f;
+            --text-main: #ffffff;
+            --text-muted: #778590;
+            --duo-blue: #1cb0f6;
+            --duo-blue-hover: #1899d6;
+            --banner-bg: #e56565; /* Vermelho/Rosa do banner */
+        }
+
         body, html {
-            overflow: hidden; 
-        }
-        
-        .main-content {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .dashboard-grid {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center; /* Centraliza tudo verticalmente na tela */
-            padding-bottom: 20px;
-        }
-
-        .path-header {
-            margin-bottom: 10px;
-        }
-
-        .path-header h1 {
-            font-size: 1.4rem;
+            background-color: var(--bg-dark);
+            font-family: 'Nunito', sans-serif;
+            color: var(--text-main);
             margin: 0;
+            padding: 0;
+            overflow-x: hidden;
         }
 
-        /* Grid principal ajustado */
-        .perfil-grid {
+        .main-content {
+            padding: 24px 40px;
+            min-height: 100vh;
+        }
+
+        /* Layout em 2 colunas como na foto */
+        .profile-container {
             display: grid;
-            grid-template-columns: 1fr 1.5fr; /* Coluna direita um pouco mais larga */
-            gap: 20px;
-            align-items: stretch; /* Força as colunas a terem a mesma altura */
-            height: 100%;
-            max-height: 500px; /* Limita a altura máxima para não esticar demais */
+            grid-template-columns: 1fr 340px;
+            gap: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
         }
 
-        /* Cartões mais compactos */
-        .perfil-card {
-            background: rgba(20, 20, 28, 0.7);
-            border: 1px solid rgba(26, 54, 202, 0.2);
-            border-radius: 12px;
-            padding: 20px;
+        /* =========================================
+           COLUNA ESQUERDA (Principal)
+           ========================================= */
+        .main-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Banner */
+        .banner-section {
+            background-color: var(--banner-bg);
+            height: 200px;
+            border-radius: 16px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .avatar-img {
+            height: 160px;
+            width: auto;
+            object-fit: contain;
+            /* Se for uma imagem vazada do Opi, fica perfeito. Se for quadrada, aplicamos borda arredondada */
+            border-radius: 20px; 
+        }
+
+        /* Botão de editar no banner (Canto superior direito, como na foto) */
+        .edit-banner-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.2);
             color: #fff;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 2px solid transparent;
+        }
+        .edit-banner-btn:hover { background: rgba(255, 255, 255, 0.3); }
+
+        /* Infos do Usuário */
+        .user-info {
+            margin-bottom: 30px;
         }
 
-        /* Coluna direita: Distribui as duas caixas uniformemente */
-        .coluna-direita {
+        .user-info h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .user-info .username {
+            display: block;
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-top: 4px;
+            margin-bottom: 12px;
+        }
+
+        .user-info .member-since {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+
+        .social-links {
             display: flex;
-            flex-direction: column;
             gap: 20px;
         }
-        
-        .coluna-direita .perfil-card {
-            flex: 1; /* Faz as duas caixas dividirem a altura igualmente */
+        .social-links a {
+            color: var(--duo-blue);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+        .social-links a:hover { color: var(--duo-blue-hover); }
+
+        /* Divisória fina igual a do Duolingo */
+        .divider {
+            height: 2px;
+            background-color: var(--border-color);
+            margin: 25px 0;
+            border-radius: 2px;
+        }
+
+        /* Seção de Estatísticas */
+        .stats-section h2 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        /* Card de Estatística (Borda fina, fundo da cor do site) */
+        .stat-card {
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stat-card-icon {
+            font-size: 1.8rem;
+            width: 35px;
+            display: flex;
             justify-content: center;
         }
 
-        .perfil-card-header {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.1rem;
-            color: #4d66f5;
-            margin-bottom: 15px;
-            border-bottom: 1px solid rgba(77, 102, 245, 0.2);
-            padding-bottom: 8px;
+        .stat-card-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-card-value {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .stat-card-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+
+        /* =========================================
+           COLUNA DIREITA (Sidebar Topo e Amigos)
+           ========================================= */
+        .side-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* Barra de Mini-stats do Topo (Fogo e Raiozinho) */
+        .top-mini-stats {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 24px;
+            font-size: 1rem;
+            font-weight: 800;
+            padding-top: 10px;
+        }
+
+        .mini-stat {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            color: var(--text-main);
+        }
+        
+        .mini-stat.fire { color: #ff9600; }
+        .mini-stat.xp { color: #1cb0f6; } /* Raiozinho Azul/Amarelo */
+
+        /* Cards da Lateral (Borda sutil, arredondada) */
+        .side-card {
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
         }
 
-        /* Lado Esquerdo: Foto reduzida e centralizada */
-        .avatar-section {
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .foto-preview-grande {
-            width: 130px;
-            height: 130px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid #1a36ca;
-            box-shadow: 0 0 15px rgba(26, 54, 202, 0.4);
-            margin-bottom: 10px;
-        }
-
-        .info-badge {
-            background: rgba(0, 0, 0, 0.4);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.8rem;
-            color: #a0a0b0;
-            margin-bottom: 10px;
-        }
-
-        /* Inputs e Botões compactos */
-        .form-group {
+        .side-card-title {
+            font-size: 1.1rem;
+            font-weight: 800;
             margin-bottom: 15px;
         }
-        .form-group label {
-            display: block;
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.85rem;
-            color: #a0a0b0;
-            margin-bottom: 5px;
+
+        .side-card-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
         }
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(26, 54, 202, 0.3);
-            border-radius: 8px;
-            color: #fff;
-            font-family: 'Poppins', sans-serif;
-        }
-        .form-control:focus {
-            outline: none;
-            border-color: #4d66f5;
-            box-shadow: 0 0 10px rgba(77, 102, 245, 0.3);
-        }
-        .btn-custom {
-            display: inline-block;
-            width: 100%;
-            padding: 10px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            border: none;
-            border-radius: 8px;
+
+        .side-card-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 2px solid var(--border-color);
             cursor: pointer;
-            transition: all 0.3s ease;
+            color: var(--text-main);
+            font-weight: 700;
+            font-size: 0.95rem;
         }
-        .btn-primary { background: linear-gradient(135deg, #3a1aca, #3a1aca); color: white; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(26, 54, 202, 0.6); }
-        .btn-danger { background: #3a1aca; color: white; margin-top: 10px; }
-        .btn-danger:hover { background: #281677; }
-        .btn-success { background: #3a1aca; color: white; }
-        .btn-success:hover { background: #281677; }
-        
-        .file-upload-wrapper { margin-bottom: 10px; width: 100%; text-align: center; }
-        .file-upload-wrapper input[type="file"] { font-size: 0.75rem; color: #a0a0b0; }
+        .side-card-list li:last-child { border-bottom: none; padding-bottom: 0; }
+        .side-card-list li:hover { color: var(--text-muted); }
+        .side-card-list i { color: var(--text-muted); }
 
-        p.security-text {
-            font-family: 'Poppins', sans-serif; 
-            font-size: 0.8rem; 
-            color: #a0a0b0; 
-            margin-bottom: 10px; 
-            line-height: 1.4;
+        /* Botões Extras / Sair (Estilo Duolingo) */
+        .btn-outline {
+            display: block;
+            text-align: center;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            text-decoration: none;
+            border: 2px solid var(--border-color);
+            color: var(--text-muted);
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+        .btn-outline:hover {
+            background-color: var(--border-color);
+            color: var(--text-main);
         }
 
-        /* Responsividade para telas menores */
+        /* Responsividade */
         @media (max-width: 900px) {
-            body, html { overflow: auto; }
-            .main-content { height: auto; }
-            .perfil-grid { grid-template-columns: 1fr; max-height: none; }
+            .profile-container { grid-template-columns: 1fr; }
+            .top-mini-stats { justify-content: flex-start; padding-top: 0; }
+            .stats-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <canvas id="bg-canvas"></canvas>
 
     <div class="app-container">
         
@@ -222,69 +342,172 @@ function obterCaminhoAvatar($path) {
             
             <?php include '../../back/topbar.php'; ?>
 
-            <section class="dashboard-grid">
-                <div class="curriculum-column">
-                    <div class="path-header">
-                        <h1>Configurações da Conta</h1>
-                    </div>
-
-                    <div class="perfil-grid">
+            <div class="profile-container">
+                
+                <!-- COLUNA ESQUERDA: PERFIL E ESTATÍSTICAS -->
+                <div class="main-column">
+                    
+                    <!-- BANNER -->
+                    <div class="banner-section">
+                        <img src="<?php echo htmlspecialchars(obterCaminhoAvatar($foto_perfil)); ?>" alt="Avatar" class="avatar-img">
                         
-                        <div class="perfil-card avatar-section">
-                            <img src="<?php echo htmlspecialchars(obterCaminhoAvatar($foto_perfil)); ?>" alt="Sua Foto" class="foto-preview-grande">
-                            
-                            <div class="info-badge">
-                                <i class="fa-solid fa-envelope"></i> <?php echo htmlspecialchars($dados_user['email']); ?>
-                            </div>
-
-                            <form action="../../back/atualizar_perfil.php" method="POST" enctype="multipart/form-data" style="width: 100%;">
-                                <input type="hidden" name="action" value="atualizar_foto">
-                                <div class="file-upload-wrapper">
-                                    <input type="file" name="foto" accept="image/*" required>
-                                </div>
-                                <button type="submit" class="btn-custom btn-primary"><i class="fa-solid fa-upload"></i> Alterar Avatar</button>
-                            </form>
-
-                             <a href="../../back/logout.php" style="text-decoration: none; width: 100%;">
-                                <button class="btn-custom btn-danger"><i class="fa-solid fa-right-from-bracket"></i> Sair do Opus</button>
-                            </a>
-                        </div>
-
-                        <div class="coluna-direita">
-                            
-                            <div class="perfil-card">
-                                <div class="perfil-card-header">
-                                    <i class="fa-solid fa-user-pen"></i> Editar Dados Pessoais
-                                </div>
-                                <form action="../../back/atualizar_perfil.php" method="POST">
-                                    <input type="hidden" name="action" value="atualizar_nome">
-                                    <div class="form-group">
-                                        <label for="novo_nome">Nome de Exibição</label>
-                                        <input type="text" id="novo_nome" name="novo_nome" class="form-control" value="<?php echo htmlspecialchars($dados_user['nome']); ?>" required>
-                                    </div>
-                                    <button type="submit" class="btn-custom btn-primary"><i class="fa-solid fa-floppy-disk"></i> Salvar Alterações</button>
-                                </form>
-                            </div>
-
-                            <div class="perfil-card">
-                                <div class="perfil-card-header" style="color: #655bf0; border-bottom-color: rgba(79, 43, 238, 0.2);">
-                                    <i class="fa-solid fa-shield-halved"></i> Segurança e Senha
-                                </div>
-                                <p class="security-text">
-                                    Para proteger sua conta, a alteração de senha é feita através de um link seguro. Clique no botão abaixo para receber as instruções no seu e-mail cadastrado.
-                                </p>
-                                <form action="../../back/solicitar_senha.php" method="POST">
-                                    <button type="submit" class="btn-custom btn-success"><i class="fa-solid fa-key"></i> Solicitar Troca de Senha</button>
-                                </form>
-                            </div>
-                            
-                        </div>
-
+                        <form id="form-foto" action="../../back/atualizar_perfil.php" method="POST" enctype="multipart/form-data">
+                            <input type="hidden" name="action" value="atualizar_foto">
+                            <label for="foto-upload" class="edit-banner-btn" title="Editar Perfil">
+                                <i class="fa-solid fa-pen"></i>
+                            </label>
+                            <input type="file" id="foto-upload" name="foto" accept="image/*" hidden onchange="document.getElementById('form-foto').submit();">
+                        </form>
                     </div>
+
+                    <!-- INFOS DO USUÁRIO -->
+                    <div class="user-info">
+                        <h1><?php echo htmlspecialchars($nome_completo); ?></h1>
+                        <span class="username"><?php echo htmlspecialchars($username); ?></span>
+                        <div class="member-since"><?php echo $membro_desde; ?></div>
+                        
+                        <div class="social-links">
+                            <a href="#">Segue 0</a>
+                            <a href="#">Tem 0 seguidores</a>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- ESTATÍSTICAS (Apenas com dados do seu site) -->
+                    <div class="stats-section">
+                        <h2>Estatísticas</h2>
+                        
+                        <div class="stats-grid">
+                            
+                            <!-- Ofensiva -->
+                            <div class="stat-card">
+                                <div class="stat-card-icon" style="color: #ff9600;">
+                                    <i class="fa-solid fa-fire"></i>
+                                </div>
+                                <div class="stat-card-content">
+                                    <span class="stat-card-value"><?php echo $dias_ofensiva; ?></span>
+                                    <span class="stat-card-label">Dias de ofensiva</span>
+                                </div>
+                            </div>
+                            
+                            <!-- O XP agora é só o Raiozinho, sem a palavra XP -->
+                            <div class="stat-card">
+                                <div class="stat-card-icon" style="color: #ffc800;">
+                                    <i class="fa-solid fa-bolt"></i>
+                                </div>
+                                <div class="stat-card-content">
+                                    <span class="stat-card-value"><?php echo $xp_total; ?></span>
+                                    <span class="stat-card-label">Total ganho</span>
+                                </div>
+                            </div>
+
+                            <!-- Liga / Divisão (Restrito à Bronze, Prata, Ouro, Diamante) -->
+                            <div class="stat-card">
+                                <div class="stat-card-icon" style="color: #1cb0f6;">
+                                    <i class="fa-solid fa-shield"></i>
+                                </div>
+                                <div class="stat-card-content">
+                                    <span class="stat-card-value"><?php echo $divisao; ?></span>
+                                    <span class="stat-card-label">Liga atual</span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Divisória antes das conquistas (se houver) -->
+                    <div class="divider"></div>
+
+                    <!-- Conquistas (Mantido simples e limpo, caso você use) -->
+                    <div class="stats-section">
+                        <h2>Conquistas</h2>
+                        <div class="stats-grid" id="trophy-container">
+                            <!-- Inserido dinamicamente via JS (API de conquistas) -->
+                        </div>
+                    </div>
+
                 </div>
-            </section>
+
+                <!-- COLUNA DIREITA: LATERAL -->
+                <div class="side-column">
+                    
+                    <!-- Mini stats do topo (Ofensiva e Raio/XP) -->
+                    <div class="top-mini-stats">
+                        <div class="mini-stat fire">
+                            <i class="fa-solid fa-fire"></i> 
+                            <span><?php echo $dias_ofensiva; ?></span>
+                        </div>
+                        <div class="mini-stat xp" style="color: #1cb0f6;">
+                            <i class="fa-solid fa-bolt" style="color: #1cb0f6;"></i> 
+                            <span style="color: #1cb0f6;"><?php echo $xp_total; ?></span>
+                        </div>
+                    </div>
+
+                    <!-- Card de Seguir (Vazio, simulando a imagem) -->
+                    <div class="side-card" style="text-align: center; padding: 40px 20px;">
+                        <span style="color: var(--text-muted); font-size: 0.95rem;">
+                            Aprender é mais divertido e eficaz quando a gente se junta!
+                        </span>
+                    </div>
+
+                    <!-- Card de Ações (Como "Adicionar amigos") -->
+                    <div class="side-card">
+                        <div class="side-card-title">Interagir</div>
+                        <ul class="side-card-list">
+                            <li>
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <i class="fa-solid fa-magnifying-glass" style="font-size: 1.2rem; color: #1cb0f6;"></i> Encontrar amigos
+                                </div>
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </li>
+                            <li>
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <i class="fa-solid fa-share-nodes" style="font-size: 1.2rem; color: #ffc800;"></i> Convidar amigos
+                                </div>
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Botão de Sair adaptado à lateral -->
+                    <a href="../../back/logout.php" class="btn-outline">
+                        Sair da Conta
+                    </a>
+
+                </div>
+
+            </div>
         </main>
     </div>
+
     <script src="../assets/js/script.js"></script> 
+    
+    <script>
+        // Script de conquistas seguindo o layout limpo dos stats
+        fetch('../../back/api_conquistas.php')
+        .then(r => r.json())
+        .then(data => {
+            const container = document.getElementById('trophy-container');
+            
+            data.lista.forEach(t => {
+                const isUnlocked = data.conquistados.includes(t.slug);
+                const opacity = isUnlocked ? '1' : '0.4';
+                const cor = isUnlocked ? '#ffc800' : 'var(--border-color)';
+                
+                container.innerHTML += `
+                    <div class="stat-card" style="opacity: ${opacity};">
+                        <div class="stat-card-icon" style="color: ${cor};">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <div class="stat-card-content">
+                            <span class="stat-card-value" style="font-size: 1rem;">${t.nome}</span>
+                            <span class="stat-card-label" style="font-size: 0.8rem;">${t.desc}</span>
+                        </div>
+                    </div>`;
+            });
+        })
+        .catch(error => console.error('Erro ao carregar conquistas:', error));
+    </script>
 </body>
 </html>

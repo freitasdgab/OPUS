@@ -82,18 +82,6 @@ if (!isset($_SESSION['user_id'])) {
             align-items: center;
         }
 
-        .icon-wrapper {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
-            font-size: 2.5rem;
-            transition: all 0.3s ease;
-        }
-
         .trophy-card h3 { 
             font-family: 'Orbitron', sans-serif; 
             font-size: 1.1rem; 
@@ -110,7 +98,7 @@ if (!isset($_SESSION['user_id'])) {
             line-height: 1.5;
         }
 
-        /* Badge de Status (Trava) */
+        /* Badge de Status (Cadeado/Check) */
         .status-badge {
             position: absolute;
             top: 20px;
@@ -124,16 +112,13 @@ if (!isset($_SESSION['user_id'])) {
             justify-content: center;
             align-items: center;
             font-size: 0.8rem;
+            z-index: 5;
+            transition: all 0.3s;
         }
 
         /* ESTADO: Bloqueado */
         .locked { 
-            filter: grayscale(80%); 
-            opacity: 0.7;
-        }
-        .locked .icon-wrapper {
-            background: #1e1e28;
-            color: #4a4a5a;
+            opacity: 0.8;
         }
         .locked:hover {
             opacity: 1;
@@ -141,19 +126,13 @@ if (!isset($_SESSION['user_id'])) {
             border-color: #3a3a45;
         }
 
-        /* ESTADO: Desbloqueado (Conquistado) */
+        /* ESTADO: Desbloqueado */
         .unlocked { 
             background: linear-gradient(145deg, #1f1f2e, #161622);
             border-color: rgba(255, 215, 0, 0.4); 
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
         
-        .unlocked .icon-wrapper { 
-            background: rgba(255, 215, 0, 0.15);
-            color: #FFD700; 
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.3) inset, 0 0 15px rgba(255, 215, 0, 0.2);
-        }
-
         .unlocked .status-badge {
             background: rgba(255, 215, 0, 0.2);
             color: #FFD700;
@@ -164,12 +143,8 @@ if (!isset($_SESSION['user_id'])) {
             border-color: #FFD700;
             box-shadow: 0 15px 35px rgba(255, 215, 0, 0.15);
         }
-        
-        .unlocked:hover .icon-wrapper {
-            transform: scale(1.1);
-        }
 
-        /* Efeito de brilho de fundo na carta desbloqueada */
+        /* Brilho de fundo na carta desbloqueada */
         .unlocked::before {
             content: '';
             position: absolute;
@@ -182,6 +157,71 @@ if (!isset($_SESSION['user_id'])) {
             pointer-events: none;
         }
         .unlocked * { z-index: 1; position: relative; }
+
+        /* =========================================
+           O COMPONENTE DA IMAGEM DA MEDALHA
+           ========================================= */
+        .medal-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .medal-img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            position: relative;
+            z-index: 2;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Brilho colorido atrás da medalha */
+        .medal-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90px;
+            height: 90px;
+            background: var(--cor-tema);
+            border-radius: 50%;
+            filter: blur(25px);
+            opacity: 0.6;
+            z-index: 0;
+        }
+
+        /* 
+           O SEGREDO DA REVELAÇÃO: 
+           Se estiver bloqueado, a imagem vira uma silhueta menor e sem brilho 
+        */
+        .locked .medal-img {
+            filter: brightness(0.2) opacity(0.6) grayscale(100%);
+            transform: scale(0.85);
+        }
+        .locked .medal-glow { 
+            display: none; 
+        }
+
+        /* Quando Desbloqueia, ela volta ao normal, cresce e flutua */
+        .unlocked .medal-img {
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.4));
+            transform: scale(1.1);
+        }
+
+        .unlocked .medal-container {
+            animation: floatTrophy 3s ease-in-out infinite;
+        }
+
+        @keyframes floatTrophy {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
     </style>
 </head>
 <body>
@@ -191,12 +231,10 @@ if (!isset($_SESSION['user_id'])) {
         <?php include '../../back/sidebar.php'; ?>
 
         <main class="main-content">
-            
             <?php include '../../back/topbar.php'; ?>
 
             <div class="page-container">
                 
-                <!-- Novo Cabeçalho -->
                 <div class="header-conquistas">
                     <div class="header-icon">
                         <i class="fa-solid fa-medal"></i>
@@ -223,19 +261,21 @@ if (!isset($_SESSION['user_id'])) {
             
             data.lista.forEach(t => {
                 const isUnlocked = data.conquistados.includes(t.slug);
-                
-                // Define o ícone de status (cadeado fechado ou check/estrela)
                 const statusIcon = isUnlocked ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-lock"></i>';
                 
-                // Permite usar um ícone personalizado vindo do banco, ou cai no troféu padrão
-                const iconeTrofeu = t.icone ? t.icone : 'fa-solid fa-trophy';
-
+                // Variável da cor do capítulo para o brilho (default azul)
+                const corCapitulo = t.cor ? t.cor : '#1cb0f6';
+                
                 container.innerHTML += `
                     <div class="trophy-card ${isUnlocked ? 'unlocked' : 'locked'}">
                         <div class="status-badge">${statusIcon}</div>
-                        <div class="icon-wrapper">
-                            <i class="${iconeTrofeu}"></i>
+                        
+                        <!-- Contêiner com a Imagem da Medalha -->
+                        <div class="medal-container" style="--cor-tema: ${corCapitulo};">
+                            <div class="medal-glow"></div>
+                            <img src="../assets/img/medalha.png" alt="Medalha" class="medal-img">
                         </div>
+
                         <h3>${t.nome}</h3>
                         <p>${t.desc}</p>
                     </div>`;
