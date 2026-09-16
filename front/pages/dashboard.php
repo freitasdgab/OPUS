@@ -593,7 +593,7 @@ $nomes_unidades = [
                             $posicao_mascote = ($num_cap % 2 != 0) ? 'mascote-esquerda' : 'mascote-direita';
                             $imagem_mascote = $info['mascote'] ?? 'vistodecimaazul.png';
                         ?>
-                            <div class="capitulo-container">
+                            <div class="capitulo-container <?php echo ($status_cap_banco === 'corrente' ? 'current-chapter' : ''); ?>" id="capitulo_<?php echo $num_cap; ?>" data-capitulo="<?php echo $num_cap; ?>">
                                 <div class="capitulo-header" style="background-color: <?php echo $cor_unidade; ?>;">
                                     <div class="capitulo-header-text">
                                         <h2><?php echo $info['titulo']; ?></h2>
@@ -639,7 +639,7 @@ $nomes_unidades = [
                                     ?>
                                         
                                         <?php if ($is_current): ?>
-                                            <a href="<?php echo $url_destino; ?>" class="modulo-node current <?php echo $pos_class; ?>">
+                                            <a href="<?php echo $url_destino; ?>" class="modulo-node current <?php echo $pos_class; ?>" id="currentLessonNode" data-capitulo="<?php echo $num_cap; ?>" data-licao="<?php echo $mod; ?>">
                                                 <div class="start-balloon" style="background-color: <?php echo $cor_unidade; ?>;">
                                                     <?php echo $vidas_atual <= 0 ? 'SEM VIDAS' : 'COMEÇAR'; ?>
                                                     <style>.start-balloon::after { border-top-color: <?php echo $cor_unidade; ?> !important; }</style>
@@ -1056,6 +1056,30 @@ $nomes_unidades = [
                 fecharModalBau();
             }
         }
+
+        // ── Scroll automático para a lição atual ──────────────────────────
+        function rolarParaLicaoAtual() {
+            // Tenta achar o nó exato da lição atual
+            const licaoAtual = document.getElementById('currentLessonNode');
+            if (licaoAtual) {
+                licaoAtual.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            // Fallback: se não houver lição atual, rola até o capítulo corrente
+            const capAtual = document.querySelector('.capitulo-container.current-chapter');
+            if (capAtual) {
+                capAtual.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Aguarda o carregamento completo (incluindo imagens/fontes) para que
+        // o layout esteja 100% calculado antes de rolar.
+        window.addEventListener('load', function () {
+            // Pequeno delay extra garante que fontes externas (Google Fonts)
+            // não causem refluxo de layout após o scroll.
+            setTimeout(rolarParaLicaoAtual, 150);
+        });
     </script>
 </body>
 </html>

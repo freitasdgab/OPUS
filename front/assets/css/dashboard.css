@@ -59,6 +59,7 @@ body {
     flex: 1;
     padding: 30px 50px;
     overflow-y: auto;
+    scroll-behavior: smooth;
 }
 
 /* TOP BAR STATS */
