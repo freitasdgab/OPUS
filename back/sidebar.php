@@ -8,6 +8,7 @@ $itens_menu = [
     ['href' => 'conquistas.php', 'icon' => 'fa-award',         'label' => 'Missões'],
     ['href' => 'ranking.php',    'icon' => 'fa-ranking-star',  'label' => 'Ranking'],
     ['href' => 'ligas.php',      'icon' => 'fa-shield-halved', 'label' => 'Ligas'],
+    ['href' => 'dicionario.php', 'icon' => 'fa-book-bookmark', 'label' => 'Dicionário'],
     ['href' => 'perfil.php',     'icon' => 'fa-user',          'label' => 'Perfil'],
 ];
 ?>
