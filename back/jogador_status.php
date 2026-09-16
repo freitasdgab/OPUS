@@ -13,6 +13,7 @@ function opus_ensure_player_columns(mysqli $conn): void {
         'vidas'             => 'TINYINT NOT NULL DEFAULT 3',
         'vidas_proxima_em'  => 'DATETIME NULL DEFAULT NULL',
         'ultima_atividade'  => 'DATE NULL DEFAULT NULL',
+        'nivel_acesso'      => "ENUM('comum','admin') NOT NULL DEFAULT 'comum'",
     ];
 
     foreach ($colunas as $nome => $definicao) {
@@ -22,13 +23,16 @@ function opus_ensure_player_columns(mysqli $conn): void {
         }
     }
 
+    // Garante que o administrador padrão (ID 1 ou email admin@gmail.com) tenha acesso de admin
+    $conn->query("UPDATE usuarios SET nivel_acesso = 'admin' WHERE (id = 1 OR LOWER(email) = 'admin@gmail.com') AND nivel_acesso = 'comum'");
+
     $done = true;
 }
 
 function opus_sincronizar_jogador(mysqli $conn, int $user_id): array {
     opus_ensure_player_columns($conn);
 
-    $stmt = $conn->prepare("SELECT xp, trofeus, dias_fogo, vidas, vidas_proxima_em, ultima_atividade, nome, foto_perfil FROM usuarios WHERE id = ?");
+    $stmt = $conn->prepare("SELECT xp, trofeus, dias_fogo, vidas, vidas_proxima_em, ultima_atividade, nome, foto_perfil, nivel_acesso FROM usuarios WHERE id = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $u = $stmt->get_result()->fetch_assoc();
@@ -43,7 +47,18 @@ function opus_sincronizar_jogador(mysqli $conn, int $user_id): array {
             'proxima_vida_texto' => '',
             'nome' => 'Usuário',
             'foto_perfil' => '',
+            'nivel_acesso' => 'comum',
+            'is_admin' => false,
         ];
+    }
+
+    $nivel_acesso = $u['nivel_acesso'] ?? 'comum';
+    $is_admin = ($nivel_acesso === 'admin');
+
+    // Sincroniza variável de sessão caso exista sessão ativa
+    if (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['user_id']) && (int)$_SESSION['user_id'] === $user_id) {
+        $_SESSION['user_nivel_acesso'] = $nivel_acesso;
+        $_SESSION['is_admin'] = $is_admin;
     }
 
     $vidas = (int) ($u['vidas'] ?? 3);
@@ -133,6 +148,8 @@ function opus_sincronizar_jogador(mysqli $conn, int $user_id): array {
         'proxima_vida_texto' => $proxima_texto,
         'nome' => $u['nome'] ?? 'Usuário',
         'foto_perfil' => $u['foto_perfil'] ?? '',
+        'nivel_acesso' => $nivel_acesso,
+        'is_admin' => $is_admin,
     ];
 }
 

@@ -15,15 +15,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         $email = strtolower($email);
 
-        $stmt = $conn->prepare("SELECT id, nome, senha FROM usuarios WHERE LOWER(email) = ?");
+        require_once 'jogador_status.php';
+        opus_ensure_player_columns($conn);
+
+        $stmt = $conn->prepare("SELECT id, nome, senha, nivel_acesso FROM usuarios WHERE LOWER(email) = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($user = $result->fetch_assoc()) {
             if ($senha === $user['senha']) {
+                $nivel = $user['nivel_acesso'] ?? 'comum';
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_nome'] = $user['nome'];
+                $_SESSION['user_nivel_acesso'] = $nivel;
+                $_SESSION['is_admin'] = ($nivel === 'admin');
                 $_SESSION['jornada_escolhida'] = 'Java'; 
 
                 header("Location: ../front/pages/dashboard.php");
@@ -88,6 +94,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             $_SESSION['user_id'] = $novo_id;
             $_SESSION['user_nome'] = $nome;
+            $_SESSION['user_nivel_acesso'] = 'comum';
+            $_SESSION['is_admin'] = false;
             $_SESSION['jornada_escolhida'] = 'Java';
 
             // Cria o mapa de progresso inicial
