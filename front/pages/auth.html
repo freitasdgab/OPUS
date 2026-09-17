@@ -11,6 +11,8 @@
     <link rel="shortcut icon" href="../assets/img/logo.png">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     
     <link rel="stylesheet" href="../assets/css/intro.css"> 
     <link rel="stylesheet" href="../assets/css/auth.css">
@@ -86,11 +88,118 @@
                     <button type="submit" class="btn-auth primary" id="btnSubmit">CADASTRAR-SE</button>
                 </div>
             </form>
+
+            <!-- Separador social -->
+            <div class="social-divider">
+                <span class="social-divider-line"></span>
+                <span class="social-divider-text">ou</span>
+                <span class="social-divider-line"></span>
+            </div>
+
+            <!-- Botão Entrar com Google -->
+            <button id="btnGoogleLogin" class="btn-google" onclick="iniciarGoogleLogin()">
+                <svg class="google-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.14 0 5.95 1.08 8.17 2.85l6.09-6.09C34.46 3.19 29.52 1 24 1 14.82 1 7.08 6.48 3.77 14.22l7.08 5.5C12.6 13.6 17.86 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                    <path fill="#FBBC05" d="M10.85 28.28A14.5 14.5 0 0 1 9.5 24c0-1.49.25-2.93.65-4.28l-7.08-5.5A23.93 23.93 0 0 0 0 24c0 3.77.9 7.34 2.46 10.54l8.39-6.26z"/>
+                    <path fill="#34A853" d="M24 47c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.14 0-11.4-4.1-13.15-9.72l-8.39 6.26C7.08 41.52 14.82 47 24 47z"/>
+                    <path fill="none" d="M0 0h48v48H0z"/>
+                </svg>
+                <span>Entrar com Google</span>
+            </button>
+
+            <!-- Container oculto do One Tap (não renderiza botão visível) -->
+            <div id="g_id_onload"
+                 data-client_id="SEU_CLIENT_ID_AQUI"
+                 data-callback="handleGoogleCredential"
+                 data-auto_prompt="false">
+            </div>
         </div>
 
     </div>
 
     <script src="../assets/js/auth.js"></script>
+    <script>
+        // ── Google Sign-In ────────────────────────────────────────
+        const GOOGLE_CLIENT_ID = 'SEU_CLIENT_ID_AQUI';
+
+        function iniciarGoogleLogin() {
+            const btn = document.getElementById('btnGoogleLogin');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i><span>Conectando...</span>';
+
+            google.accounts.id.initialize({
+                client_id: GOOGLE_CLIENT_ID,
+                callback: handleGoogleCredential,
+                ux_mode: 'popup',
+            });
+            google.accounts.id.prompt(function(notification) {
+                // Se o usuário fechar o popup sem logar, reabilita o botão
+                if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+                    resetarBtnGoogle();
+                    google.accounts.id.renderButton(
+                        document.createElement('div'),
+                        { theme: 'outline', size: 'large' }
+                    );
+                    // Fallback: abre o seletor de conta diretamente
+                    google.accounts.oauth2.initCodeClient({
+                        client_id: GOOGLE_CLIENT_ID,
+                        scope: 'email profile',
+                        ux_mode: 'popup',
+                        callback: () => {},
+                    });
+                    resetarBtnGoogle();
+                }
+            });
+        }
+
+        function handleGoogleCredential(response) {
+            fetch('../../back/google_callback.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ credential: response.credential }),
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.ok) {
+                    window.location.href = data.redirect_url;
+                } else {
+                    alert('Erro ao entrar com Google: ' + (data.erro || 'Tente novamente.'));
+                    resetarBtnGoogle();
+                }
+            })
+            .catch(() => {
+                alert('Falha de conexão. Verifique sua internet e tente novamente.');
+                resetarBtnGoogle();
+            });
+        }
+
+        function resetarBtnGoogle() {
+            const btn = document.getElementById('btnGoogleLogin');
+            if (!btn) return;
+            btn.disabled = false;
+            btn.innerHTML = `
+                <svg class="google-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.14 0 5.95 1.08 8.17 2.85l6.09-6.09C34.46 3.19 29.52 1 24 1 14.82 1 7.08 6.48 3.77 14.22l7.08 5.5C12.6 13.6 17.86 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                    <path fill="#FBBC05" d="M10.85 28.28A14.5 14.5 0 0 1 9.5 24c0-1.49.25-2.93.65-4.28l-7.08-5.5A23.93 23.93 0 0 0 0 24c0 3.77.9 7.34 2.46 10.54l8.39-6.26z"/>
+                    <path fill="#34A853" d="M24 47c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.14 0-11.4-4.1-13.15-9.72l-8.39 6.26C7.08 41.52 14.82 47 24 47z"/>
+                    <path fill="none" d="M0 0h48v48H0z"/>
+                </svg>
+                <span>Entrar com Google</span>`;
+        }
+
+        // Inicializa silenciosamente o GIS assim que o script carregar
+        window.addEventListener('load', function () {
+            if (typeof google !== 'undefined') {
+                google.accounts.id.initialize({
+                    client_id: GOOGLE_CLIENT_ID,
+                    callback: handleGoogleCredential,
+                    auto_select: false,
+                });
+            }
+        });
+    </script>
     <script>
         // Função do olhinho da senha
         function togglePasswordVisibility(inputId, button) {

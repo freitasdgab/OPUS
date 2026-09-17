@@ -2,52 +2,35 @@
 session_start();
 require_once '../../back/conexao.php';
 
-// Verifica se está logado
 if (!isset($_SESSION['user_id'])) {
     header("Location: auth.html");
     exit();
 }
 
-$user_id = $_SESSION['user_id'];
+$user_id =$_SESSION['user_id'];
 
-// Busca todos os dados do usuário para preencher as estatísticas
-$stmt_user = $conn->prepare("SELECT * FROM usuarios WHERE id = ?");
-$stmt_user->bind_param("i", $user_id);
-$stmt_user->execute();
-$dados_user = $stmt_user->get_result()->fetch_assoc();
+$stmt_user =$conn->prepare("SELECT * FROM usuarios WHERE id = ?");
+$stmt_user->bind_param("i", $user_id);$stmt_user->execute();
+$dados_user =$stmt_user->get_result()->fetch_assoc();
 
-// Define a foto padrão
-$foto_perfil = !empty($dados_user['foto_perfil']) ? $dados_user['foto_perfil'] : 'assets/img/opi pulando feliz.png';
+// Personalização de Avatar e Fundo (Corrigido para os nomes reais)
+$foto_perfil = !empty($dados_user['foto_perfil']) ? $dados_user['foto_perfil'] : '../assets/img/opi pulando feliz.png';$cor_fundo = !empty($dados_user['cor_fundo']) ?$dados_user['cor_fundo'] : '#1cb0f6';
 
-function obterCaminhoAvatar($path) {
-    if (strpos($path, 'data:image') === 0) return $path;
-    if (strpos($path, 'assets/') === 0) return '../' . $path;
-    return '../assets/img/opi pulando feliz.png';
-}
+// Dados do Usuário
+$nome_principal = !empty($dados_user['nome']) ?$dados_user['nome'] : 'Usuário';
+$username = !empty($dados_user['username']) ?$dados_user['username'] : strtolower(str_replace(' ', '', $nome_principal)) .$user_id;
+$email = !empty($dados_user['email']) ?$dados_user['email'] : 'usuario@email.com';
 
-// ------------------------------------------------------------------
-// DADOS DE ESTATÍSTICAS E DATA
-// ------------------------------------------------------------------
-$xp_total = isset($dados_user['xp']) ? $dados_user['xp'] : 515; 
-$dias_ofensiva = isset($dados_user['ofensiva']) ? $dados_user['ofensiva'] : 2;
+// Estatísticas
+$xp_total = isset($dados_user['xp']) ?$dados_user['xp'] : 0; 
+$dias_ofensiva = isset($dados_user['ofensiva']) ?$dados_user['ofensiva'] : 0;
+$ligas_validas = ['Bronze', 'Prata', 'Ouro', 'Diamante'];$divisao = isset($dados_user['divisao']) && in_array($dados_user['divisao'], $ligas_validas) ?$dados_user['divisao'] : 'Bronze';
 
-// Lógica de Ligas (Apenas as que você mencionou)
-$ligas_validas = ['Bronze', 'Prata', 'Ouro', 'Diamante'];
-$divisao = isset($dados_user['divisao']) && in_array($dados_user['divisao'], $ligas_validas) ? $dados_user['divisao'] : 'Bronze';
-
-// Pega o @ de usuário (simulando caso não tenha salvo um username específico)
-$nome_completo = isset($dados_user['nome']) ? $dados_user['nome'] : 'Usuário Opus';
-$username = strtolower(str_replace(' ', '', $nome_completo)) . $user_id;
-
-// Formata a data "Por aqui desde..."
+// Data formatada
 $meses = ['', 'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
-if (!empty($dados_user['data_criacao'])) {
-    $timestamp = strtotime($dados_user['data_criacao']);
-    $mes_idx = (int)date('n', $timestamp);
-    $ano = date('Y', $timestamp);
-    $membro_desde = "Por aqui desde " . $meses[$mes_idx] . " de " . $ano;
+if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['data_criacao']);$mes_idx = (int)date('n', $timestamp);$ano = date('Y', $timestamp);$membro_desde = "Por aqui desde " . $meses[$mes_idx] . " de " . $ano;
 } else {
-    $membro_desde = "Por aqui desde maio de 2026";
+    $membro_desde = "Por aqui desde " . $meses[(int)date('n')] . " de " . date('Y');
 }
 ?>
 <!DOCTYPE html>
@@ -59,276 +42,138 @@ if (!empty($dados_user['data_criacao'])) {
     
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="shortcut icon" href="../assets/img/logo.png">
+    <link rel="shortcut icon" href="../assets/img/LOGO.png">
     <link rel="stylesheet" href="../assets/css/dashboard.css">
     
     <style>
-        /* =========================================
-           ESTILO DUOLINGO DARK MODE (Fiel à Foto)
-           ========================================= */
         :root {
             --bg-dark: #131f24;
             --border-color: #37464f;
             --text-main: #ffffff;
             --text-muted: #778590;
             --duo-blue: #1cb0f6;
-            --duo-blue-hover: #1899d6;
-            --banner-bg: #e56565; /* Vermelho/Rosa do banner */
+            --duo-green: #58cc02;
+            --duo-green-hover: #46a302;
+            --duo-red: #ff4b4b;
+            --duo-red-hover: #ea2b2b;
         }
 
         body, html {
             background-color: var(--bg-dark);
             font-family: 'Nunito', sans-serif;
             color: var(--text-main);
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
+            margin: 0; padding: 0; overflow-x: hidden;
         }
 
-        .main-content {
-            padding: 24px 40px;
-            min-height: 100vh;
-        }
-
-        /* Layout em 2 colunas como na foto */
+        .main-content { padding: 24px 40px; min-height: 100vh; }
         .profile-container {
-            display: grid;
-            grid-template-columns: 1fr 340px;
-            gap: 40px;
-            max-width: 1000px;
-            margin: 0 auto;
+            display: grid; grid-template-columns: 1fr 340px; gap: 40px;
+            max-width: 1000px; margin: 0 auto;
         }
-
-        /* =========================================
-           COLUNA ESQUERDA (Principal)
-           ========================================= */
-        .main-column {
-            display: flex;
-            flex-direction: column;
-        }
+        .main-column { display: flex; flex-direction: column; }
 
         /* Banner */
         .banner-section {
-            background-color: var(--banner-bg);
-            height: 200px;
-            border-radius: 16px;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 24px;
+            height: 200px; border-radius: 16px; position: relative;
+            display: flex; justify-content: center; align-items: center; margin-bottom: 24px;
         }
-
-        .avatar-img {
-            height: 160px;
-            width: auto;
-            object-fit: contain;
-            /* Se for uma imagem vazada do Opi, fica perfeito. Se for quadrada, aplicamos borda arredondada */
-            border-radius: 20px; 
-        }
-
-        /* Botão de editar no banner (Canto superior direito, como na foto) */
+        .avatar-img { height: 160px; width: auto; object-fit: contain; border-radius: 20px; }
         .edit-banner-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(255, 255, 255, 0.2);
-            color: #fff;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: 0.2s;
-            border: 2px solid transparent;
+            position: absolute; top: 15px; right: 15px; background: rgba(0, 0, 0, 0.3);
+            color: #fff; width: 40px; height: 40px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; cursor: pointer; border: none; transition: 0.2s;
         }
-        .edit-banner-btn:hover { background: rgba(255, 255, 255, 0.3); }
+        .edit-banner-btn:hover { background: rgba(0, 0, 0, 0.5); transform: scale(1.05); }
 
         /* Infos do Usuário */
-        .user-info {
-            margin-bottom: 30px;
+        .user-info { margin-bottom: 30px; display: flex; flex-direction: column; gap: 8px; }
+        .user-info h1 { margin: 0; font-size: 2rem; font-weight: 900; color: var(--text-main); line-height: 1.2; }
+        .user-details { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .user-details .username { font-size: 1.1rem; font-weight: 700; color: var(--text-muted); }
+        .user-details .email-text { font-size: 0.95rem; font-weight: 700; color: var(--text-muted); opacity: 0.7; }
+        .member-since { 
+            display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); 
+            font-size: 0.95rem; font-weight: 700; background: rgba(255,255,255,0.05); 
+            padding: 6px 12px; border-radius: 8px; width: fit-content; margin-top: 5px;
         }
 
-        .user-info h1 {
-            margin: 0;
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: var(--text-main);
-        }
-
-        .user-info .username {
-            display: block;
-            color: var(--text-muted);
-            font-size: 1rem;
-            margin-top: 4px;
-            margin-bottom: 12px;
-        }
-
-        .user-info .member-since {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            margin-bottom: 15px;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 20px;
-        }
+        .social-links { display: flex; gap: 30px; margin-top: 15px; }
         .social-links a {
-            color: var(--duo-blue);
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 0.95rem;
+            color: var(--text-main); text-decoration: none; font-weight: 700; font-size: 1rem;
+            display: flex; align-items: center; gap: 8px; transition: color 0.2s;
         }
-        .social-links a:hover { color: var(--duo-blue-hover); }
+        .social-links a span { color: var(--duo-blue); font-size: 1.1rem; }
+        .social-links a:hover { color: var(--duo-blue); }
 
-        /* Divisória fina igual a do Duolingo */
-        .divider {
-            height: 2px;
-            background-color: var(--border-color);
-            margin: 25px 0;
-            border-radius: 2px;
-        }
+        .divider { height: 2px; background-color: var(--border-color); margin: 25px 0; border-radius: 2px; }
 
-        /* Seção de Estatísticas */
-        .stats-section h2 {
-            font-size: 1.3rem;
-            font-weight: 800;
-            margin-bottom: 20px;
-        }
+        /* Estatísticas */
+        .stats-section h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: 20px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        .stat-card { border: 2px solid var(--border-color); border-radius: 16px; padding: 16px 20px; display: flex; align-items: center; gap: 15px; }
+        .stat-card-icon { font-size: 1.8rem; width: 50px; display: flex; justify-content: center; }
+        .stat-card-content { display: flex; flex-direction: column; }
+        .stat-card-value { font-size: 1.2rem; font-weight: 800; color: var(--text-main); }
+        .stat-card-label { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-        }
-
-        /* Card de Estatística (Borda fina, fundo da cor do site) */
-        .stat-card {
-            border: 2px solid var(--border-color);
-            border-radius: 16px;
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .stat-card-icon {
-            font-size: 1.8rem;
-            width: 35px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .stat-card-content {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .stat-card-value {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: var(--text-main);
-        }
-
-        .stat-card-label {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-
-        /* =========================================
-           COLUNA DIREITA (Sidebar Topo e Amigos)
-           ========================================= */
-        .side-column {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-
-        /* Barra de Mini-stats do Topo (Fogo e Raiozinho) */
-        .top-mini-stats {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 24px;
-            font-size: 1rem;
-            font-weight: 800;
-            padding-top: 10px;
-        }
-
-        .mini-stat {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-main);
-        }
-        
-        .mini-stat.fire { color: #ff9600; }
-        .mini-stat.xp { color: #1cb0f6; } /* Raiozinho Azul/Amarelo */
-
-        /* Cards da Lateral (Borda sutil, arredondada) */
-        .side-card {
-            border: 2px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-        }
-
-        .side-card-title {
-            font-size: 1.1rem;
-            font-weight: 800;
-            margin-bottom: 15px;
-        }
-
-        .side-card-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
+        /* Coluna Direita */
+        .side-column { display: flex; flex-direction: column; gap: 25px; padding-top: 10px; }
+        .side-card { border: 2px solid var(--border-color); border-radius: 16px; padding: 20px; }
+        .side-card-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 15px; }
+        .side-card-list { list-style: none; padding: 0; margin: 0; }
         .side-card-list li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 2px solid var(--border-color);
-            cursor: pointer;
-            color: var(--text-main);
-            font-weight: 700;
-            font-size: 0.95rem;
+            display: flex; justify-content: space-between; align-items: center; padding: 15px 0; 
+            border-bottom: 2px solid var(--border-color); cursor: pointer; color: var(--text-main); 
+            font-weight: 700; font-size: 0.95rem; transition: color 0.2s;
         }
         .side-card-list li:last-child { border-bottom: none; padding-bottom: 0; }
-        .side-card-list li:hover { color: var(--text-muted); }
-        .side-card-list i { color: var(--text-muted); }
+        .side-card-list li:hover { color: var(--duo-blue); }
 
-        /* Botões Extras / Sair (Estilo Duolingo) */
-        .btn-outline {
-            display: block;
-            text-align: center;
-            width: 100%;
-            padding: 14px;
-            border-radius: 12px;
-            font-weight: 800;
-            text-transform: uppercase;
-            text-decoration: none;
-            border: 2px solid var(--border-color);
-            color: var(--text-muted);
-            margin-top: 10px;
-            transition: 0.2s;
+        .btn-outline { 
+            display: block; text-align: center; width: 100%; padding: 14px; border-radius: 12px; 
+            font-weight: 800; text-transform: uppercase; text-decoration: none; 
+            border: 2px solid var(--border-color); color: var(--text-muted); margin-top: 10px; 
+            transition: 0.2s; cursor: pointer; background: transparent; font-family: inherit; 
         }
-        .btn-outline:hover {
-            background-color: var(--border-color);
-            color: var(--text-main);
-        }
+        .btn-outline:hover { background-color: var(--border-color); color: var(--text-main); }
 
-        /* Responsividade */
+        /* Modais */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-content {
+            background-color: var(--bg-dark); border: 2px solid var(--border-color);
+            border-radius: 20px; padding: 30px; width: 90%; max-width: 450px;
+        }
+        .modal-title { font-size: 1.4rem; font-weight: 800; margin-bottom: 20px; text-align: center; }
+        .modal-subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 15px; font-weight: 700; }
+
+        .avatar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
+        .avatar-option {
+            background: var(--border-color); border-radius: 16px; padding: 10px;
+            cursor: pointer; display: flex; justify-content: center; align-items: center;
+            border: 3px solid transparent; transition: 0.2s;
+        }
+        .avatar-option img { height: 70px; width: auto; object-fit: contain; }
+        .avatar-option:hover { transform: scale(1.05); }
+        .avatar-option.selected { border-color: var(--duo-blue); background: rgba(28, 176, 246, 0.1); }
+
+        .color-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 30px; }
+        .color-option { height: 50px; border-radius: 12px; cursor: pointer; border: 3px solid transparent; transition: 0.2s; }
+        .color-option:hover { transform: scale(1.1); }
+        .color-option.selected { border-color: #fff; transform: scale(1.1); box-shadow: 0 0 10px rgba(255,255,255,0.3); }
+
+        .modal-actions { display: flex; gap: 15px; margin-top: 10px; }
+        .btn-modal { flex: 1; padding: 14px; border-radius: 12px; font-weight: 800; text-transform: uppercase; border: none; cursor: pointer; font-family: inherit; font-size: 1rem; }
+        .btn-cancel { background: var(--border-color); color: var(--text-main); }
+        .btn-save { background: var(--duo-green); color: #fff; box-shadow: 0 4px 0 #46a302; }
+        .btn-danger { background: var(--duo-red); color: #fff; box-shadow: 0 4px 0 #ea2b2b; }
+
         @media (max-width: 900px) {
             .profile-container { grid-template-columns: 1fr; }
-            .top-mini-stats { justify-content: flex-start; padding-top: 0; }
-            .stats-grid { grid-template-columns: 1fr; }
+            .stats-grid, #trophy-container { grid-template-columns: 1fr !important; }
         }
     </style>
 </head>
@@ -339,129 +184,87 @@ if (!empty($dados_user['data_criacao'])) {
         <?php include '../../back/sidebar.php'; ?>
 
         <main class="main-content">
-            
             <?php include '../../back/topbar.php'; ?>
 
             <div class="profile-container">
                 
-                <!-- COLUNA ESQUERDA: PERFIL E ESTATÍSTICAS -->
+                <!-- COLUNA ESQUERDA -->
                 <div class="main-column">
                     
-                    <!-- BANNER -->
-                    <div class="banner-section">
-                        <img src="<?php echo htmlspecialchars(obterCaminhoAvatar($foto_perfil)); ?>" alt="Avatar" class="avatar-img">
-                        
-                        <form id="form-foto" action="../../back/atualizar_perfil.php" method="POST" enctype="multipart/form-data">
-                            <input type="hidden" name="action" value="atualizar_foto">
-                            <label for="foto-upload" class="edit-banner-btn" title="Editar Perfil">
-                                <i class="fa-solid fa-pen"></i>
-                            </label>
-                            <input type="file" id="foto-upload" name="foto" accept="image/*" hidden onchange="document.getElementById('form-foto').submit();">
-                        </form>
+                    <div class="banner-section" style="background-color: <?php echo htmlspecialchars($cor_fundo); ?>;">
+                        <img src="<?php echo htmlspecialchars($foto_perfil); ?>" alt="Avatar" class="avatar-img">
+                        <button class="edit-banner-btn" onclick="openProfileModal()">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
                     </div>
 
-                    <!-- INFOS DO USUÁRIO -->
                     <div class="user-info">
-                        <h1><?php echo htmlspecialchars($nome_completo); ?></h1>
-                        <span class="username"><?php echo htmlspecialchars($username); ?></span>
-                        <div class="member-since"><?php echo $membro_desde; ?></div>
+                        <h1><?php echo htmlspecialchars($nome_principal); ?></h1>
+                        <div class="user-details">
+                            <span class="username">@<?php echo htmlspecialchars($username); ?></span>
+                            <span class="email-text"><?php echo htmlspecialchars($email); ?></span>
+                        </div>
+                        <div class="member-since">
+                            <i class="fa-regular fa-calendar-days"></i> <?php echo $membro_desde; ?>
+                        </div>
                         
                         <div class="social-links">
-                            <a href="#">Segue 0</a>
-                            <a href="#">Tem 0 seguidores</a>
+                            <a href="#"><span>0</span> Seguindo</a>
+                            <a href="#"><span>0</span> Seguidores</a>
                         </div>
                     </div>
 
                     <div class="divider"></div>
 
-                    <!-- ESTATÍSTICAS (Apenas com dados do seu site) -->
                     <div class="stats-section">
                         <h2>Estatísticas</h2>
-                        
                         <div class="stats-grid">
-                            
-                            <!-- Ofensiva -->
                             <div class="stat-card">
-                                <div class="stat-card-icon" style="color: #ff9600;">
-                                    <i class="fa-solid fa-fire"></i>
-                                </div>
+                                <div class="stat-card-icon" style="color: #ff9600;"><i class="fa-solid fa-fire"></i></div>
                                 <div class="stat-card-content">
                                     <span class="stat-card-value"><?php echo $dias_ofensiva; ?></span>
                                     <span class="stat-card-label">Dias de ofensiva</span>
                                 </div>
                             </div>
-                            
-                            <!-- O XP agora é só o Raiozinho, sem a palavra XP -->
                             <div class="stat-card">
-                                <div class="stat-card-icon" style="color: #ffc800;">
-                                    <i class="fa-solid fa-bolt"></i>
-                                </div>
+                                <div class="stat-card-icon" style="color: #ffc800;"><i class="fa-solid fa-bolt"></i></div>
                                 <div class="stat-card-content">
                                     <span class="stat-card-value"><?php echo $xp_total; ?></span>
                                     <span class="stat-card-label">Total ganho</span>
                                 </div>
                             </div>
-
-                            <!-- Liga / Divisão (Restrito à Bronze, Prata, Ouro, Diamante) -->
                             <div class="stat-card">
-                                <div class="stat-card-icon" style="color: #1cb0f6;">
-                                    <i class="fa-solid fa-shield"></i>
-                                </div>
+                                <div class="stat-card-icon" style="color: #1cb0f6;"><i class="fa-solid fa-shield"></i></div>
                                 <div class="stat-card-content">
-                                    <span class="stat-card-value"><?php echo $divisao; ?></span>
+                                    <span class="stat-card-value"><?php echo htmlspecialchars($divisao); ?></span>
                                     <span class="stat-card-label">Liga atual</span>
                                 </div>
                             </div>
-
                         </div>
                     </div>
 
-                    <!-- Divisória antes das conquistas (se houver) -->
                     <div class="divider"></div>
 
-                    <!-- Conquistas (Mantido simples e limpo, caso você use) -->
                     <div class="stats-section">
                         <h2>Conquistas</h2>
+                        <!-- Container onde a API insere os troféus via JS -->
                         <div class="stats-grid" id="trophy-container">
-                            <!-- Inserido dinamicamente via JS (API de conquistas) -->
                         </div>
                     </div>
-
                 </div>
 
-                <!-- COLUNA DIREITA: LATERAL -->
+                <!-- COLUNA DIREITA -->
                 <div class="side-column">
-                    
-                    <!-- Mini stats do topo (Ofensiva e Raio/XP) -->
-                    <div class="top-mini-stats">
-                        <div class="mini-stat fire">
-                            <i class="fa-solid fa-fire"></i> 
-                            <span><?php echo $dias_ofensiva; ?></span>
-                        </div>
-                        <div class="mini-stat xp" style="color: #1cb0f6;">
-                            <i class="fa-solid fa-bolt" style="color: #1cb0f6;"></i> 
-                            <span style="color: #1cb0f6;"><?php echo $xp_total; ?></span>
-                        </div>
-                    </div>
-
-                    <!-- Card de Seguir (Vazio, simulando a imagem) -->
-                    <div class="side-card" style="text-align: center; padding: 40px 20px;">
-                        <span style="color: var(--text-muted); font-size: 0.95rem;">
-                            Aprender é mais divertido e eficaz quando a gente se junta!
-                        </span>
-                    </div>
-
-                    <!-- Card de Ações (Como "Adicionar amigos") -->
                     <div class="side-card">
                         <div class="side-card-title">Interagir</div>
                         <ul class="side-card-list">
-                            <li>
+                            <li onclick="alert('Recurso em desenvolvimento!')">
                                 <div style="display: flex; align-items: center; gap: 15px;">
                                     <i class="fa-solid fa-magnifying-glass" style="font-size: 1.2rem; color: #1cb0f6;"></i> Encontrar amigos
                                 </div>
                                 <i class="fa-solid fa-chevron-right"></i>
                             </li>
-                            <li>
+                            <li onclick="alert('Convite copiado!')">
                                 <div style="display: flex; align-items: center; gap: 15px;">
                                     <i class="fa-solid fa-share-nodes" style="font-size: 1.2rem; color: #ffc800;"></i> Convidar amigos
                                 </div>
@@ -470,44 +273,128 @@ if (!empty($dados_user['data_criacao'])) {
                         </ul>
                     </div>
                     
-                    <!-- Botão de Sair adaptado à lateral -->
-                    <a href="../../back/logout.php" class="btn-outline">
-                        Sair da Conta
-                    </a>
-
+                    <button class="btn-outline" onclick="openLogoutModal()">Sair da Conta</button>
                 </div>
-
             </div>
         </main>
     </div>
 
+    <!-- MODAL DE EDIÇÃO -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal-content">
+            <div class="modal-title">Editar Perfil</div>
+            
+            <form method="POST" action="../../back/atualizar_perfil.php">
+                <input type="hidden" name="action" value="atualizar_aparencia">
+                <input type="hidden" name="avatar_selecionado" id="input-avatar" value="<?php echo htmlspecialchars($foto_perfil); ?>">
+                <input type="hidden" name="cor_selecionada" id="input-cor" value="<?php echo htmlspecialchars($cor_fundo); ?>">
+
+                <div class="modal-subtitle">Escolha seu avatar</div>
+                <!-- Nomes dos arquivos corrigidos conforme a pasta de imagens -->
+                <div class="avatar-grid">
+                    <div class="avatar-option" data-src="../assets/img/rosa.png"><img src="../assets/img/rosa.png" alt="Rosa"></div>
+                    <div class="avatar-option" data-src="../assets/img/roxo.png"><img src="../assets/img/roxo.png" alt="Roxo"></div>
+                    <div class="avatar-option" data-src="../assets/img/laranja.png"><img src="../assets/img/laranja.png" alt="Laranja"></div>
+                    <div class="avatar-option" data-src="../assets/img/verdefeliz.png"><img src="../assets/img/verdefeliz.png" alt="Verde"></div>
+                    <div class="avatar-option" data-src="../assets/img/opi pulando feliz.png"><img src="../assets/img/opi pulando feliz.png" alt="Feliz"></div>
+                    <div class="avatar-option" data-src="../assets/img/acertoutudo.png"><img src="../assets/img/acertoutudo.png" alt="Acertou"></div>
+                </div>
+
+                <div class="modal-subtitle">Cor de fundo</div>
+                <div class="color-grid">
+                    <div class="color-option" style="background-color: #1cb0f6;" data-color="#1cb0f6"></div>
+                    <div class="color-option" style="background-color: #e56565;" data-color="#e56565"></div>
+                    <div class="color-option" style="background-color: #78c800;" data-color="#78c800"></div>
+                    <div class="color-option" style="background-color: #ce82ff;" data-color="#ce82ff"></div>
+                    <div class="color-option" style="background-color: #ff9600;" data-color="#ff9600"></div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-modal btn-cancel" onclick="closeProfileModal()">Cancelar</button>
+                    <button type="submit" class="btn-modal btn-save">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="../assets/js/script.js"></script> 
-    
     <script>
-        // Script de conquistas seguindo o layout limpo dos stats
+        function openLogoutModal() { document.getElementById('logoutModal').classList.add('active'); }
+        function closeLogoutModal() { document.getElementById('logoutModal').classList.remove('active'); }
+
+        const profileModal = document.getElementById('profileModal');
+        const avatarOptions = document.querySelectorAll('.avatar-option');
+        const colorOptions = document.querySelectorAll('.color-option');
+        const inputAvatar = document.getElementById('input-avatar');
+        const inputCor = document.getElementById('input-cor');
+
+        let currentAvatar = "<?php echo htmlspecialchars($foto_perfil); ?>";
+        let currentColor = "<?php echo htmlspecialchars($cor_fundo); ?>";
+
+        function openProfileModal() {
+            profileModal.classList.add('active');
+            avatarOptions.forEach(opt => opt.classList.toggle('selected', opt.dataset.src === currentAvatar));
+            colorOptions.forEach(opt => opt.classList.toggle('selected', opt.dataset.color === currentColor));
+        }
+        function closeProfileModal() { profileModal.classList.remove('active'); }
+
+        avatarOptions.forEach(opt => {
+            opt.addEventListener('click', function() {
+                avatarOptions.forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                inputAvatar.value = this.dataset.src;
+            });
+        });
+
+        colorOptions.forEach(opt => {
+            opt.addEventListener('click', function() {
+                colorOptions.forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                inputCor.value = this.dataset.color;
+            });
+        });
+
+        // Consumo da API de Conquistas e Criação dos Cards
         fetch('../../back/api_conquistas.php')
         .then(r => r.json())
         .then(data => {
             const container = document.getElementById('trophy-container');
             
-            data.lista.forEach(t => {
-                const isUnlocked = data.conquistados.includes(t.slug);
-                const opacity = isUnlocked ? '1' : '0.4';
-                const cor = isUnlocked ? '#ffc800' : 'var(--border-color)';
-                
-                container.innerHTML += `
-                    <div class="stat-card" style="opacity: ${opacity};">
-                        <div class="stat-card-icon" style="color: ${cor};">
-                            <i class="fa-solid fa-trophy"></i>
-                        </div>
-                        <div class="stat-card-content">
-                            <span class="stat-card-value" style="font-size: 1rem;">${t.nome}</span>
-                            <span class="stat-card-label" style="font-size: 0.8rem;">${t.desc}</span>
-                        </div>
-                    </div>`;
-            });
-        })
-        .catch(error => console.error('Erro ao carregar conquistas:', error));
+            // Garante que fique em 2 colunas, um do lado do outro
+            container.style.gridTemplateColumns = 'repeat(2, 1fr)'; 
+            
+            if(data.lista) {
+                data.lista.forEach(t => {
+                    const isUnlocked = data.conquistados.includes(t.slug);
+                    
+                    const filterStyle = isUnlocked ? '' : 'filter: grayscale(100%); opacity: 0.5;';
+                    
+                    let nomeT = (t.nome + " " + t.slug).toLowerCase();
+                    let imgSrc = '../assets/img/LOGO.png'; 
+
+                    if(nomeT.includes('primeiro')) imgSrc = '../assets/img/primeirospassos.png';
+                    else if(nomeT.includes('fogo') || nomeT.includes('três') || nomeT.includes('3')) imgSrc = '../assets/img/alcancos3diasdefogo.png';
+                    else if(nomeT.includes('arquiteto')) imgSrc = '../assets/img/arquitetojava.png';
+                    else if(nomeT.includes('lógico') || nomeT.includes('caminho')) imgSrc = '../assets/img/caminhoslogicos-capitulo2.png';
+                    else if(nomeT.includes('fundamento')) imgSrc = '../assets/img/fundamentos-capitulo1.png';
+                    else if(nomeT.includes('repetição')) imgSrc = '../assets/img/mestredarepeticao.png';
+                    else if(nomeT.includes('brilhante') || nomeT.includes('acerto')) imgSrc = '../assets/img/mentebrilhante-3de3acertos.png';
+                    else if(nomeT.includes('array')) imgSrc = '../assets/img/senhor dos arrays.png';
+
+                    // Imagem aumentada (75x75) e organização lado a lado dentro da grade de 2 colunas
+                    container.innerHTML += `
+                        <div class="stat-card" style="padding: 18px; gap: 15px; display: flex; align-items: center;">
+                            <div class="stat-card-icon" style="width: 75px; height: 75px; flex-shrink: 0; display: flex; justify-content: center; align-items: center;">
+                                <img src="${imgSrc}" style="width: 100%; height: 100%; object-fit: contain; ${filterStyle}" alt="${t.nome}">
+                            </div>
+                            <div class="stat-card-content" style="display: flex; flex-direction: column; gap: 4px;">
+                                <span class="stat-card-value" style="font-size: 1.1rem; line-height: 1.2;">${t.nome}</span>
+                                <span class="stat-card-label" style="font-size: 0.85rem; line-height: 1.3;">${t.desc}</span>
+                            </div>
+                        </div>`;
+                });
+            }
+        });
     </script>
 </body>
 </html>

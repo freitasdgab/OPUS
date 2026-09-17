@@ -23,9 +23,11 @@ if (isset($_SESSION['user_id'])) {
     $dias_fogo_top = $dados_top['dias_fogo'] ?? $dados_top['ofensiva'] ?? 0;
     $vidas_top = (int) ($dados_top['vidas'] ?? 3);
     $proxima_vida_texto = $dados_top['proxima_vida_texto'] ?? '';
-    $foto_banco = $dados_top['foto_perfil'] ?? '';
+    
+    // CORREÇÃO AQUI: Pega da sessão (para atualizar na hora) ou do banco, sem bloquear caminhos normais
+    $foto_banco = $_SESSION['foto_perfil'] ?? $dados_top['foto_perfil'] ?? '';
 
-    if (strpos($foto_banco, 'data:image') === 0) {
+    if (!empty($foto_banco)) {
         $avatar_top = $foto_banco;
     } else {
         $avatar_top = '../assets/img/opi pulando feliz.png';
@@ -136,6 +138,6 @@ $titulo_vidas = $proxima_vida_texto !== '' ? $proxima_vida_texto : ($vidas_top .
     <!-- USUÁRIO -->
     <div class="user-info">
         <span><?php echo htmlspecialchars($nome_top); ?></span>
-        <img src="<?php echo $avatar_top; ?>" alt="Avatar" class="avatar">
+        <img src="<?php echo htmlspecialchars($avatar_top); ?>" alt="Avatar" class="avatar">
     </div>
 </header>
