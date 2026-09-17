@@ -1,0 +1,72 @@
+/* resultado.css - estilos da pagina de Resultado. A cor do tema (--cor-tema) e definida via atributo style no <body>. */
+        .result-container {
+            display: flex; justify-content: center; align-items: center; min-height: 80vh;
+        }
+        .result-card {
+            background: rgba(20, 20, 28, 0.9); border: 2px solid var(--cor-tema); 
+            border-radius: 20px; padding: 40px; text-align: center; max-width: 520px; width: 100%;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(26, 54, 202, 0.2);
+        }
+        .mascote-img {
+            width: 220px;
+            height: auto;
+            margin: 0 auto 20px auto;
+            display: block;
+            background: transparent;
+            border: none;
+            filter: drop-shadow(0px 15px 15px rgba(0, 0, 0, 0.6));
+        }
+        .result-title {
+            font-family: 'Orbitron', sans-serif; font-size: 2rem; color: #fff; margin-bottom: 10px;
+        }
+        .result-message {
+            font-family: 'Poppins', sans-serif; color: #a0a0b0; font-size: 1.1rem; margin-bottom: 25px;
+        }
+        .xp-box {
+            background: rgba(26, 54, 202, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 25px;
+            font-family: 'Orbitron'; font-size: 1.5rem; color: #a7b7e6; border: 1px solid var(--cor-tema);
+        }
+        
+        /* BANNER DE BAÚ DESBLOQUEADO */
+        .bau-unlocked-banner {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.18), rgba(255, 150, 0, 0.08));
+            border: 2px solid #ffd700;
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-align: left;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.25);
+            animation: pulse 2s infinite;
+        }
+        .bau-banner-icon {
+            font-size: 34px;
+            color: #ffd700;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
+            flex-shrink: 0;
+        }
+        .bau-banner-text h3 {
+            margin: 0 0 4px 0;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.05rem;
+            color: #ffd700;
+        }
+        .bau-banner-text p {
+            margin: 0;
+            font-size: 0.88rem;
+            color: #d0d0d8;
+            line-height: 1.4;
+        }
+
+        .buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+        .btn-action {
+            padding: 12px 25px; font-family: 'Orbitron'; font-weight: bold; border-radius: 8px;
+            text-decoration: none; border: none; cursor: pointer; transition: 0.3s;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-next { background: var(--cor-tema); color: #fff; }
+        .btn-next:hover { transform: scale(1.05); filter: brightness(1.2); box-shadow: 0 0 15px var(--cor-tema); }
+        .btn-dash { background: #2a2a35; color: #fff; border: 1px solid #404050; }
+        .btn-dash:hover { background: #404050; }

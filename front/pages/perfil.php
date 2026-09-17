@@ -44,138 +44,9 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="shortcut icon" href="../assets/img/LOGO.png">
     <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/topbar.css">
     
-    <style>
-        :root {
-            --bg-dark: #131f24;
-            --border-color: #37464f;
-            --text-main: #ffffff;
-            --text-muted: #778590;
-            --duo-blue: #1cb0f6;
-            --duo-green: #58cc02;
-            --duo-green-hover: #46a302;
-            --duo-red: #ff4b4b;
-            --duo-red-hover: #ea2b2b;
-        }
-
-        body, html {
-            background-color: var(--bg-dark);
-            font-family: 'Nunito', sans-serif;
-            color: var(--text-main);
-            margin: 0; padding: 0; overflow-x: hidden;
-        }
-
-        .main-content { padding: 24px 40px; min-height: 100vh; }
-        .profile-container {
-            display: grid; grid-template-columns: 1fr 340px; gap: 40px;
-            max-width: 1000px; margin: 0 auto;
-        }
-        .main-column { display: flex; flex-direction: column; }
-
-        /* Banner */
-        .banner-section {
-            height: 200px; border-radius: 16px; position: relative;
-            display: flex; justify-content: center; align-items: center; margin-bottom: 24px;
-        }
-        .avatar-img { height: 160px; width: auto; object-fit: contain; border-radius: 20px; }
-        .edit-banner-btn {
-            position: absolute; top: 15px; right: 15px; background: rgba(0, 0, 0, 0.3);
-            color: #fff; width: 40px; height: 40px; border-radius: 50%; display: flex;
-            align-items: center; justify-content: center; cursor: pointer; border: none; transition: 0.2s;
-        }
-        .edit-banner-btn:hover { background: rgba(0, 0, 0, 0.5); transform: scale(1.05); }
-
-        /* Infos do Usuário */
-        .user-info { margin-bottom: 30px; display: flex; flex-direction: column; gap: 8px; }
-        .user-info h1 { margin: 0; font-size: 2rem; font-weight: 900; color: var(--text-main); line-height: 1.2; }
-        .user-details { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
-        .user-details .username { font-size: 1.1rem; font-weight: 700; color: var(--text-muted); }
-        .user-details .email-text { font-size: 0.95rem; font-weight: 700; color: var(--text-muted); opacity: 0.7; }
-        .member-since { 
-            display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); 
-            font-size: 0.95rem; font-weight: 700; background: rgba(255,255,255,0.05); 
-            padding: 6px 12px; border-radius: 8px; width: fit-content; margin-top: 5px;
-        }
-
-        .social-links { display: flex; gap: 30px; margin-top: 15px; }
-        .social-links a {
-            color: var(--text-main); text-decoration: none; font-weight: 700; font-size: 1rem;
-            display: flex; align-items: center; gap: 8px; transition: color 0.2s;
-        }
-        .social-links a span { color: var(--duo-blue); font-size: 1.1rem; }
-        .social-links a:hover { color: var(--duo-blue); }
-
-        .divider { height: 2px; background-color: var(--border-color); margin: 25px 0; border-radius: 2px; }
-
-        /* Estatísticas */
-        .stats-section h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: 20px; }
-        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-        .stat-card { border: 2px solid var(--border-color); border-radius: 16px; padding: 16px 20px; display: flex; align-items: center; gap: 15px; }
-        .stat-card-icon { font-size: 1.8rem; width: 50px; display: flex; justify-content: center; }
-        .stat-card-content { display: flex; flex-direction: column; }
-        .stat-card-value { font-size: 1.2rem; font-weight: 800; color: var(--text-main); }
-        .stat-card-label { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; }
-
-        /* Coluna Direita */
-        .side-column { display: flex; flex-direction: column; gap: 25px; padding-top: 10px; }
-        .side-card { border: 2px solid var(--border-color); border-radius: 16px; padding: 20px; }
-        .side-card-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 15px; }
-        .side-card-list { list-style: none; padding: 0; margin: 0; }
-        .side-card-list li {
-            display: flex; justify-content: space-between; align-items: center; padding: 15px 0; 
-            border-bottom: 2px solid var(--border-color); cursor: pointer; color: var(--text-main); 
-            font-weight: 700; font-size: 0.95rem; transition: color 0.2s;
-        }
-        .side-card-list li:last-child { border-bottom: none; padding-bottom: 0; }
-        .side-card-list li:hover { color: var(--duo-blue); }
-
-        .btn-outline { 
-            display: block; text-align: center; width: 100%; padding: 14px; border-radius: 12px; 
-            font-weight: 800; text-transform: uppercase; text-decoration: none; 
-            border: 2px solid var(--border-color); color: var(--text-muted); margin-top: 10px; 
-            transition: 0.2s; cursor: pointer; background: transparent; font-family: inherit; 
-        }
-        .btn-outline:hover { background-color: var(--border-color); color: var(--text-main); }
-
-        /* Modais */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000;
-        }
-        .modal-overlay.active { display: flex; }
-        .modal-content {
-            background-color: var(--bg-dark); border: 2px solid var(--border-color);
-            border-radius: 20px; padding: 30px; width: 90%; max-width: 450px;
-        }
-        .modal-title { font-size: 1.4rem; font-weight: 800; margin-bottom: 20px; text-align: center; }
-        .modal-subtitle { font-size: 1rem; color: var(--text-muted); margin-bottom: 15px; font-weight: 700; }
-
-        .avatar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
-        .avatar-option {
-            background: var(--border-color); border-radius: 16px; padding: 10px;
-            cursor: pointer; display: flex; justify-content: center; align-items: center;
-            border: 3px solid transparent; transition: 0.2s;
-        }
-        .avatar-option img { height: 70px; width: auto; object-fit: contain; }
-        .avatar-option:hover { transform: scale(1.05); }
-        .avatar-option.selected { border-color: var(--duo-blue); background: rgba(28, 176, 246, 0.1); }
-
-        .color-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 30px; }
-        .color-option { height: 50px; border-radius: 12px; cursor: pointer; border: 3px solid transparent; transition: 0.2s; }
-        .color-option:hover { transform: scale(1.1); }
-        .color-option.selected { border-color: #fff; transform: scale(1.1); box-shadow: 0 0 10px rgba(255,255,255,0.3); }
-
-        .modal-actions { display: flex; gap: 15px; margin-top: 10px; }
-        .btn-modal { flex: 1; padding: 14px; border-radius: 12px; font-weight: 800; text-transform: uppercase; border: none; cursor: pointer; font-family: inherit; font-size: 1rem; }
-        .btn-cancel { background: var(--border-color); color: var(--text-main); }
-        .btn-save { background: var(--duo-green); color: #fff; box-shadow: 0 4px 0 #46a302; }
-        .btn-danger { background: var(--duo-red); color: #fff; box-shadow: 0 4px 0 #ea2b2b; }
-
-        @media (max-width: 900px) {
-            .profile-container { grid-template-columns: 1fr; }
-            .stats-grid, #trophy-container { grid-template-columns: 1fr !important; }
-        }
-    </style>
+    <link rel="stylesheet" href="../assets/css/perfil.css">
 </head>
 <body>
 
@@ -317,84 +188,15 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
         </div>
     </div>
 
-    <script src="../assets/js/script.js"></script> 
+    <script src="../assets/js/script.js"></script>
     <script>
-        function openLogoutModal() { document.getElementById('logoutModal').classList.add('active'); }
-        function closeLogoutModal() { document.getElementById('logoutModal').classList.remove('active'); }
-
-        const profileModal = document.getElementById('profileModal');
-        const avatarOptions = document.querySelectorAll('.avatar-option');
-        const colorOptions = document.querySelectorAll('.color-option');
-        const inputAvatar = document.getElementById('input-avatar');
-        const inputCor = document.getElementById('input-cor');
-
-        let currentAvatar = "<?php echo htmlspecialchars($foto_perfil); ?>";
-        let currentColor = "<?php echo htmlspecialchars($cor_fundo); ?>";
-
-        function openProfileModal() {
-            profileModal.classList.add('active');
-            avatarOptions.forEach(opt => opt.classList.toggle('selected', opt.dataset.src === currentAvatar));
-            colorOptions.forEach(opt => opt.classList.toggle('selected', opt.dataset.color === currentColor));
-        }
-        function closeProfileModal() { profileModal.classList.remove('active'); }
-
-        avatarOptions.forEach(opt => {
-            opt.addEventListener('click', function() {
-                avatarOptions.forEach(o => o.classList.remove('selected'));
-                this.classList.add('selected');
-                inputAvatar.value = this.dataset.src;
-            });
-        });
-
-        colorOptions.forEach(opt => {
-            opt.addEventListener('click', function() {
-                colorOptions.forEach(o => o.classList.remove('selected'));
-                this.classList.add('selected');
-                inputCor.value = this.dataset.color;
-            });
-        });
-
-        // Consumo da API de Conquistas e Criação dos Cards
-        fetch('../../back/api_conquistas.php')
-        .then(r => r.json())
-        .then(data => {
-            const container = document.getElementById('trophy-container');
-            
-            // Garante que fique em 2 colunas, um do lado do outro
-            container.style.gridTemplateColumns = 'repeat(2, 1fr)'; 
-            
-            if(data.lista) {
-                data.lista.forEach(t => {
-                    const isUnlocked = data.conquistados.includes(t.slug);
-                    
-                    const filterStyle = isUnlocked ? '' : 'filter: grayscale(100%); opacity: 0.5;';
-                    
-                    let nomeT = (t.nome + " " + t.slug).toLowerCase();
-                    let imgSrc = '../assets/img/LOGO.png'; 
-
-                    if(nomeT.includes('primeiro')) imgSrc = '../assets/img/primeirospassos.png';
-                    else if(nomeT.includes('fogo') || nomeT.includes('três') || nomeT.includes('3')) imgSrc = '../assets/img/alcancos3diasdefogo.png';
-                    else if(nomeT.includes('arquiteto')) imgSrc = '../assets/img/arquitetojava.png';
-                    else if(nomeT.includes('lógico') || nomeT.includes('caminho')) imgSrc = '../assets/img/caminhoslogicos-capitulo2.png';
-                    else if(nomeT.includes('fundamento')) imgSrc = '../assets/img/fundamentos-capitulo1.png';
-                    else if(nomeT.includes('repetição')) imgSrc = '../assets/img/mestredarepeticao.png';
-                    else if(nomeT.includes('brilhante') || nomeT.includes('acerto')) imgSrc = '../assets/img/mentebrilhante-3de3acertos.png';
-                    else if(nomeT.includes('array')) imgSrc = '../assets/img/senhor dos arrays.png';
-
-                    // Imagem aumentada (75x75) e organização lado a lado dentro da grade de 2 colunas
-                    container.innerHTML += `
-                        <div class="stat-card" style="padding: 18px; gap: 15px; display: flex; align-items: center;">
-                            <div class="stat-card-icon" style="width: 75px; height: 75px; flex-shrink: 0; display: flex; justify-content: center; align-items: center;">
-                                <img src="${imgSrc}" style="width: 100%; height: 100%; object-fit: contain; ${filterStyle}" alt="${t.nome}">
-                            </div>
-                            <div class="stat-card-content" style="display: flex; flex-direction: column; gap: 4px;">
-                                <span class="stat-card-value" style="font-size: 1.1rem; line-height: 1.2;">${t.nome}</span>
-                                <span class="stat-card-label" style="font-size: 0.85rem; line-height: 1.3;">${t.desc}</span>
-                            </div>
-                        </div>`;
-                });
-            }
-        });
+        // Config gerada pelo PHP: unico trecho dinamico da pagina, o resto da
+        // logica mora em ../assets/js/perfil.js
+        window.OPUS_PERFIL = {
+            avatar: "<?php echo htmlspecialchars($foto_perfil); ?>",
+            cor: "<?php echo htmlspecialchars($cor_fundo); ?>"
+        };
     </script>
+    <script src="../assets/js/perfil.js"></script>
 </body>
 </html>

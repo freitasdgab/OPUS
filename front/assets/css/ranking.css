@@ -1,153 +1,36 @@
 /* ranking.css */
-.ranking-container {
-    background: rgba(15, 15, 20, 0.85);
-    border-radius: 20px;
-    padding: 30px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    max-width: 800px;
-    margin: 0 auto;
-    color: #fff;
-}
+        .ranking-container { background: rgba(20, 20, 28, 0.7); border: 1px solid rgba(26, 54, 202, 0.2); border-radius: 16px; padding: 30px; max-width: 900px; margin: 0 auto; color: #fff; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+        .ranking-header { text-align: center; margin-bottom: 35px; }
+        .ranking-header h1 { font-family: 'Orbitron', sans-serif; color: #fff; font-size: 1.8rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; }
+        .ranking-header p { color: #a0a0b0; font-size: 0.95rem; }
+        
+        .my-status-alert { display: none; background: rgba(26, 54, 202, 0.2); border: 1px solid #1a36ca; border-radius: 8px; padding: 12px; text-align: center; font-weight: 600; margin-bottom: 30px; font-size: 1rem; color: #4d66f5; }
 
-.ranking-header {
-    text-align: center;
-    margin-bottom: 40px;
-}
+        .podium { display: flex; justify-content: center; align-items: flex-end; gap: 25px; margin-bottom: 40px; min-height: 220px; }
+        .podium-item { display: flex; flex-direction: column; align-items: center; width: 120px; text-align: center; }
+        .podium-avatar { width: 65px; height: 65px; background: #2a2a35; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 3px solid; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.3); overflow: hidden; }
+        .podium-name { font-family: 'Poppins', sans-serif; font-size: 0.9rem; font-weight: 600; margin-top: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+        .podium-xp { font-family: 'Poppins', sans-serif; font-size: 0.8rem; color: #a0a0b0; margin-bottom: 8px; }
+        .podium-bar { width: 100%; border-radius: 8px 8px 0 0; display: flex; justify-content: center; align-items: center; font-family: 'Orbitron', sans-serif; font-size: 1.6rem; font-weight: bold; color: #000; box-shadow: inset 0 -5px 0 rgba(0,0,0,0.2); }
 
-.ranking-header h1 {
-    font-family: 'Orbitron', sans-serif;
-    color: #1a36ca;
-    text-shadow: 0 0 10px rgba(26, 54, 202, 0.5);
-}
+        .rank-2 .podium-avatar { border-color: #C0C0C0; color: #C0C0C0; }
+        .rank-2 .podium-bar { height: 100px; background: linear-gradient(to bottom, #E0E0E0, #C0C0C0); }
+        .rank-1 .podium-avatar { border-color: #FFD700; color: #FFD700; width: 75px; height: 75px; font-size: 28px; overflow: visible; }
+        .rank-1 .podium-avatar img { border-radius: 50%; width: 100%; height: 100%; object-fit: cover; }
+        .rank-1 .podium-bar { height: 140px; background: linear-gradient(to bottom, #FFE066, #FFD700); }
+        .rank-1 .crown { position: absolute; top: -22px; color: #FFD700; font-size: 20px; z-index: 10; }
+        .rank-3 .podium-avatar { border-color: #CD7F32; color: #CD7F32; }
+        .rank-3 .podium-bar { height: 75px; background: linear-gradient(to bottom, #E6984C, #CD7F32); }
 
-/* --- PÓDIO ESTILO DUOLINGO --- */
-.podium {
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    gap: 15px;
-    margin-bottom: 50px;
-    min-height: 250px;
-}
-
-.podium-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100px;
-}
-
-.podium-avatar {
-    width: 60px;
-    height: 60px;
-    background: #2a2a35;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    margin-bottom: 10px;
-    border: 3px solid;
-    position: relative;
-}
-
-.podium-name {
-    font-size: 14px;
-    font-weight: 600;
-    text-align: center;
-    margin-bottom: 5px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 100%;
-}
-
-.podium-xp {
-    font-size: 12px;
-    color: #aaa;
-    margin-bottom: 10px;
-}
-
-.podium-bar {
-    width: 100%;
-    border-radius: 10px 10px 0 0;
-    display: flex;
-    justify-content: center;
-    padding-top: 15px;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 24px;
-    font-weight: bold;
-    color: #000;
-    box-shadow: inset 0 -10px 0 rgba(0,0,0,0.2);
-}
-
-/* Posições do Pódio */
-.rank-2 .podium-avatar { border-color: #C0C0C0; }
-.rank-2 .podium-bar { height: 120px; background: linear-gradient(to bottom, #E0E0E0, #C0C0C0); }
-
-.rank-1 .podium-avatar { border-color: #FFD700; width: 80px; height: 80px; }
-.rank-1 .podium-bar { height: 160px; background: linear-gradient(to bottom, #FFE066, #FFD700); }
-.rank-1 .crown { position: absolute; top: -25px; color: #FFD700; font-size: 24px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); }
-
-.rank-3 .podium-avatar { border-color: #CD7F32; }
-.rank-3 .podium-bar { height: 90px; background: linear-gradient(to bottom, #E6984C, #CD7F32); }
-
-/* --- LISTA DE USUÁRIOS --- */
-.ranking-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.ranking-row {
-    display: flex;
-    align-items: center;
-    background: #2a2a35;
-    padding: 15px 20px;
-    border-radius: 12px;
-    transition: transform 0.2s;
-}
-
-.ranking-row:hover {
-    transform: scale(1.02);
-    background: #3a3a48;
-}
-
-.ranking-row.is-me {
-    background: rgba(26, 54, 202, 0.15);
-    border: 1px solid #1a36ca;
-    box-shadow: 0 0 15px rgba(26, 54, 202, 0.3);
-}
-
-.row-pos {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 18px;
-    font-weight: bold;
-    width: 40px;
-    color: #888;
-}
-
-.ranking-row.is-me .row-pos { color: #1a36ca; }
-
-.row-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #444;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 15px;
-}
-
-.row-name { flex-grow: 1; font-weight: 600; font-size: 16px; }
-.row-xp { font-weight: bold; color: #FFD700; }
-
-.my-status {
-    text-align: center;
-    margin-bottom: 20px;
-    padding: 10px;
-    background: #1a36ca;
-    border-radius: 8px;
-    font-weight: bold;
-}
+        .ranking-list { display: flex; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto; padding-right: 5px; }
+        .ranking-list::-webkit-scrollbar { width: 6px; }
+        .ranking-list::-webkit-scrollbar-thumb { background: rgba(26, 54, 202, 0.4); border-radius: 4px; }
+        .ranking-row { display: flex; align-items: center; background: #1e1e28; padding: 15px 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); }
+        .ranking-row.is-me { background: rgba(26, 54, 202, 0.1); border: 1px solid #1a36ca; }
+        .row-pos { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: bold; width: 50px; color: #707080; }
+        .ranking-row.is-me .row-pos { color: #4d66f5; }
+        .row-avatar { width: 35px; height: 35px; background: #2a2a35; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; color: #a0a0b0; overflow: hidden; }
+        .row-name { flex-grow: 1; font-family: 'Poppins', sans-serif; font-weight: 500; }
+        .row-xp { font-family: 'Poppins', sans-serif; font-weight: bold; color: #FFD700; font-size: 0.95rem; }
+        
+        .img-cover { width: 100%; height: 100%; object-fit: cover; }

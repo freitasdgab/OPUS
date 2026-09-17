@@ -1,5 +1,5 @@
 <?php
-require 'back/conexao.php';
+require __DIR__ . '/../conexao.php';
 
 echo "=== LICOES ===\n";
 $r = $conn->query("SELECT id, unidade_numero, licao_numero, titulo FROM licoes ORDER BY unidade_numero, licao_numero");

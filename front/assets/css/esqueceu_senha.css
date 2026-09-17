@@ -1,0 +1,12 @@
+/* esqueceu_senha.css */
+        .alert {
+            padding: 10px; margin-bottom: 15px; border-radius: 5px;
+            text-align: center; font-family: 'Poppins', sans-serif; font-size: 0.9rem;
+            display: none; /* Escondido por padrão, ativado via JS */
+        }
+        .alert.error { background-color: #ff4d4d; color: white; display: block; }
+        .alert.success { background-color: #4CAF50; color: white; display: block; }
+        .back-link {
+            display: block; text-align: center; margin-top: 15px; color: #4d66f5;
+            text-decoration: none; font-family: 'Poppins', sans-serif; font-weight: 600;
+        }

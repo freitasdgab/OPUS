@@ -14,19 +14,7 @@
     <link rel="stylesheet" href="../assets/css/intro.css"> 
     <link rel="stylesheet" href="../assets/css/auth.css">
 
-    <style>
-        .alert {
-            padding: 10px; margin-bottom: 15px; border-radius: 5px;
-            text-align: center; font-family: 'Poppins', sans-serif; font-size: 0.9rem;
-            display: none; /* Escondido por padrão, ativado via JS */
-        }
-        .alert.error { background-color: #ff4d4d; color: white; display: block; }
-        .alert.success { background-color: #4CAF50; color: white; display: block; }
-        .back-link {
-            display: block; text-align: center; margin-top: 15px; color: #4d66f5;
-            text-decoration: none; font-family: 'Poppins', sans-serif; font-weight: 600;
-        }
-    </style>
+    <link rel="stylesheet" href="../assets/css/esqueceu_senha.css">
 </head>
 <body>
     <canvas id="bg-canvas"></canvas>
@@ -79,58 +67,6 @@
     </div>
 
     <script src="../assets/js/auth.js"></script>
-    <script>
-        function mostrarMensagem(texto, tipo) {
-            const div = document.getElementById('mensagem');
-            div.innerHTML = texto;
-            div.className = 'alert ' + tipo;
-        }
-
-        function solicitarCodigo() {
-            const email = document.getElementById('email').value.trim();
-            if(!email) return mostrarMensagem("Por favor, digite seu e-mail.", "error");
-
-            mostrarMensagem("Aguarde, enviando e-mail...", "success");
-
-            fetch('../../back/solicitar_codigo.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'email=' + encodeURIComponent(email)
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.status === 'success') {
-                    mostrarMensagem(data.message, 'success');
-                    document.getElementById('etapa-1').style.display = 'none';
-                    document.getElementById('etapa-2').style.display = 'block';
-                } else {
-                    mostrarMensagem(data.message, 'error');
-                }
-            }).catch(() => mostrarMensagem("Erro na comunicação com o servidor.", "error"));
-        }
-
-        function redefinirSenha() {
-            const email = document.getElementById('email').value.trim();
-            const codigo = document.getElementById('codigo').value.trim();
-            const novaSenha = document.getElementById('nova_senha').value;
-
-            if(!codigo || !novaSenha) return mostrarMensagem("Preencha o código e a nova senha.", "error");
-
-            fetch('../../back/redefinir_senha_acao.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `email=${encodeURIComponent(email)}&codigo=${encodeURIComponent(codigo)}&nova_senha=${encodeURIComponent(novaSenha)}`
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.status === 'success') {
-                    mostrarMensagem(data.message + " <a href='auth.html'>Clique aqui para fazer login</a>", 'success');
-                    document.getElementById('etapa-2').style.display = 'none';
-                } else {
-                    mostrarMensagem(data.message, 'error');
-                }
-            }).catch(() => mostrarMensagem("Erro ao alterar senha.", "error"));
-        }
-    </script>
+    <script src="../assets/js/esqueceu_senha.js"></script>
 </body>
 </html>

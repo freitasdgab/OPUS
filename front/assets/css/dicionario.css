@@ -1,0 +1,172 @@
+/* dicionario.css - estilos da pagina de Dicionario */
+        /* =========================================
+           ESTILO DUOLINGO DARK MODE (Igual ao Perfil)
+           ========================================= */
+        :root {
+            --bg-dark: #131f24;
+            --border-color: #37464f;
+            --text-main: #ffffff;
+            --text-muted: #778590;
+            --duo-blue: #1cb0f6;
+            --duo-blue-hover: #1899d6;
+            --card-bg: #131f24; /* Fundo dos cards igual ao body */
+            --tooltip-bg: #2a3942; /* Fundo escuro para a caixinha de dica */
+        }
+
+        body, html {
+            background-color: var(--bg-dark);
+            font-family: 'Nunito', sans-serif;
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .main-content {
+            padding: 24px 40px;
+            min-height: 100vh;
+        }
+
+        .codex-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Cabeçalho do Códex */
+        .codex-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            background-color: var(--card-bg);
+        }
+
+        .codex-header h1 {
+            color: var(--text-main);
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 0 0 10px 0;
+        }
+
+        .codex-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        /* Cartões de Categoria */
+        .categoria-section {
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            background-color: var(--card-bg);
+        }
+
+        .categoria-section h2 {
+            color: var(--text-main);
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-top: 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        /* Layout dos Comandos */
+        .comandos-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        /* Botões de Comando */
+        .comando-btn {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 2px solid var(--border-color);
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            font-family: 'Courier New', Courier, monospace;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .comando-btn:hover {
+            border-color: var(--duo-blue);
+            background-color: rgba(28, 176, 246, 0.1); /* Fundo azul bem suave */
+            color: var(--duo-blue);
+            transform: translateY(-2px);
+        }
+
+        /* =========================================
+           TOOLTIP / BALÃO DE EXPLICAÇÃO
+           ========================================= */
+        .comando-btn::after {
+            content: attr(data-descricao);
+            position: absolute;
+            bottom: 130%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--tooltip-bg);
+            color: #ffffff;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            width: max-content;
+            max-width: 250px;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.4;
+            
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            pointer-events: none;
+        }
+
+        .comando-btn::before {
+            content: "";
+            position: absolute;
+            bottom: 115%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 8px;
+            border-style: solid;
+            border-color: var(--tooltip-bg) transparent transparent transparent;
+            
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            z-index: 101;
+            pointer-events: none;
+        }
+
+        /* Para a setinha não ficar com a borda cortada, adicionamos um contorno */
+        .comando-btn:hover::after,
+        .comando-btn:hover::before {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .main-content { padding: 20px; }
+            .codex-header h1 { font-size: 1.6rem; }
+            .comando-btn { width: 100%; text-align: center; }
+            .comando-btn::after { max-width: 200px; }
+        }

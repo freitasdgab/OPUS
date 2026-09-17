@@ -1,0 +1,69 @@
+/* topbar.css - estilos da barra superior (incluida via back/topbar.php) */
+/* BARRA SUPERIOR - ESTILO FLAT DUOLINGO */
+.top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 30px;
+    background: transparent;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.topbar-stats {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.topbar-stat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 800;
+    font-size: 1.15rem;
+    text-decoration: none;
+    user-select: none;
+    transition: transform 0.1s ease;
+}
+
+.topbar-stat:hover {
+    transform: scale(1.05);
+}
+
+.topbar-stat i {
+    font-size: 1.4rem;
+}
+
+/* CORES SÓLIDAS DA INTERFACE */
+.stat-liga { color: #1cb0f6; } /* Azul */
+.stat-fogo { color: #ff9600; } /* Laranja */
+.stat-xp   { color: #ffc800; } /* Amarelo */
+.stat-vida { color: #ff4b4b; } /* Vermelho */
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 800;
+    font-size: 1rem;
+    color: #fff;
+}
+
+.user-info .avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 768px) {
+    .top-bar {
+        flex-direction: column-reverse;
+        gap: 15px;
+    }
+    .topbar-stats {
+        gap: 18px;
+    }
+}
