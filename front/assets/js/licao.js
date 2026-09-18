@@ -348,3 +348,18 @@
 
     // Inicializar progresso
     updateProgress(0);
+
+// ====================================
+// AVISO DE SAÍDA (sair no meio das perguntas)
+// ====================================
+function abrirAvisoSaida() {
+    document.getElementById('exitWarningModal').classList.add('active');
+}
+
+function fecharAvisoSaida() {
+    document.getElementById('exitWarningModal').classList.remove('active');
+}
+
+function confirmarSaida() {
+    window.location.href = 'dashboard.php';
+}

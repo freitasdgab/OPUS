@@ -745,3 +745,80 @@
                 padding: 10px 15px;
             }
         }
+
+/* ==========================================
+   AVISO DE SAÍDA (sair no meio das perguntas)
+   ========================================== */
+.exit-warning-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: rgba(0, 0, 0, 0.7);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.exit-warning-overlay.active { display: flex; }
+
+.exit-warning-card {
+    background: #161a24;
+    border: 1px solid rgba(255, 75, 75, 0.4);
+    border-radius: 20px;
+    padding: 32px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.25s ease-out;
+}
+
+.exit-warning-icon {
+    font-size: 40px;
+    color: #ff4b4b;
+    margin-bottom: 14px;
+}
+
+.exit-warning-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.exit-warning-text {
+    color: #a0a0b0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 24px;
+}
+
+.exit-warning-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn-exit-warning {
+    padding: 13px;
+    border-radius: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: filter 0.2s, transform 0.1s;
+}
+.btn-exit-warning:active { transform: translateY(1px); }
+
+.btn-exit-cancel {
+    background: #2a2d38;
+    color: #fff;
+}
+.btn-exit-cancel:hover { filter: brightness(1.15); }
+
+.btn-exit-confirm {
+    background: transparent;
+    color: #ff4b4b;
+}
+.btn-exit-confirm:hover { color: #ff7a7a; }

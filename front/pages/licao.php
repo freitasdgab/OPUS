@@ -73,7 +73,7 @@ require_once '../../back/licao_logic.php';
     <div class="phase-container" id="quizPhase" style="display: none;">
         <!-- BARRA DE PROGRESSO -->
         <div class="quiz-progress-bar">
-            <a href="dashboard.php" class="btn-close-quiz"><i class="fa-solid fa-xmark"></i></a>
+            <a href="dashboard.php" class="btn-close-quiz" onclick="event.preventDefault(); abrirAvisoSaida();"><i class="fa-solid fa-xmark"></i></a>
             <div class="progress-track">
                 <div class="progress-fill" id="progressFill" style="background: linear-gradient(90deg, <?php echo htmlspecialchars($cor_capitulo); ?>, <?php echo htmlspecialchars($cor_capitulo); ?>);"></div>
             </div>
@@ -149,6 +149,19 @@ require_once '../../back/licao_logic.php';
 
     <!-- CONFETTI -->
     <div class="confetti-container" id="confettiContainer"></div>
+
+    <!-- AVISO DE SAÍDA (mostrado ao tentar sair no meio das perguntas) -->
+    <div class="exit-warning-overlay" id="exitWarningModal">
+        <div class="exit-warning-card">
+            <i class="fa-solid fa-triangle-exclamation exit-warning-icon"></i>
+            <h3 class="exit-warning-title">Sair da lição agora?</h3>
+            <p class="exit-warning-text">Se você sair no meio das perguntas, seu progresso nesta lição não será salvo e você poderá perder XP.</p>
+            <div class="exit-warning-actions">
+                <button type="button" class="btn-exit-warning btn-exit-cancel" onclick="fecharAvisoSaida()">Continuar respondendo</button>
+                <button type="button" class="btn-exit-warning btn-exit-confirm" onclick="confirmarSaida()">Sair mesmo assim</button>
+            </div>
+        </div>
+    </div>
 
     <script src="../assets/js/script.js"></script>
     <script src="../assets/js/licao.js"></script>
