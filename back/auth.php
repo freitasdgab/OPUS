@@ -16,7 +16,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = strtolower($email);
 
         require_once 'jogador_status.php';
-        opus_ensure_player_columns($conn);
 
         $stmt = $conn->prepare("SELECT id, nome, senha, nivel_acesso FROM usuarios WHERE LOWER(email) = ?");
         $stmt->bind_param("s", $email);
@@ -83,7 +82,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Garante que as colunas de jogador existam
         require_once 'jogador_status.php';
-        opus_ensure_player_columns($conn);
 
         // Insere o usuário com 3 vidas e status zerado no banco
         $stmt_insert = $conn->prepare("INSERT INTO usuarios (nome, email, senha, xp, trofeus, dificuldade, vidas, vidas_proxima_em, dias_fogo) VALUES (?, ?, ?, 0, 0, 'Iniciante', 3, NULL, 0)");

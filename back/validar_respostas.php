@@ -1,9 +1,6 @@
 <?php
 session_start();
 require_once 'conexao.php';
-require_once 'jogador_status.php';
-require_once 'ligas_logic.php';
-require_once 'missoes_logic.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../front/pages/auth.html");
@@ -22,6 +19,10 @@ if ($capitulo == 0 || $licao == 0) {
 
 // ============================================================
 // 1. CORRIGIR RESPOSTAS
+// Comparar a alternativa escolhida com a correta é uma checagem
+// simples por pergunta — fica no PHP. Tudo o que acontece DEPOIS de
+// acertar tudo (avançar progresso, XP, troféu, liga, missão, streak,
+// conquistas) mora em sp_corrigir_licao (back/sql/opus_procedures.sql).
 // ============================================================
 $acertos         = 0;
 $total_perguntas = count($respostas_usuario);
@@ -44,63 +45,23 @@ if ($total_perguntas > 0) {
 // ============================================================
 if ($acertos == $total_perguntas && $total_perguntas > 0) {
 
-    // Busca progresso atual
-    $stmt_prog = $conn->prepare("SELECT licoes_concluidas, status FROM progresso_usuario WHERE usuario_id = ? AND unidade_numero = ?");
-    $stmt_prog->bind_param("ii", $user_id, $capitulo);
-    $stmt_prog->execute();
-    $progresso = $stmt_prog->get_result()->fetch_assoc();
+    $stmt = $conn->prepare("CALL sp_corrigir_licao(?, ?, ?, ?)");
+    $stmt->bind_param("iiii", $user_id, $capitulo, $licao, $acertos);
+    $stmt->execute();
+    $resultado = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+    $conn->next_result();
 
-    $msg_bonus          = "";
-    $capitulo_concluido = false;
+    $msg_bonus = "";
+    if ($resultado && (int) $resultado['avancou'] === 1) {
+        if ((int) $resultado['capitulo_concluido'] === 1) {
+            $msg_bonus = " 🎉 Capítulo $capitulo concluído! Próxima unidade desbloqueada!";
+        } elseif ((int) $resultado['bau_liberado'] === 1) {
+            $msg_bonus = " 🎁 Baú de Recompensas liberado na Dashboard!";
+        }
 
-    if ($progresso) {
-        $licoes_feitas = $progresso['licoes_concluidas'];
-
-        // Só avança se for a lição inédita atual
-        if ($licao == $licoes_feitas + 1) {
-            $novas_licoes = $licoes_feitas + 1;
-
-            if ($novas_licoes >= 5) {
-                // Capítulo completo
-                $stmt_up = $conn->prepare("UPDATE progresso_usuario SET licoes_concluidas = 5, status = 'completo' WHERE usuario_id = ? AND unidade_numero = ?");
-                $stmt_up->bind_param("ii", $user_id, $capitulo);
-                $stmt_up->execute();
-
-                // Destrava próximo capítulo
-                $proximo = $capitulo + 1;
-                $stmt_unlock = $conn->prepare("UPDATE progresso_usuario SET status = 'corrente' WHERE usuario_id = ? AND unidade_numero = ? AND status = 'trancado'");
-                $stmt_unlock->bind_param("ii", $user_id, $proximo);
-                $stmt_unlock->execute();
-
-                $msg_bonus          = " 🎉 Capítulo $capitulo concluído! Próxima unidade desbloqueada!";
-                $capitulo_concluido = true;
-            } else {
-                // Incrementa lição
-                $stmt_inc = $conn->prepare("UPDATE progresso_usuario SET licoes_concluidas = ? WHERE usuario_id = ? AND unidade_numero = ?");
-                $stmt_inc->bind_param("iii", $novas_licoes, $user_id, $capitulo);
-                $stmt_inc->execute();
-
-                if ($novas_licoes == 3) {
-                    $msg_bonus = " 🎁 Baú de Recompensas liberado na Dashboard!";
-                }
-            }
-
-     // +50 XP, +1 troféu
-$stmt_xp = $conn->prepare("UPDATE usuarios SET xp = xp + 50, trofeus = trofeus + 1 WHERE id = ?");
-$stmt_xp->bind_param("i", $user_id);
-$stmt_xp->execute();
-
-liga_registrar_xp($conn, $user_id, 50);
-missoes_registrar_progresso($conn, $user_id, 50, $acertos);   
-
-            // Atualiza streak
-            atualizar_streak($conn, $user_id);
-
-            // Verifica conquistas
-            $nova_conquista = verificar_conquistas($conn, $user_id, $capitulo, $capitulo_concluido);
-            if ($nova_conquista) {
-                $msg_bonus .= " 🏆 Nova conquista: $nova_conquista!";
-            }
+        if (!empty($resultado['nova_conquista'])) {
+            $msg_bonus .= " 🏆 Nova conquista: {$resultado['nova_conquista']}!";
         }
     }
 
@@ -115,73 +76,3 @@ missoes_registrar_progresso($conn, $user_id, 50, $acertos);
             window.history.back();
           </script>";
 }
-
-// ============================================================
-// FUNÇÃO: Atualiza streak diário
-// ============================================================
-function atualizar_streak(mysqli $conn, int $user_id): void {
-    opus_atualizar_fogo($conn, $user_id);
-}
-
-// ============================================================
-// FUNÇÃO: Verifica e desbloqueia conquistas automaticamente
-// ============================================================
-function verificar_conquistas(mysqli $conn, int $user_id, int $capitulo, bool $capitulo_concluido): string {
-    // Busca dados atuais do usuário
-    $stmt = $conn->prepare("SELECT xp, dias_fogo FROM usuarios WHERE id = ?");
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $u = $stmt->get_result()->fetch_assoc();
-
-    // Busca conquistas já desbloqueadas
-    $res_conq = $conn->query("SELECT trofeu_slug FROM user_trofeus WHERE user_id = $user_id");
-    $conquistados = [];
-    while ($r = $res_conq->fetch_assoc()) {
-        $conquistados[] = $r['trofeu_slug'];
-    }
-
-    // Conta capítulos completos
-    $res_caps = $conn->query("SELECT COUNT(*) as total FROM progresso_usuario WHERE usuario_id = $user_id AND status = 'completo'");
-    $caps_completos = (int)($res_caps->fetch_assoc()['total'] ?? 0);
-
-    // Mapa de conquistas: slug → condição
-    $regras = [
-        'primeiro_codigo'    => ($capitulo == 1 && $capitulo_concluido),
-        'mestre_escolhas'    => ($capitulo == 2 && $capitulo_concluido),
-        'loop_infinito'      => ($capitulo == 3 && $capitulo_concluido),
-        'arquitetura_dados'  => ($capitulo == 4 && $capitulo_concluido),
-        'poo_master'         => ($capitulo == 5 && $capitulo_concluido),
-        'lenda_opus'         => ($caps_completos >= 5),
-        'precisao_absoluta'  => ($u['xp'] >= 150),
-        'sequencia_7'        => (($u['dias_fogo'] ?? 0) >= 7),
-        'sequencia_30'       => (($u['dias_fogo'] ?? 0) >= 30),
-    ];
-
-    $nomes = [
-        'primeiro_codigo'   => 'Primeiro Código',
-        'mestre_escolhas'   => 'Mestre das Escolhas',
-        'loop_infinito'     => 'Loop Infinito',
-        'arquitetura_dados' => 'Arquitetura de Dados',
-        'poo_master'        => 'Mestre da POO',
-        'lenda_opus'        => 'Lenda do OPUS',
-        'precisao_absoluta' => 'Precisão Absoluta',
-        'sequencia_7'       => 'Semana Perfeita',
-        'sequencia_30'      => 'Mês Épico',
-    ];
-
-    $nova_nome = '';
-
-    foreach ($regras as $slug => $condicao) {
-        if ($condicao && !in_array($slug, $conquistados)) {
-            $stmt_ins = $conn->prepare("INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (?, ?)");
-            $stmt_ins->bind_param("is", $user_id, $slug);
-            $stmt_ins->execute();
-            if ($nova_nome === '') {
-                $nova_nome = $nomes[$slug] ?? $slug;
-            }
-        }
-    }
-
-    return $nova_nome;
-}
-?>

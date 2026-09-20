@@ -64,7 +64,6 @@ $nome      = htmlspecialchars(trim($payload['name'] ?? explode('@', $email)[0]))
 $foto      = isset($payload['picture']) ? $conn->real_escape_string($payload['picture']) : null;
 
 // ── 4. Garante que as colunas google_id / foto_google existem ─
-opus_ensure_player_columns($conn);
 $conn->query("ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS google_id VARCHAR(100) DEFAULT NULL");
 $conn->query("ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS foto_google VARCHAR(500) DEFAULT NULL");
 

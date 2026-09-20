@@ -1,41 +1,20 @@
 <?php
 /**
  * Vidas (3 corações) e sequência diária de fogo.
+ *
+ * A lógica de regeneração de vidas e de sequência (streak) agora mora no
+ * banco (sp_sincronizar_jogador, sp_perder_vida, sp_atualizar_fogo em
+ * back/sql/opus_procedures.sql). Este arquivo só chama as procedures e
+ * formata o texto de exibição ("Próxima vida em Xh Ymin").
  */
 
-function opus_ensure_player_columns(mysqli $conn): void {
-    static $done = false;
-    if ($done) {
-        return;
-    }
-
-    $colunas = [
-        'vidas'             => 'TINYINT NOT NULL DEFAULT 3',
-        'vidas_proxima_em'  => 'DATETIME NULL DEFAULT NULL',
-        'ultima_atividade'  => 'DATE NULL DEFAULT NULL',
-        'nivel_acesso'      => "ENUM('comum','admin') NOT NULL DEFAULT 'comum'",
-    ];
-
-    foreach ($colunas as $nome => $definicao) {
-        $res = $conn->query("SHOW COLUMNS FROM usuarios LIKE '" . $conn->real_escape_string($nome) . "'");
-        if ($res && $res->num_rows === 0) {
-            $conn->query("ALTER TABLE usuarios ADD COLUMN `$nome` $definicao");
-        }
-    }
-
-    // Garante que o administrador padrão (ID 1 ou email admin@gmail.com) tenha acesso de admin
-    $conn->query("UPDATE usuarios SET nivel_acesso = 'admin' WHERE (id = 1 OR LOWER(email) = 'admin@gmail.com') AND nivel_acesso = 'comum'");
-
-    $done = true;
-}
-
 function opus_sincronizar_jogador(mysqli $conn, int $user_id): array {
-    opus_ensure_player_columns($conn);
-
-    $stmt = $conn->prepare("SELECT xp, trofeus, dias_fogo, vidas, vidas_proxima_em, ultima_atividade, nome, foto_perfil, nivel_acesso FROM usuarios WHERE id = ?");
+    $stmt = $conn->prepare("CALL sp_sincronizar_jogador(?)");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $u = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+    $conn->next_result();
 
     if (!$u) {
         return [
@@ -62,69 +41,7 @@ function opus_sincronizar_jogador(mysqli $conn, int $user_id): array {
     }
 
     $vidas = (int) ($u['vidas'] ?? 3);
-    if ($vidas > 3) {
-        $vidas = 3;
-    }
-    if ($vidas < 0) {
-        $vidas = 0;
-    }
-
     $proxima = $u['vidas_proxima_em'] ?? null;
-    $agora = new DateTime();
-
-    if ($vidas < 3) {
-        if (!empty($proxima)) {
-            $quando = new DateTime($proxima);
-            $mudou = false;
-
-            while ($vidas < 3 && $quando <= $agora) {
-                $vidas++;
-                $mudou = true;
-                if ($vidas >= 3) {
-                    $quando = null;
-                    break;
-                }
-                $quando->modify('+5 hours');
-            }
-
-            if ($mudou) {
-                if ($quando === null) {
-                    $up = $conn->prepare("UPDATE usuarios SET vidas = ?, vidas_proxima_em = NULL WHERE id = ?");
-                    $up->bind_param("ii", $vidas, $user_id);
-                } else {
-                    $proxima_str = $quando->format('Y-m-d H:i:s');
-                    $up = $conn->prepare("UPDATE usuarios SET vidas = ?, vidas_proxima_em = ? WHERE id = ?");
-                    $up->bind_param("isi", $vidas, $proxima_str, $user_id);
-                }
-                $up->execute();
-                $proxima = $quando ? $quando->format('Y-m-d H:i:s') : null;
-            }
-        } else {
-            // Se o jogador está com menos de 3 vidas mas não possui timer agendado no banco, inicia timer de 5h
-            $quando = (new DateTime())->modify('+5 hours');
-            $proxima_str = $quando->format('Y-m-d H:i:s');
-            $up = $conn->prepare("UPDATE usuarios SET vidas_proxima_em = ? WHERE id = ?");
-            $up->bind_param("si", $proxima_str, $user_id);
-            $up->execute();
-            $proxima = $proxima_str;
-        }
-    }
-
-    if ($vidas >= 3) {
-        $proxima = null;
-    }
-
-    $hoje = date('Y-m-d');
-    $ontem = date('Y-m-d', strtotime('-1 day'));
-    $ultima = $u['ultima_atividade'] ?? null;
-    $fogo = (int) ($u['dias_fogo'] ?? 0);
-
-    if (!empty($ultima) && $ultima !== $hoje && $ultima !== $ontem && $fogo > 0) {
-        $fogo = 0;
-        $up_fogo = $conn->prepare("UPDATE usuarios SET dias_fogo = 0 WHERE id = ?");
-        $up_fogo->bind_param("i", $user_id);
-        $up_fogo->execute();
-    }
 
     $proxima_texto = '';
     if ($vidas < 3 && !empty($proxima)) {
@@ -142,7 +59,7 @@ function opus_sincronizar_jogador(mysqli $conn, int $user_id): array {
     return [
         'xp' => (int) ($u['xp'] ?? 0),
         'trofeus' => (int) ($u['trofeus'] ?? 0),
-        'dias_fogo' => $fogo,
+        'dias_fogo' => (int) ($u['dias_fogo'] ?? 0),
         'vidas' => $vidas,
         'vidas_proxima_em' => $proxima,
         'proxima_vida_texto' => $proxima_texto,
@@ -158,62 +75,23 @@ function opus_perder_vida(mysqli $conn, int $user_id): int {
         return 0;
     }
 
-    $status = opus_sincronizar_jogador($conn, $user_id);
-    $vidas = (int) $status['vidas'];
+    $stmt = $conn->prepare("CALL sp_perder_vida(?)");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $row = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+    $conn->next_result();
 
-    if ($vidas <= 0) {
-        return 0;
-    }
-
-    $vidas--;
-    $proxima = $status['vidas_proxima_em'];
-
-    if ($vidas < 3 && empty($proxima)) {
-        $proxima = (new DateTime('+5 hours'))->format('Y-m-d H:i:s');
-        $up = $conn->prepare("UPDATE usuarios SET vidas = ?, vidas_proxima_em = ? WHERE id = ?");
-        $up->bind_param("isi", $vidas, $proxima, $user_id);
-    } else {
-        $up = $conn->prepare("UPDATE usuarios SET vidas = ? WHERE id = ?");
-        $up->bind_param("ii", $vidas, $user_id);
-    }
-    $up->execute();
-
-    return $vidas;
+    return (int) ($row['vidas'] ?? 0);
 }
 
 function opus_atualizar_fogo(mysqli $conn, int $user_id): int {
-    opus_ensure_player_columns($conn);
-
-    $stmt = $conn->prepare("SELECT dias_fogo, ultima_atividade FROM usuarios WHERE id = ?");
+    $stmt = $conn->prepare("CALL sp_atualizar_fogo(?)");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
-    $u = $stmt->get_result()->fetch_assoc();
+    $row = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+    $conn->next_result();
 
-    $hoje = date('Y-m-d');
-    $ontem = date('Y-m-d', strtotime('-1 day'));
-    $ultima = $u['ultima_atividade'] ?? null;
-    $seq = (int) ($u['dias_fogo'] ?? 0);
-
-    if ($ultima === $hoje) {
-        return $seq;
-    }
-
-    if ($ultima === $ontem) {
-        $seq += 1;
-    } else {
-        $seq = 1;
-    }
-
-    $up = $conn->prepare("UPDATE usuarios SET dias_fogo = ?, ultima_atividade = ? WHERE id = ?");
-    $up->bind_param("isi", $seq, $hoje, $user_id);
-    $up->execute();
-
-    if ($seq >= 3) {
-        $ins = $conn->prepare("INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (?, 'fogo_3')");
-        $ins->bind_param("i", $user_id);
-        $ins->execute();
-        $conn->query("UPDATE usuarios SET trofeus = (SELECT COUNT(*) FROM user_trofeus WHERE user_id = $user_id) WHERE id = $user_id");
-    }
-
-    return $seq;
+    return (int) ($row['dias_fogo'] ?? 0);
 }

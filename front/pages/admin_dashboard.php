@@ -13,7 +13,6 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $user_id = (int) $_SESSION['user_id'];
-opus_ensure_player_columns($conn);
 
 // Valida permissão de administrador diretamente no banco de dados
 $stmt_admin = $conn->prepare("SELECT nome, email, nivel_acesso FROM usuarios WHERE id = ?");

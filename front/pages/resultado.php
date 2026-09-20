@@ -3,8 +3,6 @@ session_start();
 require_once '../../back/conexao.php';
 require_once '../../back/jogador_status.php';
 require_once '../../back/mascotes_capitulos.php';
-require_once '../../back/ligas_logic.php';
-require_once '../../back/missoes_logic.php';
 
 if (!isset($_SESSION['user_id']) || !isset($_POST['acertos'])) {
     header("Location: dashboard.php");
@@ -53,15 +51,14 @@ if ($acertos == 3) {
 }
 
 if (!$ja_processado) {
-    // 2. Atualizar o XP do Usuário
-    $stmt_xp = $conn->prepare("UPDATE usuarios SET xp = xp + ? WHERE id = ?");
-    $stmt_xp->bind_param("ii", $xp_ganho, $user_id);
-    $stmt_xp->execute();
-
-    liga_registrar_xp($conn, $user_id, $xp_ganho);
-    missoes_registrar_progresso($conn, $user_id, $xp_ganho, $acertos);
-
-    opus_atualizar_fogo($conn, $user_id);
+    // Atualiza XP, liga, missão, sequência de fogo, troféus e avanço de
+    // progresso — tudo isso mora em sp_processar_resultado_licao
+    // (back/sql/opus_procedures.sql).
+    $stmt_res = $conn->prepare("CALL sp_processar_resultado_licao(?, ?, ?, ?, ?)");
+    $stmt_res->bind_param("iiiii", $user_id, $cap_atual, $licao_atual, $acertos, $xp_ganho);
+    $stmt_res->execute();
+    $stmt_res->close();
+    $conn->next_result();
 
     if ($acertos === 0) {
         $vidas_restantes = opus_perder_vida($conn, $user_id);
@@ -74,51 +71,6 @@ if (!$ja_processado) {
 } else {
     $status_atual = opus_sincronizar_jogador($conn, $user_id);
     $vidas_restantes = (int) $status_atual['vidas'];
-}
-
-if (!$ja_processado) {
-    if ($acertos > 0) {
-        $conn->query("INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES ($user_id, 'primeiro_passo')");
-    }
-
-    if ($acertos == 3) {
-        $conn->query("INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES ($user_id, 'perfeicao')");
-    }
-
-    // Troféu do capítulo ao completar a 5ª lição
-    if ($licao_atual == 5 && $acertos > 0) {
-        if ($cap_atual == 1) {
-            $conn->query("INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES ($user_id, 'capitulo_1')");
-        } elseif ($cap_atual == 2) {
-            $conn->query("INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES ($user_id, 'capitulo_2')");
-        } elseif ($cap_atual == 3) {
-            $conn->query("INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES ($user_id, 'capitulo_3')");
-        } elseif ($cap_atual == 4) {
-            $conn->query("INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES ($user_id, 'capitulo_4')");
-        } elseif ($cap_atual == 5) {
-            $conn->query("INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES ($user_id, 'capitulo_5')");
-        }
-    }
-
-    $conn->query("UPDATE usuarios SET trofeus = (SELECT COUNT(*) FROM user_trofeus WHERE user_id = $user_id) WHERE id = $user_id");
-
-    if ($acertos > 0) {
-        $res_prog = $conn->query("SELECT * FROM progresso_usuario WHERE usuario_id = $user_id AND unidade_numero = $cap_atual");
-        $progresso = $res_prog->fetch_assoc();
-
-        if ($progresso && $progresso['status'] == 'corrente' && $progresso['licoes_concluidas'] == ($licao_atual - 1)) {
-            if ($licao_atual == 5) {
-                $conn->query("UPDATE progresso_usuario SET status = 'completo', licoes_concluidas = 5 WHERE usuario_id = $user_id AND unidade_numero = $cap_atual");
-
-                if ($cap_atual < 5) {
-                    $prox_cap = $cap_atual + 1;
-                    $conn->query("UPDATE progresso_usuario SET status = 'corrente' WHERE usuario_id = $user_id AND unidade_numero = $prox_cap AND status = 'trancado'");
-                }
-            } else {
-                $conn->query("UPDATE progresso_usuario SET licoes_concluidas = $licao_atual WHERE usuario_id = $user_id AND unidade_numero = $cap_atual");
-            }
-        }
-    }
 }
 
 // 4. Descobre qual é a próxima lição para o Botão "Continuar"
