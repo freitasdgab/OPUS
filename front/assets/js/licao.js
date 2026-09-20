@@ -294,25 +294,25 @@
         btn.disabled = true;
     }
 
-    // Confete animado
+    // Confete animado (cobre a tela inteira)
     function launchConfetti() {
         const container = document.getElementById('confettiContainer');
         const colors = ['#58cc02', '#4baf00', '#ffd900', '#ff9600', '#4b8df8', '#ce82ff'];
-        
-        for (let i = 0; i < 30; i++) {
+
+        for (let i = 0; i < 80; i++) {
             const piece = document.createElement('div');
             piece.className = 'confetti-piece';
-            piece.style.left = (Math.random() * 50 + 25) + '%';
+            piece.style.left = (Math.random() * 100) + '%';
             piece.style.top = '-10px';
             piece.style.width = (Math.random() * 8 + 5) + 'px';
             piece.style.height = (Math.random() * 8 + 5) + 'px';
             piece.style.background = colors[Math.floor(Math.random() * colors.length)];
             piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
-            piece.style.animation = `confettiFall ${Math.random() * 2 + 1.5}s ease-out ${Math.random() * 0.3}s forwards`;
+            piece.style.animation = `confettiFall ${Math.random() * 2 + 1.5}s ease-out ${Math.random() * 0.5}s forwards`;
             container.appendChild(piece);
 
             // Limpar após animação
-            setTimeout(() => piece.remove(), 3000);
+            setTimeout(() => piece.remove(), 3500);
         }
     }
 

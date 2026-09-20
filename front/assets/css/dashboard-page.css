@@ -268,7 +268,7 @@
 
         /* BAÚ DE RECOMPENSAS NO MEIO DA TRILHA */
         .reward-chest-container {
-            margin: 15px 0 45px 0; display: flex; flex-direction: column; align-items: center;
+            margin: 35px 0 95px 0; display: flex; flex-direction: column; align-items: center;
             position: relative; z-index: 2; animation: floatNode 4s ease-in-out infinite;
         }
         .chest-node {
@@ -353,46 +353,47 @@
         .modal-body { padding: 30px; color: #d0d0d5; font-size: 1.1rem; line-height: 1.6; }
         .code-box { background: #111115; border-left: 4px solid #1cb0f6; padding: 15px; border-radius: 8px; font-family: monospace; margin-top: 15px; color: #a5d6a7; }
 
-        /* MODAL DO BAÚ DE RECOMPENSAS */
+        /* MODAL DO BAÚ DE RECOMPENSAS — estilo Duolingo: flat, bold, sem glow/gradiente */
         .modal-bau-box {
-            background: #181824; width: 90%; max-width: 480px; border-radius: 24px;
-            overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.85);
-            border: 2px solid #3a3a4c; text-align: center; padding: 35px 28px;
-            position: relative; transform: scale(0.85); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: #1e1e24; width: 90%; max-width: 420px; border-radius: 24px;
+            overflow: hidden; box-shadow: 0 8px 0 #0f0f14, 0 15px 35px rgba(0,0,0,0.5);
+            border: 2px solid #2e2e3a; text-align: center; padding: 32px 26px;
+            position: relative; transform: scale(0.85); transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .modal-overlay.active .modal-bau-box { transform: scale(1); }
         .modal-bau-icon-wrapper {
-            width: 110px; height: 110px; border-radius: 50%;
-            background: radial-gradient(circle, rgba(255, 215, 0, 0.25) 0%, rgba(255, 150, 0, 0.05) 70%);
-            border: 3px solid #ffd700; display: flex; justify-content: center; align-items: center;
-            font-size: 50px; color: #ffd700; margin: 0 auto 20px auto;
-            box-shadow: 0 0 35px rgba(255, 215, 0, 0.45);
-            animation: pulse 2s infinite;
+            width: 96px; height: 96px; border-radius: 50%;
+            background: #ffc800; border: none; box-shadow: 0 6px 0 #cc9b00;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 44px; color: #7a5900; margin: 0 auto 22px auto;
+            animation: chestPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        .modal-bau-title { font-family: 'Orbitron', sans-serif; font-size: 1.6rem; font-weight: 900; color: #fff; margin-bottom: 6px; }
-        .modal-bau-sub { font-size: 0.95rem; color: #a5a5ac; font-weight: 600; margin-bottom: 25px; }
+        @keyframes chestPop {
+            0% { transform: scale(0); }
+            60% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+        .modal-bau-title { font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 6px; }
+        .modal-bau-sub { font-size: 0.9rem; color: #8e95a1; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 22px; }
 
         .reward-cards-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 25px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 22px;
         }
         .reward-card {
-            background: #222230; border: 1px solid #38384a; border-radius: 16px;
+            background: #2a2a35; border: 2px solid #38384a; border-bottom-width: 4px; border-radius: 16px;
             padding: 16px 12px; display: flex; flex-direction: column; align-items: center; gap: 6px;
-            transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
-        .reward-card:hover { transform: translateY(-3px); border-color: #ffd700; }
-        .reward-card .rc-icon { font-size: 30px; margin-bottom: 2px; }
-        .reward-card .rc-val { font-size: 1.2rem; font-weight: 900; color: #fff; font-family: 'Orbitron', sans-serif; }
-        .reward-card .rc-lbl { font-size: 0.75rem; color: #8e95a1; font-weight: 700; text-transform: uppercase; }
+        .reward-card .rc-icon { font-size: 28px; margin-bottom: 2px; }
+        .reward-card .rc-val { font-family: 'Poppins', sans-serif; font-size: 1.15rem; font-weight: 800; color: #fff; }
+        .reward-card .rc-lbl { font-size: 0.7rem; color: #8e95a1; font-weight: 700; text-transform: uppercase; }
 
         .btn-claim-chest {
             background: #58cc02; border: none; border-bottom: 5px solid #45a300;
             color: #fff; width: 100%; padding: 14px 20px; border-radius: 16px;
-            font-size: 1.05rem; font-weight: 900; text-transform: uppercase;
-            letter-spacing: 0.8px; cursor: pointer; transition: 0.1s;
-            box-shadow: 0 4px 15px rgba(88, 204, 2, 0.4);
+            font-family: 'Poppins', sans-serif; font-size: 1rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.3px; cursor: pointer; transition: 0.1s;
         }
-        .btn-claim-chest:hover { filter: brightness(1.1); transform: translateY(-2px); }
-        .btn-claim-chest:active { transform: translateY(4px); border-bottom: 2px solid #45a300; }
+        .btn-claim-chest:hover { filter: brightness(1.06); }
+        .btn-claim-chest:active { transform: translateY(4px); border-bottom-width: 1px; }
         .btn-claim-chest:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         .code-box { background: #111115; border-left: 4px solid #1cb0f6; padding: 15px; border-radius: 8px; font-family: monospace; margin-top: 15px; color: #a5d6a7; }
