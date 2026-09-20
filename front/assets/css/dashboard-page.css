@@ -239,6 +239,8 @@
         .modulo-node {
             text-decoration: none; position: relative; z-index: 1; display: flex;
             justify-content: center; align-items: center; margin-bottom: 35px;
+        }
+        .modulo-node.current {
             animation: floatNode 3.5s ease-in-out infinite;
         }
 
