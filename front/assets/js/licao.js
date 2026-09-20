@@ -361,5 +361,10 @@ function fecharAvisoSaida() {
 }
 
 function confirmarSaida() {
-    window.location.href = 'dashboard.php';
+    // Aplica a penalidade de XP de verdade antes de sair (não é só aviso).
+    fetch('../../back/penalizar_saida.php', { method: 'POST' })
+        .catch(() => {})
+        .finally(() => {
+            window.location.href = 'dashboard.php';
+        });
 }

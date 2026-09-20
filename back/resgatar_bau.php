@@ -20,13 +20,10 @@ if ($unidade_numero < 1 || $unidade_numero > 5) {
 
 // Toda a lógica (checar resgate duplicado, checar requisito de progresso,
 // aplicar recompensa de vidas/XP, registrar liga/missão e gravar o
-// resgate) mora em sp_resgatar_bau (back/sql/opus_procedures.sql).
-$stmt = $conn->prepare("CALL sp_resgatar_bau(?, ?)");
-$stmt->bind_param("ii", $user_id, $unidade_numero);
-$stmt->execute();
-$resultado = $stmt->get_result()->fetch_assoc();
-$stmt->close();
-$conn->next_result();
+// resgate) mora em sp_resgatar_bau (back/sql/opus_procedures.sql). Usa
+// opus_call() porque essa procedure chama sp_sincronizar_jogador por
+// dentro, então o resultado final não é o primeiro result set.
+$resultado = opus_call($conn, "CALL sp_resgatar_bau(?, ?)", "ii", [$user_id, $unidade_numero]);
 
 if (!$resultado || $resultado['status'] === 'ja_resgatado') {
     echo json_encode([

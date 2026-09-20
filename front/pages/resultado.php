@@ -53,12 +53,19 @@ if ($acertos == 3) {
 if (!$ja_processado) {
     // Atualiza XP, liga, missão, sequência de fogo, troféus e avanço de
     // progresso — tudo isso mora em sp_processar_resultado_licao
-    // (back/sql/opus_procedures.sql).
-    $stmt_res = $conn->prepare("CALL sp_processar_resultado_licao(?, ?, ?, ?, ?)");
-    $stmt_res->bind_param("iiiii", $user_id, $cap_atual, $licao_atual, $acertos, $xp_ganho);
-    $stmt_res->execute();
-    $stmt_res->close();
-    $conn->next_result();
+    // (back/sql/opus_procedures.sql). Se for repetição de uma lição já
+    // concluída, a procedure reduz o XP pra 10 (como se tivesse zerado)
+    // e devolve o valor realmente aplicado. Usa opus_call() porque essa
+    // procedure chama sp_atualizar_fogo por dentro, então o resultado
+    // final não é o primeiro result set.
+    $res_proc = opus_call($conn, "CALL sp_processar_resultado_licao(?, ?, ?, ?, ?)", "iiiii", [$user_id, $cap_atual, $licao_atual, $acertos, $xp_ganho]);
+
+    if ($res_proc && isset($res_proc['xp_aplicado'])) {
+        $xp_ganho = (int) $res_proc['xp_aplicado'];
+    }
+    if ($res_proc && (int) ($res_proc['eh_repeticao'] ?? 0) === 1) {
+        $mensagem .= " (Lição já concluída antes — XP reduzido.)";
+    }
 
     if ($acertos === 0) {
         $vidas_restantes = opus_perder_vida($conn, $user_id);

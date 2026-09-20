@@ -155,7 +155,7 @@ require_once '../../back/licao_logic.php';
         <div class="exit-warning-card">
             <i class="fa-solid fa-triangle-exclamation exit-warning-icon"></i>
             <h3 class="exit-warning-title">Sair da lição agora?</h3>
-            <p class="exit-warning-text">Se você sair no meio das perguntas, seu progresso nesta lição não será salvo e você poderá perder XP.</p>
+            <p class="exit-warning-text">Se você sair no meio das perguntas, seu progresso nesta lição não será salvo e você vai perder 15 XP.</p>
             <div class="exit-warning-actions">
                 <button type="button" class="btn-exit-warning btn-exit-cancel" onclick="fecharAvisoSaida()">Continuar respondendo</button>
                 <button type="button" class="btn-exit-warning btn-exit-confirm" onclick="confirmarSaida()">Sair mesmo assim</button>

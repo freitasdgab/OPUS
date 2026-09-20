@@ -45,12 +45,10 @@ if ($total_perguntas > 0) {
 // ============================================================
 if ($acertos == $total_perguntas && $total_perguntas > 0) {
 
-    $stmt = $conn->prepare("CALL sp_corrigir_licao(?, ?, ?, ?)");
-    $stmt->bind_param("iiii", $user_id, $capitulo, $licao, $acertos);
-    $stmt->execute();
-    $resultado = $stmt->get_result()->fetch_assoc();
-    $stmt->close();
-    $conn->next_result();
+    // sp_corrigir_licao chama sp_atualizar_fogo por dentro (que também
+    // termina com um SELECT), então usa opus_call() pra garantir que
+    // pegamos o result set final, não o de uma chamada interna.
+    $resultado = opus_call($conn, "CALL sp_corrigir_licao(?, ?, ?, ?)", "iiii", [$user_id, $capitulo, $licao, $acertos]);
 
     $msg_bonus = "";
     if ($resultado && (int) $resultado['avancou'] === 1) {

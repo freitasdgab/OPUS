@@ -4,17 +4,13 @@
  *
  * A lógica de regeneração de vidas e de sequência (streak) agora mora no
  * banco (sp_sincronizar_jogador, sp_perder_vida, sp_atualizar_fogo em
- * back/sql/opus_procedures.sql). Este arquivo só chama as procedures e
- * formata o texto de exibição ("Próxima vida em Xh Ymin").
+ * back/sql/opus_procedures.sql). Este arquivo só chama as procedures
+ * (via opus_call, de back/conexao.php) e formata o texto de exibição
+ * ("Próxima vida em Xh Ymin").
  */
 
 function opus_sincronizar_jogador(mysqli $conn, int $user_id): array {
-    $stmt = $conn->prepare("CALL sp_sincronizar_jogador(?)");
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $u = $stmt->get_result()->fetch_assoc();
-    $stmt->close();
-    $conn->next_result();
+    $u = opus_call($conn, "CALL sp_sincronizar_jogador(?)", "i", [$user_id]);
 
     if (!$u) {
         return [
@@ -75,23 +71,11 @@ function opus_perder_vida(mysqli $conn, int $user_id): int {
         return 0;
     }
 
-    $stmt = $conn->prepare("CALL sp_perder_vida(?)");
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $row = $stmt->get_result()->fetch_assoc();
-    $stmt->close();
-    $conn->next_result();
-
+    $row = opus_call($conn, "CALL sp_perder_vida(?)", "i", [$user_id]);
     return (int) ($row['vidas'] ?? 0);
 }
 
 function opus_atualizar_fogo(mysqli $conn, int $user_id): int {
-    $stmt = $conn->prepare("CALL sp_atualizar_fogo(?)");
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $row = $stmt->get_result()->fetch_assoc();
-    $stmt->close();
-    $conn->next_result();
-
+    $row = opus_call($conn, "CALL sp_atualizar_fogo(?)", "i", [$user_id]);
     return (int) ($row['dias_fogo'] ?? 0);
 }
