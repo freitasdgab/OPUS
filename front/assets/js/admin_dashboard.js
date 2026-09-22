@@ -513,6 +513,14 @@
             document.getElementById('aluno-modal').classList.remove('active');
         }
 
+        function abrirModalLogoutAdmin() {
+            document.getElementById('logout-modal-admin').classList.add('active');
+        }
+
+        function fecharModalLogoutAdmin() {
+            document.getElementById('logout-modal-admin').classList.remove('active');
+        }
+
         function escapeHtml(text) {
             if (!text) return '';
             return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -543,5 +551,10 @@
             // Fechar modal ao clicar fora
             document.getElementById('aluno-modal').addEventListener('click', (e) => {
                 if (e.target.id === 'aluno-modal') fecharModalAluno();
+            });
+
+            // Fechar modal de logout ao clicar fora
+            document.getElementById('logout-modal-admin').addEventListener('click', (e) => {
+                if (e.target.id === 'logout-modal-admin') fecharModalLogoutAdmin();
             });
         });

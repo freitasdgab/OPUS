@@ -50,14 +50,6 @@
     color: #fff;
 }
 
-.user-info .avatar {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
 @media (max-width: 768px) {
     .top-bar {
         flex-direction: column-reverse;

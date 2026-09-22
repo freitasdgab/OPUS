@@ -31,7 +31,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['is_admin'] = ($nivel === 'admin');
                 $_SESSION['jornada_escolhida'] = 'Java'; 
 
-                header("Location: ../front/pages/dashboard.php");
+                if ($nivel === 'admin') {
+                    header("Location: ../front/pages/admin_dashboard.php");
+                } else {
+                    header("Location: ../front/pages/dashboard.php");
+                }
                 exit();
             }
         }

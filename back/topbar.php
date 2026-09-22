@@ -39,6 +39,11 @@ $titulo_vidas = $proxima_vida_texto !== '' ? $proxima_vida_texto : ($vidas_top .
 
 
 <header class="top-bar">
+    <!-- USUÁRIO -->
+    <div class="user-info">
+        <span><?php echo htmlspecialchars($nome_top); ?></span>
+    </div>
+
     <div class="topbar-stats">
         <!-- LIGA / DIVISÃO -->
         <a href="ligas.php" class="topbar-stat stat-liga" title="Sua Divisão / Liga Atual">
@@ -63,11 +68,5 @@ $titulo_vidas = $proxima_vida_texto !== '' ? $proxima_vida_texto : ($vidas_top .
             <i class="fa-solid fa-heart"></i>
             <span><?php echo $vidas_top; ?></span>
         </div>
-    </div>
-
-    <!-- USUÁRIO -->
-    <div class="user-info">
-        <span><?php echo htmlspecialchars($nome_top); ?></span>
-        <img src="<?php echo htmlspecialchars($avatar_top); ?>" alt="Avatar" class="avatar">
     </div>
 </header>

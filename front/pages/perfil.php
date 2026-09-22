@@ -188,6 +188,18 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
         </div>
     </div>
 
+    <!-- MODAL DE CONFIRMAÇÃO DE SAÍDA -->
+    <div class="modal-overlay" id="logoutModal">
+        <div class="modal-content" style="max-width: 380px; text-align: center;">
+            <div class="modal-title">Sair da Conta</div>
+            <p style="color: var(--text-muted); margin-bottom: 25px;">Tem certeza que deseja sair da sua conta?</p>
+            <div class="modal-actions">
+                <button type="button" class="btn-modal btn-cancel" onclick="closeLogoutModal()">Cancelar</button>
+                <a href="../../back/logout.php" class="btn-modal btn-danger" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">Sim, Sair</a>
+            </div>
+        </div>
+    </div>
+
     <script src="../assets/js/script.js"></script>
     <script>
         // Config gerada pelo PHP: unico trecho dinamico da pagina, o resto da

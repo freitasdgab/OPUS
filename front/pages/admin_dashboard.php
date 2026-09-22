@@ -85,9 +85,9 @@ $email_admin = htmlspecialchars($current_user['email'] ?? '');
                 <div class="admin-user-name"><?= $nome_admin ?></div>
                 <div class="admin-user-email"><?= $email_admin ?></div>
             </div>
-            <a href="../../back/logout.php" class="btn-logout" title="Encerrar Sessão">
+            <button type="button" class="btn-logout" title="Encerrar Sessão" onclick="abrirModalLogoutAdmin()">
                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Sair
-            </a>
+            </button>
         </div>
     </header>
 
@@ -287,6 +287,18 @@ $email_admin = htmlspecialchars($current_user['email'] ?? '');
             <button class="modal-close-btn" onclick="fecharModalAluno()"><i class="fa-solid fa-xmark"></i></button>
             <div id="aluno-modal-content">
                 <!-- Conteúdo preenchido dinamicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIRMAÇÃO DE SAÍDA -->
+    <div class="modal-bg" id="logout-modal-admin">
+        <div class="modal-box" style="max-width: 380px; text-align: center; padding: 40px 30px;">
+            <h2 style="margin-bottom: 12px;">Sair da Conta</h2>
+            <p style="color: #8e95a1; margin-bottom: 25px;">Tem certeza que deseja encerrar sua sessão de administrador?</p>
+            <div style="display: flex; gap: 15px;">
+                <button type="button" onclick="fecharModalLogoutAdmin()" style="flex:1; padding: 14px; border-radius: 12px; font-weight: 800; border: none; cursor: pointer; background: rgba(255,255,255,0.08); color: #fff;">Cancelar</button>
+                <a href="../../back/logout.php" style="flex:1; padding: 14px; border-radius: 12px; font-weight: 800; border: none; cursor: pointer; background: #ef4444; color: #fff; text-decoration: none; display: flex; align-items: center; justify-content: center;">Sim, Sair</a>
             </div>
         </div>
     </div>
