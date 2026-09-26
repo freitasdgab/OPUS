@@ -163,6 +163,8 @@ require_once '../../back/licao_logic.php';
         </div>
     </div>
 
+    <?php include '../../back/chatbot.php'; ?>
+
     <script src="../assets/js/script.js"></script>
     <script src="../assets/js/licao.js"></script>
 

@@ -22,3 +22,8 @@ $itens_menu = [
         <?php endforeach; ?>
     </nav>
 </aside>
+
+<?php
+// Inclui o assistente flutuante Opi IA em todas as páginas com a sidebar
+include __DIR__ . '/chatbot.php';
+?>
