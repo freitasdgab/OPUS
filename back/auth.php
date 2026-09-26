@@ -31,6 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['is_admin'] = ($nivel === 'admin');
                 $_SESSION['jornada_escolhida'] = 'Java'; 
 
+                setcookie('opus_cadastrado', '1', time() + 31536000, '/');
+
                 if ($nivel === 'admin') {
                     header("Location: ../front/pages/admin_dashboard.php");
                 } else {
@@ -99,6 +101,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['user_nivel_acesso'] = 'comum';
             $_SESSION['is_admin'] = false;
             $_SESSION['jornada_escolhida'] = 'Java';
+
+            setcookie('opus_cadastrado', '1', time() + 31536000, '/');
 
             // Cria o mapa de progresso inicial
             $conn->query("INSERT INTO progresso_usuario (usuario_id, unidade_numero, status, licoes_concluidas) VALUES 

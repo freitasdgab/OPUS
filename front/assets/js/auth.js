@@ -8,8 +8,8 @@ const inputConfirmar = document.getElementById('confirme_senha');
 const authForm = document.getElementById('authForm');
 const inputSenha = document.getElementById('senha');
 
-btnModoLogin.addEventListener('click', () => {
-    if (authAction.value === 'cadastro') {
+function setAuthMode(mode) {
+    if (mode === 'login') {
         authAction.value = 'login';
         groupNome.style.display = 'none';
         groupConfirmar.style.display = 'none';
@@ -30,9 +30,26 @@ btnModoLogin.addEventListener('click', () => {
         btnSubmit.textContent = 'CADASTRAR-SE';
         btnModoLogin.textContent = 'LOGAR';
     }
+}
+
+// Verifica parâmetros de URL para definir modo inicial (login ou cadastro)
+const urlParams = new URLSearchParams(window.location.search);
+const initialMode = urlParams.get('mode') || urlParams.get('action') || urlParams.get('modo');
+if (initialMode === 'login') {
+    setAuthMode('login');
+} else if (initialMode === 'cadastro') {
+    setAuthMode('cadastro');
+}
+
+btnModoLogin.addEventListener('click', () => {
+    if (authAction.value === 'cadastro') {
+        setAuthMode('login');
+    } else {
+        setAuthMode('cadastro');
+    }
 });
 
-// --- VALIDAÇÃO DE SENHA FORTE NO CADASTRO ---
+// --- VALIDAÇÃO DE SENHA FORTE NO CADASTRO E MARCAÇÃO DE CADASTRO ---
 authForm.addEventListener('submit', (e) => {
     if (authAction.value === 'cadastro') {
         const senha = inputSenha.value;
@@ -54,8 +71,13 @@ authForm.addEventListener('submit', (e) => {
         if (erros.length > 0) {
             e.preventDefault(); // Impede o envio do formulário
             alert("Sua senha precisa melhorar nos seguintes pontos:\n\n- " + erros.join("\n- "));
+            return;
         }
     }
+
+    // Registra no navegador que o usuário já foi cadastrado ou tentou logar
+    localStorage.setItem('opus_cadastrado', 'true');
+    document.cookie = "opus_cadastrado=1; path=/; max-age=31536000";
 });
 
 // --- CANVAS DE PARTÍCULAS DO FUNDO ---

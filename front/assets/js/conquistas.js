@@ -15,10 +15,16 @@
                     <div class="trophy-card ${isUnlocked ? 'unlocked' : 'locked'}">
                         <div class="status-badge">${statusIcon}</div>
                         
-                        <!-- Contêiner com a Imagem da Medalha -->
+                const imgSrc = t.imagem ? `../assets/img/${encodeURIComponent(t.imagem)}` : '../assets/img/medalha.png';
+                
+                container.innerHTML += `
+                    <div class="trophy-card ${isUnlocked ? 'unlocked' : 'locked'}">
+                        <div class="status-badge">${statusIcon}</div>
+                        
+                        <!-- Contêiner com a Imagem do Troféu -->
                         <div class="medal-container" style="--cor-tema: ${corCapitulo};">
                             <div class="medal-glow"></div>
-                            <img src="../assets/img/medalha.png" alt="Medalha" class="medal-img">
+                            <img src="${imgSrc}" alt="${t.nome}" class="medal-img">
                         </div>
 
                         <h3>${t.nome}</h3>

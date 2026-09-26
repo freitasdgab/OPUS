@@ -516,6 +516,23 @@ $nomes_unidades = [
         </div>
     </div>
 
+    <!-- Modal de Aviso Personalizado para Baú Coletado/Trancado -->
+    <div id="modalAvisoBau" class="modal-overlay">
+        <div class="modal-bau-box" style="max-width: 380px; padding: 30px 24px;">
+            <button class="close-btn-modal" onclick="fecharAvisoBau()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-bau-icon-wrapper" id="avisoBauIconBox" style="width: 80px; height: 80px; font-size: 36px; margin-bottom: 18px;">
+                <i class="fa-solid fa-lock" id="avisoBauIcone"></i>
+            </div>
+            <h2 class="modal-bau-title" id="avisoBauTitulo" style="font-size: 1.35rem;">Baú Trancado</h2>
+            <p style="color: #b0b0c2; font-size: 0.92rem; line-height: 1.5; margin: 12px 0 22px 0;" id="avisoBauTexto">
+                Complete mais lições para desbloquear este baú.
+            </p>
+            <button class="btn-claim-chest" onclick="fecharAvisoBau()" style="background: #1cb0f6; border-bottom-color: #148bc4; padding: 14px;">
+                ENTENDIDO
+            </button>
+        </div>
+    </div>
+
     <script src="../assets/js/script.js"></script> 
     
     <script src="../assets/js/dashboard.js"></script>

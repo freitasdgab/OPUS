@@ -23,12 +23,37 @@
             setTimeout(() => modal.style.display = 'none', 300);
         }
 
+        function fecharAvisoBau() {
+            const modal = document.getElementById('modalAvisoBau');
+            if (!modal) return;
+            modal.classList.remove('active');
+            setTimeout(() => modal.style.display = 'none', 250);
+        }
+
         function avisoBauColetado(cap) {
-            alert('Você já abriu e coletou a recompensa deste baú da Unidade ' + cap + '!');
+            const modal = document.getElementById('modalAvisoBau');
+            if (!modal) return;
+            document.getElementById('avisoBauIconBox').style.background = 'linear-gradient(135deg, #1cb0f6, #0088cc)';
+            document.getElementById('avisoBauIconBox').style.borderBottomColor = '#0070a8';
+            document.getElementById('avisoBauIcone').className = 'fa-solid fa-box-open';
+            document.getElementById('avisoBauIcone').style.color = '#fff';
+            document.getElementById('avisoBauTitulo').innerText = 'Baú Já Coletado!';
+            document.getElementById('avisoBauTexto').innerText = 'Você já resgatou as recompensas de XP e vida deste baú da Unidade ' + cap + '!';
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
         }
 
         function avisoBauTrancado(cap) {
-            alert('🔒 Complete pelo menos 3 lições da Unidade ' + cap + ' para desbloquear e abrir este baú de recompensa!');
+            const modal = document.getElementById('modalAvisoBau');
+            if (!modal) return;
+            document.getElementById('avisoBauIconBox').style.background = 'linear-gradient(135deg, #ff9600, #e67e00)';
+            document.getElementById('avisoBauIconBox').style.borderBottomColor = '#b36200';
+            document.getElementById('avisoBauIcone').className = 'fa-solid fa-lock';
+            document.getElementById('avisoBauIcone').style.color = '#fff';
+            document.getElementById('avisoBauTitulo').innerText = 'Baú Trancado!';
+            document.getElementById('avisoBauTexto').innerText = 'Complete pelo menos 3 lições da Unidade ' + cap + ' para desbloquear e abrir este baú de recompensa!';
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
         }
 
         function resgatarRecompensaBau() {

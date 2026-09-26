@@ -162,6 +162,8 @@
             .then(r => r.json())
             .then(data => {
                 if (data.ok) {
+                    localStorage.setItem('opus_cadastrado', 'true');
+                    document.cookie = "opus_cadastrado=1; path=/; max-age=31536000";
                     window.location.href = data.redirect_url;
                 } else {
                     alert('Erro ao entrar com Google: ' + (data.erro || 'Tente novamente.'));

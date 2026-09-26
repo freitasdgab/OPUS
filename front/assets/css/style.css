@@ -11,8 +11,9 @@ body, html {
     font-family: 'Poppins', sans-serif;
     background-color: #121212;
     color: #ffffff;
-    overflow: hidden;
+    overflow-x: hidden;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
@@ -27,6 +28,90 @@ body, html {
     pointer-events: none;
 }
 
+/* --- TOP BAR HEADER --- */
+.topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 75px;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 50px;
+    background: rgba(18, 18, 18, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+}
+
+.topbar-logo {
+    height: 38px;
+    width: auto;
+    object-fit: contain;
+}
+
+.topbar-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: 2px;
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.topbar-btn {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 10px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.topbar-btn.btn-login {
+    background: transparent;
+    color: #ffffff;
+    border: 2px solid #1a36ca;
+}
+
+.topbar-btn.btn-login:hover {
+    background: rgba(26, 54, 202, 0.2);
+    border-color: #264be3;
+    box-shadow: 0 0 15px rgba(26, 54, 202, 0.4);
+    transform: translateY(-2px);
+}
+
+.topbar-btn.btn-signup {
+    background: #1a36ca;
+    color: #ffffff;
+    border: 2px solid #1a36ca;
+    box-shadow: 0 4px 15px rgba(26, 54, 202, 0.4);
+}
+
+.topbar-btn.btn-signup:hover {
+    background: #264be3;
+    border-color: #264be3;
+    box-shadow: 0 6px 20px rgba(38, 75, 227, 0.6);
+    transform: translateY(-2px);
+}
+
 /* --- LAYOUT DA TELA --- */
 .wrapper {
     position: relative;
@@ -34,6 +119,7 @@ body, html {
     width: 100%;
     max-width: 1200px;
     padding: 20px;
+    margin-top: 75px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -131,7 +217,10 @@ body, html {
 
 /* Responsividade */
 @media (max-width: 900px) {
-    .wrapper { flex-direction: column; text-align: center; }
+    .topbar { padding: 0 20px; height: 65px; }
+    .topbar-title { font-size: 1.2rem; }
+    .topbar-btn { padding: 8px 16px; font-size: 0.85rem; }
+    .wrapper { flex-direction: column; text-align: center; margin-top: 65px; }
     .right-side { padding-left: 0; align-items: center; margin-top: 30px; }
     .title { font-size: 2.2rem; }
     .description { font-size: 1rem; max-width: 100%; }

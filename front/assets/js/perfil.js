@@ -37,44 +37,33 @@ colorOptions.forEach(opt => {
     });
 });
 
-// Consumo da API de Conquistas e Criação dos Cards
+// Consumo da API de Conquistas e Criação dos Cards no Perfil
 fetch('../../back/api_conquistas.php')
 .then(r => r.json())
 .then(data => {
     const container = document.getElementById('trophy-container');
+    if (!container) return;
 
-    // Garante que fique em 2 colunas, um do lado do outro
-    container.style.gridTemplateColumns = 'repeat(2, 1fr)';
+    container.innerHTML = '';
 
     if (data.lista) {
         data.lista.forEach(t => {
             const isUnlocked = data.conquistados.includes(t.slug);
+            const imgSrc = t.imagem ? `../assets/img/${encodeURI(t.imagem)}` : '../assets/img/LOGO.png';
+            const badgeIcon = isUnlocked ? '<i class="fa-solid fa-check"></i> Conquistado' : '<i class="fa-solid fa-lock"></i> Bloqueado';
 
-            const filterStyle = isUnlocked ? '' : 'filter: grayscale(100%); opacity: 0.5;';
-
-            let nomeT = (t.nome + " " + t.slug).toLowerCase();
-            let imgSrc = '../assets/img/LOGO.png';
-
-            if (nomeT.includes('primeiro')) imgSrc = '../assets/img/primeirospassos.png';
-            else if (nomeT.includes('fogo') || nomeT.includes('três') || nomeT.includes('3')) imgSrc = '../assets/img/alcancos3diasdefogo.png';
-            else if (nomeT.includes('arquiteto')) imgSrc = '../assets/img/arquitetojava.png';
-            else if (nomeT.includes('lógico') || nomeT.includes('caminho')) imgSrc = '../assets/img/caminhoslogicos-capitulo2.png';
-            else if (nomeT.includes('fundamento')) imgSrc = '../assets/img/fundamentos-capitulo1.png';
-            else if (nomeT.includes('repetição')) imgSrc = '../assets/img/mestredarepeticao.png';
-            else if (nomeT.includes('brilhante') || nomeT.includes('acerto')) imgSrc = '../assets/img/mentebrilhante-3de3acertos.png';
-            else if (nomeT.includes('array')) imgSrc = '../assets/img/senhor dos arrays.png';
-
-            // Imagem aumentada (75x75) e organização lado a lado dentro da grade de 2 colunas
             container.innerHTML += `
-                <div class="stat-card" style="padding: 18px; gap: 15px; display: flex; align-items: center;">
-                    <div class="stat-card-icon" style="width: 75px; height: 75px; flex-shrink: 0; display: flex; justify-content: center; align-items: center;">
-                        <img src="${imgSrc}" style="width: 100%; height: 100%; object-fit: contain; ${filterStyle}" alt="${t.nome}">
+                <div class="trophy-profile-card ${isUnlocked ? 'unlocked' : 'locked'}">
+                    <div class="trophy-badge-status">${badgeIcon}</div>
+                    <div class="trophy-img-box">
+                        <img src="${imgSrc}" class="trophy-img" alt="${t.nome}">
                     </div>
-                    <div class="stat-card-content" style="display: flex; flex-direction: column; gap: 4px;">
-                        <span class="stat-card-value" style="font-size: 1.1rem; line-height: 1.2;">${t.nome}</span>
-                        <span class="stat-card-label" style="font-size: 0.85rem; line-height: 1.3;">${t.desc}</span>
+                    <div class="trophy-details">
+                        <div class="trophy-title">${t.nome}</div>
+                        <div class="trophy-desc">${t.desc}</div>
                     </div>
                 </div>`;
         });
     }
-});
+})
+.catch(err => console.error('Erro ao carregar conquistas no perfil:', err));

@@ -27,37 +27,58 @@
             font-family: 'Orbitron'; font-size: 1.5rem; color: #a7b7e6; border: 1px solid var(--cor-tema);
         }
         
-        /* BANNER DE BAÚ DESBLOQUEADO */
+        /* BANNER DE BAÚ DESBLOQUEADO — DESIGN GAME EXCLUSIVO OPUS */
         .bau-unlocked-banner {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.18), rgba(255, 150, 0, 0.08));
-            border: 2px solid #ffd700;
-            border-radius: 16px;
-            padding: 16px 20px;
+            background: #232230;
+            border: 2px solid #ffc800;
+            border-bottom: 5px solid #cc9b00;
+            border-radius: 20px;
+            padding: 20px 22px;
             margin-bottom: 25px;
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 18px;
             text-align: left;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.25);
-            animation: pulse 2s infinite;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        .bau-unlocked-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 200, 0, 0.12) 0%, rgba(0,0,0,0) 70%);
+            pointer-events: none;
         }
         .bau-banner-icon {
-            font-size: 34px;
-            color: #ffd700;
-            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
+            width: 58px;
+            height: 58px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #ffc800 0%, #ff9600 100%);
+            border-bottom: 4px solid #cc7a00;
+            color: #4a3400;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             flex-shrink: 0;
+            box-shadow: 0 6px 15px rgba(255, 150, 0, 0.35);
         }
         .bau-banner-text h3 {
             margin: 0 0 4px 0;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.05rem;
-            color: #ffd700;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #ffffff;
         }
         .bau-banner-text p {
             margin: 0;
             font-size: 0.88rem;
-            color: #d0d0d8;
-            line-height: 1.4;
+            color: #b0b0c2;
+            line-height: 1.45;
         }
 
         .buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
