@@ -49,6 +49,20 @@ if (!isset($_SESSION['user_id'])) {
                 </div>
 
                 <div id="liga-list" class="liga-list"></div>
+
+                <!-- SEÇÃO: PERFIS RECOMENDADOS DA LIGA -->
+                <div class="recomendados-section">
+                    <div class="recomendados-header">
+                        <div class="recomendados-title">
+                            <i class="fa-solid fa-user-group" style="color:#1cb0f6;"></i>
+                            <span>Perfis Recomendados da Liga</span>
+                        </div>
+                        <span class="recomendados-sub">Rivais na sua divisão — siga e desafie!</span>
+                    </div>
+                    <div id="perfis-recomendados" class="recomendados-grid">
+                        <!-- cards de recomendação carregados via JS -->
+                    </div>
+                </div>
             </div>
         </main>
     </div>

@@ -80,8 +80,8 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                         </div>
                         
                         <div class="social-links">
-                            <a href="#"><span>0</span> Seguindo</a>
-                            <a href="#"><span>0</span> Seguidores</a>
+                            <a href="amigos.php"><span id="lblSeguindoCount">0</span> Seguindo</a>
+                            <a href="amigos.php"><span id="lblSeguidoresCount">0</span> Seguidores</a>
                         </div>
                     </div>
 
@@ -129,13 +129,13 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                     <div class="side-card">
                         <div class="side-card-title">Interagir</div>
                         <ul class="side-card-list">
-                            <li onclick="alert('Recurso em desenvolvimento!')">
+                            <li onclick="window.location.href='amigos.php'">
                                 <div style="display: flex; align-items: center; gap: 15px;">
                                     <i class="fa-solid fa-magnifying-glass" style="font-size: 1.2rem; color: #1cb0f6;"></i> Encontrar amigos
                                 </div>
                                 <i class="fa-solid fa-chevron-right"></i>
                             </li>
-                            <li onclick="alert('Convite copiado!')">
+                            <li onclick="copiarConvitePerfil(<?php echo $user_id; ?>)">
                                 <div style="display: flex; align-items: center; gap: 15px;">
                                     <i class="fa-solid fa-share-nodes" style="font-size: 1.2rem; color: #ffc800;"></i> Convidar amigos
                                 </div>

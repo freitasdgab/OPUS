@@ -8,6 +8,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL));
     $senha = trim($_POST['senha'] ?? '');
 
+    $codigo_grupo = trim($_POST['grupo'] ?? $_GET['grupo'] ?? '');
+    $convite_id = (int) ($_POST['convite'] ?? $_GET['convite'] ?? 0);
+
     // ----------------------------------------------------
     // MODO: LOGIN
     // ----------------------------------------------------
@@ -25,13 +28,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($user = $result->fetch_assoc()) {
             if ($senha === $user['senha']) {
                 $nivel = $user['nivel_acesso'] ?? 'comum';
-                $_SESSION['user_id'] = $user['id'];
+                $uid = (int) $user['id'];
+                $_SESSION['user_id'] = $uid;
                 $_SESSION['user_nome'] = $user['nome'];
                 $_SESSION['user_nivel_acesso'] = $nivel;
                 $_SESSION['is_admin'] = ($nivel === 'admin');
                 $_SESSION['jornada_escolhida'] = 'Java'; 
 
                 setcookie('opus_cadastrado', '1', time() + 31536000, '/');
+
+                // Processa entrada em grupo ou seguir amigo via link de convite
+                if (!empty($codigo_grupo)) {
+                    $cod_esc = $conn->real_escape_string($codigo_grupo);
+                    $res_g = $conn->query("SELECT id FROM grupos_batalha WHERE codigo_convite = '$cod_esc'");
+                    if ($res_g && $g = $res_g->fetch_assoc()) {
+                        $gid = (int) $g['id'];
+                        $conn->query("INSERT IGNORE INTO grupo_membros (grupo_id, usuario_id) VALUES ($gid, $uid)");
+                    }
+                }
+                if ($convite_id > 0 && $convite_id !== $uid) {
+                    $conn->query("INSERT IGNORE INTO seguidores (seguidor_id, seguido_id) VALUES ($uid, $convite_id)");
+                    $conn->query("INSERT IGNORE INTO seguidores (seguidor_id, seguido_id) VALUES ($convite_id, $uid)");
+                }
+
+                if (!empty($codigo_grupo) || $convite_id > 0) {
+                    header("Location: ../front/pages/amigos.php");
+                    exit();
+                }
 
                 if ($nivel === 'admin') {
                     header("Location: ../front/pages/admin_dashboard.php");
@@ -111,6 +134,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ($novo_id, 3, 'trancado', 0),
                 ($novo_id, 4, 'trancado', 0),
                 ($novo_id, 5, 'trancado', 0)");
+
+            // Processa entrada em grupo ou seguir amigo via link de convite
+            if (!empty($codigo_grupo)) {
+                $cod_esc = $conn->real_escape_string($codigo_grupo);
+                $res_g = $conn->query("SELECT id FROM grupos_batalha WHERE codigo_convite = '$cod_esc'");
+                if ($res_g && $g = $res_g->fetch_assoc()) {
+                    $gid = (int) $g['id'];
+                    $conn->query("INSERT IGNORE INTO grupo_membros (grupo_id, usuario_id) VALUES ($gid, $novo_id)");
+                }
+            }
+            if ($convite_id > 0 && $convite_id !== $novo_id) {
+                $conn->query("INSERT IGNORE INTO seguidores (seguidor_id, seguido_id) VALUES ($novo_id, $convite_id)");
+                $conn->query("INSERT IGNORE INTO seguidores (seguidor_id, seguido_id) VALUES ($convite_id, $novo_id)");
+            }
+
+            if (!empty($codigo_grupo) || $convite_id > 0) {
+                header("Location: ../front/pages/amigos.php");
+                exit();
+            }
 
             header("Location: ../front/pages/dashboard.php");
             exit();

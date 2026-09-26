@@ -11,6 +11,15 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = (int) $_SESSION['user_id'];
 
+// Garante que a tabela seguidores existe (usada no cálculo de is_seguindo)
+$conn->query("CREATE TABLE IF NOT EXISTS `seguidores` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `seguidor_id` INT NOT NULL,
+    `seguido_id` INT NOT NULL,
+    `data_criacao` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY `uq_seguidor_seguido` (`seguidor_id`, `seguido_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
 try {
     liga_garantir_usuario($conn, $user_id);
 
@@ -55,14 +64,20 @@ try {
         if ($posicao <= $zonas['sobe'] && $cfg['sobe']) $zona = 'sobe';
         elseif ($posicao > ($n - $zonas['desce']) && $cfg['desce']) $zona = 'desce';
 
-        if ((int)$m['usuario_id'] === $user_id) $minhaPosicao = $posicao;
+        $mid = (int) $m['usuario_id'];
+        if ($mid === $user_id) $minhaPosicao = $posicao;
+
+        $check = $conn->query("SELECT id FROM seguidores WHERE seguidor_id = $user_id AND seguido_id = $mid");
+        $is_seguindo = ($check && $check->num_rows > 0);
 
         $lista[] = [
+            "id"          => $mid,
             "posicao"     => $posicao,
             "nome"        => $m['nome'],
             "xp"          => (int)$m['xp_semana'],
             "foto_perfil" => $m['foto_perfil'],
-            "is_me"       => (int)$m['usuario_id'] === $user_id,
+            "is_me"       => $mid === $user_id,
+            "is_seguindo" => $is_seguindo,
             "zona"        => $zona,
         ];
     }

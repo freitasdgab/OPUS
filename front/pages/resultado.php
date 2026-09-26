@@ -67,6 +67,20 @@ if (!$ja_processado) {
         $mensagem .= " (Lição já concluída antes — XP reduzido.)";
     }
 
+    // Registra os acertos de hoje no sistema de batalha entre amigos
+    if ($acertos > 0) {
+        $data_hoje = date('Y-m-d');
+        $conn->query("CREATE TABLE IF NOT EXISTS `acertos_diarios` (
+            `id` INT AUTO_INCREMENT PRIMARY KEY,
+            `usuario_id` INT NOT NULL,
+            `data_dia` DATE NOT NULL,
+            `acertos` INT DEFAULT 0,
+            UNIQUE KEY `uq_user_dia` (`usuario_id`, `data_dia`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+
+        $conn->query("INSERT INTO acertos_diarios (usuario_id, data_dia, acertos) VALUES ($user_id, '$data_hoje', $acertos) ON DUPLICATE KEY UPDATE acertos = acertos + $acertos");
+    }
+
     if ($acertos === 0) {
         $vidas_restantes = opus_perder_vida($conn, $user_id);
         $perdeu_vida = true;

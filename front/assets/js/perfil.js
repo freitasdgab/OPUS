@@ -37,6 +37,28 @@ colorOptions.forEach(opt => {
     });
 });
 
+// Busca estatísticas de Seguidores e Seguindo
+fetch('../../back/api_amigos.php?action=estatisticas_sociais')
+.then(r => r.json())
+.then(data => {
+    if (data.success) {
+        const seguindoElem = document.getElementById('lblSeguindoCount');
+        const seguidoresElem = document.getElementById('lblSeguidoresCount');
+        if (seguindoElem) seguindoElem.innerText = data.seguindo;
+        if (seguidoresElem) seguidoresElem.innerText = data.seguidores;
+    }
+})
+.catch(err => console.error('Erro ao buscar seguidores:', err));
+
+function copiarConvitePerfil(userId) {
+    const link = `${window.location.origin}/OPUS/front/pages/auth.html?convite=${userId}`;
+    navigator.clipboard.writeText(link).then(() => {
+        alert('🎉 Link de convite copiado para a área de transferência!\n\nEnvie para seus amigos para jogarem juntos no Opus!');
+    }).catch(() => {
+        alert('Seu link de convite: ' + link);
+    });
+}
+
 // Consumo da API de Conquistas e Criação dos Cards no Perfil
 fetch('../../back/api_conquistas.php')
 .then(r => r.json())

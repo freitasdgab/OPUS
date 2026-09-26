@@ -34,6 +34,16 @@
 
             <form action="../../back/auth.php" method="POST" id="authForm">
                 <input type="hidden" name="action" id="authAction" value="cadastro">
+                <input type="hidden" name="grupo" id="authGrupo" value="">
+                <input type="hidden" name="convite" id="authConvite" value="">
+
+                <script>
+                    (function() {
+                        const p = new URLSearchParams(window.location.search);
+                        if (p.get('grupo')) document.getElementById('authGrupo').value = p.get('grupo');
+                        if (p.get('convite')) document.getElementById('authConvite').value = p.get('convite');
+                    })();
+                </script>
 
                 <div class="card-input">
                     <div class="input-group" id="group-nome">
