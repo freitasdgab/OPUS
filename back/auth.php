@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $stmt->get_result();
 
         if ($user = $result->fetch_assoc()) {
-            if ($senha === $user['senha']) {
+            if ($senha === $user['senha'] || password_verify($senha, $user['senha'])) {
                 $nivel = $user['nivel_acesso'] ?? 'comum';
                 $uid = (int) $user['id'];
                 $_SESSION['user_id'] = $uid;

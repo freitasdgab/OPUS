@@ -1,117 +1,135 @@
-// admin_dashboard.js - logica do painel administrativo
-        // ------------------------------------------------------------------
-        // ESTADO GLOBAL
-        // ------------------------------------------------------------------
-        let chartInstances = {};
-        let currentPage = 1;
-        let searchTimer = null;
+/**
+ * ==========================================================================
+ * OPUS - PAINEL ADMINISTRATIVO (ADMIN DASHBOARD)
+ * Gestão de métricas globais, ligas, gráficos e inspeção completa de perfil.
+ * ==========================================================================
+ */
 
-        const LIGAS_INFO = {
-            'bronze':   { nome: 'Bronze',   cor: '#cd7f32', corClara: '#cd7f32' },
-            'prata':    { nome: 'Prata',    cor: '#8e8e99', corClara: '#c0c0c0' },
-            'ouro':     { nome: 'Ouro',     cor: '#d4a017', corClara: '#ffd700' },
-            'diamante': { nome: 'Diamante', cor: '#1ec8e0', corClara: '#5be7ff' },
-            'mestre':   { nome: 'Mestre',   cor: '#8b2fd9', corClara: '#c47bff' },
-        };
+(function() {
+    'use strict';
 
-        // ------------------------------------------------------------------
-        // FEEDBACK TOAST
-        // ------------------------------------------------------------------
-        function showToast(msg, tipo = 'info') {
-            const wrap = document.getElementById('toast-wrapper');
-            const toast = document.createElement('div');
-            toast.className = `toast-msg ${tipo}`;
-            
-            let icon = 'fa-info-circle';
-            if (tipo === 'success') icon = 'fa-circle-check';
-            if (tipo === 'error') icon = 'fa-circle-exclamation';
+    // ── Estado Global ────────────────────────────────────────────────────────
+    let chartInstances = {};
+    let currentPage = 1;
+    let searchTimer = null;
 
-            toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${msg}</span>`;
-            wrap.appendChild(toast);
+    const LIGAS_INFO = {
+        'bronze':   { nome: 'Bronze',   cor: '#cd7f32', corClara: '#cd7f32', bg: 'rgba(205, 127, 50, 0.15)' },
+        'prata':    { nome: 'Prata',    cor: '#8e8e99', corClara: '#c0c0c0', bg: 'rgba(192, 192, 192, 0.15)' },
+        'ouro':     { nome: 'Ouro',     cor: '#d4a017', corClara: '#ffd700', bg: 'rgba(255, 215, 0, 0.15)' },
+        'diamante': { nome: 'Diamante', cor: '#1ec8e0', corClara: '#5be7ff', bg: 'rgba(91, 231, 255, 0.15)' },
+        'mestre':   { nome: 'Mestre',   cor: '#8b2fd9', corClara: '#c47bff', bg: 'rgba(196, 123, 255, 0.15)' },
+    };
 
-            setTimeout(() => {
-                toast.style.animation = 'slideIn 0.3s ease reverse';
-                setTimeout(() => toast.remove(), 300);
-            }, 3500);
+    const CAPITULOS_NOMES = {
+        1: 'Fundamentos de Java',
+        2: 'Estruturas de Controle',
+        3: 'Orientação a Objetos',
+        4: 'Estruturas de Dados',
+        5: 'Java Avançado & Projeto'
+    };
+
+    // ── Feedback Toast / Alerta ──────────────────────────────────────────────
+    function showToast(msg, tipo = 'info') {
+        if (typeof window.opusToast === 'function') {
+            window.opusToast(msg, tipo);
+            return;
         }
 
-        // ------------------------------------------------------------------
-        // CARREGAR ESTATÍSTICAS DA API
-        // ------------------------------------------------------------------
-        async function carregarEstatisticas() {
-            try {
-                const res = await fetch('../../back/api_admin.php?action=stats');
-                const data = await res.json();
+        const wrap = document.getElementById('toast-wrapper');
+        if (!wrap) return;
+        const toast = document.createElement('div');
+        toast.className = `toast-msg ${tipo}`;
+        
+        let icon = 'fa-circle-info';
+        if (tipo === 'success') icon = 'fa-circle-check';
+        if (tipo === 'error') icon = 'fa-triangle-exclamation';
+        if (tipo === 'warning') icon = 'fa-triangle-exclamation';
 
-                if (!data.sucesso) {
-                    showToast(data.mensagem || 'Erro ao obter estatísticas.', 'error');
-                    return;
-                }
+        toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${escapeHtml(msg)}</span>`;
+        wrap.appendChild(toast);
 
-                const s = data.data;
+        setTimeout(() => {
+            toast.style.animation = 'slideIn 0.3s ease reverse';
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
 
-                // 1. Destaques Ampliados (Semana e Próxima Virada)
-                if (s.ligas_info) {
-                    document.getElementById('destaque-semana').innerText = s.ligas_info.semana_atual || '--/--/----';
-                    document.getElementById('destaque-proxima-virada').innerText = s.ligas_info.proxima_virada || '--/--/----';
-                }
+    // ── Carregar Estatísticas Gerais da API ───────────────────────────────────
+    async function carregarEstatisticas() {
+        try {
+            const res = await fetch('../../back/api_admin.php?action=stats');
+            const data = await res.json();
 
-                // 2. KPIs
-                document.getElementById('kpi-total-usuarios').innerText = Number(s.total_usuarios).toLocaleString('pt-BR');
-                document.getElementById('kpi-ofensiva-ativa').innerText = Number(s.ofensivas.com_fogo).toLocaleString('pt-BR');
-                document.getElementById('kpi-max-ofensiva').innerText = s.ofensivas.max_fogo;
-                document.getElementById('kpi-vidas-cheias').innerText = Number(s.vidas.cheias_3).toLocaleString('pt-BR');
-                document.getElementById('kpi-vidas-zeradas').innerText = s.vidas.zeradas_0;
-
-                // 3. Cards de Divisões
-                renderizarCardsDivisoes(s.divisoes);
-
-                // 4. Gráficos
-                renderizarGraficos(s);
-
-            } catch (err) {
-                console.error("Erro ao carregar estatísticas:", err);
-                showToast('Falha na conexão com o servidor.', 'error');
+            if (!data.sucesso) {
+                showToast(data.mensagem || 'Erro ao obter estatísticas.', 'error');
+                return;
             }
+
+            const s = data.data;
+
+            // 1. Destaques Ampliados (Semana e Próxima Virada)
+            if (s.ligas_info) {
+                document.getElementById('destaque-semana').innerText = s.ligas_info.semana_atual || '--/--/----';
+                document.getElementById('destaque-proxima-virada').innerText = s.ligas_info.proxima_virada || '--/--/----';
+            }
+
+            // 2. KPIs
+            document.getElementById('kpi-total-usuarios').innerText = Number(s.total_usuarios || 0).toLocaleString('pt-BR');
+            document.getElementById('kpi-ofensiva-ativa').innerText = Number(s.ofensivas.com_fogo || 0).toLocaleString('pt-BR');
+            document.getElementById('kpi-max-ofensiva').innerText = (s.ofensivas.max_fogo || 0);
+            document.getElementById('kpi-vidas-cheias').innerText = Number(s.vidas.cheias_3 || 0).toLocaleString('pt-BR');
+            document.getElementById('kpi-vidas-zeradas').innerText = (s.vidas.zeradas_0 || 0);
+
+            // 3. Cards de Divisões
+            renderizarCardsDivisoes(s.divisoes);
+
+            // 4. Gráficos
+            renderizarGraficos(s);
+
+        } catch (err) {
+            console.error("Erro ao carregar estatísticas:", err);
+            showToast('Falha na conexão com o servidor ao carregar estatísticas.', 'error');
         }
+    }
 
-        function renderizarCardsDivisoes(divisoes) {
-            const container = document.getElementById('ligas-grid-container');
-            container.innerHTML = '';
+    function renderizarCardsDivisoes(divisoes) {
+        const container = document.getElementById('ligas-grid-container');
+        if (!container || !divisoes) return;
+        container.innerHTML = '';
 
-            Object.keys(divisoes).forEach(slug => {
-                const div = divisoes[slug];
-                const card = document.createElement('div');
-                card.className = 'liga-card-item';
-                card.style.borderLeft = `4px solid ${div.corClara}`;
+        Object.keys(divisoes).forEach(slug => {
+            const div = divisoes[slug];
+            const card = document.createElement('div');
+            card.className = 'liga-card-item';
+            card.style.borderLeft = `4px solid ${div.corClara}`;
 
-                card.innerHTML = `
-                    <div class="liga-icon-badge" style="background: ${div.cor};">
-                        <i class="fa-solid fa-shield-halved"></i>
-                    </div>
-                    <div class="liga-card-info">
-                        <h4 style="color: ${div.corClara};">${div.nome}</h4>
-                        <div class="count">${Number(div.quantidade).toLocaleString('pt-BR')}</div>
-                        <div class="pct">${div.porcentagem}% dos alunos</div>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
+            card.innerHTML = `
+                <div class="liga-icon-badge" style="background: ${div.cor};">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div class="liga-card-info">
+                    <h4 style="color: ${div.corClara};">${escapeHtml(div.nome)}</h4>
+                    <div class="count">${Number(div.quantidade).toLocaleString('pt-BR')}</div>
+                    <div class="pct">${div.porcentagem}% dos alunos</div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
 
-        // ------------------------------------------------------------------
-        // GRÁFICOS (CHART.JS)
-        // ------------------------------------------------------------------
-        function renderizarGraficos(data) {
-            Object.values(chartInstances).forEach(inst => {
-                if (inst && typeof inst.destroy === 'function') inst.destroy();
-            });
+    // ── Renderização dos Gráficos (Chart.js) ──────────────────────────────────
+    function renderizarGraficos(data) {
+        Object.values(chartInstances).forEach(inst => {
+            if (inst && typeof inst.destroy === 'function') inst.destroy();
+        });
 
-            Chart.defaults.color = '#8e95a1';
-            Chart.defaults.font.family = "'Poppins', sans-serif";
+        Chart.defaults.color = '#8e95a1';
+        Chart.defaults.font.family = "'Poppins', sans-serif";
 
-            // 1. GRÁFICO DE LIGAS (DONUT)
-            const ctxLigas = document.getElementById('chartLigas').getContext('2d');
+        // 1. GRÁFICO DE LIGAS (DONUT)
+        const ctxLigas = document.getElementById('chartLigas')?.getContext('2d');
+        if (ctxLigas && data.divisoes) {
             const divKeys = Object.keys(data.divisoes);
             chartInstances.ligas = new Chart(ctxLigas, {
                 type: 'doughnut',
@@ -122,7 +140,7 @@
                         backgroundColor: divKeys.map(k => data.divisoes[k].corClara),
                         borderWidth: 2,
                         borderColor: '#12141c',
-                        hoverOffset: 6
+                        hoverOffset: 8
                     }]
                 },
                 options: {
@@ -131,19 +149,21 @@
                     plugins: {
                         legend: { position: 'bottom', labels: { boxWidth: 12, padding: 14, font: { weight: '600' } } }
                     },
-                    cutout: '65%'
+                    cutout: '68%'
                 }
             });
+        }
 
-            // 2. GRÁFICO DE CONCLUSÃO DE CAPÍTULOS (BARRAS)
-            const ctxCapitulos = document.getElementById('chartCapitulos').getContext('2d');
+        // 2. GRÁFICO DE CONCLUSÃO DE CAPÍTULOS (BARRAS)
+        const ctxCapitulos = document.getElementById('chartCapitulos')?.getContext('2d');
+        if (ctxCapitulos) {
             const caps = data.progresso_capitulos || [];
             chartInstances.capitulos = new Chart(ctxCapitulos, {
                 type: 'bar',
                 data: {
                     labels: caps.map(c => c.nome),
                     datasets: [{
-                        label: 'Alunos Concluíram',
+                        label: 'Alunos que Concluíram',
                         data: caps.map(c => c.concluidos),
                         backgroundColor: 'rgba(34, 197, 94, 0.75)',
                         borderColor: '#22c55e',
@@ -163,9 +183,11 @@
                     }
                 }
             });
+        }
 
-            // 3. GRÁFICO DE STATUS DE VIDAS (BARRA HORIZONTAL)
-            const ctxVidas = document.getElementById('chartStatusVidas').getContext('2d');
+        // 3. GRÁFICO DE STATUS DE VIDAS (BARRA HORIZONTAL)
+        const ctxVidas = document.getElementById('chartStatusVidas')?.getContext('2d');
+        if (ctxVidas && data.vidas) {
             chartInstances.vidas = new Chart(ctxVidas, {
                 type: 'bar',
                 data: {
@@ -196,365 +218,528 @@
                 }
             });
         }
+    }
 
-        // ------------------------------------------------------------------
-        // GERENCIAR USUÁRIOS (TABELA COM BUSCA POR EMAIL E ID ASC/DESC)
-        // ------------------------------------------------------------------
-        async function carregarUsuarios(page = 1) {
-            currentPage = page;
-            const q = document.getElementById('input-busca-email').value.trim();
-            const divisao = document.getElementById('select-divisao').value;
-            const orderDir = document.getElementById('select-ordenacao-id').value;
+    // ── Gerenciamento de Usuários (Tabela) ────────────────────────────────────
+    async function carregarUsuarios(page = 1) {
+        currentPage = page;
+        const q = document.getElementById('input-busca-email')?.value.trim() || '';
+        const divisao = document.getElementById('select-divisao')?.value || '';
+        const orderDir = document.getElementById('select-ordenacao-id')?.value || 'ASC';
 
-            const tbody = document.getElementById('admin-table-body');
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="7" style="text-align:center; padding: 40px; color: var(--text-muted);">
-                        <i class="fa-solid fa-spinner fa-spin" style="font-size: 22px; margin-bottom: 8px; display:block;"></i>
-                        Carregando usuários...
-                    </td>
-                </tr>
-            `;
+        const tbody = document.getElementById('admin-table-body');
+        if (!tbody) return;
 
-            try {
-                const params = new URLSearchParams({
-                    action: 'users',
-                    page: page,
-                    limit: 15,
-                    q: q,
-                    divisao: divisao,
-                    order_dir: orderDir
-                });
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align:center; padding: 40px; color: var(--text-muted);">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 22px; margin-bottom: 8px; display:block; color: var(--accent-blue);"></i>
+                    Carregando usuários...
+                </td>
+            </tr>
+        `;
 
-                const res = await fetch(`../../back/api_admin.php?${params.toString()}`);
-                const data = await res.json();
+        try {
+            const params = new URLSearchParams({
+                action: 'users',
+                page: page,
+                limit: 15,
+                q: q,
+                divisao: divisao,
+                order_dir: orderDir
+            });
 
-                if (!data.sucesso) {
-                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: #ef4444;">${data.mensagem}</td></tr>`;
-                    return;
-                }
+            const res = await fetch(`../../back/api_admin.php?${params.toString()}`);
+            const data = await res.json();
 
-                renderizarTabela(data.data);
-            } catch (err) {
-                console.error("Erro ao carregar lista de usuários:", err);
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: #ef4444;">Erro ao carregar dados.</td></tr>`;
-            }
-        }
-
-        function renderizarTabela(data) {
-            const tbody = document.getElementById('admin-table-body');
-            const lista = data.usuarios || [];
-
-            if (lista.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 40px; color: var(--text-muted);">Nenhum usuário encontrado.</td></tr>`;
-                document.getElementById('page-info-text').innerText = 'Mostrando 0 de 0 usuários';
-                document.getElementById('page-nav-btns').innerHTML = '';
+            if (!data.sucesso) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: #ef4444;">${escapeHtml(data.mensagem)}</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = '';
-            lista.forEach(u => {
-                const tr = document.createElement('tr');
-                
-                let fotoUrl = u.foto_perfil && u.foto_perfil.startsWith('data:image') ? u.foto_perfil : '../assets/img/opi pulando feliz.png';
-                const divSlug = (u.divisao || 'bronze').toLowerCase();
-                const divNome = LIGAS_INFO[divSlug] ? LIGAS_INFO[divSlug].nome : 'Bronze';
+            renderizarTabela(data.data);
+        } catch (err) {
+            console.error("Erro ao carregar lista de usuários:", err);
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: #ef4444;">Erro ao carregar dados dos usuários.</td></tr>`;
+        }
+    }
 
-                let coracoes = '';
-                for (let i = 1; i <= 3; i++) {
-                    coracoes += `<i class="fa-solid fa-heart ${i <= u.vidas ? '' : 'empty'}"></i>`;
-                }
+    function renderizarTabela(data) {
+        const tbody = document.getElementById('admin-table-body');
+        const lista = data.usuarios || [];
 
-                tr.innerHTML = `
-                    <td style="font-family: 'Orbitron', sans-serif; font-weight: bold; color: var(--text-muted); font-size: 0.8rem;">#${u.id}</td>
-                    <td>
-                        <div class="user-avatar-cell">
-                            <img src="${fotoUrl}" alt="Avatar" class="user-avatar-img">
-                            <div class="user-meta">
-                                <div class="name">${escapeHtml(u.nome)}</div>
-                                <div class="email">${escapeHtml(u.email)}</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <span class="div-badge badge-${divSlug}">
-                            <i class="fa-solid fa-shield"></i> ${divNome}
-                        </span>
-                    </td>
-                    <td>
-                        <div class="hearts-box" title="${u.vidas} de 3 vidas">
-                            ${coracoes}
-                        </div>
-                    </td>
-                    <td style="font-family: 'Orbitron', sans-serif; font-weight: bold; color: #f97316;">
-                        <i class="fa-solid fa-fire"></i> ${u.dias_fogo}d
-                    </td>
-                    <td style="color: var(--text-muted); font-size: 0.8rem;">${u.criado_em}</td>
-                    <td>
-                        <div class="action-btns">
-                            <button class="btn-action-sm" onclick="abrirDetalhesAluno(${u.id})" title="Ver Detalhes do Aluno">
-                                <i class="fa-solid fa-eye"></i>
-                            </button>
-                            <button class="btn-action-sm btn-heart" onclick="restaurarVidas(${u.id}, '${escapeHtml(u.nome)}')" title="Restaurar 3 Vidas">
-                                <i class="fa-solid fa-heart-circle-plus"></i>
-                            </button>
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            // Paginação
-            const total = data.total || 0;
-            const pagAtual = data.pagina_atual || 1;
-            const totalPags = data.total_paginas || 1;
-            const limite = data.limite || 15;
-            const de = (pagAtual - 1) * limite + 1;
-            const ate = Math.min(total, pagAtual * limite);
-
-            document.getElementById('page-info-text').innerText = `Mostrando ${de} - ${ate} de ${total} usuários`;
-
-            const navContainer = document.getElementById('page-nav-btns');
-            navContainer.innerHTML = '';
-
-            const btnPrev = document.createElement('button');
-            btnPrev.className = 'page-btn';
-            btnPrev.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
-            btnPrev.disabled = (pagAtual <= 1);
-            btnPrev.onclick = () => carregarUsuarios(pagAtual - 1);
-            navContainer.appendChild(btnPrev);
-
-            for (let p = 1; p <= totalPags; p++) {
-                if (p === 1 || p === totalPags || (p >= pagAtual - 1 && p <= pagAtual + 1)) {
-                    const btnP = document.createElement('button');
-                    btnP.className = `page-btn ${p === pagAtual ? 'active' : ''}`;
-                    btnP.innerText = p;
-                    btnP.onclick = () => carregarUsuarios(p);
-                    navContainer.appendChild(btnP);
-                } else if (p === pagAtual - 2 || p === pagAtual + 2) {
-                    const span = document.createElement('span');
-                    span.style.padding = '0 4px';
-                    span.style.color = '#555e6d';
-                    span.innerText = '...';
-                    navContainer.appendChild(span);
-                }
-            }
-
-            const btnNext = document.createElement('button');
-            btnNext.className = 'page-btn';
-            btnNext.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
-            btnNext.disabled = (pagAtual >= totalPags);
-            btnNext.onclick = () => carregarUsuarios(pagAtual + 1);
-            navContainer.appendChild(btnNext);
+        if (lista.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 40px; color: var(--text-muted);">Nenhum usuário encontrado com os filtros aplicados.</td></tr>`;
+            document.getElementById('page-info-text').innerText = 'Mostrando 0 de 0 usuários';
+            document.getElementById('page-nav-btns').innerHTML = '';
+            return;
         }
 
-        // ------------------------------------------------------------------
-        // AÇÕES (VIRADA DE LIGAS E RESTAURAR VIDAS)
-        // ------------------------------------------------------------------
-        async function dispararViradaLigas() {
+        tbody.innerHTML = '';
+        lista.forEach(u => {
+            const tr = document.createElement('tr');
+            
+            let fotoUrl = u.foto_perfil && u.foto_perfil.startsWith('data:image') ? u.foto_perfil : '../assets/img/opi pulando feliz.png';
+            const divSlug = (u.divisao || 'bronze').toLowerCase();
+            const divNome = LIGAS_INFO[divSlug] ? LIGAS_INFO[divSlug].nome : 'Bronze';
+
+            let coracoes = '';
+            for (let i = 1; i <= 3; i++) {
+                coracoes += `<i class="fa-solid fa-heart ${i <= u.vidas ? '' : 'empty'}"></i>`;
+            }
+
+            tr.innerHTML = `
+                <td style="font-family: 'Orbitron', sans-serif; font-weight: bold; color: var(--accent-blue); font-size: 0.85rem;">#${u.id}</td>
+                <td>
+                    <div class="user-avatar-cell" onclick="abrirDetalhesAluno(${u.id})" style="cursor: pointer;" title="Clique para ver o perfil completo">
+                        <img src="${fotoUrl}" alt="Avatar" class="user-avatar-img">
+                        <div class="user-meta">
+                            <div class="name">${escapeHtml(u.nome)}</div>
+                            <div class="email">${escapeHtml(u.email)}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="div-badge badge-${divSlug}">
+                        <i class="fa-solid fa-shield"></i> ${divNome}
+                    </span>
+                </td>
+                <td>
+                    <div class="hearts-box" title="${u.vidas} de 3 vidas">
+                        ${coracoes}
+                    </div>
+                </td>
+                <td style="font-family: 'Orbitron', sans-serif; font-weight: bold; color: #f97316;">
+                    <i class="fa-solid fa-fire"></i> ${u.dias_fogo}d
+                </td>
+                <td style="color: var(--text-muted); font-size: 0.82rem;">${u.criado_em}</td>
+                <td style="text-align: center;">
+                    <button class="btn-view-profile" onclick="abrirDetalhesAluno(${u.id})" title="Visualizar Perfil Completo">
+                        <i class="fa-solid fa-user"></i>
+                        <span>Ver Perfil</span>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        // Paginação
+        const total = data.total || 0;
+        const pagAtual = data.pagina_atual || 1;
+        const totalPags = data.total_paginas || 1;
+        const limite = data.limite || 15;
+        const de = total > 0 ? (pagAtual - 1) * limite + 1 : 0;
+        const ate = Math.min(total, pagAtual * limite);
+
+        document.getElementById('page-info-text').innerText = `Mostrando ${de} - ${ate} de ${total} usuários`;
+
+        const navContainer = document.getElementById('page-nav-btns');
+        navContainer.innerHTML = '';
+
+        const btnPrev = document.createElement('button');
+        btnPrev.className = 'page-btn';
+        btnPrev.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
+        btnPrev.disabled = (pagAtual <= 1);
+        btnPrev.onclick = () => carregarUsuarios(pagAtual - 1);
+        navContainer.appendChild(btnPrev);
+
+        for (let p = 1; p <= totalPags; p++) {
+            if (p === 1 || p === totalPags || (p >= pagAtual - 1 && p <= pagAtual + 1)) {
+                const btnP = document.createElement('button');
+                btnP.className = `page-btn ${p === pagAtual ? 'active' : ''}`;
+                btnP.innerText = p;
+                btnP.onclick = () => carregarUsuarios(p);
+                navContainer.appendChild(btnP);
+            } else if (p === pagAtual - 2 || p === pagAtual + 2) {
+                const span = document.createElement('span');
+                span.style.padding = '0 4px';
+                span.style.color = '#555e6d';
+                span.innerText = '...';
+                navContainer.appendChild(span);
+            }
+        }
+
+        const btnNext = document.createElement('button');
+        btnNext.className = 'page-btn';
+        btnNext.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+        btnNext.disabled = (pagAtual >= totalPags);
+        btnNext.onclick = () => carregarUsuarios(pagAtual + 1);
+        navContainer.appendChild(btnNext);
+    }
+
+    // ── Disparo Manual da Virada de Ligas ────────────────────────────────────
+    async function dispararViradaLigas() {
+        if (typeof window.opusAlerta === 'function') {
+            const confirmou = await window.opusAlerta({
+                tipo: 'warning',
+                titulo: 'Processar Virada Semanal',
+                mensagem: 'Deseja realmente processar a Virada Semanal de Ligas agora?<br><br>As subidas e descidas de divisão serão recalculadas e aplicadas imediatamente.',
+                botaoTexto: 'SIM, PROCESSAR AGORA',
+                cancelTexto: 'CANCELAR'
+            });
+            if (!confirmou) return;
+        } else {
             if (!confirm("Deseja realmente processar a Virada Semanal de Ligas agora?\n\nAs subidas e descidas de divisão serão calculadas e aplicadas imediatamente.")) {
                 return;
             }
-
-            const btn = document.getElementById('btn-virada-ligas');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processando...';
-
-            try {
-                const formData = new FormData();
-                formData.append('action', 'trigger_league_turnover');
-
-                const res = await fetch('../../back/api_admin.php', {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await res.json();
-
-                if (data.sucesso) {
-                    showToast(data.mensagem, 'success');
-                    carregarEstatisticas();
-                    carregarUsuarios(currentPage);
-                } else {
-                    showToast(data.mensagem || 'Erro ao processar virada.', 'error');
-                }
-            } catch (err) {
-                console.error("Erro:", err);
-                showToast('Erro ao executar virada de ligas.', 'error');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-bolt"></i> Atualizar Virada de Liga';
-            }
         }
 
-        async function restaurarVidas(userId, userName) {
-            try {
-                const formData = new FormData();
-                formData.append('action', 'update_lives');
-                formData.append('user_id', userId);
-                formData.append('vidas', 3);
+        const btn = document.getElementById('btn-virada-ligas');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processando...';
 
-                const res = await fetch('../../back/api_admin.php', {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await res.json();
+        try {
+            const formData = new FormData();
+            formData.append('action', 'trigger_league_turnover');
 
-                if (data.sucesso) {
-                    showToast(`3 Vidas restauradas para "${userName}" com sucesso!`, 'success');
-                    carregarEstatisticas();
-                    carregarUsuarios(currentPage);
-                } else {
-                    showToast(data.mensagem || 'Erro ao restaurar vidas.', 'error');
-                }
-            } catch (err) {
-                console.error("Erro:", err);
-                showToast('Erro ao comunicar com o servidor.', 'error');
+            const res = await fetch('../../back/api_admin.php', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+
+            if (data.sucesso) {
+                showToast(data.mensagem, 'success');
+                carregarEstatisticas();
+                carregarUsuarios(currentPage);
+            } else {
+                showToast(data.mensagem || 'Erro ao processar virada.', 'error');
             }
+        } catch (err) {
+            console.error("Erro:", err);
+            showToast('Erro ao executar virada de ligas.', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-bolt"></i> Atualizar Virada de Liga';
         }
+    }
 
-        // ------------------------------------------------------------------
-        // MODAL DE DETALHES DO ALUNO
-        // ------------------------------------------------------------------
-        async function abrirDetalhesAluno(userId) {
-            const modal = document.getElementById('aluno-modal');
-            const box = document.getElementById('aluno-modal-content');
+    // ── Inspeção Completa do Perfil do Aluno (Visualizar Perfil) ─────────────
+    async function abrirDetalhesAluno(userId) {
+        const modal = document.getElementById('aluno-modal');
+        const box = document.getElementById('aluno-modal-content');
+        if (!modal || !box) return;
 
+        box.innerHTML = `
+            <div class="profile-loader-box">
+                <i class="fa-solid fa-circle-notch fa-spin"></i>
+                <p>Carregando perfil completo do usuário...</p>
+            </div>
+        `;
+        modal.classList.add('active');
+
+        try {
+            const res = await fetch(`../../back/api_admin.php?action=user_details&user_id=${userId}`);
+            const data = await res.json();
+
+            if (!data.sucesso) {
+                box.innerHTML = `
+                    <div style="text-align:center; padding: 40px 20px;">
+                        <i class="fa-solid fa-circle-exclamation" style="font-size: 3rem; color: #ef4444; margin-bottom: 14px;"></i>
+                        <h3 style="color: #fff; margin-bottom: 8px;">Erro ao carregar perfil</h3>
+                        <p style="color: var(--text-muted);">${escapeHtml(data.mensagem || 'Usuário não encontrado.')}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const u = data.data.usuario;
+            const soc = data.data.social || {};
+            const prog = data.data.progresso || [];
+            const hist = data.data.historico_ligas || [];
+            const conquistasTotal = data.data.conquistas_total || 0;
+
+            let foto = u.foto_perfil && u.foto_perfil.startsWith('data:image') ? u.foto_perfil : '../assets/img/opi pulando feliz.png';
+            const divSlug = (u.divisao || 'bronze').toLowerCase();
+            const divInfo = LIGAS_INFO[divSlug] || LIGAS_INFO.bronze;
+
+            // Renderização das Unidades de Aprendizado (Capítulos 1 a 5)
+            let progressoCardsHtml = '';
+            for (let c = 1; c <= 5; c++) {
+                const item = prog.find(p => Number(p.unidade_numero) === c) || { status: 'trancado', licoes_concluidas: 0 };
+                const st = item.status || 'trancado';
+                const licoes = item.licoes_concluidas || 0;
+                const nomeCap = CAPITULOS_NOMES[c] || `Capítulo ${c}`;
+
+                let badgeClass = 'status-locked';
+                let badgeText = 'Trancado';
+                let iconStatus = 'fa-lock';
+                let pct = Math.min(100, Math.round((licoes / 5) * 100));
+
+                if (st === 'completo') {
+                    badgeClass = 'status-completed';
+                    badgeText = 'Concluído';
+                    iconStatus = 'fa-circle-check';
+                    pct = 100;
+                } else if (st === 'corrente') {
+                    badgeClass = 'status-current';
+                    badgeText = 'Em Andamento';
+                    iconStatus = 'fa-spinner fa-spin';
+                }
+
+                progressoCardsHtml += `
+                    <div class="chapter-card ${st}">
+                        <div class="chapter-card-header">
+                            <div class="chapter-num">Unidade ${c}</div>
+                            <span class="chapter-status-badge ${badgeClass}">
+                                <i class="fa-solid ${iconStatus}"></i> ${badgeText}
+                            </span>
+                        </div>
+                        <div class="chapter-title">${nomeCap}</div>
+                        <div class="chapter-progress-track">
+                            <div class="chapter-progress-fill ${st}" style="width: ${pct}%;"></div>
+                        </div>
+                        <div class="chapter-card-footer">
+                            <span>${licoes}/5 lições concluídas</span>
+                            <span>${pct}%</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Histórico de Ligas
+            let historicoHtml = '';
+            if (hist.length > 0) {
+                hist.forEach(h => {
+                    const resLower = (h.resultado || '').toLowerCase();
+                    let resBadge = '<span class="hist-badge neutro">Permaneceu</span>';
+                    if (resLower === 'subiu') resBadge = '<span class="hist-badge subiu"><i class="fa-solid fa-arrow-trend-up"></i> Promovido</span>';
+                    if (resLower === 'desceu') resBadge = '<span class="hist-badge desceu"><i class="fa-solid fa-arrow-trend-down"></i> Rebaixado</span>';
+
+                    historicoHtml += `
+                        <div class="hist-row">
+                            <div class="hist-week">
+                                <i class="fa-solid fa-calendar-day"></i>
+                                <span>Semana: <strong>${escapeHtml(h.semana_ref)}</strong></span>
+                            </div>
+                            <div class="hist-transition">
+                                <span style="text-transform: capitalize;">${escapeHtml(h.divisao_anterior)}</span>
+                                <i class="fa-solid fa-arrow-right" style="font-size: 10px; color: var(--text-dim);"></i>
+                                <span style="text-transform: capitalize; font-weight: bold;">${escapeHtml(h.divisao_nova)}</span>
+                            </div>
+                            ${resBadge}
+                        </div>
+                    `;
+                });
+            } else {
+                historicoHtml = `
+                    <div class="empty-sub-box">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <p>Nenhuma virada de ligas registrada no histórico deste aluno.</p>
+                    </div>
+                `;
+            }
+
+            // Informação do Grupo de Batalha
+            let grupoBoxHtml = '';
+            if (soc.grupo) {
+                grupoBoxHtml = `
+                    <div class="profile-group-box">
+                        <div class="group-icon-wrap">
+                            <i class="fa-solid fa-people-group"></i>
+                        </div>
+                        <div class="group-info">
+                            <div class="group-title">${escapeHtml(soc.grupo.nome)}</div>
+                            <div class="group-meta">Código de Convite: <strong>${escapeHtml(soc.grupo.codigo)}</strong> • ${soc.grupo.total_membros} membros</div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                grupoBoxHtml = `
+                    <div class="profile-group-empty">
+                        <i class="fa-solid fa-user-group"></i> O aluno ainda não está participando de um Grupo de Batalha.
+                    </div>
+                `;
+            }
+
+            // Template completo de inspeção
             box.innerHTML = `
-                <div style="text-align:center; padding: 40px; color: var(--text-muted);">
-                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 26px; margin-bottom: 10px; display:block;"></i>
-                    Carregando detalhes do aluno...
+                <!-- 1. CABEÇALHO DO PERFIL -->
+                <div class="profile-header-card">
+                    <div class="profile-avatar-wrapper" style="border-color: ${divInfo.corClara};">
+                        <img src="${foto}" alt="Avatar de ${escapeHtml(u.nome)}" class="profile-avatar-big">
+                        <div class="profile-league-badge-mini" style="background: ${divInfo.cor};" title="Divisão: ${divInfo.nome}">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                    </div>
+                    <div class="profile-user-details">
+                        <div class="profile-name-row">
+                            <h2 class="profile-user-name">${escapeHtml(u.nome)}</h2>
+                            <span class="profile-role-badge ${u.nivel_acesso === 'admin' ? 'role-admin' : 'role-user'}">
+                                <i class="fa-solid ${u.nivel_acesso === 'admin' ? 'fa-shield-cat' : 'fa-graduation-cap'}"></i>
+                                ${u.nivel_acesso === 'admin' ? 'ADMINISTRADOR' : 'ALUNO'}
+                            </span>
+                        </div>
+                        <div class="profile-email-text">
+                            <i class="fa-solid fa-envelope"></i> ${escapeHtml(u.email)}
+                        </div>
+                        <div class="profile-tags-row">
+                            <span class="profile-tag"><i class="fa-solid fa-hashtag"></i> ID: ${u.id}</span>
+                            <span class="profile-tag"><i class="fa-solid fa-calendar-check"></i> Cadastrado em: ${u.criado_em}</span>
+                            <span class="profile-tag"><i class="fa-solid fa-compass"></i> Dificuldade: ${escapeHtml(u.dificuldade)}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. GRID DE ESTATÍSTICAS PRINCIPAIS (6 CARDS) -->
+                <div class="profile-stats-grid">
+                    <!-- XP TOTAL -->
+                    <div class="pstat-card stat-xp">
+                        <div class="pstat-icon"><i class="fa-solid fa-bolt"></i></div>
+                        <div class="pstat-data">
+                            <div class="pstat-val">${Number(u.xp || 0).toLocaleString('pt-BR')}</div>
+                            <div class="pstat-lbl">XP Total Acumulado</div>
+                        </div>
+                    </div>
+
+                    <!-- TROFÉUS -->
+                    <div class="pstat-card stat-trophies">
+                        <div class="pstat-icon"><i class="fa-solid fa-trophy"></i></div>
+                        <div class="pstat-data">
+                            <div class="pstat-val">${Number(u.trofeus || 0).toLocaleString('pt-BR')}</div>
+                            <div class="pstat-lbl">Troféus Conquistados</div>
+                        </div>
+                    </div>
+
+                    <!-- DIVISÃO DE LIGA -->
+                    <div class="pstat-card stat-league" style="border-left: 3px solid ${divInfo.corClara};">
+                        <div class="pstat-icon" style="color: ${divInfo.corClara};"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="pstat-data">
+                            <div class="pstat-val" style="color: ${divInfo.corClara};">${divInfo.nome}</div>
+                            <div class="pstat-lbl">${Number(u.xp_semana || 0).toLocaleString('pt-BR')} XP nesta semana</div>
+                        </div>
+                    </div>
+
+                    <!-- OFENSIVA -->
+                    <div class="pstat-card stat-streak">
+                        <div class="pstat-icon"><i class="fa-solid fa-fire"></i></div>
+                        <div class="pstat-data">
+                            <div class="pstat-val">${u.dias_fogo} dias</div>
+                            <div class="pstat-lbl">Sequência de Ofensiva</div>
+                        </div>
+                    </div>
+
+                    <!-- VIDAS -->
+                    <div class="pstat-card stat-lives">
+                        <div class="pstat-icon"><i class="fa-solid fa-heart"></i></div>
+                        <div class="pstat-data">
+                            <div class="pstat-val">${u.vidas} / 3</div>
+                            <div class="pstat-lbl">Vidas Disponíveis</div>
+                        </div>
+                    </div>
+
+                    <!-- CONQUISTAS & AMIGOS -->
+                    <div class="pstat-card stat-social">
+                        <div class="pstat-icon"><i class="fa-solid fa-award"></i></div>
+                        <div class="pstat-data">
+                            <div class="pstat-val">${conquistasTotal} Conquistas</div>
+                            <div class="pstat-lbl">${soc.seguidores || 0} seguidores • ${soc.seguindo || 0} seguindo</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. GRUPO DE BATALHA -->
+                <div class="profile-section-title">
+                    <i class="fa-solid fa-people-robotic"></i> Grupo de Batalha
+                </div>
+                ${grupoBoxHtml}
+
+                <!-- 4. PROGRESSO NAS 5 UNIDADES -->
+                <div class="profile-section-title" style="margin-top: 24px;">
+                    <i class="fa-solid fa-graduation-cap"></i> Trilha de Aprendizado (Capítulos 1 a 5)
+                </div>
+                <div class="profile-chapters-grid">
+                    ${progressoCardsHtml}
+                </div>
+
+                <!-- 5. HISTÓRICO DE LIGAS -->
+                <div class="profile-section-title" style="margin-top: 24px;">
+                    <i class="fa-solid fa-timeline"></i> Histórico de Viradas e Divisões
+                </div>
+                <div class="profile-hist-container">
+                    ${historicoHtml}
+                </div>
+
+                <!-- 6. AÇÕES DO MODAL -->
+                <div class="profile-modal-footer">
+                    <button type="button" class="btn-profile-close" onclick="fecharModalAluno()">
+                        <i class="fa-solid fa-xmark"></i> Fechar Visualização
+                    </button>
                 </div>
             `;
-            modal.classList.add('active');
 
-            try {
-                const res = await fetch(`../../back/api_admin.php?action=user_details&user_id=${userId}`);
-                const data = await res.json();
-
-                if (!data.sucesso) {
-                    box.innerHTML = `<p style="color: #ef4444;">${data.mensagem}</p>`;
-                    return;
-                }
-
-                const u = data.data.usuario;
-                const prog = data.data.progresso || [];
-                const hist = data.data.historico_ligas || [];
-
-                let foto = u.foto_perfil && u.foto_perfil.startsWith('data:image') ? u.foto_perfil : '../assets/img/opi pulando feliz.png';
-                const divSlug = (u.divisao || 'bronze').toLowerCase();
-                const divNome = LIGAS_INFO[divSlug] ? LIGAS_INFO[divSlug].nome : 'Bronze';
-
-                let progressoHtml = '';
-                if (prog.length > 0) {
-                    prog.forEach(p => {
-                        const statusColor = p.status === 'completo' ? '#22c55e' : (p.status === 'corrente' ? '#1cb0f6' : '#555e6d');
-                        const statusLabel = p.status === 'completo' ? 'Concluído' : (p.status === 'corrente' ? 'Em Andamento' : 'Trancado');
-                        progressoHtml += `
-                            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.03); padding: 11px 14px; border-radius: 10px; margin-bottom: 6px;">
-                                <span><strong>Capítulo ${p.unidade_numero}</strong> (${p.licoes_concluidas} lições concluídas)</span>
-                                <span style="color: ${statusColor}; font-weight: bold; font-size: 0.8rem; text-transform: uppercase;">${statusLabel}</span>
-                            </div>
-                        `;
-                    });
-                } else {
-                    progressoHtml = '<p style="color: var(--text-muted); font-size: 0.85rem;">Nenhum progresso registrado.</p>';
-                }
-
-                let historicoHtml = '';
-                if (hist.length > 0) {
-                    hist.forEach(h => {
-                        historicoHtml += `
-                            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 8px; margin-bottom: 5px; font-size: 0.82rem;">
-                                <span>Semana: <strong>${h.semana_ref}</strong> (${h.divisao_anterior} → ${h.divisao_nova})</span>
-                                <span style="font-weight: bold; color: ${h.resultado === 'subiu' ? '#22c55e' : (h.resultado === 'desceu' ? '#ef4444' : '#c0c0c0')}; text-transform: uppercase;">${h.resultado}</span>
-                            </div>
-                        `;
-                    });
-                } else {
-                    historicoHtml = '<p style="color: var(--text-muted); font-size: 0.85rem;">Sem histórico de viradas ainda.</p>';
-                }
-
-                box.innerHTML = `
-                    <div style="display:flex; align-items:center; gap: 16px; margin-bottom: 22px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 18px;">
-                        <img src="${foto}" style="width: 65px; height: 65px; border-radius: 50%; border: 3px solid var(--accent-blue); object-fit: cover;">
-                        <div>
-                            <h2 style="margin:0; font-size: 1.35rem; font-family:'Orbitron', sans-serif;">${escapeHtml(u.nome)}</h2>
-                            <p style="margin:2px 0 0 0; color: var(--text-muted); font-size: 0.85rem;">${escapeHtml(u.email)} • ID #${u.id}</p>
-                            <div style="margin-top: 6px;">
-                                <span class="div-badge badge-${divSlug}"><i class="fa-solid fa-shield"></i> Liga ${divNome}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 22px;">
-                        <div style="background:rgba(255,255,255,0.03); padding:12px; border-radius:12px; text-align:center;">
-                            <div style="color:var(--text-muted); font-size:0.75rem;">Status de Vidas</div>
-                            <div style="font-family:'Orbitron',sans-serif; font-size:1.15rem; font-weight:bold; color:#ef4444;">${u.vidas} / 3</div>
-                        </div>
-                        <div style="background:rgba(255,255,255,0.03); padding:12px; border-radius:12px; text-align:center;">
-                            <div style="color:var(--text-muted); font-size:0.75rem;">Dias de Ofensiva</div>
-                            <div style="font-family:'Orbitron',sans-serif; font-size:1.15rem; font-weight:bold; color:#f97316;">${u.dias_fogo} dias</div>
-                        </div>
-                    </div>
-
-                    <h4 style="font-family:'Orbitron',sans-serif; margin-bottom:10px; font-size:0.92rem;"><i class="fa-solid fa-book-open" style="color:var(--accent-blue)"></i> Conclusão de Capítulos</h4>
-                    <div style="margin-bottom: 20px;">${progressoHtml}</div>
-
-                    <h4 style="font-family:'Orbitron',sans-serif; margin-bottom:10px; font-size:0.92rem;"><i class="fa-solid fa-clock-rotate-left" style="color:#c47bff"></i> Histórico de Ligas</h4>
-                    <div>${historicoHtml}</div>
-                `;
-            } catch (err) {
-                console.error("Erro ao carregar detalhes:", err);
-                box.innerHTML = `<p style="color: #ef4444;">Erro ao carregar detalhes do aluno.</p>`;
-            }
+        } catch (err) {
+            console.error("Erro ao carregar detalhes do aluno:", err);
+            box.innerHTML = `
+                <div style="text-align:center; padding: 40px 20px;">
+                    <i class="fa-solid fa-triangle-exclamation" style="font-size: 3rem; color: #ef4444; margin-bottom: 14px;"></i>
+                    <h3 style="color: #fff; margin-bottom: 8px;">Erro de Comunicação</h3>
+                    <p style="color: var(--text-muted);">Não foi possível carregar os detalhes do usuário.</p>
+                </div>
+            `;
         }
+    }
 
-        function fecharModalAluno() {
-            document.getElementById('aluno-modal').classList.remove('active');
-        }
+    function fecharModalAluno() {
+        const modal = document.getElementById('aluno-modal');
+        if (modal) modal.classList.remove('active');
+    }
 
-        function abrirModalLogoutAdmin() {
-            document.getElementById('logout-modal-admin').classList.add('active');
-        }
+    function abrirModalLogoutAdmin() {
+        const modal = document.getElementById('logout-modal-admin');
+        if (modal) modal.classList.add('active');
+    }
 
-        function fecharModalLogoutAdmin() {
-            document.getElementById('logout-modal-admin').classList.remove('active');
-        }
+    function fecharModalLogoutAdmin() {
+        const modal = document.getElementById('logout-modal-admin');
+        if (modal) modal.classList.remove('active');
+    }
 
-        function escapeHtml(text) {
-            if (!text) return '';
-            return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-        }
+    function escapeHtml(text) {
+        if (!text) return '';
+        return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
 
-        // ------------------------------------------------------------------
-        // INICIALIZAÇÃO
-        // ------------------------------------------------------------------
-        document.addEventListener('DOMContentLoaded', () => {
-            carregarEstatisticas();
-            carregarUsuarios(1);
+    // ── Exportações Globais ───────────────────────────────────────────────────
+    window.abrirDetalhesAluno = abrirDetalhesAluno;
+    window.fecharModalAluno = fecharModalAluno;
+    window.abrirModalLogoutAdmin = abrirModalLogoutAdmin;
+    window.fecharModalLogoutAdmin = fecharModalLogoutAdmin;
 
-            // Botão de Virada de Ligas
-            document.getElementById('btn-virada-ligas').addEventListener('click', dispararViradaLigas);
+    // ── Inicialização de Eventos ─────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+        carregarEstatisticas();
+        carregarUsuarios(1);
 
-            // Busca por E-mail com debounce
-            document.getElementById('input-busca-email').addEventListener('input', () => {
-                clearTimeout(searchTimer);
-                searchTimer = setTimeout(() => carregarUsuarios(1), 350);
-            });
+        // Botão de Virada de Ligas
+        document.getElementById('btn-virada-ligas')?.addEventListener('click', dispararViradaLigas);
 
-            // Filtro de Divisão
-            document.getElementById('select-divisao').addEventListener('change', () => carregarUsuarios(1));
-
-            // Ordenação por ID (ASC / DESC)
-            document.getElementById('select-ordenacao-id').addEventListener('change', () => carregarUsuarios(1));
-
-            // Fechar modal ao clicar fora
-            document.getElementById('aluno-modal').addEventListener('click', (e) => {
-                if (e.target.id === 'aluno-modal') fecharModalAluno();
-            });
-
-            // Fechar modal de logout ao clicar fora
-            document.getElementById('logout-modal-admin').addEventListener('click', (e) => {
-                if (e.target.id === 'logout-modal-admin') fecharModalLogoutAdmin();
-            });
+        // Busca com Debounce
+        document.getElementById('input-busca-email')?.addEventListener('input', () => {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => carregarUsuarios(1), 300);
         });
+
+        // Filtros de Divisão e Ordenação
+        document.getElementById('select-divisao')?.addEventListener('change', () => carregarUsuarios(1));
+        document.getElementById('select-ordenacao-id')?.addEventListener('change', () => carregarUsuarios(1));
+
+        // Fechar modais ao clicar no fundo
+        document.getElementById('aluno-modal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'aluno-modal') fecharModalAluno();
+        });
+
+        document.getElementById('logout-modal-admin')?.addEventListener('click', (e) => {
+            if (e.target.id === 'logout-modal-admin') fecharModalLogoutAdmin();
+        });
+
+        // Fechar modais ao pressionar tecla ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                fecharModalAluno();
+                fecharModalLogoutAdmin();
+            }
+        });
+    });
+
+})();

@@ -257,7 +257,7 @@ $email_admin = htmlspecialchars($current_user['email'] ?? '');
                             <th>Status de Vidas</th>
                             <th>Ofensiva</th>
                             <th>Data de Cadastro</th>
-                            <th>Ações</th>
+                            <th style="text-align: center;">Ações</th>
                         </tr>
                     </thead>
                     <tbody id="admin-table-body">
@@ -282,12 +282,12 @@ $email_admin = htmlspecialchars($current_user['email'] ?? '');
 
     </main>
 
-    <!-- MODAL DE DETALHES DO ALUNO -->
+    <!-- MODAL DE DETALHES COMPLETOS DO PERFIL DO ALUNO -->
     <div class="modal-bg" id="aluno-modal">
-        <div class="modal-box">
-            <button class="modal-close-btn" onclick="fecharModalAluno()"><i class="fa-solid fa-xmark"></i></button>
+        <div class="modal-box modal-box-profile">
+            <button class="modal-close-btn" onclick="fecharModalAluno()" title="Fechar"><i class="fa-solid fa-xmark"></i></button>
             <div id="aluno-modal-content">
-                <!-- Conteúdo preenchido dinamicamente -->
+                <!-- Conteúdo preenchido dinamicamente com visualização completa de perfil -->
             </div>
         </div>
     </div>

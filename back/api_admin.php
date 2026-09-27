@@ -256,7 +256,7 @@ try {
             break;
 
         // ------------------------------------------------
-        // DETALHES DE UM ALUNO (PROGRESSO DE CAPÍTULOS E LIGAS)
+        // DETALHES COMPLETOS DO PERFIL DO ALUNO (INSPEÇÃO ADMIN)
         // ------------------------------------------------
         case 'user_details':
             $target_id = (int) ($_GET['user_id'] ?? $_POST['user_id'] ?? 0);
@@ -265,9 +265,14 @@ try {
                 exit();
             }
 
+            // Sincroniza status do jogador para garantir cálculo correto de vidas/fogo
+            $user_status = opus_sincronizar_jogador($conn, $target_id);
+
             $stmt_u = $conn->prepare("
-                SELECT u.id, u.nome, u.email, u.foto_perfil, u.vidas, u.dias_fogo, u.criado_em,
-                       COALESCE(l.divisao, 'bronze') AS divisao
+                SELECT u.id, u.nome, u.email, u.foto_perfil, u.vidas, u.dias_fogo, u.xp, u.trofeus, u.dificuldade, u.nivel_acesso, u.criado_em,
+                       COALESCE(l.divisao, 'bronze') AS divisao,
+                       COALESCE(l.xp_semana, 0) AS xp_semana,
+                       l.grupo_id
                 FROM usuarios u
                 LEFT JOIN ligas_usuario l ON l.usuario_id = u.id
                 WHERE u.id = ?
@@ -293,6 +298,38 @@ try {
             $stmt_hist->execute();
             $historico_ligas = $stmt_hist->get_result()->fetch_all(MYSQLI_ASSOC);
 
+            // Seguidores / Seguindo
+            $seguidores_count = 0;
+            $seguindo_count = 0;
+            $res_seg = $conn->query("SELECT COUNT(*) AS total FROM seguidores WHERE seguido_id = $target_id");
+            if ($res_seg) $seguidores_count = (int) ($res_seg->fetch_assoc()['total'] ?? 0);
+            $res_indo = $conn->query("SELECT COUNT(*) AS total FROM seguidores WHERE seguidor_id = $target_id");
+            if ($res_indo) $seguindo_count = (int) ($res_indo->fetch_assoc()['total'] ?? 0);
+
+            // Grupo de Batalha (se pertencer a algum)
+            $grupo_info = null;
+            $res_g = $conn->query("
+                SELECT g.id, g.nome, g.codigo_convite,
+                       (SELECT COUNT(*) FROM grupo_membros WHERE grupo_id = g.id) AS total_membros
+                FROM grupo_membros gm 
+                JOIN grupos_batalha g ON g.id = gm.grupo_id 
+                WHERE gm.usuario_id = $target_id 
+                LIMIT 1
+            ");
+            if ($res_g && $g_row = $res_g->fetch_assoc()) {
+                $grupo_info = [
+                    'id'            => (int) $g_row['id'],
+                    'nome'          => $g_row['nome'],
+                    'codigo'        => $g_row['codigo_convite'],
+                    'total_membros' => (int) $g_row['total_membros']
+                ];
+            }
+
+            // Total de Conquistas desbloqueadas
+            $conquistas_total = 0;
+            $res_c = $conn->query("SELECT COUNT(*) AS total FROM conquistas_usuario WHERE usuario_id = $target_id");
+            if ($res_c) $conquistas_total = (int) ($res_c->fetch_assoc()['total'] ?? 0);
+
             echo json_encode([
                 'sucesso' => true,
                 'data' => [
@@ -302,48 +339,25 @@ try {
                         'email'            => $user_data['email'],
                         'vidas'            => (int) $user_data['vidas'],
                         'dias_fogo'        => (int) $user_data['dias_fogo'],
-                        'divisao'          => $user_data['divisao'],
+                        'xp'               => (int) ($user_data['xp'] ?? 0),
+                        'trofeus'          => (int) ($user_data['trofeus'] ?? 0),
+                        'dificuldade'      => $user_data['dificuldade'] ?? 'Iniciante',
+                        'nivel_acesso'     => $user_data['nivel_acesso'] ?? 'comum',
+                        'divisao'          => $user_data['divisao'] ?: 'bronze',
+                        'xp_semana'        => (int) ($user_data['xp_semana'] ?? 0),
                         'foto_perfil'      => $user_data['foto_perfil'],
                         'criado_em'        => $user_data['criado_em'] ? date('d/m/Y H:i', strtotime($user_data['criado_em'])) : '-',
                     ],
+                    'social'          => [
+                        'seguidores' => $seguidores_count,
+                        'seguindo'   => $seguindo_count,
+                        'grupo'      => $grupo_info,
+                    ],
+                    'conquistas_total'=> $conquistas_total,
                     'progresso'       => $progresso,
                     'historico_ligas' => $historico_ligas,
                 ]
             ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-            break;
-
-        // ------------------------------------------------
-        // RESTAURAR VIDAS DO ALUNO
-        // ------------------------------------------------
-        case 'update_lives':
-            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-                echo json_encode(['sucesso' => false, 'mensagem' => 'Método inválido. Use POST.']);
-                exit();
-            }
-
-            $target_id = (int) ($_POST['user_id'] ?? 0);
-            $qtd_vidas = min(3, max(0, (int) ($_POST['vidas'] ?? 3)));
-
-            if ($target_id <= 0) {
-                echo json_encode(['sucesso' => false, 'mensagem' => 'ID de usuário inválido.']);
-                exit();
-            }
-
-            if ($qtd_vidas >= 3) {
-                $stmt_up = $conn->prepare("UPDATE usuarios SET vidas = 3, vidas_proxima_em = NULL WHERE id = ?");
-                $stmt_up->bind_param("i", $target_id);
-            } else {
-                $proxima = (new DateTime('+5 hours'))->format('Y-m-d H:i:s');
-                $stmt_up = $conn->prepare("UPDATE usuarios SET vidas = ?, vidas_proxima_em = ? WHERE id = ?");
-                $stmt_up->bind_param("isi", $qtd_vidas, $proxima, $target_id);
-            }
-            $stmt_up->execute();
-
-            echo json_encode([
-                'sucesso'   => true,
-                'mensagem'  => "Vidas do usuário atualizadas para $qtd_vidas.",
-                'vidas'     => $qtd_vidas,
-            ]);
             break;
 
         // ------------------------------------------------
