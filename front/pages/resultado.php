@@ -38,19 +38,19 @@ $cor_tema = $mascote_capitulo['cor'];
 if ($acertos == 3) {
     $mensagem = "Perfeito! Você dominou o conteúdo!";
     $imagem_mascote = "../assets/img/" . $mascote_capitulo['feliz'];
-    $xp_ganho = 150;
+    $xp_ganho = 50;
 } elseif ($acertos == 2) {
     $mensagem = "Muito bom! Você está no caminho certo!";
     $imagem_mascote = "../assets/img/" . $mascote_capitulo['explicando'];
-    $xp_ganho = 100;
+    $xp_ganho = 25;
 } elseif ($acertos == 1) {
     $mensagem = "Foi por pouco! Que tal revisar o conteúdo?";
     $imagem_mascote = "../assets/img/" . $mascote_capitulo['triste'];
-    $xp_ganho = 50;
+    $xp_ganho = 10;
 } else {
     $mensagem = "Não desanime! A programação exige prática. Tente novamente!";
     $imagem_mascote = "../assets/img/" . $mascote_capitulo['triste'];
-    $xp_ganho = 10; // Um incentivo por tentar
+    $xp_ganho = 10; 
 }
 
 if (!$ja_processado) {
