@@ -175,26 +175,59 @@
             }
         }
 
-        // ── Scroll automático para a lição atual ──────────────────────────
-        function rolarParaLicaoAtual() {
-            // Tenta achar o nó exato da lição atual
-            const licaoAtual = document.getElementById('currentLessonNode');
+        // ── Scroll para a lição atual e Botão Flutuante de Seta ───────────
+        function rolarAteLicaoAtual() {
+            const licaoAtual = document.getElementById('currentLessonNode') 
+                            || document.querySelector('.modulo-node.current')
+                            || document.querySelector('.capitulo-container.current-chapter')
+                            || document.querySelector('.modulo-node.completed');
+            
             if (licaoAtual) {
                 licaoAtual.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                return;
-            }
+                
+                // Animação de pulso para evidenciar onde o jogador está
+                licaoAtual.classList.add('pulse-highlight');
+                setTimeout(() => licaoAtual.classList.remove('pulse-highlight'), 2200);
 
-            // Fallback: se não houver lição atual, rola até o capítulo corrente
-            const capAtual = document.querySelector('.capitulo-container.current-chapter');
-            if (capAtual) {
-                capAtual.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                if (typeof opusToast === 'function') {
+                    opusToast('Lição atual localizada na trilha!', 'info', 2000);
+                }
+            } else {
+                const primeiroCap = document.querySelector('.capitulo-container');
+                if (primeiroCap) {
+                    primeiroCap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             }
         }
 
-        // Aguarda o carregamento completo (incluindo imagens/fontes) para que
-        // o layout esteja 100% calculado antes de rolar.
+        // Monitora o scroll para diminuir a opacidade do botão quando o usuário já estiver olhando para a lição
+        function monitorarVisibilidadeLicaoAtual() {
+            const btn = document.getElementById('btnScrollToLesson');
+            const alvo = document.getElementById('currentLessonNode') || document.querySelector('.modulo-node.current');
+            const container = document.querySelector('.main-content');
+            if (!btn || !alvo || !container) return;
+
+            const checar = () => {
+                const rect = alvo.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+                const visivel = (rect.top >= containerRect.top + 60 && rect.bottom <= containerRect.bottom - 60);
+                
+                if (visivel) {
+                    btn.style.opacity = '0.35';
+                    btn.style.transform = 'scale(0.92)';
+                } else {
+                    btn.style.opacity = '1';
+                    btn.style.transform = 'scale(1)';
+                }
+            };
+
+            container.addEventListener('scroll', checar, { passive: true });
+            checar();
+        }
+
+        // Aguarda o carregamento completo para calcular posições
         window.addEventListener('load', function () {
-            // Pequeno delay extra garante que fontes externas (Google Fonts)
-            // não causem refluxo de layout após o scroll.
-            setTimeout(rolarParaLicaoAtual, 150);
+            setTimeout(rolarAteLicaoAtual, 150);
+            setTimeout(monitorarVisibilidadeLicaoAtual, 300);
         });
+

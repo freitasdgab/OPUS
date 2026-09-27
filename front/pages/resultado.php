@@ -58,10 +58,10 @@ if (!$ja_processado) {
     // e devolve o valor realmente aplicado. Usa opus_call() porque essa
     // procedure chama sp_atualizar_fogo por dentro, então o resultado
     // final não é o primeiro result set.
-    $res_proc = opus_call($conn, "CALL sp_processar_resultado_licao(?, ?, ?, ?, ?)", "iiiii", [$user_id, $cap_atual, $licao_atual, $acertos, $xp_ganho]);
+    $res_proc = opus_call($conn, "CALL sp_processar_resultado_licao(?, ?, ?, ?, ?)", "iiiii", [$user_id, $cap_atual, $licao_atual, $acertos, 3]);
 
-    if ($res_proc && isset($res_proc['xp_aplicado'])) {
-        $xp_ganho = (int) $res_proc['xp_aplicado'];
+    if ($res_proc && isset($res_proc['xp_ganho'])) {
+        $xp_ganho = (int) $res_proc['xp_ganho'];
     }
     if ($res_proc && (int) ($res_proc['eh_repeticao'] ?? 0) === 1) {
         $mensagem .= " (Lição já concluída antes — XP reduzido.)";
