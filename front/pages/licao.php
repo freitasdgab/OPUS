@@ -19,7 +19,7 @@ require_once '../../back/licao_logic.php';
     <link rel="stylesheet" href="../assets/css/licao.css">
     <link rel="stylesheet" href="../assets/css/opus_alerta.css">
 </head>
-<body>
+<body class="licao-page">
 
     <canvas id="bg-canvas"></canvas>
 

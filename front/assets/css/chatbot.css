@@ -392,6 +392,61 @@
     transform: none;
 }
 
+/* ==========================================================
+   REPOSICIONAMENTO EXCLUSIVO NA TELA DE LIÇÃO (.licao-page)
+   Move o botão do Opi IA para o topo direito para NUNCA
+   atrapalhar a barra inferior e os botões VERIFICAR/CONTINUAR.
+   ========================================================== */
+body.licao-page .opi-chat-trigger,
+.licao-page .opi-chat-trigger {
+    top: 18px;
+    bottom: auto;
+    right: 25px;
+    z-index: 1050;
+    padding: 6px 16px 6px 10px;
+    border-radius: 30px;
+    background: linear-gradient(135deg, rgba(28, 176, 246, 0.9) 0%, rgba(16, 133, 194, 0.95) 100%);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 18px rgba(28, 176, 246, 0.35);
+}
+
+body.licao-page .opi-chat-trigger:hover,
+.licao-page .opi-chat-trigger:hover {
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 6px 22px rgba(28, 176, 246, 0.5);
+}
+
+body.licao-page .opi-chat-window,
+.licao-page .opi-chat-window {
+    top: 72px;
+    bottom: auto;
+    right: 25px;
+    height: 520px;
+    max-height: calc(100vh - 90px);
+    z-index: 1050;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+}
+
+@media (max-width: 768px) {
+    body.licao-page .opi-chat-trigger,
+    .licao-page .opi-chat-trigger {
+        top: 14px;
+        right: 14px;
+        padding: 5px 10px 5px 6px;
+    }
+    body.licao-page .opi-trigger-text,
+    .licao-page .opi-trigger-text {
+        display: none; /* Em telas menores de lição, exibe só o ícone flutuante do Opi no topo */
+    }
+    body.licao-page .opi-chat-window,
+    .licao-page .opi-chat-window {
+        top: 60px;
+        right: 10px;
+        width: calc(100vw - 20px);
+        height: calc(100vh - 80px);
+    }
+}
+
 @media (max-width: 480px) {
     .opi-chat-window {
         right: 15px;
@@ -404,3 +459,4 @@
         bottom: 20px;
     }
 }
+
