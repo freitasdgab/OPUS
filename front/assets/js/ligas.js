@@ -49,6 +49,19 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.error === "unauthorized") { window.location.href = "auth.html"; return; }
             if (data.error) { mostrarErro(data.mensagem || 'Erro desconhecido no servidor.'); return; }
 
+            // Mapeamento de ícones únicos por Liga
+            const iconesPorLiga = {
+                'bronze': '<i class="fa-solid fa-shield"></i>',
+                'prata': '<i class="fa-solid fa-shield-halved"></i>',
+                'ouro': '<i class="fa-solid fa-crown"></i>',
+                'diamante': '<i class="fa-solid fa-gem"></i>',
+                'mestre': '<i class="fa-solid fa-dragon"></i>'
+            };
+            
+            const nomeKey = data.divisao_nome.toLowerCase();
+            const mainIconHtml = iconesPorLiga[nomeKey] || '<i class="fa-solid fa-shield-halved"></i>';
+
+            document.getElementById('badge-icon').innerHTML = mainIconHtml;
             document.getElementById('badge-icon').style.background = data.divisao_cor;
             document.getElementById('badge-nome').innerText = data.divisao_nome;
             document.getElementById('badge-sub').innerText =
@@ -62,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let trackHTML = '';
             ligasOrdem.forEach((nomeLiga, index) => {
                 let statusClass = '';
-                let iconHTML = '<i class="fa-solid fa-shield-halved"></i>';
+                let iconHTML = iconesPorLiga[nomeLiga.toLowerCase()] || '<i class="fa-solid fa-shield"></i>';
                 
                 if (index < ligaAtualIndex) {
                     iconHTML = '<i class="fa-solid fa-check"></i>';

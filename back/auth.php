@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $senha = trim($_POST['senha'] ?? '');
 
     $codigo_grupo = trim($_POST['grupo'] ?? $_GET['grupo'] ?? '');
-    $convite_id = (int) ($_POST['convite'] ?? $_GET['convite'] ?? 0);
+    $convite_id = (int) ($_POST['convite'] ?? $_GET['convite'] ?? $_POST['ref'] ?? $_GET['ref'] ?? 0);
 
     // ----------------------------------------------------
     // MODO: LOGIN
@@ -47,8 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
                 if ($convite_id > 0 && $convite_id !== $uid) {
-                    $conn->query("INSERT IGNORE INTO seguidores (seguidor_id, seguido_id) VALUES ($uid, $convite_id)");
-                    $conn->query("INSERT IGNORE INTO seguidores (seguidor_id, seguido_id) VALUES ($convite_id, $uid)");
+                    $conn->query("INSERT IGNORE INTO pedidos_conexao (remetente_id, destinatario_id, status) VALUES ($uid, $convite_id, 'aceito')");
                 }
 
                 if (!empty($codigo_grupo) || $convite_id > 0) {
@@ -150,8 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
             if ($convite_id > 0 && $convite_id !== $novo_id) {
-                $conn->query("INSERT IGNORE INTO seguidores (seguidor_id, seguido_id) VALUES ($novo_id, $convite_id)");
-                $conn->query("INSERT IGNORE INTO seguidores (seguidor_id, seguido_id) VALUES ($convite_id, $novo_id)");
+                $conn->query("INSERT IGNORE INTO pedidos_conexao (remetente_id, destinatario_id, status) VALUES ($novo_id, $convite_id, 'aceito')");
             }
 
             if (!empty($codigo_grupo) || $convite_id > 0) {

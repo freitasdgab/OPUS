@@ -538,8 +538,7 @@ $nomes_unidades = [
 
     <!-- BOTÃO FLUTUANTE COM FORMATO DE SETA PARA ROLAGEM DIRETA À LIÇÃO ATUAL -->
     <button class="btn-scroll-to-lesson" id="btnScrollToLesson" onclick="rolarAteLicaoAtual()" title="Ir direto para a lição atual na trilha">
-        <i class="fa-solid fa-arrow-down"></i>
-        <span>Lição Atual</span>
+        <i class="fa-solid fa-arrow-right"></i>
     </button>
 
     <script src="../assets/js/script.js"></script> 

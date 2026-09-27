@@ -44,8 +44,10 @@ fetch('../../back/api_amigos.php?action=estatisticas_sociais')
     if (data.success) {
         const seguindoElem = document.getElementById('lblSeguindoCount');
         const seguidoresElem = document.getElementById('lblSeguidoresCount');
+        const amigosElem = document.getElementById('lblAmigosCount');
         if (seguindoElem) seguindoElem.innerText = data.seguindo;
         if (seguidoresElem) seguidoresElem.innerText = data.seguidores;
+        if (amigosElem) amigosElem.innerText = data.amigos || 0;
     }
 })
 .catch(err => console.error('Erro ao buscar seguidores:', err));

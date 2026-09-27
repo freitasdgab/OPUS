@@ -57,7 +57,11 @@ if ($action === 'estatisticas_sociais') {
     $res_indo = $conn->query("SELECT COUNT(*) as qtd FROM seguidores WHERE seguidor_id = $target_id");
     $seguindo_count = (int) ($res_indo->fetch_assoc()['qtd'] ?? 0);
 
+    $res_amigos = $conn->query("SELECT COUNT(*) as qtd FROM pedidos_conexao WHERE (remetente_id = $target_id OR destinatario_id = $target_id) AND status = 'aceito'");
+    $amigos_count = (int) ($res_amigos->fetch_assoc()['qtd'] ?? 0);
+
     echo json_encode([
+        'amigos' => $amigos_count,
         'success' => true,
         'target_id' => $target_id,
         'seguidores' => $seguidores_count,

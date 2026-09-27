@@ -85,9 +85,10 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                             <div id="listaPedidosPerfil" style="display:flex; flex-direction:column; gap:10px;"></div>
                         </div>
 
-                        <div class="social-links">
-                            <a href="amigos.php"><span id="lblSeguindoCount">0</span> Amigos</a>
-                            <a href="amigos.php" style="display:none;"><span id="lblSeguidoresCount">0</span> Seguidores</a>
+                        <div class="social-links" style="display: flex; gap: 15px; margin-top: 15px;">
+                            <a href="chat.php"><span id="lblAmigosCount">0</span> Amigos</a>
+                            <a href="chat.php"><span id="lblSeguindoCount">0</span> Seguindo</a>
+                            <a href="chat.php"><span id="lblSeguidoresCount">0</span> Seguidores</a>
                         </div>
                     </div>
 
@@ -135,7 +136,7 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                     <div class="side-card">
                         <div class="side-card-title">Interagir</div>
                         <ul class="side-card-list">
-                            <li onclick="window.location.href='amigos.php'">
+                            <li onclick="window.location.href='chat.php'">
                                 <div style="display: flex; align-items: center; gap: 15px;">
                                     <i class="fa-solid fa-magnifying-glass" style="font-size: 1.2rem; color: #1cb0f6;"></i> Encontrar amigos
                                 </div>

@@ -53,10 +53,11 @@ $titulo_vidas = $proxima_vida_texto !== '' ? $proxima_vida_texto : ($vidas_top .
     </div>
 
     <div class="topbar-stats">
-        <!-- LIGA / DIVISÃO -->
-        <a href="ligas.php" class="minimal-league-btn" title="Sua Divisão / Liga Atual">
-            <i class="fa-solid fa-arrow-right"></i>
-        </a>
+        <!-- NOTIFICAÇÕES / MENSAGENS -->
+        <div class="topbar-stat stat-notificacao" id="btn-notificacoes" title="Notificações" onclick="toggleNotificacoes()">
+            <i class="fa-solid fa-bell"></i>
+            <span class="badge-notif" id="badge-notif" style="display: none;">0</span>
+        </div>
 
         <!-- FOGO (OFENSIVA / DIAS) -->
         <div class="topbar-stat stat-fogo" title="Sequência Diária">
@@ -77,3 +78,16 @@ $titulo_vidas = $proxima_vida_texto !== '' ? $proxima_vida_texto : ($vidas_top .
         </div>
     </div>
 </header>
+
+<!-- DROPDOWN NOTIFICAÇÕES -->
+<div class="notif-dropdown" id="notif-dropdown" style="display: none;">
+    <div class="notif-header">
+        <h3>Notificações</h3>
+        <a href="chat.php" class="notif-link"><i class="fa-solid fa-paper-plane"></i> Abrir Chat</a>
+    </div>
+    <div class="notif-body" id="notif-list">
+        <div class="notif-empty">Nenhuma notificação nova</div>
+    </div>
+</div>
+
+<script src="../assets/js/notificacoes.js"></script>
