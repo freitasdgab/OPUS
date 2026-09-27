@@ -31,7 +31,8 @@ $result_licao = $stmt_licao->get_result();
 $dados_licao = $result_licao->fetch_assoc();
 
 if (!$dados_licao) {
-    die("Lição não encontrada ou ainda não cadastrada no banco!");
+    header("Location: dashboard.php?aviso=" . urlencode("Esta lição ainda não está disponível ou está em desenvolvimento!"));
+    exit();
 }
 
 $licao_id = $dados_licao['id'];

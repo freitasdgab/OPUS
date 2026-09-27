@@ -1,0 +1,477 @@
+/* ==========================================================================
+   OPUS - SISTEMA DE AVISOS E NOTIFICAÇÕES PERSONALIZADAS (ALERTS & TOASTS)
+   Design futurista / cyberpunk / gamer perfeitamente integrado ao tema OPUS
+   ========================================================================== */
+
+/* ── Container Global de Toasts Flutuantes ────────────────────────────────── */
+#opus-toast-container {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 999999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none;
+    max-width: 420px;
+    width: calc(100% - 48px);
+}
+
+@media (max-width: 600px) {
+    #opus-toast-container {
+        top: 16px;
+        right: 16px;
+        left: 16px;
+        width: auto;
+        max-width: none;
+    }
+}
+
+/* ── Item de Toast Individual ────────────────────────────────────────────── */
+.opus-toast {
+    position: relative;
+    pointer-events: auto;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 18px;
+    background: rgba(18, 20, 32, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(28, 176, 246, 0.15);
+    color: #ffffff;
+    font-family: 'Poppins', sans-serif;
+    transform: translateX(120%) scale(0.9);
+    opacity: 0;
+    transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+}
+
+.opus-toast.opus-toast-show {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+}
+
+.opus-toast.opus-toast-hide {
+    transform: translateX(120%) scale(0.85);
+    opacity: 0;
+}
+
+/* Tipos de Toasts (Cores de Destaque) */
+.opus-toast.toast-success {
+    border-color: rgba(0, 230, 118, 0.4);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(0, 230, 118, 0.2);
+}
+.opus-toast.toast-error {
+    border-color: rgba(255, 71, 87, 0.45);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(255, 71, 87, 0.2);
+}
+.opus-toast.toast-warning {
+    border-color: rgba(255, 150, 0, 0.45);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(255, 150, 0, 0.2);
+}
+.opus-toast.toast-info {
+    border-color: rgba(28, 176, 246, 0.45);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(28, 176, 246, 0.2);
+}
+
+/* Ícone do Toast */
+.opus-toast-icon {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.toast-success .opus-toast-icon {
+    background: linear-gradient(135deg, rgba(0, 230, 118, 0.25), rgba(0, 180, 90, 0.1));
+    color: #00e676;
+    border: 1px solid rgba(0, 230, 118, 0.4);
+}
+.toast-error .opus-toast-icon {
+    background: linear-gradient(135deg, rgba(255, 71, 87, 0.25), rgba(200, 30, 50, 0.1));
+    color: #ff4757;
+    border: 1px solid rgba(255, 71, 87, 0.4);
+}
+.toast-warning .opus-toast-icon {
+    background: linear-gradient(135deg, rgba(255, 150, 0, 0.25), rgba(210, 120, 0, 0.1));
+    color: #ff9600;
+    border: 1px solid rgba(255, 150, 0, 0.4);
+}
+.toast-info .opus-toast-icon {
+    background: linear-gradient(135deg, rgba(28, 176, 246, 0.25), rgba(15, 120, 190, 0.1));
+    color: #1cb0f6;
+    border: 1px solid rgba(28, 176, 246, 0.4);
+}
+
+/* Conteúdo do Toast */
+.opus-toast-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.opus-toast-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    color: #ffffff;
+}
+
+.opus-toast-message {
+    font-size: 0.84rem;
+    line-height: 1.45;
+    color: #c9cce0;
+    font-weight: 400;
+    word-break: break-word;
+}
+
+/* Botão Fechar Toast */
+.opus-toast-close {
+    background: transparent;
+    border: none;
+    color: #717799;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 2px 4px;
+    line-height: 1;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.opus-toast-close:hover {
+    color: #ffffff;
+    transform: scale(1.15);
+}
+
+/* Barra de Progresso do Toast */
+.opus-toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    transform-origin: left;
+}
+
+.toast-success .opus-toast-progress { background: #00e676; }
+.toast-error .opus-toast-progress { background: #ff4757; }
+.toast-warning .opus-toast-progress { background: #ff9600; }
+.toast-info .opus-toast-progress { background: #1cb0f6; }
+
+
+/* ── MODAL DE AVISO PERSONALIZADO (POPUP OPUS) ───────────────────────────── */
+.opus-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(8, 10, 18, 0.82);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 999998;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.28s ease-out;
+}
+
+.opus-modal-overlay.opus-modal-active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.opus-modal-box {
+    position: relative;
+    background: #151828;
+    background: linear-gradient(180deg, #1a1e33 0%, #111422 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    padding: 34px 28px 28px 28px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(28, 176, 246, 0.15);
+    text-align: center;
+    transform: scale(0.85) translateY(20px);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    color: #ffffff;
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden;
+}
+
+.opus-modal-overlay.opus-modal-active .opus-modal-box {
+    transform: scale(1) translateY(0);
+}
+
+/* Linha de topo brilhante no Modal */
+.opus-modal-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #1cb0f6, #4d66f5, #00e676);
+}
+
+.opus-modal-box.modal-type-error::before {
+    background: linear-gradient(90deg, #ff4757, #ff6b81, #ffa502);
+}
+.opus-modal-box.modal-type-warning::before {
+    background: linear-gradient(90deg, #ff9600, #ffb142, #ff5252);
+}
+.opus-modal-box.modal-type-success::before {
+    background: linear-gradient(90deg, #00e676, #1cb0f6, #00d2d3);
+}
+
+/* Ícone central do modal */
+.opus-modal-icon-wrap {
+    width: 84px;
+    height: 84px;
+    margin: 0 auto 20px auto;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.3rem;
+    position: relative;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    animation: opusIconFloat 3s ease-in-out infinite;
+}
+
+@keyframes opusIconFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+.modal-type-success .opus-modal-icon-wrap {
+    background: linear-gradient(135deg, #00e676, #00994d);
+    border-color: #00ff88;
+    color: #0d2818;
+    box-shadow: 0 0 30px rgba(0, 230, 118, 0.45);
+}
+
+.modal-type-error .opus-modal-icon-wrap {
+    background: linear-gradient(135deg, #ff4757, #b31e2b);
+    border-color: #ff6b81;
+    color: #ffffff;
+    box-shadow: 0 0 30px rgba(255, 71, 87, 0.45);
+}
+
+.modal-type-warning .opus-modal-icon-wrap {
+    background: linear-gradient(135deg, #ff9600, #c76f00);
+    border-color: #ffb142;
+    color: #ffffff;
+    box-shadow: 0 0 30px rgba(255, 150, 0, 0.45);
+}
+
+.modal-type-info .opus-modal-icon-wrap {
+    background: linear-gradient(135deg, #1cb0f6, #097ab2);
+    border-color: #53c8ff;
+    color: #ffffff;
+    box-shadow: 0 0 30px rgba(28, 176, 246, 0.45);
+}
+
+/* Botão Fechar no canto do Modal */
+.opus-modal-close-btn {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #8f96b3;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.opus-modal-close-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    transform: rotate(90deg);
+}
+
+/* Textos do Modal */
+.opus-modal-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    color: #ffffff;
+}
+
+.opus-modal-message {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #b8bdd4;
+    margin-bottom: 22px;
+    word-break: break-word;
+}
+
+/* Lista detalhada / Critérios de erro dentro do modal */
+.opus-modal-details-list {
+    text-align: left;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.opus-modal-details-list li {
+    font-size: 0.85rem;
+    color: #e2e5f5;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.opus-modal-details-list li i {
+    font-size: 0.85rem;
+    color: #ff4757;
+}
+
+/* Campo de cópia de link */
+.opus-modal-copy-box {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(28, 176, 246, 0.3);
+    border-radius: 10px;
+    padding: 6px 8px 6px 14px;
+    margin-bottom: 22px;
+    gap: 10px;
+}
+
+.opus-modal-copy-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #1cb0f6;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.85rem;
+    outline: none;
+}
+
+.opus-modal-copy-btn {
+    background: #1cb0f6;
+    color: #ffffff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    font-family: 'Poppins', sans-serif;
+}
+
+.opus-modal-copy-btn:hover {
+    background: #009ce3;
+}
+
+/* Ações / Botões do Modal */
+.opus-modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.opus-modal-btn {
+    flex: 1;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.opus-modal-btn-primary {
+    background: #1cb0f6;
+    color: #ffffff;
+    border-bottom: 4px solid #148bc4;
+    box-shadow: 0 4px 15px rgba(28, 176, 246, 0.35);
+}
+
+.opus-modal-btn-primary:hover {
+    background: #25b8fc;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(28, 176, 246, 0.5);
+}
+
+.opus-modal-btn-primary:active {
+    transform: translateY(2px);
+    border-bottom-width: 2px;
+}
+
+.modal-type-error .opus-modal-btn-primary {
+    background: #ff4757;
+    border-bottom-color: #c42635;
+    box-shadow: 0 4px 15px rgba(255, 71, 87, 0.35);
+}
+.modal-type-error .opus-modal-btn-primary:hover {
+    background: #ff5e6c;
+}
+
+.modal-type-success .opus-modal-btn-primary {
+    background: #00e676;
+    color: #0b2414;
+    border-bottom-color: #00b359;
+    box-shadow: 0 4px 15px rgba(0, 230, 118, 0.35);
+}
+.modal-type-success .opus-modal-btn-primary:hover {
+    background: #1aff85;
+}
+
+.modal-type-warning .opus-modal-btn-primary {
+    background: #ff9600;
+    border-bottom-color: #c76f00;
+    box-shadow: 0 4px 15px rgba(255, 150, 0, 0.35);
+}
+.modal-type-warning .opus-modal-btn-primary:hover {
+    background: #ffa726;
+}
+
+.opus-modal-btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: #c5cae0;
+    border-bottom: 4px solid rgba(255, 255, 255, 0.05);
+}
+
+.opus-modal-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+    transform: translateY(-2px);
+}

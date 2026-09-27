@@ -53,9 +53,27 @@ fetch('../../back/api_amigos.php?action=estatisticas_sociais')
 function copiarConvitePerfil(userId) {
     const link = `${window.location.origin}/OPUS/front/pages/auth.html?convite=${userId}`;
     navigator.clipboard.writeText(link).then(() => {
-        alert('🎉 Link de convite copiado para a área de transferência!\n\nEnvie para seus amigos para jogarem juntos no Opus!');
+        if (typeof opusAlerta === 'function') {
+            opusAlerta({
+                tipo: 'success',
+                titulo: 'Convite Pronto! 🎉',
+                mensagem: 'Seu link de convite foi copiado para a área de transferência. Compartilhe com seus amigos para aprenderem juntos no Opus!',
+                linkCopia: link
+            });
+        } else {
+            alert('🎉 Link de convite copiado!\n\n' + link);
+        }
     }).catch(() => {
-        alert('Seu link de convite: ' + link);
+        if (typeof opusAlerta === 'function') {
+            opusAlerta({
+                tipo: 'info',
+                titulo: 'Link de Convite',
+                mensagem: 'Copie seu link de convite abaixo:',
+                linkCopia: link
+            });
+        } else {
+            alert('Seu link de convite: ' + link);
+        }
     });
 }
 

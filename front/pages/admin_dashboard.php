@@ -71,6 +71,7 @@ $email_admin = htmlspecialchars($current_user['email'] ?? '');
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
     <link rel="stylesheet" href="../assets/css/admin_dashboard.css">
+    <link rel="stylesheet" href="../assets/css/opus_alerta.css">
 </head>
 <body>
     <!-- BARRA SUPERIOR EXCLUSIVA DO ADMINISTRADOR -->
@@ -306,6 +307,7 @@ $email_admin = htmlspecialchars($current_user['email'] ?? '');
     <!-- TOAST CONTAINER -->
     <div class="toast-box" id="toast-wrapper"></div>
 
+    <script src="../assets/js/opus_alerta.js"></script>
     <script src="../assets/js/admin_dashboard.js"></script>
 </body>
 </html>

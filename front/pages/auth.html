@@ -16,6 +16,7 @@
     
     <link rel="stylesheet" href="../assets/css/intro.css"> 
     <link rel="stylesheet" href="../assets/css/auth.css">
+    <link rel="stylesheet" href="../assets/css/opus_alerta.css">
 </head>
 <body>
 
@@ -128,6 +129,7 @@
 
     </div>
 
+    <script src="../assets/js/opus_alerta.js"></script>
     <script src="../assets/js/auth.js"></script>
     <script>
         // ── Google Sign-In ────────────────────────────────────────
@@ -176,12 +178,20 @@
                     document.cookie = "opus_cadastrado=1; path=/; max-age=31536000";
                     window.location.href = data.redirect_url;
                 } else {
-                    alert('Erro ao entrar com Google: ' + (data.erro || 'Tente novamente.'));
+                    opusAlerta({
+                        tipo: 'error',
+                        titulo: 'Erro no Google Sign-In',
+                        mensagem: data.erro || 'Não foi possível autenticar sua conta Google. Tente novamente.'
+                    });
                     resetarBtnGoogle();
                 }
             })
             .catch(() => {
-                alert('Falha de conexão. Verifique sua internet e tente novamente.');
+                opusAlerta({
+                    tipo: 'error',
+                    titulo: 'Falha de Conexão',
+                    mensagem: 'Não foi possível conectar ao servidor. Verifique sua conexão e tente novamente.'
+                });
                 resetarBtnGoogle();
             });
         }

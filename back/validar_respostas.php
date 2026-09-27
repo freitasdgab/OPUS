@@ -13,7 +13,7 @@ $licao    = intval($_POST['licao']    ?? 0);
 $respostas_usuario = $_POST['resposta'] ?? [];
 
 if ($capitulo == 0 || $licao == 0) {
-    echo "<script>alert('Dados da lição inválidos.'); window.location.href='../front/pages/dashboard.php';</script>";
+    header("Location: ../front/pages/dashboard.php?erro=" . urlencode('Dados da lição inválidos.'));
     exit();
 }
 
@@ -63,14 +63,12 @@ if ($acertos == $total_perguntas && $total_perguntas > 0) {
         }
     }
 
-    echo "<script>
-            alert('✅ Excelente! Você acertou todas as questões. +50 XP ganho.$msg_bonus');
-            window.location.href='../front/pages/dashboard.php';
-          </script>";
+    $msg = "Excelente! Você acertou todas as questões. +50 XP ganho.$msg_bonus";
+    header("Location: ../front/pages/dashboard.php?sucesso=" . urlencode($msg));
+    exit();
 
 } else {
-    echo "<script>
-            alert('❌ Você acertou $acertos de $total_perguntas. Revise e tente novamente!');
-            window.history.back();
-          </script>";
+    $msg = "Você acertou $acertos de $total_perguntas. Revise os conceitos e tente novamente!";
+    header("Location: ../front/pages/licao.php?capitulo={$capitulo}&licao={$licao}&aviso=" . urlencode($msg));
+    exit();
 }

@@ -17,6 +17,7 @@ require_once '../../back/licao_logic.php';
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/licao.css">
+    <link rel="stylesheet" href="../assets/css/opus_alerta.css">
 </head>
 <body>
 
@@ -165,6 +166,7 @@ require_once '../../back/licao_logic.php';
 
     <?php include '../../back/chatbot.php'; ?>
 
+    <script src="../assets/js/opus_alerta.js"></script>
     <script src="../assets/js/script.js"></script>
     <script src="../assets/js/licao.js"></script>
 

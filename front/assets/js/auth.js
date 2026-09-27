@@ -70,7 +70,17 @@ authForm.addEventListener('submit', (e) => {
 
         if (erros.length > 0) {
             e.preventDefault(); // Impede o envio do formulário
-            alert("Sua senha precisa melhorar nos seguintes pontos:\n\n- " + erros.join("\n- "));
+            if (typeof opusAlerta === 'function') {
+                opusAlerta({
+                    tipo: 'warning',
+                    titulo: 'Requisitos de Senha',
+                    mensagem: 'Para sua segurança, ajuste os seguintes pontos:',
+                    detalhes: erros,
+                    botaoTexto: 'AJUSTAR SENHA'
+                });
+            } else {
+                alert("Sua senha precisa melhorar nos seguintes pontos:\n\n- " + erros.join("\n- "));
+            }
             return;
         }
     }

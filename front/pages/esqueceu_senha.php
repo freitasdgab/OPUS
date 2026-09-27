@@ -13,8 +13,8 @@
     
     <link rel="stylesheet" href="../assets/css/intro.css"> 
     <link rel="stylesheet" href="../assets/css/auth.css">
-
     <link rel="stylesheet" href="../assets/css/esqueceu_senha.css">
+    <link rel="stylesheet" href="../assets/css/opus_alerta.css">
 </head>
 <body>
     <canvas id="bg-canvas"></canvas>
@@ -66,6 +66,7 @@
         </div>
     </div>
 
+    <script src="../assets/js/opus_alerta.js"></script>
     <script src="../assets/js/auth.js"></script>
     <script src="../assets/js/esqueceu_senha.js"></script>
 </body>

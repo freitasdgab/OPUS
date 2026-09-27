@@ -151,16 +151,42 @@ function carregarBatalha(rivalId) {
 
 function provocarRival() {
     const rivalNome = document.getElementById('p2Nome').innerText;
-    alert(`🔥 Provocação enviada para ${rivalNome}: "Seu duelo tá fraco! Quero ver me passar!" 😎`);
+    if (typeof opusAlerta === 'function') {
+        opusAlerta({
+            tipo: 'warning',
+            titulo: 'Provocação Enviada! 🔥',
+            mensagem: `Provocação enviada para <strong>${rivalNome}</strong>:<br><br><em>"Seu duelo tá fraco! Quero ver me passar!"</em> 😎`
+        });
+    } else {
+        alert(`🔥 Provocação enviada para ${rivalNome}: "Seu duelo tá fraco! Quero ver me passar!" 😎`);
+    }
 }
 
 // ── 2. COPIAR LINK E CONVITES (WHATSAPP E CHAT DO OPUS) ──────────
 function copiarLinkConvite(userId) {
     const link = `${window.location.origin}/OPUS/front/pages/auth.html?convite=${userId}`;
     navigator.clipboard.writeText(link).then(() => {
-        alert('🎉 Link de convite copiado para a área de transferência!\n\nEnvie para seus amigos para eles entrarem no Opus!');
+        if (typeof opusAlerta === 'function') {
+            opusAlerta({
+                tipo: 'success',
+                titulo: 'Link de Convite Copiado! 🎉',
+                mensagem: 'O link foi copiado para sua área de transferência. Envie para seus amigos para jogarem juntos no Opus!',
+                linkCopia: link
+            });
+        } else {
+            alert('🎉 Link de convite copiado para a área de transferência!\n\nEnvie para seus amigos para eles entrarem no Opus!');
+        }
     }).catch(() => {
-        alert('Seu link de convite: ' + link);
+        if (typeof opusAlerta === 'function') {
+            opusAlerta({
+                tipo: 'info',
+                titulo: 'Link de Convite',
+                mensagem: 'Copie seu link de convite abaixo:',
+                linkCopia: link
+            });
+        } else {
+            alert('Seu link de convite: ' + link);
+        }
     });
 }
 
@@ -182,7 +208,11 @@ function enviarConviteChatGrupo(codigoConvite, nomeGrupo) {
         enviarSugestaoOpi(texto);
     } else {
         navigator.clipboard.writeText(texto);
-        alert('🎉 Mensagem de convite copiada! Cole no chat para convidar seus amigos.');
+        if (typeof opusToast === 'function') {
+            opusToast('Mensagem de convite copiada! Cole no chat para convidar seus amigos.', 'success');
+        } else {
+            alert('🎉 Mensagem de convite copiada! Cole no chat para convidar seus amigos.');
+        }
     }
 }
 
@@ -283,10 +313,18 @@ function entrarNoGrupoDireto(codigo) {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            alert('🎉 ' + data.mensagem);
+            if (typeof opusToast === 'function') {
+                opusToast(data.mensagem, 'success');
+            } else {
+                alert('🎉 ' + data.mensagem);
+            }
             carregarGrupos();
         } else {
-            alert(data.mensagem || 'Erro ao entrar no grupo.');
+            if (typeof opusToast === 'function') {
+                opusToast(data.mensagem || 'Erro ao entrar no grupo.', 'error');
+            } else {
+                alert(data.mensagem || 'Erro ao entrar no grupo.');
+            }
         }
     });
 }
@@ -405,12 +443,20 @@ function confirmarCriarGrupo() {
                 carregarGrupos();
             }, 2800);
         } else {
-            alert(data.mensagem || 'Erro ao criar grupo. Tente novamente.');
+            if (typeof opusToast === 'function') {
+                opusToast(data.mensagem || 'Erro ao criar grupo. Tente novamente.', 'error');
+            } else {
+                alert(data.mensagem || 'Erro ao criar grupo. Tente novamente.');
+            }
         }
     })
     .catch(() => {
         if (btnCriar) { btnCriar.disabled = false; btnCriar.innerHTML = 'Criar Grupo'; }
-        alert('Erro de conexão. Verifique sua internet e tente novamente.');
+        if (typeof opusToast === 'function') {
+            opusToast('Erro de conexão. Verifique sua internet e tente novamente.', 'error');
+        } else {
+            alert('Erro de conexão. Verifique sua internet e tente novamente.');
+        }
     });
 }
 
@@ -418,7 +464,11 @@ function confirmarCriarGrupo() {
 function entrarGrupoPorCodigo() {
     const codigo = document.getElementById('inputCodigoGrupo').value.trim();
     if (!codigo) {
-        alert('Digite o código do grupo para entrar!');
+        if (typeof opusToast === 'function') {
+            opusToast('Digite o código do grupo para entrar!', 'warning');
+        } else {
+            alert('Digite o código do grupo para entrar!');
+        }
         return;
     }
 
@@ -430,11 +480,19 @@ function entrarGrupoPorCodigo() {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            alert('🎉 ' + data.mensagem);
+            if (typeof opusToast === 'function') {
+                opusToast(data.mensagem, 'success');
+            } else {
+                alert('🎉 ' + data.mensagem);
+            }
             document.getElementById('inputCodigoGrupo').value = '';
             carregarGrupos();
         } else {
-            alert(data.mensagem || 'Não foi possível entrar no grupo.');
+            if (typeof opusToast === 'function') {
+                opusToast(data.mensagem || 'Não foi possível entrar no grupo.', 'error');
+            } else {
+                alert(data.mensagem || 'Não foi possível entrar no grupo.');
+            }
         }
     });
 }
@@ -445,7 +503,11 @@ function visualizarGrupo(grupoId) {
     .then(r => r.json())
     .then(data => {
         if (!data.success || !data.grupo) {
-            alert('Não foi possível carregar os detalhes do grupo.');
+            if (typeof opusToast === 'function') {
+                opusToast('Não foi possível carregar os detalhes do grupo.', 'error');
+            } else {
+                alert('Não foi possível carregar os detalhes do grupo.');
+            }
             return;
         }
 

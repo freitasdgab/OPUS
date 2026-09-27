@@ -65,10 +65,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
         
-        echo "<script>
-            alert('Erro: Usuário ou senha incorretos!'); 
-            window.history.back();
-        </script>";
+        $msg_erro = urlencode('Usuário ou senha incorretos! Verifique seus dados e tente novamente.');
+        $redirect_url = "../front/pages/auth.html?erro={$msg_erro}&mode=login";
+        if (!empty($codigo_grupo)) $redirect_url .= "&grupo=" . urlencode($codigo_grupo);
+        if ($convite_id > 0) $redirect_url .= "&convite=" . $convite_id;
+        header("Location: $redirect_url");
         exit();
 
     // ----------------------------------------------------
@@ -80,9 +81,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $confirme_senha = trim($_POST['confirme_senha'] ?? '');
         $email = strtolower($email);
 
+        $redirect_base = "../front/pages/auth.html?mode=cadastro";
+        if (!empty($codigo_grupo)) $redirect_base .= "&grupo=" . urlencode($codigo_grupo);
+        if ($convite_id > 0) $redirect_base .= "&convite=" . $convite_id;
+
         // 1. Validação de senhas iguais
         if ($senha !== $confirme_senha) {
-            echo "<script>alert('As senhas não coincidem!'); window.history.back();</script>";
+            $msg_erro = urlencode('As senhas digitadas não coincidem!');
+            header("Location: {$redirect_base}&erro={$msg_erro}");
             exit();
         }
 
@@ -93,10 +99,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $especial  = preg_match('@[^\w]@', $senha); // Verifica se há caracteres que não sejam letras ou números
 
         if (!$maiuscula || !$minuscula || !$numero || !$especial || strlen($senha) < 8) {
-            echo "<script>
-                alert('Erro de Segurança: A senha enviada não cumpre os requisitos mínimos de força (Mínimo de 8 caracteres, contendo maiúscula, minúscula, número e caractere especial).'); 
-                window.history.back();
-            </script>";
+            $msg_erro = urlencode('A senha deve ter pelo menos 8 caracteres e conter letra maiúscula, minúscula, número e caractere especial.');
+            header("Location: {$redirect_base}&erro={$msg_erro}");
             exit();
         }
 
@@ -105,7 +109,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param("s", $email);
         $stmt->execute();
         if ($stmt->get_result()->num_rows > 0) {
-            echo "<script>alert('Este e-mail já está cadastrado!'); window.history.back();</script>";
+            $msg_erro = urlencode('Este e-mail já está cadastrado no Opus!');
+            header("Location: {$redirect_base}&erro={$msg_erro}");
             exit();
         }
 
@@ -157,7 +162,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Location: ../front/pages/dashboard.php");
             exit();
         } else {
-            echo "<script>alert('Erro ao criar sua conta no banco de dados.'); window.history.back();</script>";
+            $msg_erro = urlencode('Ocorreu um erro ao criar a conta no banco de dados. Tente novamente.');
+            header("Location: {$redirect_base}&erro={$msg_erro}");
             exit();
         }
     }

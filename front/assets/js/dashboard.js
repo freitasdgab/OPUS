@@ -69,7 +69,11 @@
             .then(r => r.json())
             .then(data => {
                 if (!data.success) {
-                    alert(data.mensagem || 'Não foi possível resgatar o baú.');
+                    if (typeof opusToast === 'function') {
+                        opusToast(data.mensagem || 'Não foi possível resgatar o baú.', 'error');
+                    } else {
+                        alert(data.mensagem || 'Não foi possível resgatar o baú.');
+                    }
                     btn.disabled = false;
                     btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> TENTAR NOVAMENTE';
                     return;
@@ -118,7 +122,11 @@
             })
             .catch(err => {
                 console.error(err);
-                alert('Erro de conexão ao abrir o baú.');
+                if (typeof opusToast === 'function') {
+                    opusToast('Erro de conexão ao abrir o baú.', 'error');
+                } else {
+                    alert('Erro de conexão ao abrir o baú.');
+                }
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-box-open"></i> ABRIR BAÚ DE RECOMPENSA';
             });
