@@ -311,3 +311,4 @@ $email_admin = htmlspecialchars($current_user['email'] ?? '');
     <script src="../assets/js/admin_dashboard.js"></script>
 </body>
 </html>
+

@@ -107,3 +107,49 @@ fetch('../../back/api_conquistas.php')
     }
 })
 .catch(err => console.error('Erro ao carregar conquistas no perfil:', err));
+
+// Busca pedidos pendentes para a Caixa de Aprovação
+fetch('../../back/api_amigos.php?action=listar_pedidos')
+.then(r => r.json())
+.then(data => {
+    if (data.success && data.pedidos.length > 0) {
+        document.getElementById('notificacoesAreaPerfil').style.display = 'block';
+        const container = document.getElementById('listaPedidosPerfil');
+        container.innerHTML = '';
+        data.pedidos.forEach(p => {
+            container.innerHTML += `
+                <div style="display:flex; align-items:center; gap:10px; background:#12121a; padding:8px 12px; border-radius:10px;" id="pedidoBox_${p.pedido_id}">
+                    <img src="${p.foto_perfil}" style="width:30px; height:30px; border-radius:50%;">
+                    <div style="flex:1;">
+                        <span style="color:#fff; font-size:0.85rem; font-weight:700;">${p.nome}</span>
+                        <span style="display:block; color:var(--text-muted); font-size:0.75rem;">Quer conectar</span>
+                    </div>
+                    <button onclick="responderPedidoPerfil(${p.pedido_id}, 'aceitar')" style="background:#58cc02; border:none; border-radius:6px; color:#fff; width:26px; height:26px; cursor:pointer;"><i class="fa-solid fa-check"></i></button>
+                    <button onclick="responderPedidoPerfil(${p.pedido_id}, 'recusar')" style="background:#ff4b4b; border:none; border-radius:6px; color:#fff; width:26px; height:26px; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            `;
+        });
+    }
+});
+
+function responderPedidoPerfil(pedidoId, resposta) {
+    const fd = new FormData();
+    fd.append('action', 'responder_pedido');
+    fd.append('pedido_id', pedidoId);
+    fd.append('resposta', resposta);
+
+    fetch('../../back/api_amigos.php', { method: 'POST', body: fd })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById(`pedidoBox_${pedidoId}`).remove();
+            if (document.getElementById('listaPedidosPerfil').children.length === 0) {
+                document.getElementById('notificacoesAreaPerfil').style.display = 'none';
+            }
+            if (resposta === 'aceitar') {
+                const segElem = document.getElementById('lblSeguindoCount');
+                if (segElem) segElem.innerText = parseInt(segElem.innerText) + 1;
+            }
+        }
+    });
+}

@@ -55,20 +55,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 `${data.minha_posicao}º lugar de ${data.tamanho_grupo} · ${data.meu_xp_semana} XP nesta semana`;
             document.getElementById('timer-valor').innerText = formatarTempo(data.segundos_restantes);
 
-            // ── Ranking com botão de seguir em cima da foto ──
+            // ── Track de Ligas ──
+            const ligasOrdem = ['Bronze', 'Prata', 'Ouro', 'Diamante', 'Mestre'];
+            const ligaAtualIndex = ligasOrdem.findIndex(l => l.toLowerCase() === data.divisao_nome.toLowerCase());
+            
+            let trackHTML = '';
+            ligasOrdem.forEach((nomeLiga, index) => {
+                let statusClass = '';
+                let iconHTML = '<i class="fa-solid fa-shield-halved"></i>';
+                
+                if (index < ligaAtualIndex) {
+                    iconHTML = '<i class="fa-solid fa-check"></i>';
+                } else if (index === ligaAtualIndex) {
+                    statusClass = 'active';
+                } else {
+                    statusClass = 'locked';
+                    iconHTML = '<i class="fa-solid fa-lock"></i>';
+                }
+                
+                trackHTML += `
+                    <div class="league-node ${statusClass}">
+                        <div class="league-node-icon">${iconHTML}</div>
+                        <div class="league-node-name">${nomeLiga}</div>
+                    </div>
+                `;
+            });
+            const trackContainer = document.getElementById('league-track');
+            if (trackContainer) trackContainer.innerHTML = trackHTML;
+
+            // ── Ranking ──
             let html = '';
             data.membros.forEach(m => {
                 let icon = '';
                 if (m.zona === 'sobe') icon = '<i class="fa-solid fa-arrow-up" style="color:#58cc02"></i>';
                 if (m.zona === 'desce') icon = '<i class="fa-solid fa-arrow-down" style="color:#ff4b4b"></i>';
-
-                const followBtn = m.is_me ? '' : `
-                    <button
-                        class="btn-follow-avatar ${m.is_seguindo ? 'following' : ''}"
-                        title="${m.is_seguindo ? 'Seguindo' : 'Seguir'}"
-                        onclick="toggleSeguirLiga(${m.id}, this)">
-                        <i class="fa-solid ${m.is_seguindo ? 'fa-check' : 'fa-user-plus'}"></i>
-                    </button>`;
 
                 // medalha para top 3
                 let medalha = '';
@@ -81,7 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="row-pos">${medalha || m.posicao + 'º'}</div>
                         <div class="row-avatar-wrapper">
                             <img src="${obterFoto(m.foto_perfil)}" class="img-cover" alt="${m.nome}">
-                            ${followBtn}
                         </div>
                         <div class="row-name">${m.nome}${m.is_me ? ' <span style="color:#1cb0f6;font-size:0.78rem">(Você)</span>' : ''}</div>
                         <div class="row-xp">${m.xp} XP</div>
@@ -89,67 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>`;
             });
             document.getElementById('liga-list').innerHTML = html;
-
-            // ── Seção de Perfis Recomendados (quem não está seguindo ainda) ──
-            const recomendados = data.membros.filter(m => !m.is_me && !m.is_seguindo);
-            const container = document.getElementById('perfis-recomendados');
-
-            if (!container) return;
-
-            if (recomendados.length === 0) {
-                container.innerHTML = `<div style="color:#64748b; text-align:center; padding:20px; font-size:0.9rem; grid-column:1/-1;">
-                    🎉 Você já segue todos os da sua liga! Continue competindo!
-                </div>`;
-                return;
-            }
-
-            container.innerHTML = '';
-            recomendados.forEach(m => {
-                const card = document.createElement('div');
-                card.className = 'recomendado-card';
-                card.innerHTML = `
-                    <div class="rec-avatar-wrap">
-                        <img src="${obterFoto(m.foto_perfil)}" class="rec-avatar" alt="${m.nome}">
-                        <span class="rec-zona-dot ${m.zona}" title="Zona: ${m.zona}"></span>
-                    </div>
-                    <div class="rec-info">
-                        <strong>${m.nome}</strong>
-                        <span>${m.xp} XP esta semana · #${m.posicao}º lugar</span>
-                    </div>
-                    <button
-                        class="btn-rec-seguir"
-                        id="recBtn${m.id}"
-                        onclick="toggleSeguirRecomendado(${m.id}, this)">
-                        <i class="fa-solid fa-user-plus"></i> Seguir
-                    </button>`;
-                container.appendChild(card);
-            });
         })
         .catch(err => mostrarErro('Não foi possível conectar à API (' + err.message + ').'));
 });
 
-function toggleSeguirRecomendado(targetId, btn) {
-    const fd = new FormData();
-    fd.append('action', 'toggle_seguir');
-    fd.append('target_id', targetId);
 
-    btn.disabled = true;
-    fetch('../../back/api_amigos.php', { method: 'POST', body: fd })
-        .then(r => r.json())
-        .then(data => {
-            btn.disabled = false;
-            if (data.success) {
-                if (data.is_seguindo) {
-                    btn.className = 'btn-rec-seguir following';
-                    btn.innerHTML = '<i class="fa-solid fa-check"></i> Seguindo';
-                    // Anima o card
-                    btn.closest('.recomendado-card').style.opacity = '0.65';
-                } else {
-                    btn.className = 'btn-rec-seguir';
-                    btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Seguir';
-                    btn.closest('.recomendado-card').style.opacity = '1';
-                }
-            }
-        })
-        .catch(() => { btn.disabled = false; });
-}

@@ -66,22 +66,33 @@ if ($action === 'estatisticas_sociais') {
     exit();
 }
 
-// ── 2. BUSCAR USUÁRIOS PARA SEGUIR ─────────────────────────────
+// ── 2. BUSCAR USUÁRIOS PARA SEGUIR (ID OU EMAIL) ───────────────
 if ($action === 'buscar_usuarios') {
     $q = trim($_GET['q'] ?? '');
     $q_esc = $conn->real_escape_string($q);
 
-    $sql = "SELECT id, nome, email, xp, dias_fogo, foto_perfil FROM usuarios 
-            WHERE (nome LIKE '%$q_esc%' OR email LIKE '%$q_esc%') AND id != $user_id 
-            LIMIT 20";
+    // Busca exata por email ou ID (se for numérico)
+    if (is_numeric($q_esc)) {
+        $sql = "SELECT id, nome, email, xp, dias_fogo, foto_perfil FROM usuarios WHERE (id = $q_esc OR email = '$q_esc') AND id != $user_id LIMIT 1";
+    } else {
+        $sql = "SELECT id, nome, email, xp, dias_fogo, foto_perfil FROM usuarios WHERE email = '$q_esc' AND id != $user_id LIMIT 1";
+    }
     
     $res = $conn->query($sql);
     $usuarios = [];
 
-    while ($r = $res->fetch_assoc()) {
+    if ($res && $r = $res->fetch_assoc()) {
         $uid = (int) $r['id'];
-        $check = $conn->query("SELECT id FROM seguidores WHERE seguidor_id = $user_id AND seguido_id = $uid");
-        $is_seguindo = ($check && $check->num_rows > 0);
+        
+        // Verifica status da conexão
+        $check = $conn->query("SELECT status FROM pedidos_conexao WHERE (remetente_id = $user_id AND destinatario_id = $uid) OR (remetente_id = $uid AND destinatario_id = $user_id) LIMIT 1");
+        $status_conexao = 'nenhum';
+        if ($check && $row = $check->fetch_assoc()) {
+            $status_conexao = $row['status'];
+        } else {
+            $check_amigo = $conn->query("SELECT id FROM seguidores WHERE seguidor_id = $user_id AND seguido_id = $uid");
+            if ($check_amigo && $check_amigo->num_rows > 0) $status_conexao = 'aceito';
+        }
 
         $foto = !empty($r['foto_perfil']) ? $r['foto_perfil'] : '../assets/img/opi pulando feliz.png';
 
@@ -92,13 +103,14 @@ if ($action === 'buscar_usuarios') {
             'xp' => (int) $r['xp'],
             'dias_fogo' => (int) $r['dias_fogo'],
             'foto_perfil' => $foto,
-            'is_seguindo' => $is_seguindo
+            'status_conexao' => $status_conexao
         ];
     }
 
     echo json_encode(['success' => true, 'usuarios' => $usuarios]);
     exit();
 }
+
 
 // ── 3. SEGUIR / DEIXAR DE SEGUIR ──────────────────────────────
 if ($action === 'toggle_seguir') {
@@ -451,6 +463,175 @@ if ($action === 'detalhes_grupo') {
             'membros' => $membros
         ]
     ]);
+    exit();
+}
+
+// ── 10. RECOMENDAÇÕES DA LIGA ─────────────────────────────────
+if ($action === 'buscar_recomendacoes') {
+    require_once 'ligas_logic.php';
+    try {
+        liga_garantir_usuario($conn, $user_id);
+        $stmt = $conn->prepare("SELECT grupo_id FROM ligas_usuario WHERE usuario_id = ?");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $minhaLiga = $stmt->get_result()->fetch_assoc();
+        $grupo_id = $minhaLiga['grupo_id'] ?? 0;
+
+        $usuarios = [];
+        if ($grupo_id > 0) {
+            $sql = "SELECT u.id, u.nome, u.xp, u.dias_fogo, u.foto_perfil 
+                    FROM ligas_usuario lu 
+                    JOIN usuarios u ON lu.usuario_id = u.id 
+                    WHERE lu.grupo_id = $grupo_id AND u.id != $user_id 
+                    LIMIT 10";
+            $res = $conn->query($sql);
+            while ($res && $r = $res->fetch_assoc()) {
+                $uid = (int) $r['id'];
+                $check = $conn->query("SELECT status FROM pedidos_conexao WHERE (remetente_id = $user_id AND destinatario_id = $uid) OR (remetente_id = $uid AND destinatario_id = $user_id) LIMIT 1");
+                $status = 'nenhum';
+                if ($check && $row = $check->fetch_assoc()) {
+                    $status = $row['status'];
+                } else {
+                    $check_amigo = $conn->query("SELECT id FROM seguidores WHERE seguidor_id = $user_id AND seguido_id = $uid");
+                    if ($check_amigo && $check_amigo->num_rows > 0) $status = 'aceito';
+                }
+
+                $foto = !empty($r['foto_perfil']) ? $r['foto_perfil'] : '../assets/img/opi pulando feliz.png';
+                $usuarios[] = [
+                    'id' => $uid,
+                    'nome' => $r['nome'],
+                    'xp' => (int) $r['xp'],
+                    'dias_fogo' => (int) $r['dias_fogo'],
+                    'foto_perfil' => $foto,
+                    'status_conexao' => $status
+                ];
+            }
+        }
+        echo json_encode(['success' => true, 'usuarios' => $usuarios]);
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'mensagem' => $e->getMessage()]);
+    }
+    exit();
+}
+
+// ── 11. ENVIAR PEDIDO DE CONEXÃO ──────────────────────────────
+if ($action === 'solicitar_conexao') {
+    $target_id = (int) ($_POST['target_id'] ?? 0);
+    if ($target_id <= 0 || $target_id === $user_id) {
+        echo json_encode(['success' => false, 'mensagem' => 'Usuário inválido']);
+        exit();
+    }
+    $check = $conn->query("SELECT id, status, remetente_id FROM pedidos_conexao WHERE (remetente_id = $user_id AND destinatario_id = $target_id) OR (remetente_id = $target_id AND destinatario_id = $user_id)");
+    if ($check && $check->num_rows > 0) {
+        $row = $check->fetch_assoc();
+        if ($row['status'] === 'pendente') {
+            if ($row['remetente_id'] == $target_id) {
+                echo json_encode(['success' => false, 'mensagem' => 'Este usuário já enviou um pedido para você. Aceite-o nas notificações!']);
+            } else {
+                echo json_encode(['success' => false, 'mensagem' => 'Pedido já enviado, aguarde aprovação.']);
+            }
+        } elseif ($row['status'] === 'aceito') {
+            echo json_encode(['success' => false, 'mensagem' => 'Vocês já são amigos!']);
+        } else {
+            $conn->query("UPDATE pedidos_conexao SET status = 'pendente', remetente_id = $user_id, destinatario_id = $target_id, data_criacao = NOW() WHERE id = " . $row['id']);
+            echo json_encode(['success' => true, 'mensagem' => 'Pedido enviado!']);
+        }
+    } else {
+        $conn->query("INSERT INTO pedidos_conexao (remetente_id, destinatario_id) VALUES ($user_id, $target_id)");
+        echo json_encode(['success' => true, 'mensagem' => 'Pedido de conexão enviado!']);
+    }
+    exit();
+}
+
+// ── 12. RESPONDER PEDIDO DE CONEXÃO ────────────────────────────
+if ($action === 'responder_pedido') {
+    $pedido_id = (int) ($_POST['pedido_id'] ?? 0);
+    $resposta = $_POST['resposta'] ?? ''; 
+
+    $check = $conn->query("SELECT remetente_id FROM pedidos_conexao WHERE id = $pedido_id AND destinatario_id = $user_id AND status = 'pendente'");
+    if ($check && $row = $check->fetch_assoc()) {
+        $remetente = $row['remetente_id'];
+        if ($resposta === 'aceitar') {
+            $conn->query("UPDATE pedidos_conexao SET status = 'aceito' WHERE id = $pedido_id");
+            $conn->query("INSERT IGNORE INTO seguidores (seguidor_id, seguido_id) VALUES ($user_id, $remetente)");
+            $conn->query("INSERT IGNORE INTO seguidores (seguidor_id, seguido_id) VALUES ($remetente, $user_id)");
+            echo json_encode(['success' => true, 'mensagem' => 'Pedido aceito! Vocês agora são amigos.']);
+        } else {
+            $conn->query("UPDATE pedidos_conexao SET status = 'recusado' WHERE id = $pedido_id");
+            echo json_encode(['success' => true, 'mensagem' => 'Pedido recusado.']);
+        }
+    } else {
+        echo json_encode(['success' => false, 'mensagem' => 'Pedido inválido ou já respondido.']);
+    }
+    exit();
+}
+
+// ── 13. LISTAR PEDIDOS PENDENTES ──────────────────────────────
+if ($action === 'listar_pedidos') {
+    $sql = "SELECT p.id as pedido_id, u.id as usuario_id, u.nome, u.foto_perfil, p.data_criacao
+            FROM pedidos_conexao p
+            JOIN usuarios u ON p.remetente_id = u.id
+            WHERE p.destinatario_id = $user_id AND p.status = 'pendente'
+            ORDER BY p.data_criacao DESC";
+    $res = $conn->query($sql);
+    $pedidos = [];
+    while ($r = $res->fetch_assoc()) {
+        $foto = !empty($r['foto_perfil']) ? $r['foto_perfil'] : '../assets/img/opi pulando feliz.png';
+        $pedidos[] = [
+            'pedido_id' => (int) $r['pedido_id'],
+            'usuario_id' => (int) $r['usuario_id'],
+            'nome' => $r['nome'],
+            'foto_perfil' => $foto,
+            'data' => $r['data_criacao']
+        ];
+    }
+    echo json_encode(['success' => true, 'pedidos' => $pedidos]);
+    exit();
+}
+
+// ── 14. CHAT: ENVIAR MENSAGEM / PROVOCAR ──────────────────────
+if ($action === 'enviar_mensagem') {
+    $destinatario_id = (int) ($_POST['destinatario_id'] ?? 0);
+    $mensagem = trim($_POST['mensagem'] ?? '');
+
+    if ($destinatario_id <= 0 || empty($mensagem)) {
+        echo json_encode(['success' => false, 'mensagem' => 'Dados inválidos']);
+        exit();
+    }
+
+    $msg_esc = $conn->real_escape_string($mensagem);
+    $conn->query("INSERT INTO chat_mensagens (remetente_id, destinatario_id, mensagem) VALUES ($user_id, $destinatario_id, '$msg_esc')");
+    echo json_encode(['success' => true, 'mensagem' => 'Enviado!']);
+    exit();
+}
+
+// ── 15. CHAT: LISTAR MENSAGENS ────────────────────────────────
+if ($action === 'listar_mensagens') {
+    $amigo_id = (int) ($_GET['amigo_id'] ?? 0);
+    if ($amigo_id <= 0) {
+        echo json_encode(['success' => false, 'mensagem' => 'Amigo inválido']);
+        exit();
+    }
+
+    $conn->query("UPDATE chat_mensagens SET status_leitura = 'lido' WHERE destinatario_id = $user_id AND remetente_id = $amigo_id AND status_leitura != 'lido'");
+
+    $sql = "SELECT id, remetente_id, mensagem, status_leitura, data_envio
+            FROM chat_mensagens
+            WHERE (remetente_id = $user_id AND destinatario_id = $amigo_id)
+               OR (remetente_id = $amigo_id AND destinatario_id = $user_id)
+            ORDER BY data_envio ASC LIMIT 50";
+    $res = $conn->query($sql);
+    $mensagens = [];
+    while ($r = $res->fetch_assoc()) {
+        $mensagens[] = [
+            'id' => (int) $r['id'],
+            'is_mine' => ((int) $r['remetente_id'] === $user_id),
+            'mensagem' => $r['mensagem'],
+            'status' => $r['status_leitura'],
+            'data' => $r['data_envio']
+        ];
+    }
+    echo json_encode(['success' => true, 'mensagens' => $mensagens]);
     exit();
 }
 

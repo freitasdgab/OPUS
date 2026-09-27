@@ -1,5 +1,3 @@
-<link rel="shortcut icon" href="../assets/img/logo.png">
-
 <?php
 // Toda a lógica de sessão, proteção de acesso e busca de dados no banco
 // foi movida para back/licao_logic.php (mesma funcionalidade, apenas separada
@@ -21,10 +19,9 @@ require_once '../../back/licao_logic.php';
 </head>
 <body class="licao-page">
 
-    <canvas id="bg-canvas"></canvas>
-
-    <!-- FASE 1: SLIDES DE EXPLICAÇÃO -->
-    <div class="phase-container" id="explanationPhase">
+    
+    <!-- FASE 1: SLIDES DE EXPLICAÇÃO (Ocultado a pedido do usuário) -->
+    <div class="phase-container" id="explanationPhase" style="display: none;">
         <div class="phase-header">
             <a href="dashboard.php" class="btn-close-phase"><i class="fa-solid fa-arrow-left"></i> Voltar</a>
             <span class="lesson-title"><?php echo htmlspecialchars($dados_licao['titulo']); ?></span>
@@ -71,7 +68,7 @@ require_once '../../back/licao_logic.php';
     </div>
 
     <!-- FASE 2: QUIZ ESTILO DUOLINGO -->
-    <div class="phase-container" id="quizPhase" style="display: none;">
+    <div class="phase-container" id="quizPhase" style="display: flex;">
         <!-- BARRA DE PROGRESSO -->
         <div class="quiz-progress-bar">
             <a href="dashboard.php" class="btn-close-quiz" onclick="event.preventDefault(); abrirAvisoSaida();"><i class="fa-solid fa-xmark"></i></a>
@@ -98,30 +95,111 @@ require_once '../../back/licao_logic.php';
             
             <!-- LADO DIREITO: PERGUNTA E ALTERNATIVAS -->
             <div class="quiz-question-side">
-                <?php foreach ($perguntas as $index => $p): $q_num = $index + 1; ?>
+                <?php foreach ($perguntas as $index => $p): $q_num = $index + 1; 
+                    $tipo = $p['tipo'] ?? 'multipla_escolha';
+                ?>
                     <div class="question-slide" 
                          data-index="<?php echo $index; ?>" 
-                         data-correct="<?php echo $p['alternativa_correta']; ?>"
+                         data-tipo="<?php echo htmlspecialchars($tipo); ?>"
+                         data-correct="<?php echo htmlspecialchars($p['alternativa_correta'] ?? ''); ?>"
+                         data-correct-text="<?php echo htmlspecialchars($p['alternativa_' . strtolower($p['alternativa_correta'] ?? '')] ?? ''); ?>"
                          data-pergunta-id="<?php echo $p['id']; ?>"
                          style="display: <?php echo $index === 0 ? 'flex' : 'none'; ?>;">
                         
-                        <span class="question-number">Pergunta <?php echo $q_num; ?> de <?php echo count($perguntas); ?></span>
+                        <span class="question-number">Pergunta <?php echo $q_num; ?> de <?php echo count($perguntas); ?> - <?php echo ucfirst(str_replace('_', ' ', $tipo)); ?></span>
                         <h2 class="question-text"><?php echo htmlspecialchars($p['pergunta_texto']); ?></h2>
                         
-                        <div class="duo-options">
-                            <div class="duo-option" data-value="A" onclick="selectOption(this)">
-                                <span class="option-letter">A</span>
-                                <span class="option-text"><?php echo htmlspecialchars($p['alternativa_a']); ?></span>
+                        <?php if ($tipo === 'multipla_escolha'): ?>
+                            <div class="duo-options">
+                                <div class="duo-option" data-value="A" onclick="selectOption(this)">
+                                    <span class="option-letter">A</span>
+                                    <span class="option-text"><?php echo htmlspecialchars($p['alternativa_a']); ?></span>
+                                </div>
+                                <div class="duo-option" data-value="B" onclick="selectOption(this)">
+                                    <span class="option-letter">B</span>
+                                    <span class="option-text"><?php echo htmlspecialchars($p['alternativa_b']); ?></span>
+                                </div>
+                                <div class="duo-option" data-value="C" onclick="selectOption(this)">
+                                    <span class="option-letter">C</span>
+                                    <span class="option-text"><?php echo htmlspecialchars($p['alternativa_c']); ?></span>
+                                </div>
                             </div>
-                            <div class="duo-option" data-value="B" onclick="selectOption(this)">
-                                <span class="option-letter">B</span>
-                                <span class="option-text"><?php echo htmlspecialchars($p['alternativa_b']); ?></span>
+                        
+                        <?php elseif ($tipo === 'digitar_codigo'): ?>
+                            <div class="typing-container">
+                                <p style="font-size: 0.95rem; color: #a5a5ac; margin-bottom: 15px;"><i class="fa-solid fa-terminal"></i> Terminal: Digite o código para resolver o problema:</p>
+                                <div class="code-editor" style="margin-top: 0; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+                                    <div class="code-header" style="margin-bottom: 10px;">
+                                        <div class="dot r"></div>
+                                        <div class="dot y"></div>
+                                        <div class="dot g"></div>
+                                    </div>
+                                    <span class="code-text" style="color: #6a9955; display:block; margin-bottom: 10px;">// Dica: A resposta correta deve ser '<?php echo htmlspecialchars($p['alternativa_' . strtolower($p['alternativa_correta'])]); ?>'</span>
+                                    <span class="code-text" style="color: #569cd6; font-size:1.15rem;">> </span>
+                                    <textarea class="typing-input" id="typeInput_<?php echo $index; ?>" placeholder="Escreva seu código aqui..." oninput="checkTypingInput(this)"></textarea>
+                                </div>
+                                <div style="margin-top: 15px; font-size: 0.85rem; color: #8e95a1; background: #1a1c24; padding: 10px; border-radius: 8px;">
+                                    <strong>Opções (Use o conteúdo de uma delas para acertar):</strong><br>
+                                    <span style="color:#d1d5e0;">A) <?php echo htmlspecialchars($p['alternativa_a']); ?></span><br>
+                                    <span style="color:#d1d5e0;">B) <?php echo htmlspecialchars($p['alternativa_b']); ?></span><br>
+                                    <span style="color:#d1d5e0;">C) <?php echo htmlspecialchars($p['alternativa_c']); ?></span>
+                                </div>
                             </div>
-                            <div class="duo-option" data-value="C" onclick="selectOption(this)">
-                                <span class="option-letter">C</span>
-                                <span class="option-text"><?php echo htmlspecialchars($p['alternativa_c']); ?></span>
+                        
+                        <?php elseif ($tipo === 'completar_codigo'): ?>
+                            <div class="complete-code-container">
+                                <p style="font-size: 0.95rem; color: #a5a5ac; margin-bottom: 15px;"><i class="fa-solid fa-code"></i> Escolha a alternativa correta para preencher a lacuna abaixo:</p>
+                                
+                                <div class="code-editor" style="margin-top: 0; box-shadow: 0 5px 15px rgba(0,0,0,0.3); margin-bottom: 20px;">
+                                    <div class="code-header" style="margin-bottom: 10px;">
+                                        <div class="dot r"></div>
+                                        <div class="dot y"></div>
+                                        <div class="dot g"></div>
+                                    </div>
+                                    <div class="code-snippet-box" style="padding: 0; border: none; background: transparent;">
+                                        <span class="code-text" style="color: #6a9955; display:block; margin-bottom: 10px;">// <?php echo htmlspecialchars($p['pergunta_texto']); ?></span>
+                                        <span class="code-text" style="color: #ce82ff; font-weight: bold;">_________</span>
+                                    </div>
+                                </div>
+
+                                <div class="duo-options" style="display: flex; flex-direction: column; gap: 10px;">
+                                    <div class="duo-option" data-value="A" onclick="selectOption(this)">
+                                        <span class="option-text"><?php echo htmlspecialchars($p['alternativa_a']); ?></span>
+                                    </div>
+                                    <div class="duo-option" data-value="B" onclick="selectOption(this)">
+                                        <span class="option-text"><?php echo htmlspecialchars($p['alternativa_b']); ?></span>
+                                    </div>
+                                    <div class="duo-option" data-value="C" onclick="selectOption(this)">
+                                        <span class="option-text"><?php echo htmlspecialchars($p['alternativa_c']); ?></span>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                            
+                        <?php elseif ($tipo === 'completar_codigo_escrito'): ?>
+                            <div class="complete-code-container">
+                                <p style="font-size: 0.95rem; color: #a5a5ac; margin-bottom: 15px;"><i class="fa-solid fa-keyboard"></i> Digite a resposta exata para completar o código:</p>
+                                
+                                <div class="code-editor" style="margin-top: 0; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+                                    <div class="code-header" style="margin-bottom: 10px;">
+                                        <div class="dot r"></div>
+                                        <div class="dot y"></div>
+                                        <div class="dot g"></div>
+                                    </div>
+                                    <div class="code-snippet-box" style="padding: 0; border: none; background: transparent;">
+                                        <span class="code-text" style="color: #6a9955; display:block; margin-bottom: 10px;">// Complete a lacuna com 'A', 'B', 'C' ou a frase correta</span>
+                                        <span class="code-text" style="color: #569cd6;">> </span>
+                                        <input type="text" class="code-input-inline" placeholder="digite a resposta..." oninput="checkInlineInput(this)">
+                                    </div>
+                                </div>
+                                <div style="margin-top: 15px; font-size: 0.85rem; color: #8e95a1; background: #1a1c24; padding: 10px; border-radius: 8px;">
+                                    <strong>Possíveis Respostas:</strong><br>
+                                    <span style="color:#d1d5e0;">A) <?php echo htmlspecialchars($p['alternativa_a']); ?></span><br>
+                                    <span style="color:#d1d5e0;">B) <?php echo htmlspecialchars($p['alternativa_b']); ?></span><br>
+                                    <span style="color:#d1d5e0;">C) <?php echo htmlspecialchars($p['alternativa_c']); ?></span>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
                     </div>
                 <?php endforeach; ?>
             </div>
@@ -166,9 +244,9 @@ require_once '../../back/licao_logic.php';
 
     <?php include '../../back/chatbot.php'; ?>
 
-    <script src="../assets/js/opus_alerta.js"></script>
-    <script src="../assets/js/script.js"></script>
-    <script src="../assets/js/licao.js"></script>
+    <script src="../assets/js/opus_alerta.js?v=<?= time() ?>"></script>
+    <script src="../assets/js/script.js?v=<?= time() ?>"></script>
+    <script src="../assets/js/licao.js?v=<?= time() ?>"></script>
 
 </body>
 </html>

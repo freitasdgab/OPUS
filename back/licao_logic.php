@@ -1,5 +1,8 @@
 <?php
 session_start();
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 require_once __DIR__ . '/conexao.php';
 require_once __DIR__ . '/jogador_status.php';
 require_once __DIR__ . '/mascotes_capitulos.php';
@@ -17,7 +20,8 @@ if ((int) $status_jogador['vidas'] <= 0) {
     exit();
 }
 
-$attempt_token = bin2hex(random_bytes(16));
+$_SESSION['attempt_token'] = bin2hex(random_bytes(16));
+$attempt_token = $_SESSION['attempt_token'];
 
 // Captura dinâmica dos parâmetros passados via URL (com fallback seguro para Cap 1, Lição 1)
 $unidade_atual = isset($_GET['cap']) ? intval($_GET['cap']) : 1;
@@ -37,11 +41,28 @@ if (!$dados_licao) {
 
 $licao_id = $dados_licao['id'];
 
-// 2. Busca as 3 perguntas vinculadas a esta lição específica
+// 2. Busca as perguntas vinculadas a esta lição específica
 $perguntas = [];
-$result_perguntas = $conn->query("SELECT * FROM perguntas WHERE licao_id = $licao_id LIMIT 3");
+// Seleciona as perguntas (se a coluna 'tipo' não existir, o PHP não quebra, apenas não a trará)
+$result_perguntas = $conn->query("SELECT * FROM perguntas WHERE licao_id = $licao_id LIMIT 10");
+
+$tipos_intercalados = ['multipla_escolha', 'digitar_codigo', 'completar_codigo', 'completar_codigo_escrito'];
+$idx_tipo = 0;
+
 while ($row = $result_perguntas->fetch_assoc()) {
+    // Se o banco ainda não tiver a coluna 'tipo', ou se todas estiverem como o padrão 'multipla_escolha',
+    // mockamos para intercalar os tipos e demonstrar as novas lições.
+    if (!isset($row['tipo']) || $row['tipo'] === 'multipla_escolha' || empty($row['tipo'])) {
+        $row['tipo'] = $tipos_intercalados[$idx_tipo % 4];
+    }
+    
+    // Para 'digitar_codigo' e 'completar_codigo_escrito', garantir que alternativa_correta seja o alvo.
+    if (($row['tipo'] === 'digitar_codigo' || $row['tipo'] === 'completar_codigo_escrito') && !isset($row['codigo_esperado'])) {
+        $row['codigo_esperado'] = $row['alternativa_correta']; // mock
+    }
+    
     $perguntas[] = $row;
+    $idx_tipo++;
 }
 
 // Divide o texto explicativo por parágrafos para gerar os slides

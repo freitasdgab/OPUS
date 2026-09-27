@@ -1,7 +1,7 @@
 /* amigos.css - Estilos da Central de Amigos & Batalhas (VS) */
 
 :root {
-    --bg-dark: #121218;
+    --bg-dark: #0d0d0f;
     --card-bg: #191924;
     --border-color: #2e2e42;
     --text-main: #ffffff;
@@ -1088,3 +1088,256 @@
     filter: brightness(1.1);
 }
 
+/* --- NOVAS CLASSES (MENU GRADE E CHAT) --- */
+.amigos-menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+.amigos-menu-card {
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-bottom: 5px solid #101018;
+    border-radius: 20px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: center;
+}
+
+.amigos-menu-card:hover {
+    transform: translateY(-5px);
+    border-color: #3b3b54;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+.amc-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.8rem;
+    margin: 0 auto 16px auto;
+}
+
+.amigos-menu-card h3 {
+    color: #fff;
+    margin: 0 0 8px 0;
+    font-size: 1.15rem;
+    font-weight: 800;
+}
+
+.amigos-menu-card p {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.btn-voltar-amigos {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    color: var(--text-muted);
+    border: none;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    margin-bottom: 20px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    transition: 0.2s;
+}
+
+.btn-voltar-amigos:hover {
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+}
+
+/* CHAT E PEDIDOS LAYOUT */
+.chat-pedidos-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 24px;
+    height: 600px;
+}
+
+.chat-sidebar {
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.chat-main {
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+.chat-empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+.pedidos-list, .amigos-chat-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pedido-card, .amigo-chat-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    background: #12121a;
+    border-radius: 14px;
+    border: 1px solid #2e2e42;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.pedido-card:hover, .amigo-chat-card:hover {
+    border-color: #3b3b54;
+}
+
+.amigo-chat-card.active {
+    border-color: #1cb0f6;
+    background: rgba(28,176,246,0.1);
+}
+
+.pedido-avatar, .amigo-chat-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: contain;
+    background: #191924;
+}
+
+.pedido-info, .amigo-chat-info {
+    flex: 1;
+}
+
+.pedido-info h5, .amigo-chat-info h5 {
+    margin: 0;
+    color: #fff;
+    font-size: 0.9rem;
+}
+
+.pedido-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.btn-pedido {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+}
+
+.btn-pedido.aceitar {
+    background: #58cc02;
+}
+
+.btn-pedido.recusar {
+    background: #ff4b4b;
+}
+
+/* MENSAGENS CHAT */
+.chat-header {
+    padding: 16px 20px;
+    border-bottom: 2px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #161622;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.chat-bubble {
+    max-width: 75%;
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    position: relative;
+    word-break: break-word;
+}
+
+.chat-bubble.received {
+    background: #252535;
+    color: #fff;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+}
+
+.chat-bubble.sent {
+    background: #1cb0f6;
+    color: #fff;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+}
+
+.chat-status {
+    font-size: 0.7rem;
+    margin-top: 4px;
+    text-align: right;
+    color: rgba(255,255,255,0.7);
+}
+
+.chat-input-area {
+    padding: 16px;
+    border-top: 2px solid var(--border-color);
+    display: flex;
+    gap: 10px;
+    background: #161622;
+}
+
+.chat-input-area input {
+    flex: 1;
+    background: #12121a;
+    border: 1px solid #2e2e42;
+    padding: 12px 16px;
+    border-radius: 20px;
+    color: #fff;
+    outline: none;
+}
+
+.chat-input-area button {
+    background: #1cb0f6;
+    border: none;
+    width: 46px;
+    border-radius: 20px;
+    color: #fff;
+    cursor: pointer;
+}

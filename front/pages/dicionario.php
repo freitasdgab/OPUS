@@ -11,16 +11,13 @@ if (!isset($_SESSION['user_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dicionário</title>
-    
-    <!-- Fonte Nunito igual ao perfil -->
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+    <title>Dicionário - Opus</title>
+    <link rel="shortcut icon" href="../assets/img/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Ajuste o caminho do CSS caso necessário -->
-    <link rel="stylesheet" href="../assets/css/dashboard.css">
-    <link rel="stylesheet" href="../assets/css/topbar.css">
-    
-    <link rel="stylesheet" href="../assets/css/dicionario.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/topbar.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/dicionario.css?v=<?= time() ?>">
 </head>
 <body>
 

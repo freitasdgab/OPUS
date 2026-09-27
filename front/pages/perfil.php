@@ -79,9 +79,15 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                             <i class="fa-regular fa-calendar-days"></i> <?php echo $membro_desde; ?>
                         </div>
                         
+                        <!-- ÁREA DE NOTIFICAÇÕES (Caixa de Aprovação) -->
+                        <div id="notificacoesAreaPerfil" style="margin: 20px 0; display: none; background: #191924; border: 1px solid #2e2e42; border-left: 4px solid #1cb0f6; border-radius: 12px; padding: 14px; text-align: left;">
+                            <h5 style="margin:0 0 12px 0; color:#fff; font-size:0.9rem;"><i class="fa-solid fa-bell" style="color:#1cb0f6; margin-right:6px;"></i> Pedidos de Conexão</h5>
+                            <div id="listaPedidosPerfil" style="display:flex; flex-direction:column; gap:10px;"></div>
+                        </div>
+
                         <div class="social-links">
-                            <a href="amigos.php"><span id="lblSeguindoCount">0</span> Seguindo</a>
-                            <a href="amigos.php"><span id="lblSeguidoresCount">0</span> Seguidores</a>
+                            <a href="amigos.php"><span id="lblSeguindoCount">0</span> Amigos</a>
+                            <a href="amigos.php" style="display:none;"><span id="lblSeguidoresCount">0</span> Seguidores</a>
                         </div>
                     </div>
 

@@ -13,16 +13,15 @@ if (!isset($_SESSION['user_id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ranking Global - Opus</title>
     <link rel="shortcut icon" href="../assets/img/logo.png">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/dashboard.css">
-    <link rel="stylesheet" href="../assets/css/topbar.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/topbar.css?v=<?= time() ?>">
     
-    <link rel="stylesheet" href="../assets/css/ranking.css">
+    <link rel="stylesheet" href="../assets/css/ranking.css?v=<?= time() ?>">
 </head>
 <body>
-    <canvas id="bg-canvas"></canvas>
-    <div class="app-container">
+        <div class="app-container">
         <?php include '../../back/sidebar.php'; ?>
 
         <main class="main-content">
@@ -41,7 +40,8 @@ if (!isset($_SESSION['user_id'])) {
         </main>
     </div>
     
-    <script src="../assets/js/script.js"></script>
-    <script src="../assets/js/ranking.js"></script>
+    <script src="../assets/js/script.js?v=<?= time() ?>"></script>
+    <script src="../assets/js/ranking.js?v=<?= time() ?>"></script>
 </body>
 </html>
+

@@ -22,8 +22,7 @@ if (!isset($_SESSION['user_id'])) {
     <link rel="stylesheet" href="../assets/css/conquistas.css">
 </head>
 <body>
-    <canvas id="bg-canvas"></canvas>
-
+    
     <div class="app-container">
         <?php include '../../back/sidebar.php'; ?>
 

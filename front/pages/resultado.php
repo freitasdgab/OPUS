@@ -1,5 +1,8 @@
 <?php
 session_start();
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 require_once '../../back/conexao.php';
 require_once '../../back/jogador_status.php';
 require_once '../../back/mascotes_capitulos.php';
@@ -122,8 +125,7 @@ $vidas_restantes = (int) $status_atual['vidas'];
     <link rel="stylesheet" href="../assets/css/resultado.css">
 </head>
 <body style="--cor-tema: <?php echo $cor_tema; ?>;">
-    <canvas id="bg-canvas"></canvas>
-    <div class="app-container">
+        <div class="app-container">
         
         <main class="main-content" style="width: 100%; margin-left: 0;">
             <?php include '../../back/topbar.php'; ?>

@@ -8,51 +8,17 @@
     const btnPrev = document.getElementById('btnPrevSlide');
     const btnNext = document.getElementById('btnNextSlide');
 
-    // Inicializa os dots
-    function initDots() {
-        dotsContainer.innerHTML = '';
-        for (let i = 0; i < totalSlides; i++) {
-            const dot = document.createElement('div');
-            dot.className = `dot-indicator ${i === 0 ? 'active' : ''}`;
-            dot.addEventListener('click', () => showSlide(i));
-            dotsContainer.appendChild(dot);
-        }
-    }
+    // Como o usuário pediu para remover o "textão" inicial:
+    // Nós ignoramos os slides de explicação e exibimos a fase de Quiz diretamente.
+    // function initDots() { ... }
+    // function showSlide(index) { ... }
+    // function changeSlide(direction) { ... }
 
-    function showSlide(index) {
-        if (index < 0 || index >= totalSlides) return;
-        
-        slidesExpl[currentSlide].classList.remove('active');
-        currentSlide = index;
-        slidesExpl[currentSlide].classList.add('active');
+    // Oculta a fase de explicação caso ela ainda exista (por precaução)
+    const explPhase = document.getElementById('explanationPhase');
+    if (explPhase) explPhase.style.display = 'none';
 
-        // Atualizar dots
-        const dots = document.querySelectorAll('.dot-indicator');
-        dots.forEach((dot, idx) => {
-            if (idx === currentSlide) dot.classList.add('active');
-            else dot.classList.remove('active');
-        });
-
-        // Configurar botões
-        btnPrev.disabled = currentSlide === 0;
-        
-        if (currentSlide === totalSlides - 1) {
-            btnNext.textContent = 'COMEÇAR EXERCÍCIOS';
-            btnNext.className = 'btn-nav btn-next-slide';
-        } else {
-            btnNext.textContent = 'PRÓXIMO';
-            btnNext.className = 'btn-nav btn-next-slide';
-        }
-    }
-
-    function changeSlide(direction) {
-        if (currentSlide === totalSlides - 1 && direction === 1) {
-            startQuizPhase();
-            return;
-        }
-        showSlide(currentSlide + direction);
-    }
-
+    // startQuizPhase inicializa e confere as perguntas
     function startQuizPhase() {
         if (totalQuestions === 0) {
             // Se não houver perguntas, finaliza a lição automaticamente com sucesso
@@ -61,23 +27,12 @@
             return;
         }
 
-        const explPhase = document.getElementById('explanationPhase');
         const quizPhase = document.getElementById('quizPhase');
-        
-        explPhase.classList.add('leaving-phase');
-        setTimeout(() => {
-            explPhase.style.display = 'none';
-            quizPhase.style.display = 'flex';
-            quizPhase.style.opacity = 0;
-            setTimeout(() => {
-                quizPhase.style.opacity = 1;
-                quizPhase.style.transition = 'opacity 0.4s ease';
-            }, 50);
-        }, 300);
+        quizPhase.style.display = 'flex';
+        quizPhase.style.opacity = 1;
     }
 
-    initDots();
-    showSlide(0);
+    // A chamada para startQuizPhase foi movida para depois da inicialização das variáveis.
 
 
     // ====================================
@@ -137,37 +92,86 @@
         }
     }
 
+    // Handlers para novos tipos
+    window.checkTypingInput = function(el) {
+        if (state === 'checked') return;
+        const val = el.value.trim();
+        selectedValue = val ? val : null;
+        const btn = document.getElementById('btnAction');
+        btn.disabled = !selectedValue;
+    };
+
+    window.checkSelectInput = function(el) {
+        if (state === 'checked') return;
+        selectedValue = el.value;
+        const btn = document.getElementById('btnAction');
+        btn.disabled = !selectedValue;
+    };
+
+    window.checkInlineInput = function(el) {
+        if (state === 'checked') return;
+        const val = el.value.trim();
+        selectedValue = val ? val : null;
+        const btn = document.getElementById('btnAction');
+        btn.disabled = !selectedValue;
+    };
+
     // Verificar resposta
     function verificar() {
         if (!selectedValue) return;
 
         const slide = slidesQuiz[currentIndex];
         const correct = slide.getAttribute('data-correct').trim().toUpperCase();
+        const tipo = slide.getAttribute('data-tipo') || 'multipla_escolha';
         const perguntaId = slide.getAttribute('data-pergunta-id');
-        const options = slide.querySelectorAll('.duo-option');
         const footer = document.getElementById('quizFooter');
         const feedbackMsg = document.getElementById('feedbackMsg');
         const btn = document.getElementById('btnAction');
 
-        const isCorrect = selectedValue === correct;
+        let isCorrect = false;
+
+        if (tipo === 'digitar_codigo' || tipo === 'completar_codigo_escrito') {
+            const expectedText = correct; // A, B, C
+            const expectedCode = slide.getAttribute('data-correct-text') ? slide.getAttribute('data-correct-text').trim().toUpperCase() : '';
+            const userVal = selectedValue.trim().toUpperCase();
+            
+            isCorrect = (userVal === expectedText || userVal === expectedCode);
+        } else {
+            isCorrect = selectedValue === correct;
+        }
 
         // Salvar resposta no form hidden
         document.getElementById('resp_' + perguntaId).value = selectedValue;
 
-        // Desabilitar todas as opções
-        options.forEach(opt => {
-            opt.classList.add('disabled');
-            if (opt.getAttribute('data-value') === correct && !isCorrect) {
-                opt.classList.add('reveal-correct');
+        if (tipo === 'multipla_escolha' || tipo === 'completar_codigo') {
+            const options = slide.querySelectorAll('.duo-option');
+            // Desabilitar todas as opções
+            options.forEach(opt => {
+                opt.classList.add('disabled');
+                if (opt.getAttribute('data-value') === correct && !isCorrect) {
+                    opt.classList.add('reveal-correct');
+                }
+            });
+            // Marcar a selecionada
+            const selectedEl = slide.querySelector('.duo-option.selected');
+            if (selectedEl) {
+                if (isCorrect) selectedEl.classList.add('correct');
+                else selectedEl.classList.add('wrong');
             }
-        });
-
-        // Marcar a selecionada
-        const selectedEl = slide.querySelector('.duo-option.selected');
+        } else if (tipo === 'digitar_codigo') {
+            const input = slide.querySelector('.typing-input');
+            input.disabled = true;
+            if (isCorrect) input.style.borderColor = '#58cc02';
+            else input.style.borderColor = '#ff4b4b';
+        } else if (tipo === 'completar_codigo_escrito') {
+            const inputInline = slide.querySelector('.code-input-inline');
+            inputInline.disabled = true;
+            if (isCorrect) inputInline.style.borderColor = '#58cc02';
+            else inputInline.style.borderColor = '#ff4b4b';
+        }
 
         if (isCorrect) {
             totalAcertos++;
-            selectedEl.classList.add('correct');
 
             // Mascote reativo: feliz com comemoração e bounce
             opiQuizImg.src = MASCOTE_FELIZ;
@@ -193,8 +197,6 @@
             // Mini confete
             launchConfetti();
         } else {
-            selectedEl.classList.add('wrong');
-
             // Mascote reativo: triste com shake
             opiQuizImg.src = MASCOTE_TRISTE;
             opiQuizImg.className = "opi-quiz-mascote opi-shake-animation";
@@ -207,12 +209,15 @@
             feedbackMsg.className = 'feedback-message msg-wrong visible';
             
             // Encontrar texto da alternativa correta
-            let correctText = '';
-            options.forEach(opt => {
-                if (opt.getAttribute('data-value') === correct) {
-                    correctText = opt.querySelector('.option-text').textContent;
-                }
-            });
+            let correctText = correct;
+            if (tipo === 'multipla_escolha' || tipo === 'completar_codigo') {
+                const options = slide.querySelectorAll('.duo-option');
+                options.forEach(opt => {
+                    if (opt.getAttribute('data-value') === correct) {
+                        correctText = opt.querySelector('.option-text').textContent;
+                    }
+                });
+            }
             feedbackMsg.innerHTML = '<div class="feedback-icon"><i class="fa-solid fa-xmark"></i></div><div><strong>Resposta incorreta</strong><br><span style="font-weight:400;font-size:13px;opacity:0.85">Correta: ' + correctText + '</span></div>';
 
             // Botão continuar vermelho
@@ -318,16 +323,7 @@
 
     // Atalho de teclado: Enter para verificar/continuar
     document.addEventListener('keydown', function(e) {
-        // Ignora atalhos de quiz se estiver na fase de explicação
-        const explPhase = document.getElementById('explanationPhase');
-        if (explPhase.style.display !== 'none') {
-            if (e.key === 'ArrowRight' || e.key === 'Enter') {
-                changeSlide(1);
-            } else if (e.key === 'ArrowLeft') {
-                changeSlide(-1);
-            }
-            return;
-        }
+        // Como removemos a explanationPhase, não precisa mais do atalho dela.
 
         if (e.key === 'Enter') {
             const btn = document.getElementById('btnAction');
@@ -348,6 +344,9 @@
 
     // Inicializar progresso
     updateProgress(0);
+
+    // Inicia a fase de quiz imediatamente sem os slides explicativos
+    startQuizPhase();
 
 // ====================================
 // AVISO DE SAÍDA (sair no meio das perguntas)

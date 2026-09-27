@@ -1,31 +1,35 @@
 /* chatbot.css - Estilos do Chatbot Opi IA do Opus */
 
-.opi-chat-trigger {
+.opi-chat-trigger.flat-ai-btn {
     position: fixed;
     bottom: 25px;
     right: 25px;
     z-index: 9999;
-    background: linear-gradient(135deg, #1cb0f6 0%, #1085c2 100%);
-    border: 2px solid #ffffff;
-    border-bottom: 4px solid #0b699c;
-    border-radius: 40px;
-    padding: 8px 18px 8px 10px;
+    background: #4CAF50; /* Flat green, or anything really, let's keep it simple dark */
+    color: #ffffff;
+    font-family: sans-serif;
+    font-weight: bold;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    padding: 12px 20px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
     cursor: pointer;
-    box-shadow: 0 8px 25px rgba(28, 176, 246, 0.45);
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: none;
+    transition: none;
+    text-transform: uppercase;
 }
 
-.opi-chat-trigger:hover {
-    transform: translateY(-4px) scale(1.05);
-    box-shadow: 0 12px 30px rgba(28, 176, 246, 0.6);
+.opi-chat-trigger.flat-ai-btn:hover {
+    transform: none;
+    box-shadow: none;
 }
 
-.opi-chat-trigger:active {
-    transform: translateY(2px);
-    border-bottom-width: 2px;
+.opi-chat-trigger.flat-ai-btn:active {
+    transform: none;
+    border: none;
 }
 
 .opi-trigger-avatar {
@@ -403,17 +407,12 @@ body.licao-page .opi-chat-trigger,
     bottom: auto;
     right: 25px;
     z-index: 1050;
-    padding: 6px 16px 6px 10px;
-    border-radius: 30px;
-    background: linear-gradient(135deg, rgba(28, 176, 246, 0.9) 0%, rgba(16, 133, 194, 0.95) 100%);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 18px rgba(28, 176, 246, 0.35);
 }
 
 body.licao-page .opi-chat-trigger:hover,
 .licao-page .opi-chat-trigger:hover {
-    transform: translateY(-2px) scale(1.04);
-    box-shadow: 0 6px 22px rgba(28, 176, 246, 0.5);
+    transform: none;
+    box-shadow: none;
 }
 
 body.licao-page .opi-chat-window,

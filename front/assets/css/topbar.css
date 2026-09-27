@@ -1,7 +1,7 @@
 /* BARRA SUPERIOR FIXA / STICKY - ESTILO FLAT DUOLINGO & GLASSMORPHISM */
 .top-bar {
     position: sticky;
-    top: 0;
+    top: 30px;
     z-index: 100;
     display: flex;
     align-items: center;
@@ -44,7 +44,22 @@
 }
 
 /* CORES SÓLIDAS DA INTERFACE */
-.stat-liga { color: #1cb0f6; } /* Azul */
+.minimal-league-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    background-color: #4CAF50;
+    color: #ffffff;
+    text-decoration: none;
+    box-shadow: none;
+    border: none;
+}
+.minimal-league-btn i {
+    font-size: 14px;
+}
 .stat-fogo { color: #ff9600; } /* Laranja */
 .stat-xp   { color: #ffc800; } /* Amarelo */
 .stat-vida { color: #ff4b4b; } /* Vermelho */
@@ -60,7 +75,7 @@
 
 @media (max-width: 768px) {
     .top-bar {
-        margin: -20px -20px 20px -20px;
+        margin: -30px -20px 20px -20px;
         width: calc(100% + 40px);
         padding: 12px 20px;
         flex-direction: row;

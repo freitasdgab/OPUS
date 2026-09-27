@@ -39,6 +39,13 @@ $titulo_vidas = $proxima_vida_texto !== '' ? $proxima_vida_texto : ($vidas_top .
 <link rel="stylesheet" href="../assets/css/opus_alerta.css">
 <script src="../assets/js/opus_alerta.js"></script>
 
+<style>
+/* Anula o cache do navegador e força a barra a colar perfeitamente no topo */
+.main-content { padding-top: 0 !important; }
+.top-bar { position: sticky !important; top: 0 !important; margin-top: 0 !important; }
+@media (max-width: 768px) { .top-bar { margin-top: 0 !important; } }
+</style>
+
 <header class="top-bar">
     <!-- USUÁRIO -->
     <div class="user-info">
@@ -47,9 +54,8 @@ $titulo_vidas = $proxima_vida_texto !== '' ? $proxima_vida_texto : ($vidas_top .
 
     <div class="topbar-stats">
         <!-- LIGA / DIVISÃO -->
-        <a href="ligas.php" class="topbar-stat stat-liga" title="Sua Divisão / Liga Atual">
-            <i class="fa-solid fa-shield-halved"></i>
-            <span><?php echo htmlspecialchars($liga_nome_top); ?></span>
+        <a href="ligas.php" class="minimal-league-btn" title="Sua Divisão / Liga Atual">
+            <i class="fa-solid fa-arrow-right"></i>
         </a>
 
         <!-- FOGO (OFENSIVA / DIAS) -->

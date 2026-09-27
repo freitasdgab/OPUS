@@ -12,22 +12,23 @@ if (!isset($_SESSION['user_id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ligas - Opus</title>
     <link rel="shortcut icon" href="../assets/img/logo.png">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/dashboard.css">
-    <link rel="stylesheet" href="../assets/css/topbar.css">
-
-    <link rel="stylesheet" href="../assets/css/ligas.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/topbar.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/ligas.css?v=<?= time() ?>">
 </head>
 <body>
-    <canvas id="bg-canvas"></canvas>
-    <div class="app-container">
+        <div class="app-container">
         <?php include '../../back/sidebar.php'; ?>
 
         <main class="main-content">
             <?php include '../../back/topbar.php'; ?>
 
             <div class="liga-container">
+                <!-- LEAGUE TRACK PROGRESS -->
+                <div id="league-track" class="league-track"></div>
+
                 <div class="liga-header">
                     <div class="liga-badge">
                         <div id="badge-icon" class="liga-badge-icon"><i class="fa-solid fa-shield-halved"></i></div>
@@ -50,24 +51,12 @@ if (!isset($_SESSION['user_id'])) {
 
                 <div id="liga-list" class="liga-list"></div>
 
-                <!-- SEÇÃO: PERFIS RECOMENDADOS DA LIGA -->
-                <div class="recomendados-section">
-                    <div class="recomendados-header">
-                        <div class="recomendados-title">
-                            <i class="fa-solid fa-user-group" style="color:#1cb0f6;"></i>
-                            <span>Perfis Recomendados da Liga</span>
-                        </div>
-                        <span class="recomendados-sub">Rivais na sua divisão — siga e desafie!</span>
-                    </div>
-                    <div id="perfis-recomendados" class="recomendados-grid">
-                        <!-- cards de recomendação carregados via JS -->
-                    </div>
-                </div>
+
             </div>
         </main>
     </div>
 
-    <script src="../assets/js/script.js"></script>
-    <script src="../assets/js/ligas.js"></script>
+    <script src="../assets/js/script.js?v=<?= time() ?>"></script>
+    <script src="../assets/js/ligas.js?v=<?= time() ?>"></script>
 </body>
 </html>

@@ -17,8 +17,7 @@
     <link rel="stylesheet" href="../assets/css/opus_alerta.css">
 </head>
 <body>
-    <canvas id="bg-canvas"></canvas>
-
+    
     <div class="main-wrapper">
         <div class="auth-container" style="max-width: 500px; margin: 0 auto;">
             <h2 class="auth-title">REDEFINIR SENHA</h2>

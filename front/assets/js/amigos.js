@@ -560,6 +560,284 @@ function fecharModalVisualizarGrupo() {
 
 function duelarComMembro(membroId) {
     fecharModalVisualizarGrupo();
-    trocarAbaAmigos('batalha');
+    abrirTelaAmigos('batalha');
     carregarBatalha(membroId);
 }
+
+// ── 6. NOVA NAVEGAÇÃO EM GRADE ──────────────────────────────────
+function abrirTelaAmigos(tela) {
+    document.getElementById('amigosMenuGrid').style.display = 'none';
+    document.getElementById('btnVoltarMenuAmigos').style.display = 'inline-flex';
+    
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    
+    if (tela === 'grupos') {
+        document.getElementById('tabContentGrupos').classList.add('active');
+        carregarGrupos();
+    } else if (tela === 'batalha') {
+        document.getElementById('tabContentBatalha').classList.add('active');
+        carregarBatalhas1v1();
+    } else if (tela === 'encontrar') {
+        document.getElementById('tabContentEncontrar').classList.add('active');
+        carregarRecomendacoesLiga();
+    } else if (tela === 'chat') {
+        document.getElementById('tabContentChat').classList.add('active');
+        carregarPedidosPendentes();
+        carregarAmigosChat();
+    }
+}
+
+function voltarMenuAmigos() {
+    document.getElementById('amigosMenuGrid').style.display = 'grid';
+    document.getElementById('btnVoltarMenuAmigos').style.display = 'none';
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+}
+
+// ── 7. ENCONTRAR AMIGOS E RECOMENDAÇÕES ────────────────────────
+function buscarAmigosExato() {
+    const q = document.getElementById('inputBuscaAmigo').value.trim();
+    if (!q) return;
+
+    fetch(`../../back/api_amigos.php?action=buscar_usuarios&q=${encodeURIComponent(q)}`)
+    .then(r => r.json())
+    .then(data => {
+        const container = document.getElementById('containerResultadoBusca');
+        if (!data.success || !data.usuarios || data.usuarios.length === 0) {
+            container.innerHTML = '<div style="color:#ff4b4b; margin-top: 10px;">Nenhum usuário encontrado com este E-mail ou ID.</div>';
+            return;
+        }
+        renderizarCardsAmigos(data.usuarios, container);
+    });
+}
+
+function carregarRecomendacoesLiga() {
+    fetch('../../back/api_amigos.php?action=buscar_recomendacoes')
+    .then(r => r.json())
+    .then(data => {
+        const container = document.getElementById('containerRecomendacoesLiga');
+        if (data.success && data.usuarios) {
+            renderizarCardsAmigos(data.usuarios, container);
+        }
+    });
+}
+
+function renderizarCardsAmigos(usuarios, container) {
+    container.innerHTML = '';
+    usuarios.forEach(u => {
+        let btnHtml = '';
+        if (u.status_conexao === 'aceito') {
+            btnHtml = `<button class="btn-follow following" disabled>Amigos</button>`;
+        } else if (u.status_conexao === 'pendente') {
+            btnHtml = `<button class="btn-follow following" disabled>Pendente</button>`;
+        } else {
+            btnHtml = `<button class="btn-follow" onclick="enviarPedidoConexao(${u.id}, this)">Conectar</button>`;
+        }
+
+        container.innerHTML += `
+            <div class="friend-card">
+                <div class="friend-info-left">
+                    <img src="${u.foto_perfil}" class="friend-avatar">
+                    <div class="friend-details">
+                        <h4>${u.nome}</h4>
+                        <span>⚡ ${u.xp} XP</span>
+                    </div>
+                </div>
+                ${btnHtml}
+            </div>`;
+    });
+}
+
+function enviarPedidoConexao(targetId, btnElement) {
+    const fd = new FormData();
+    fd.append('action', 'solicitar_conexao');
+    fd.append('target_id', targetId);
+
+    fetch('../../back/api_amigos.php', { method: 'POST', body: fd })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            btnElement.className = 'btn-follow following';
+            btnElement.innerText = 'Pendente';
+            btnElement.disabled = true;
+            if (typeof opusToast === 'function') opusToast(data.mensagem, 'success');
+            else alert(data.mensagem);
+        } else {
+            if (typeof opusToast === 'function') opusToast(data.mensagem, 'warning');
+            else alert(data.mensagem);
+        }
+    });
+}
+
+// ── 8. CHAT E PEDIDOS ──────────────────────────────────────────
+function carregarPedidosPendentes() {
+    fetch('../../back/api_amigos.php?action=listar_pedidos')
+    .then(r => r.json())
+    .then(data => {
+        const container = document.getElementById('listaPedidosPendentes');
+        if (!data.success || data.pedidos.length === 0) {
+            container.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem;">Nenhum pedido pendente.</div>';
+            return;
+        }
+        container.innerHTML = '';
+        data.pedidos.forEach(p => {
+            container.innerHTML += `
+                <div class="pedido-card" id="pedidoCard_${p.pedido_id}">
+                    <img src="${p.foto_perfil}" class="pedido-avatar">
+                    <div class="pedido-info">
+                        <h5>${p.nome}</h5>
+                        <span style="font-size:0.75rem; color:var(--text-muted)">Quer conectar!</span>
+                    </div>
+                    <div class="pedido-actions">
+                        <button class="btn-pedido aceitar" onclick="responderPedido(${p.pedido_id}, 'aceitar')"><i class="fa-solid fa-check"></i></button>
+                        <button class="btn-pedido recusar" onclick="responderPedido(${p.pedido_id}, 'recusar')"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>`;
+        });
+    });
+}
+
+function responderPedido(pedidoId, resposta) {
+    const fd = new FormData();
+    fd.append('action', 'responder_pedido');
+    fd.append('pedido_id', pedidoId);
+    fd.append('resposta', resposta);
+
+    fetch('../../back/api_amigos.php', { method: 'POST', body: fd })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById(`pedidoCard_${pedidoId}`).remove();
+            if (resposta === 'aceitar') carregarAmigosChat();
+        }
+    });
+}
+
+function carregarAmigosChat() {
+    fetch('../../back/api_amigos.php?action=listar_amigos&tipo=seguindo')
+    .then(r => r.json())
+    .then(data => {
+        const container = document.getElementById('listaAmigosChat');
+        if (!data.success || data.amigos.length === 0) {
+            container.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem;">Adicione amigos para conversar.</div>';
+            return;
+        }
+        container.innerHTML = '';
+        data.amigos.forEach(a => {
+            container.innerHTML += `
+                <div class="amigo-chat-card" onclick="abrirChatComAmigo(${a.id}, '${a.nome}', '${a.foto_perfil}', this)">
+                    <img src="${a.foto_perfil}" class="amigo-chat-avatar">
+                    <div class="amigo-chat-info">
+                        <h5>${a.nome}</h5>
+                    </div>
+                </div>`;
+        });
+    });
+}
+
+let amigoChatAtual = 0;
+let chatInterval = null;
+
+function abrirChatComAmigo(id, nome, foto, cardElem) {
+    document.querySelectorAll('.amigo-chat-card').forEach(c => c.classList.remove('active'));
+    if (cardElem) cardElem.classList.add('active');
+
+    amigoChatAtual = id;
+    const chatArea = document.getElementById('chatMainArea');
+    chatArea.innerHTML = `
+        <div class="chat-header">
+            <img src="${foto}" style="width:36px; height:36px; border-radius:50%; object-fit:contain; background:#12121a;">
+            <h4 style="margin:0; color:#fff; font-size:1rem;">${nome}</h4>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div style="text-align:center; color:var(--text-muted); margin-top:20px;">Carregando mensagens...</div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="inputMsgChat" placeholder="Digite uma mensagem..." onkeyup="if(event.key==='Enter') enviarMensagemChat()">
+            <button onclick="enviarMensagemChat()"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    `;
+
+    carregarMensagensChat(id);
+    if (chatInterval) clearInterval(chatInterval);
+    chatInterval = setInterval(() => carregarMensagensChat(id, true), 3000);
+}
+
+function carregarMensagensChat(id, silent = false) {
+    if (amigoChatAtual !== id) return;
+    fetch(`../../back/api_amigos.php?action=listar_mensagens&amigo_id=${id}`)
+    .then(r => r.json())
+    .then(data => {
+        if (!data.success) return;
+        const container = document.getElementById('chatMessages');
+        if (!container) return;
+        
+        let html = '';
+        data.mensagens.forEach(m => {
+            const cls = m.is_mine ? 'sent' : 'received';
+            let iconLeitura = '';
+            if (m.is_mine) {
+                if (m.status === 'lido') iconLeitura = '<i class="fa-solid fa-check-double" style="color:#58cc02"></i>';
+                else if (m.status === 'entregue') iconLeitura = '<i class="fa-solid fa-check-double"></i>';
+                else iconLeitura = '<i class="fa-solid fa-check"></i>';
+            }
+            html += `
+                <div class="chat-bubble ${cls}">
+                    ${m.mensagem}
+                    <div class="chat-status">${iconLeitura}</div>
+                </div>`;
+        });
+        
+        if (html === '') html = '<div style="text-align:center; color:var(--text-muted); margin-top:20px;">Diga olá!</div>';
+        
+        const isScrolledToBottom = container.scrollHeight - container.clientHeight <= container.scrollTop + 10;
+        container.innerHTML = html;
+        if (isScrolledToBottom || !silent) container.scrollTop = container.scrollHeight;
+    });
+}
+
+function enviarMensagemChat() {
+    if (amigoChatAtual <= 0) return;
+    const input = document.getElementById('inputMsgChat');
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    input.value = '';
+    const fd = new FormData();
+    fd.append('action', 'enviar_mensagem');
+    fd.append('destinatario_id', amigoChatAtual);
+    fd.append('mensagem', msg);
+
+    fetch('../../back/api_amigos.php', { method: 'POST', body: fd })
+    .then(() => carregarMensagensChat(amigoChatAtual));
+}
+
+// Sobrescrever provocarRival para enviar via chat
+window.provocarRival = function() {
+    const rivalNome = document.getElementById('p2Nome').innerText;
+    // Precisamos do ID do rival. Ele não está salvo numa variável global, mas podemos pegar da div do player.
+    // Vamos buscar a lista de batalhas e pegar o rivalId do card selecionado.
+    const selectedCard = document.querySelector('.batalha-1v1-card.selected');
+    if (selectedCard) {
+        const onclickAttr = selectedCard.getAttribute('onclick'); // Ex: selecionarRival1v1(4, this)
+        const match = onclickAttr.match(/\d+/);
+        if (match) {
+            const rivalId = parseInt(match[0]);
+            const fd = new FormData();
+            fd.append('action', 'enviar_mensagem');
+            fd.append('destinatario_id', rivalId);
+            fd.append('mensagem', `Seu duelo tá fraco, ${rivalNome}! Quero ver me passar! 😎🔥`);
+            fetch('../../back/api_amigos.php', { method: 'POST', body: fd });
+            if (typeof opusAlerta === 'function') {
+                opusAlerta({
+                    tipo: 'success',
+                    titulo: 'Provocação Enviada! 🔥',
+                    mensagem: `Você provocou <strong>${rivalNome}</strong>! A mensagem foi enviada no chat.`
+                });
+            } else {
+                alert(`🔥 Provocação enviada no chat para ${rivalNome}!`);
+            }
+            return;
+        }
+    }
+    alert(`🔥 Provocação enviada para ${rivalNome}!`);
+};

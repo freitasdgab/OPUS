@@ -25,8 +25,7 @@ $invite_code = $user_id; // Código de convite único do usuário
     <link rel="stylesheet" href="../assets/css/amigos.css">
 </head>
 <body>
-    <canvas id="bg-canvas"></canvas>
-
+    
     <div class="app-container">
         <?php include '../../back/sidebar.php'; ?>
 
@@ -42,27 +41,43 @@ $invite_code = $user_id; // Código de convite único do usuário
                         <p>Acompanhe o duelo em tempo real, veja acertos de hoje, diferença de XP e desafie seus amigos!</p>
                     </div>
                     <div class="header-amigos-actions">
-                        <button class="btn-invite-link zap" onclick="enviarConviteZapGeral(<?php echo $user_id; ?>)">
-                            <i class="fa-brands fa-whatsapp"></i> Convidar no WhatsApp
-                        </button>
                         <button class="btn-invite-link" onclick="copiarLinkConvite(<?php echo $user_id; ?>)">
-                            <i class="fa-solid fa-link"></i> Copiar Link
+                            <i class="fa-solid fa-link"></i> Copiar Link de Convite
                         </button>
                     </div>
                 </div>
 
-                <!-- NAVEGAÇÃO POR ABAS -->
-                <div class="amigos-tabs">
-                    <button class="tab-btn active" onclick="trocarAbaAmigos('grupos')">
-                        <i class="fa-solid fa-shield-halved"></i> Grupos de Duelo
-                    </button>
-                    <button class="tab-btn" onclick="trocarAbaAmigos('batalha')">
-                        <i class="fa-solid fa-swords"></i> Minhas Batalhas (1v1)
-                    </button>
+                <!-- BOTÃO VOLTAR (Oculto inicialmente) -->
+                <div id="btnVoltarMenuAmigos" class="btn-voltar-amigos" style="display: none;" onclick="voltarMenuAmigos()">
+                    <i class="fa-solid fa-arrow-left"></i> Voltar ao Menu Principal
                 </div>
 
-                <!-- CONTEÚDO DA ABA 1: GRUPOS DE DUELO (TELA INICIAL) -->
-                <div class="tab-content active" id="tabContentGrupos">
+                <!-- MENU INICIAL EM GRADE -->
+                <div class="amigos-menu-grid" id="amigosMenuGrid">
+                    <div class="amigos-menu-card" onclick="abrirTelaAmigos('grupos')">
+                        <div class="amc-icon" style="color: #58cc02; background: rgba(88,204,2,0.1);"><i class="fa-solid fa-shield-halved"></i></div>
+                        <h3>Grupos de Duelo</h3>
+                        <p>Crie ou participe de batalhas em grupo.</p>
+                    </div>
+                    <div class="amigos-menu-card" onclick="abrirTelaAmigos('batalha')">
+                        <div class="amc-icon" style="color: #ff4b4b; background: rgba(255,75,75,0.1);"><i class="fa-solid fa-swords"></i></div>
+                        <h3>Minhas Batalhas 1v1</h3>
+                        <p>Acompanhe e desafie seus rivais diretos.</p>
+                    </div>
+                    <div class="amigos-menu-card" onclick="abrirTelaAmigos('encontrar')">
+                        <div class="amc-icon" style="color: #1cb0f6; background: rgba(28,176,246,0.1);"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        <h3>Encontrar Amigos</h3>
+                        <p>Busque perfis e veja recomendações da liga.</p>
+                    </div>
+                    <div class="amigos-menu-card" onclick="abrirTelaAmigos('chat')">
+                        <div class="amc-icon" style="color: #ffc800; background: rgba(255,200,0,0.1);"><i class="fa-solid fa-message"></i></div>
+                        <h3>Chat & Pedidos</h3>
+                        <p>Converse e gerencie suas solicitações.</p>
+                    </div>
+                </div>
+
+                <!-- CONTEÚDO DA ABA 1: GRUPOS DE DUELO -->
+                <div class="tab-content" id="tabContentGrupos">
                     <div class="grupos-actions-bar">
                         <button class="btn-create-group" onclick="abrirModalCriarGrupo()">
                             <i class="fa-solid fa-plus"></i> Criar Grupo de Batalha
@@ -188,6 +203,45 @@ $invite_code = $user_id; // Código de convite único do usuário
                     </div>
                 </div>
 
+                <!-- CONTEÚDO DA ABA 3: ENCONTRAR AMIGOS -->
+                <div class="tab-content" id="tabContentEncontrar">
+                    <h3 style="color: #fff; font-size: 1.15rem; font-weight: 900; margin-bottom: 16px;">ENCONTRAR POR E-MAIL OU ID</h3>
+                    <div class="search-bar-box">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="inputBuscaAmigo" placeholder="Digite o E-mail ou ID exato do amigo" onkeyup="if(event.key==='Enter') buscarAmigosExato()">
+                    </div>
+                    <div class="amigos-grid" id="containerResultadoBusca"></div>
+
+                    <h3 style="color: #fff; font-size: 1.15rem; font-weight: 900; margin: 35px 0 16px 0;">RECOMENDAÇÕES DA SUA LIGA</h3>
+                    <div class="amigos-grid" id="containerRecomendacoesLiga">
+                        <!-- Carregados via JS -->
+                    </div>
+                </div>
+
+                <!-- CONTEÚDO DA ABA 4: CHAT & PEDIDOS -->
+                <div class="tab-content" id="tabContentChat">
+                    <div class="chat-pedidos-layout">
+                        <div class="chat-sidebar">
+                            <h4 style="color: #fff; font-size: 1rem; margin-bottom: 12px; font-weight: 800;">PEDIDOS PENDENTES</h4>
+                            <div id="listaPedidosPendentes" class="pedidos-list">
+                                <!-- JS -->
+                            </div>
+                            
+                            <h4 style="color: #fff; font-size: 1rem; margin: 20px 0 12px 0; font-weight: 800;">SEUS AMIGOS</h4>
+                            <div id="listaAmigosChat" class="amigos-chat-list">
+                                <!-- JS -->
+                            </div>
+                        </div>
+                        <div class="chat-main" id="chatMainArea">
+                            <div class="chat-empty-state">
+                                <i class="fa-solid fa-message" style="font-size: 2.5rem; color: #2e2e42; margin-bottom: 10px;"></i>
+                                <p>Selecione um amigo para conversar</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
             </div>
         </main>
     </div>
@@ -254,3 +308,4 @@ $invite_code = $user_id; // Código de convite único do usuário
     <script src="../assets/js/amigos.js"></script>
 </body>
 </html>
+

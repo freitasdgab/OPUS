@@ -2,12 +2,8 @@
 // chatbot.php - Componente flutuante do Opi IA
 ?>
 <!-- BOTÃO FLUTUANTE DO CHATBOT OPI IA -->
-<div class="opi-chat-trigger" id="opiChatTrigger" onclick="toggleOpiChat()" title="Tirar dúvidas com o Opi IA">
-    <div class="opi-trigger-avatar">
-        <img src="../assets/img/opi pulando feliz.png" alt="Opi IA" class="opi-trigger-img">
-        <span class="opi-online-dot"></span>
-    </div>
-    <span class="opi-trigger-text">Opi IA</span>
+<div class="opi-chat-trigger flat-ai-btn" id="opiChatTrigger" onclick="toggleOpiChat()" title="Tirar dúvidas com o Opi IA">
+    IA
 </div>
 
 <!-- JANELA DO CHATBOT -->

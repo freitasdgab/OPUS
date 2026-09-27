@@ -23,17 +23,17 @@
                     
                     // Segundo Colocado
                     if (data.top3[1]) {
-                        podiumHTML += `<div class="podium-item rank-2"><div class="podium-avatar"><img src="${obterFoto(data.top3[1].foto_perfil)}" class="img-cover"></div><div class="podium-name">${data.top3[1].nome}</div><div class="podium-xp">${Number(data.top3[1].xp).toLocaleString('pt-BR')} XP</div><div class="podium-bar">2</div></div>`;
+                        podiumHTML += `<div class="podium-item rank-2"><div class="podium-avatar"><img src="${obterFoto(data.top3[1].foto_perfil)}" class="img-cover"></div><div class="podium-xp">${Number(data.top3[1].xp).toLocaleString('pt-BR')} XP</div><div class="podium-name">${data.top3[1].nome}</div><div class="podium-bar">2</div></div>`;
                     }
                     
                     // Primeiro Colocado (Rei do pedaço!)
                     if (data.top3[0]) {
-                        podiumHTML += `<div class="podium-item rank-1"><div class="podium-avatar"><i class="fa-solid fa-crown crown"></i><img src="${obterFoto(data.top3[0].foto_perfil)}" class="img-cover"></div><div class="podium-name">${data.top3[0].nome}</div><div class="podium-xp">${Number(data.top3[0].xp).toLocaleString('pt-BR')} XP</div><div class="podium-bar">1</div></div>`;
+                        podiumHTML += `<div class="podium-item rank-1"><div class="podium-avatar"><i class="fa-solid fa-crown crown"></i><img src="${obterFoto(data.top3[0].foto_perfil)}" class="img-cover"></div><div class="podium-xp">${Number(data.top3[0].xp).toLocaleString('pt-BR')} XP</div><div class="podium-name">${data.top3[0].nome}</div><div class="podium-bar">1</div></div>`;
                     }
                     
                     // Terceiro Colocado
                     if (data.top3[2]) {
-                        podiumHTML += `<div class="podium-item rank-3"><div class="podium-avatar"><img src="${obterFoto(data.top3[2].foto_perfil)}" class="img-cover"></div><div class="podium-name">${data.top3[2].nome}</div><div class="podium-xp">${Number(data.top3[2].xp).toLocaleString('pt-BR')} XP</div><div class="podium-bar">3</div></div>`;
+                        podiumHTML += `<div class="podium-item rank-3"><div class="podium-avatar"><img src="${obterFoto(data.top3[2].foto_perfil)}" class="img-cover"></div><div class="podium-xp">${Number(data.top3[2].xp).toLocaleString('pt-BR')} XP</div><div class="podium-name">${data.top3[2].nome}</div><div class="podium-bar">3</div></div>`;
                     }
                     
                     document.getElementById('podium-container').innerHTML = podiumHTML;
