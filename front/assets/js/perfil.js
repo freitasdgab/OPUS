@@ -151,7 +151,87 @@ function responderPedidoPerfil(pedidoId, resposta) {
             if (resposta === 'aceitar') {
                 const segElem = document.getElementById('lblSeguindoCount');
                 if (segElem) segElem.innerText = parseInt(segElem.innerText) + 1;
+                carregarAmigosPerfil(); // Recarrega a lista de amigos se aceitou
             }
         }
     });
 }
+
+function carregarAmigosPerfil() {
+    fetch('../../back/api_amigos.php?action=listar_amigos&tipo=amigos')
+    .then(r => r.json())
+    .then(data => {
+        const container = document.getElementById('listaAmigosPerfil');
+        if (!container) return;
+        
+        if (!data.success || data.amigos.length === 0) {
+            container.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem;">Você ainda não tem amigos. Adicione conexões!</div>';
+            return;
+        }
+        
+        container.innerHTML = '';
+        data.amigos.forEach(a => {
+            container.innerHTML += `
+                <div style="display:flex; align-items:center; gap:8px; background:#12121a; padding:8px 10px; border-radius:10px; cursor:pointer; border: 1px solid #2e2e42; transition: all 0.2s ease;"
+                     onmouseover="this.style.borderColor='#1cb0f6'" 
+                     onmouseout="this.style.borderColor='#2e2e42'"
+                     onclick="window.location.href='chat.php?user_id=${a.id}'">
+                    <img src="${a.foto_perfil}" style="width:32px; height:32px; border-radius:50%; object-fit:contain; background:#191924;">
+                    <div style="flex:1;">
+                        <span style="color:#fff; font-size:0.9rem; font-weight:700; display:block;">${a.nome}</span>
+                        <span style="color:#ffc800; font-size:0.75rem; font-weight:700;"><i class="fa-solid fa-bolt"></i> ${a.xp} XP</span>
+                        <span style="color:#ff9600; font-size:0.75rem; font-weight:700; margin-left: 6px;"><i class="fa-solid fa-fire"></i> ${a.dias_fogo}d</span>
+                    </div>
+                    <div style="color:#1cb0f6; font-size: 1rem;">
+                        <i class="fa-solid fa-comment-dots"></i>
+                    </div>
+                </div>
+            `;
+        });
+    });
+}
+
+function openSocialModal(type) {
+    document.getElementById('socialModal').classList.add('active');
+    
+    let title = 'Amigos';
+    if (type === 'seguidores') title = 'Seguidores';
+    else if (type === 'seguindo') title = 'Seguindo';
+    
+    document.getElementById('socialModalTitle').innerText = title;
+    
+    const container = document.getElementById('socialModalList');
+    container.innerHTML = '<div style="color:var(--text-muted); text-align:center;">Carregando...</div>';
+    
+    fetch(`../../back/api_amigos.php?action=listar_amigos&tipo=${type}`)
+    .then(r => r.json())
+    .then(data => {
+        if (!data.success || data.amigos.length === 0) {
+            container.innerHTML = `<div style="color:var(--text-muted); text-align:center; font-size:0.85rem;">Nenhum usuário encontrado.</div>`;
+            return;
+        }
+        
+        container.innerHTML = '';
+        data.amigos.forEach(a => {
+            container.innerHTML += `
+                <div style="display:flex; align-items:center; gap:10px; background:#12121a; padding:12px; border-radius:12px; border: 1px solid #2e2e42;">
+                    <img src="${a.foto_perfil}" style="width:40px; height:40px; border-radius:50%; object-fit:contain; background:#191924;">
+                    <div style="flex:1;">
+                        <span style="color:#fff; font-size:0.95rem; font-weight:800; display:block;">${a.nome}</span>
+                        <span style="color:#ffc800; font-size:0.8rem; font-weight:700;"><i class="fa-solid fa-bolt"></i> ${a.xp} XP</span>
+                    </div>
+                </div>
+            `;
+        });
+    });
+}
+
+function closeSocialModal() {
+    document.getElementById('socialModal').classList.remove('active');
+}
+
+// Carrega os amigos ao iniciar
+document.addEventListener('DOMContentLoaded', () => {
+    carregarAmigosPerfil();
+});
+

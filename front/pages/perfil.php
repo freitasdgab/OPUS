@@ -86,9 +86,9 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                         </div>
 
                         <div class="social-links" style="display: flex; gap: 15px; margin-top: 15px;">
-                            <a href="chat.php"><span id="lblAmigosCount">0</span> Amigos</a>
-                            <a href="chat.php"><span id="lblSeguindoCount">0</span> Seguindo</a>
-                            <a href="chat.php"><span id="lblSeguidoresCount">0</span> Seguidores</a>
+                            <a href="#" onclick="openSocialModal('amigos')"><span id="lblAmigosCount">0</span> Amigos</a>
+                            <a href="#" onclick="openSocialModal('seguindo')"><span id="lblSeguindoCount">0</span> Seguindo</a>
+                            <a href="#" onclick="openSocialModal('seguidores')"><span id="lblSeguidoresCount">0</span> Seguidores</a>
                         </div>
                     </div>
 
@@ -129,6 +129,7 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                         <div class="stats-grid" id="trophy-container">
                         </div>
                     </div>
+
                 </div>
 
                 <!-- COLUNA DIREITA -->
@@ -151,7 +152,15 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                         </ul>
                     </div>
                     
+                    
                     <button class="btn-outline" onclick="openLogoutModal()">Sair da Conta</button>
+
+                    <div class="side-card" style="margin-top: 20px;">
+                        <div class="side-card-title">Seus Amigos</div>
+                        <div id="listaAmigosPerfil" style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+                            <div style="color:var(--text-muted); font-size:0.9rem;">Carregando amigos...</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
@@ -192,6 +201,19 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                     <button type="submit" class="btn-modal btn-save">Salvar</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- MODAL SOCIAL (Amigos, Seguidores, Seguindo) -->
+    <div class="modal-overlay" id="socialModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-title" id="socialModalTitle">Amigos</div>
+            <div id="socialModalList" style="max-height: 300px; overflow-y: auto; margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px;">
+                <div style="color:var(--text-muted); text-align:center;">Carregando...</div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-modal btn-cancel" onclick="closeSocialModal()" style="width: 100%;">Voltar</button>
+            </div>
         </div>
     </div>
 

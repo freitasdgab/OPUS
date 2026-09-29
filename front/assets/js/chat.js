@@ -211,4 +211,9 @@ function enviarConviteDuelo(id) {
 
 document.addEventListener('DOMContentLoaded', () => {
     carregarConversas();
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetUserId = urlParams.get('user_id');
+    if (targetUserId) {
+        abrirChat(parseInt(targetUserId));
+    }
 });

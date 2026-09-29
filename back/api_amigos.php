@@ -157,6 +157,12 @@ if ($action === 'listar_amigos') {
                 FROM seguidores s 
                 JOIN usuarios u ON s.seguidor_id = u.id 
                 WHERE s.seguido_id = $user_id";
+    } elseif ($tipo === 'amigos') {
+        $sql = "SELECT u.id, u.nome, u.xp, u.dias_fogo, u.foto_perfil 
+                FROM pedidos_conexao p 
+                JOIN usuarios u ON (u.id = p.remetente_id OR u.id = p.destinatario_id) 
+                WHERE (p.remetente_id = $user_id OR p.destinatario_id = $user_id) 
+                AND u.id != $user_id AND p.status = 'aceito'";
     } else {
         $sql = "SELECT u.id, u.nome, u.xp, u.dias_fogo, u.foto_perfil 
                 FROM seguidores s 

@@ -37,7 +37,8 @@ $convite_url = "http://" . $_SERVER['HTTP_HOST'] . "/OPUS/front/pages/auth.html?
                 <div class="chat-sidebar">
                     <div class="chat-sidebar-header">
                         <h2>Conexões</h2>
-                        <div class="chat-actions">
+                        <div class="chat-actions" style="display:flex; gap:8px;">
+                            <button class="btn-invite" style="background:#2e2e42; color:#fff;" onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
                             <button class="btn-invite" onclick="copiarConvite('<?php echo $convite_url; ?>')"><i class="fa-solid fa-link"></i> Convidar</button>
                         </div>
                     </div>

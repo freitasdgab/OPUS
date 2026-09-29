@@ -7,7 +7,6 @@ $itens_menu = [
     ['href' => 'dashboard.php',  'icon' => 'fa-house',         'label' => 'Aprender'],
     ['href' => 'ranking.php',    'icon' => 'fa-ranking-star',  'label' => 'Ranking'],
     ['href' => 'ligas.php',      'icon' => 'fa-shield-halved', 'label' => 'Ligas'],
-    ['href' => 'amigos.php',     'icon' => 'fa-user-group',    'label' => 'Amigos'],
     ['href' => 'dicionario.php', 'icon' => 'fa-book-bookmark', 'label' => 'Dicionário'],
     ['href' => 'perfil.php',     'icon' => 'fa-user',          'label' => 'Perfil'],
 ];

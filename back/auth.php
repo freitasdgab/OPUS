@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 if (!empty($codigo_grupo) || $convite_id > 0) {
-                    header("Location: ../front/pages/amigos.php");
+                    header("Location: ../front/pages/perfil.php");
                     exit();
                 }
 
@@ -153,7 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             if (!empty($codigo_grupo) || $convite_id > 0) {
-                header("Location: ../front/pages/amigos.php");
+                header("Location: ../front/pages/perfil.php");
                 exit();
             }
 
