@@ -23,7 +23,7 @@ $email = !empty($dados_user['email']) ?$dados_user['email'] : 'usuario@email.com
 
 // Estatísticas
 $xp_total = isset($dados_user['xp']) ?$dados_user['xp'] : 0; 
-$dias_ofensiva = isset($dados_user['ofensiva']) ?$dados_user['ofensiva'] : 0;
+$dias_ofensiva = isset($dados_user['dias_fogo']) ?$dados_user['dias_fogo'] : 0;
 $ligas_validas = ['Bronze', 'Prata', 'Ouro', 'Diamante'];$divisao = isset($dados_user['divisao']) && in_array($dados_user['divisao'], $ligas_validas) ?$dados_user['divisao'] : 'Bronze';
 
 // Data formatada
