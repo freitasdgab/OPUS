@@ -2,6 +2,7 @@
 // Barra lateral única, incluída em todas as páginas internas.
 // Detecta a página atual automaticamente para marcar o link "active".
 $pagina_atual = basename($_SERVER['SCRIPT_NAME']);
+$is_admin = !empty($_SESSION['is_admin']) || (isset($_SESSION['user_nivel_acesso']) && $_SESSION['user_nivel_acesso'] === 'admin');
 
 $itens_menu = [
     ['href' => 'dashboard.php',  'icon' => 'fa-house',         'label' => 'Aprender'],
@@ -19,6 +20,10 @@ $itens_menu = [
                 <i class="fa-solid <?= $item['icon'] ?>"></i> <?= $item['label'] ?>
             </a>
         <?php endforeach; ?>
+
+        <a href="../../back/logout.php" class="nav-link nav-link-logout" style="margin-top: 25px; color: #ff4757;" onclick="return confirm('Deseja realmente sair da conta?')">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Sair
+        </a>
     </nav>
 </aside>
 

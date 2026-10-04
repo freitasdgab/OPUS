@@ -10,6 +10,12 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+// Administrador não pode jogar: redireciona para o Painel Administrativo
+if (!empty($_SESSION['is_admin']) || (isset($_SESSION['user_nivel_acesso']) && $_SESSION['user_nivel_acesso'] === 'admin')) {
+    header("Location: admin_dashboard.php");
+    exit();
+}
+
 require_once '../../back/jogador_status.php';
 require_once '../../back/ligas_logic.php';
 require_once '../../back/missoes_logic.php';

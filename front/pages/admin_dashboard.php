@@ -86,9 +86,9 @@ $email_admin = htmlspecialchars($current_user['email'] ?? '');
                 <div class="admin-user-name"><?= $nome_admin ?></div>
                 <div class="admin-user-email"><?= $email_admin ?></div>
             </div>
-            <button type="button" class="btn-logout" title="Encerrar Sessão" onclick="abrirModalLogoutAdmin()">
+            <a href="../../back/logout.php" class="btn-logout" title="Encerrar Sessão" onclick="return confirm('Deseja realmente sair da conta?')">
                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Sair
-            </button>
+            </a>
         </div>
     </header>
 

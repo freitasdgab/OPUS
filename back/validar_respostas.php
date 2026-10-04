@@ -7,6 +7,11 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+if (!empty($_SESSION['is_admin']) || (isset($_SESSION['user_nivel_acesso']) && $_SESSION['user_nivel_acesso'] === 'admin')) {
+    header("Location: ../front/pages/admin_dashboard.php");
+    exit();
+}
+
 $user_id  = $_SESSION['user_id'];
 $capitulo = intval($_POST['capitulo'] ?? 0);
 $licao    = intval($_POST['licao']    ?? 0);

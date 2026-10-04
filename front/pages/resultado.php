@@ -12,6 +12,11 @@ if (!isset($_SESSION['user_id']) || !isset($_POST['acertos'])) {
     exit();
 }
 
+if (!empty($_SESSION['is_admin']) || (isset($_SESSION['user_nivel_acesso']) && $_SESSION['user_nivel_acesso'] === 'admin')) {
+    header("Location: admin_dashboard.php");
+    exit();
+}
+
 $user_id = (int) $_SESSION['user_id'];
 $acertos = (int)$_POST['acertos'];
 $cap_atual = (int)$_POST['cap'];
