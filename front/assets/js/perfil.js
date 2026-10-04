@@ -92,23 +92,31 @@ fetch('../../back/api_conquistas.php')
         data.lista.forEach(t => {
             const isUnlocked = data.conquistados.includes(t.slug);
             const imgSrc = t.imagem ? `../assets/img/${encodeURI(t.imagem)}` : '../assets/img/LOGO.png';
-            const badgeIcon = isUnlocked ? '<i class="fa-solid fa-check"></i> Conquistado' : '<i class="fa-solid fa-lock"></i> Bloqueado';
+            
+            const progress = isUnlocked ? 100 : (t.progresso_percent || 0);
+            
+            const progressTextHtml = !isUnlocked 
+                ? `<div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 500;">Falta ${100 - progress}% para conseguir isso</div>` 
+                : `<div style="font-size: 0.75rem; color: #58cc02; margin-bottom: 4px; font-weight: bold;">Concluído</div>`;
 
             container.innerHTML += `
                 <div class="trophy-profile-card ${isUnlocked ? 'unlocked' : 'locked'}">
-                    <div class="trophy-badge-status">${badgeIcon}</div>
                     <div class="trophy-img-box">
                         <img src="${imgSrc}" class="trophy-img" alt="${t.nome}">
                     </div>
                     <div class="trophy-details">
-                        <div class="trophy-title">${t.nome}</div>
-                        <div class="trophy-desc">${t.desc}</div>
+                        <div class="trophy-desc">${t.desc.toUpperCase()}</div>
+                        ${progressTextHtml}
+                        <div class="trophy-progress">
+                            <div class="trophy-progress-fill" style="width: ${progress}%;"></div>
+                        </div>
                     </div>
                 </div>`;
         });
     }
 })
 .catch(err => console.error('Erro ao carregar conquistas no perfil:', err));
+
 
 // Busca pedidos pendentes para a Caixa de Aprovação
 fetch('../../back/api_amigos.php?action=listar_pedidos')
@@ -172,18 +180,13 @@ function carregarAmigosPerfil() {
         container.innerHTML = '';
         data.amigos.forEach(a => {
             container.innerHTML += `
-                <div style="display:flex; align-items:center; gap:8px; background:#12121a; padding:8px 10px; border-radius:10px; cursor:pointer; border: 1px solid #2e2e42; transition: all 0.2s ease;"
-                     onmouseover="this.style.borderColor='#1cb0f6'" 
-                     onmouseout="this.style.borderColor='#2e2e42'"
-                     onclick="window.location.href='chat.php?user_id=${a.id}'">
-                    <img src="${a.foto_perfil}" style="width:32px; height:32px; border-radius:50%; object-fit:contain; background:#191924;">
-                    <div style="flex:1;">
-                        <span style="color:#fff; font-size:0.9rem; font-weight:700; display:block;">${a.nome}</span>
-                        <span style="color:#ffc800; font-size:0.75rem; font-weight:700;"><i class="fa-solid fa-bolt"></i> ${a.xp} XP</span>
-                        <span style="color:#ff9600; font-size:0.75rem; font-weight:700; margin-left: 6px;"><i class="fa-solid fa-fire"></i> ${a.dias_fogo}d</span>
+                <div class="friend-item" onclick="window.location.href='chat.php?user_id=${a.id}'">
+                    <img src="${a.foto_perfil}" class="friend-avatar">
+                    <div class="friend-name">
+                        ${a.nome}
                     </div>
-                    <div style="color:#1cb0f6; font-size: 1rem;">
-                        <i class="fa-solid fa-comment-dots"></i>
+                    <div class="friend-chat-icon">
+                        <i class="fa-regular fa-comment-dots"></i>
                     </div>
                 </div>
             `;

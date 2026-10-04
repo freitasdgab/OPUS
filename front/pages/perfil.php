@@ -70,13 +70,15 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                     </div>
 
                     <div class="user-info">
-                        <h1><?php echo htmlspecialchars($nome_principal); ?></h1>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <h1><?php echo htmlspecialchars($nome_principal); ?></h1>
+                            <i class="fa-brands fa-java" style="font-size: 2rem; color: #5382a1;"></i>
+                        </div>
                         <div class="user-details">
-                            <span class="username">@<?php echo htmlspecialchars($username); ?></span>
                             <span class="email-text"><?php echo htmlspecialchars($email); ?></span>
                         </div>
                         <div class="member-since">
-                            <i class="fa-regular fa-calendar-days"></i> <?php echo $membro_desde; ?>
+                            <?php echo strtolower($membro_desde); ?>
                         </div>
                         
                         <!-- ÁREA DE NOTIFICAÇÕES (Caixa de Aprovação) -->
@@ -85,48 +87,44 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                             <div id="listaPedidosPerfil" style="display:flex; flex-direction:column; gap:10px;"></div>
                         </div>
 
-                        <div class="social-links" style="display: flex; gap: 15px; margin-top: 15px;">
-                            <a href="#" onclick="openSocialModal('amigos')"><span id="lblAmigosCount">0</span> Amigos</a>
-                            <a href="#" onclick="openSocialModal('seguindo')"><span id="lblSeguindoCount">0</span> Seguindo</a>
-                            <a href="#" onclick="openSocialModal('seguidores')"><span id="lblSeguidoresCount">0</span> Seguidores</a>
+                        <div class="social-links">
+                            <a href="#" onclick="openSocialModal('seguindo')">seguindo <span id="lblSeguindoCount">0</span></a>
+                            <a href="#" onclick="openSocialModal('seguidores')">seguidores <span id="lblSeguidoresCount">0</span></a>
+                            <a href="#" onclick="openSocialModal('amigos')">amigos <span id="lblAmigosCount">0</span></a>
                         </div>
                     </div>
 
-                    <div class="divider"></div>
-
                     <div class="stats-section">
-                        <h2>Estatísticas</h2>
+                        <h2>Estatisticas</h2>
                         <div class="stats-grid">
                             <div class="stat-card">
-                                <div class="stat-card-icon" style="color: #ff9600;"><i class="fa-solid fa-fire"></i></div>
+                                <div class="stat-card-icon" style="color: #4a4a5a;"><i class="fa-solid fa-fire"></i></div>
                                 <div class="stat-card-content">
                                     <span class="stat-card-value"><?php echo $dias_ofensiva; ?></span>
-                                    <span class="stat-card-label">Dias de ofensiva</span>
+                                    <span class="stat-card-label">dias<br>seguidos</span>
                                 </div>
                             </div>
                             <div class="stat-card">
                                 <div class="stat-card-icon" style="color: #ffc800;"><i class="fa-solid fa-bolt"></i></div>
                                 <div class="stat-card-content">
                                     <span class="stat-card-value"><?php echo $xp_total; ?></span>
-                                    <span class="stat-card-label">Total ganho</span>
+                                    <span class="stat-card-label">total de xp</span>
                                 </div>
                             </div>
                             <div class="stat-card">
-                                <div class="stat-card-icon" style="color: #1cb0f6;"><i class="fa-solid fa-shield"></i></div>
+                                <div class="stat-card-icon" style="color: #ffc800;"><i class="fa-solid fa-shield"></i></div>
                                 <div class="stat-card-content">
-                                    <span class="stat-card-value"><?php echo htmlspecialchars($divisao); ?></span>
-                                    <span class="stat-card-label">Liga atual</span>
+                                    <span class="stat-card-value" style="font-size: 1rem;"><?php echo strtolower(htmlspecialchars($divisao)); ?></span>
+                                    <span class="stat-card-label">divisão</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="divider"></div>
-
-                    <div class="stats-section">
+                    <div class="stats-section" style="margin-top: 40px;">
                         <h2>Conquistas</h2>
                         <!-- Container onde a API insere os troféus via JS -->
-                        <div class="stats-grid" id="trophy-container">
+                        <div class="stats-grid-trophies" id="trophy-container">
                         </div>
                     </div>
 
@@ -134,33 +132,27 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
 
                 <!-- COLUNA DIREITA -->
                 <div class="side-column">
-                    <div class="side-card">
-                        <div class="side-card-title">Interagir</div>
-                        <ul class="side-card-list">
-                            <li onclick="window.location.href='chat.php'">
-                                <div style="display: flex; align-items: center; gap: 15px;">
-                                    <i class="fa-solid fa-magnifying-glass" style="font-size: 1.2rem; color: #1cb0f6;"></i> Encontrar amigos
-                                </div>
-                                <i class="fa-solid fa-chevron-right"></i>
-                            </li>
-                            <li onclick="copiarConvitePerfil(<?php echo $user_id; ?>)">
-                                <div style="display: flex; align-items: center; gap: 15px;">
-                                    <i class="fa-solid fa-share-nodes" style="font-size: 1.2rem; color: #ffc800;"></i> Convidar amigos
-                                </div>
-                                <i class="fa-solid fa-chevron-right"></i>
-                            </li>
-                        </ul>
-                    </div>
-                    
-                    
-                    <button class="btn-outline" onclick="openLogoutModal()">Sair da Conta</button>
-
-                    <div class="side-card" style="margin-top: 20px;">
-                        <div class="side-card-title">Seus Amigos</div>
-                        <div id="listaAmigosPerfil" style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
-                            <div style="color:var(--text-muted); font-size:0.9rem;">Carregando amigos...</div>
+                    <div class="side-card interact-card">
+                        <div onclick="copiarConvitePerfil(<?php echo $user_id; ?>)" class="interact-item">
+                            <img src="../assets/img/azulcarta.png" alt="Convidar">
+                            <span>convidar amigos</span>
+                        </div>
+                        <div onclick="window.location.href='chat.php'" class="interact-item">
+                            <img src="../assets/img/azulpesquisar.png" alt="Encontrar">
+                            <span>encontrar amigos</span>
                         </div>
                     </div>
+                    
+                    <div class="friends-list-container">
+                        <div class="friends-list-title">lista de amigos</div>
+                        <div class="side-card friends-card">
+                            <div id="listaAmigosPerfil" class="friends-list">
+                                <div style="color:var(--text-muted); font-size:0.9rem; padding: 15px;">Carregando amigos...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn-outline" style="margin-top: auto;" onclick="openLogoutModal()">Sair da Conta</button>
                 </div>
             </div>
         </main>
