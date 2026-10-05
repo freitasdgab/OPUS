@@ -243,7 +243,7 @@ CREATE TABLE `ligas_grupos` (
   `criado_em` datetime DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `divisao_semana` (`divisao`,`semana_ref`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -252,7 +252,7 @@ CREATE TABLE `ligas_grupos` (
 
 LOCK TABLES `ligas_grupos` WRITE;
 /*!40000 ALTER TABLE `ligas_grupos` DISABLE KEYS */;
-INSERT INTO `ligas_grupos` VALUES (1,'bronze','2026-09-21',30,'2026-09-26 23:22:38'),(2,'prata','2026-09-21',30,'2026-09-26 23:22:38'),(3,'ouro','2026-09-21',30,'2026-09-26 23:22:38'),(4,'diamante','2026-09-21',30,'2026-09-26 23:22:38'),(5,'mestre','2026-09-21',30,'2026-09-26 23:22:38');
+INSERT INTO `ligas_grupos` VALUES (1,'bronze','2026-09-21',30,'2026-09-26 23:22:38'),(2,'prata','2026-09-21',30,'2026-09-26 23:22:38'),(3,'ouro','2026-09-21',30,'2026-09-26 23:22:38'),(4,'diamante','2026-09-21',30,'2026-09-26 23:22:38'),(5,'mestre','2026-09-21',30,'2026-09-26 23:22:38'),(6,'bronze','2026-09-28',30,'2026-10-04 21:01:36'),(7,'prata','2026-09-28',30,'2026-10-04 21:01:36'),(8,'ouro','2026-09-28',30,'2026-10-04 21:01:36'),(9,'diamante','2026-09-28',30,'2026-10-04 21:01:36'),(10,'mestre','2026-09-28',30,'2026-10-04 21:01:36');
 /*!40000 ALTER TABLE `ligas_grupos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -307,7 +307,7 @@ CREATE TABLE `ligas_usuario` (
   UNIQUE KEY `uq_usuario_semana` (`usuario_id`,`grupo_id`),
   KEY `idx_divisao_grupo` (`divisao`,`grupo_id`),
   CONSTRAINT `fk_ligas_usuario_user` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -316,7 +316,7 @@ CREATE TABLE `ligas_usuario` (
 
 LOCK TABLES `ligas_usuario` WRITE;
 /*!40000 ALTER TABLE `ligas_usuario` DISABLE KEYS */;
-INSERT INTO `ligas_usuario` VALUES (1,1,'bronze',1,200,NULL,'2026-09-26 23:22:38'),(2,2,'bronze',1,100,NULL,'2026-09-26 23:22:38'),(3,3,'bronze',1,150,NULL,'2026-09-26 23:22:38'),(4,4,'bronze',1,200,NULL,'2026-09-26 23:22:38'),(5,5,'bronze',1,250,NULL,'2026-09-26 23:22:38');
+INSERT INTO `ligas_usuario` VALUES (1,1,'bronze',1,200,NULL,'2026-09-26 23:22:38'),(2,2,'bronze',1,100,NULL,'2026-09-26 23:22:38'),(3,3,'bronze',1,150,NULL,'2026-09-26 23:22:38'),(4,4,'bronze',1,200,NULL,'2026-09-26 23:22:38'),(5,5,'bronze',1,250,NULL,'2026-09-26 23:22:38'),(6,3,'bronze',0,45,NULL,'2026-10-04 21:01:36'),(7,7,'bronze',0,25,NULL,'2026-10-04 21:01:36'),(8,8,'bronze',0,15,NULL,'2026-10-04 21:01:36'),(9,4,'prata',0,140,NULL,'2026-10-04 21:01:36'),(10,9,'prata',0,180,NULL,'2026-10-04 21:01:36'),(11,10,'prata',0,110,NULL,'2026-10-04 21:01:36'),(12,5,'ouro',0,320,NULL,'2026-10-04 21:01:36'),(13,11,'ouro',0,410,NULL,'2026-10-04 21:01:36'),(14,12,'ouro',0,290,NULL,'2026-10-04 21:01:36'),(15,13,'ouro',0,260,NULL,'2026-10-04 21:01:36'),(16,14,'diamante',0,650,NULL,'2026-10-04 21:01:36'),(17,15,'diamante',0,780,NULL,'2026-10-04 21:01:36'),(18,16,'diamante',0,590,NULL,'2026-10-04 21:01:36'),(19,1,'mestre',0,950,NULL,'2026-10-04 21:01:36'),(20,2,'mestre',0,1200,NULL,'2026-10-04 21:01:36'),(21,17,'mestre',0,1550,NULL,'2026-10-04 21:01:36'),(22,18,'mestre',0,1180,NULL,'2026-10-04 21:01:36'),(23,19,'mestre',0,1340,NULL,'2026-10-04 21:01:36'),(24,21,'bronze',6,0,NULL,'2026-10-04 21:06:18');
 /*!40000 ALTER TABLE `ligas_usuario` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -402,7 +402,7 @@ CREATE TABLE `progresso_usuario` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_usuario_unidade` (`usuario_id`,`unidade_numero`),
   CONSTRAINT `fk_progresso_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -411,7 +411,7 @@ CREATE TABLE `progresso_usuario` (
 
 LOCK TABLES `progresso_usuario` WRITE;
 /*!40000 ALTER TABLE `progresso_usuario` DISABLE KEYS */;
-INSERT INTO `progresso_usuario` VALUES (1,1,1,'corrente',2,'2026-09-27 02:22:38'),(2,1,2,'trancado',0,'2026-09-27 02:22:38'),(3,1,3,'trancado',0,'2026-09-27 02:22:38'),(4,1,4,'trancado',0,'2026-09-27 02:22:38'),(5,1,5,'trancado',0,'2026-09-27 02:22:38'),(6,2,1,'corrente',0,'2026-09-27 02:22:38'),(7,2,2,'trancado',0,'2026-09-27 02:22:38'),(8,2,3,'trancado',0,'2026-09-27 02:22:38'),(9,2,4,'trancado',0,'2026-09-27 02:22:38'),(10,2,5,'trancado',0,'2026-09-27 02:22:38'),(11,3,1,'corrente',0,'2026-09-27 02:22:38'),(12,3,2,'trancado',0,'2026-09-27 02:22:38'),(13,3,3,'trancado',0,'2026-09-27 02:22:38'),(14,3,4,'trancado',0,'2026-09-27 02:22:38'),(15,3,5,'trancado',0,'2026-09-27 02:22:38'),(16,4,1,'corrente',0,'2026-09-27 02:22:38'),(17,4,2,'trancado',0,'2026-09-27 02:22:38'),(18,4,3,'trancado',0,'2026-09-27 02:22:38'),(19,4,4,'trancado',0,'2026-09-27 02:22:38'),(20,4,5,'trancado',0,'2026-09-27 02:22:38'),(21,5,1,'corrente',0,'2026-09-27 02:22:38'),(22,5,2,'trancado',0,'2026-09-27 02:22:38'),(23,5,3,'trancado',0,'2026-09-27 02:22:38'),(24,5,4,'trancado',0,'2026-09-27 02:22:38'),(25,5,5,'trancado',0,'2026-09-27 02:22:38');
+INSERT INTO `progresso_usuario` VALUES (1,1,1,'corrente',2,'2026-09-27 02:22:38'),(2,1,2,'trancado',0,'2026-09-27 02:22:38'),(3,1,3,'trancado',0,'2026-09-27 02:22:38'),(4,1,4,'trancado',0,'2026-09-27 02:22:38'),(5,1,5,'trancado',0,'2026-09-27 02:22:38'),(6,2,1,'corrente',0,'2026-09-27 02:22:38'),(7,2,2,'trancado',0,'2026-09-27 02:22:38'),(8,2,3,'trancado',0,'2026-09-27 02:22:38'),(9,2,4,'trancado',0,'2026-09-27 02:22:38'),(10,2,5,'trancado',0,'2026-09-27 02:22:38'),(11,3,1,'corrente',0,'2026-09-27 02:22:38'),(12,3,2,'trancado',0,'2026-09-27 02:22:38'),(13,3,3,'trancado',0,'2026-09-27 02:22:38'),(14,3,4,'trancado',0,'2026-09-27 02:22:38'),(15,3,5,'trancado',0,'2026-09-27 02:22:38'),(16,4,1,'corrente',0,'2026-09-27 02:22:38'),(17,4,2,'trancado',0,'2026-09-27 02:22:38'),(18,4,3,'trancado',0,'2026-09-27 02:22:38'),(19,4,4,'trancado',0,'2026-09-27 02:22:38'),(20,4,5,'trancado',0,'2026-09-27 02:22:38'),(21,5,1,'corrente',0,'2026-09-27 02:22:38'),(22,5,2,'trancado',0,'2026-09-27 02:22:38'),(23,5,3,'trancado',0,'2026-09-27 02:22:38'),(24,5,4,'trancado',0,'2026-09-27 02:22:38'),(25,5,5,'trancado',0,'2026-09-27 02:22:38'),(26,20,1,'corrente',0,'2026-10-05 00:02:59'),(27,20,2,'trancado',0,'2026-10-05 00:02:59'),(28,20,3,'trancado',0,'2026-10-05 00:02:59'),(29,20,4,'trancado',0,'2026-10-05 00:02:59'),(30,20,5,'trancado',0,'2026-10-05 00:02:59'),(31,21,1,'corrente',0,'2026-10-05 00:03:58'),(32,21,2,'trancado',0,'2026-10-05 00:03:58'),(33,21,3,'trancado',0,'2026-10-05 00:03:58'),(34,21,4,'trancado',0,'2026-10-05 00:03:58'),(35,21,5,'trancado',0,'2026-10-05 00:03:58');
 /*!40000 ALTER TABLE `progresso_usuario` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -531,7 +531,7 @@ CREATE TABLE `usuarios` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
   KEY `idx_email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -540,7 +540,7 @@ CREATE TABLE `usuarios` (
 
 LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
-INSERT INTO `usuarios` VALUES (1,'Gabriel Freitas','gabriel@opus.com','$2y$10$8Fb33G1p8YdvgMXcIyd5COwo7K6O0MFhvffFN3HvOqlFi5jhEhsTO',500,3,'Intermediário',NULL,'2026-09-27 02:22:37',1,3,NULL,'2026-09-26','admin','#1cb0f6','gabriel_dev',NULL,NULL),(2,'Administrador OPUS','admin@opus.com','$2y$10$8Fb33G1p8YdvgMXcIyd5COwo7K6O0MFhvffFN3HvOqlFi5jhEhsTO',1000,10,'Avançado',NULL,'2026-09-27 02:22:37',12,3,NULL,NULL,'admin','#58cc02','admin_opus',NULL,NULL),(3,'Ana Silva','ana.silva@email.com','$2y$10$8Fb33G1p8YdvgMXcIyd5COwo7K6O0MFhvffFN3HvOqlFi5jhEhsTO',250,3,'Iniciante',NULL,'2026-09-27 02:22:37',3,3,NULL,NULL,'comum','#ff4b4b','aninha_code',NULL,NULL),(4,'Lucas Mendes','lucas@email.com','$2y$10$8Fb33G1p8YdvgMXcIyd5COwo7K6O0MFhvffFN3HvOqlFi5jhEhsTO',180,2,'Iniciante',NULL,'2026-09-27 02:22:37',2,2,NULL,NULL,'comum','#ce82ff','lucas_java',NULL,NULL),(5,'Mariana Costa','mariana@email.com','$2y$10$8Fb33G1p8YdvgMXcIyd5COwo7K6O0MFhvffFN3HvOqlFi5jhEhsTO',320,4,'Intermediário',NULL,'2026-09-27 02:22:37',4,3,NULL,NULL,'comum','#ff9600','mari_dev',NULL,NULL);
+INSERT INTO `usuarios` VALUES (1,'Administrador OPUS','gabriel@opus.com','$2y$10$42ShEHGq1zO9srfpO0BvZ.Bq/3caA5Brpc/in5.S3H9juaMNyc7Qi',2500,12,'Intermediário',NULL,'2026-09-27 02:22:37',14,3,NULL,'2026-09-26','admin','#1cb0f6','admin_opus',NULL,NULL),(2,'Gabriel Freitas','admin@opus.com','$2y$10$42ShEHGq1zO9srfpO0BvZ.Bq/3caA5Brpc/in5.S3H9juaMNyc7Qi',3800,15,'Avançado',NULL,'2026-09-27 02:22:37',30,3,NULL,NULL,'admin','#58cc02','gabriel_dev',NULL,NULL),(3,'Ana Silva','ana.silva@email.com','$2y$10$8Fb33G1p8YdvgMXcIyd5COwo7K6O0MFhvffFN3HvOqlFi5jhEhsTO',180,3,'Iniciante',NULL,'2026-09-27 02:22:37',2,3,NULL,NULL,'comum','#ff4b4b','aninha_code',NULL,NULL),(4,'Lucas Mendes','lucas@email.com','$2y$10$8Fb33G1p8YdvgMXcIyd5COwo7K6O0MFhvffFN3HvOqlFi5jhEhsTO',450,2,'Iniciante',NULL,'2026-09-27 02:22:37',4,2,NULL,NULL,'comum','#ce82ff','lucas_java',NULL,NULL),(5,'Mariana Costa','mariana@email.com','$2y$10$8Fb33G1p8YdvgMXcIyd5COwo7K6O0MFhvffFN3HvOqlFi5jhEhsTO',950,4,'Intermediário',NULL,'2026-09-27 02:22:37',8,3,NULL,NULL,'comum','#ff9600','mari_dev',NULL,NULL),(7,'Pedro Rocha','pedro.rocha@email.com','$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a',90,1,'Iniciante',NULL,'2026-10-05 00:01:36',1,1,NULL,NULL,'comum','#1cb0f6','pedro_dev',NULL,NULL),(8,'Júlia Santos','julia.santos@email.com','$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a',50,0,'Iniciante',NULL,'2026-10-05 00:01:36',0,0,NULL,NULL,'comum','#ff9600','ju_santos',NULL,NULL),(9,'Felipe Oliveira','felipe.oliveira@email.com','$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a',530,5,'Intermediário',NULL,'2026-10-05 00:01:36',6,3,NULL,NULL,'comum','#00cd9c','felipe_oli',NULL,NULL),(10,'Camila Ribeiro','camila.ribeiro@email.com','$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a',390,3,'Iniciante',NULL,'2026-10-05 00:01:36',3,3,NULL,NULL,'comum','#e11d48','cami_rib',NULL,NULL),(11,'Bruno Carvalho','bruno.carvalho@email.com','$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a',1100,8,'Intermediário',NULL,'2026-10-05 00:01:36',12,2,NULL,NULL,'comum','#d97706','bruno_code',NULL,NULL),(12,'Larissa Souza','larissa.souza@email.com','$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a',880,6,'Intermediário',NULL,'2026-10-05 00:01:36',7,3,NULL,NULL,'comum','#9333ea','lari_souza',NULL,NULL),(13,'Rodrigo Lima','rodrigo.lima@email.com','$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a',820,6,'Intermediário',NULL,'2026-10-05 00:01:36',5,1,NULL,NULL,'comum','#2563eb','rodrigo_l',NULL,NULL),(14,'Rafael Duarte','rafael.duarte@email.com','$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a',2100,10,'Avançado',NULL,'2026-10-05 00:01:36',18,3,NULL,NULL,'comum','#06b6d4','rafa_duarte',NULL,NULL),(15,'Beatriz Almeida','beatriz.almeida@email.com','$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a',2450,11,'Avançado',NULL,'2026-10-05 00:01:36',21,3,NULL,NULL,'comum','#3b82f6','bea_almeida',NULL,NULL),(16,'Thiago Ferreira','thiago.ferreira@email.com','$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a',1950,9,'Intermediário',NULL,'2026-10-05 00:01:36',15,2,NULL,NULL,'comum','#84cc16','thiago_f',NULL,NULL),(17,'Helena Martins','helena.martins@email.com','$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a',4800,18,'Avançado',NULL,'2026-10-05 00:01:36',45,3,NULL,NULL,'comum','#a855f7','helena_m',NULL,NULL),(18,'Vinicius Prado','vinicius.prado@email.com','$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a',3900,14,'Avançado',NULL,'2026-10-05 00:01:36',28,3,NULL,NULL,'comum','#ec4899','vini_prado',NULL,NULL),(19,'Sophia Castro','sophia.castro@email.com','$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a',4350,16,'Avançado',NULL,'2026-10-05 00:01:36',35,3,NULL,NULL,'comum','#6366f1','sophia_c',NULL,NULL),(20,'Gab Santos','gabsantosbag@gmail.com','',0,0,'Iniciante',NULL,'2026-10-05 00:02:59',0,3,NULL,NULL,'comum','#1cb0f6',NULL,'106201833585413825315','https://lh3.googleusercontent.com/a/ACg8ocLdaUy7rcG2C8yeI1163uwixoCqwFzMxpfd_sM6epC2w34oUmA=s96-c'),(21,'lucas','lucas@opus.com','Admin123@',0,0,'Iniciante',NULL,'2026-10-05 00:03:58',0,3,NULL,NULL,'comum','#1cb0f6',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -548,14 +548,15 @@ UNLOCK TABLES;
 -- Dumping routines for database 'opus'
 --
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `sp_atualizar_fogo` */;
+ALTER DATABASE `opus` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
 /*!50003 SET character_set_client  = utf8mb4 */ ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_atualizar_fogo`(IN p_user_id INT)
 BEGIN
@@ -581,15 +582,17 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+ALTER DATABASE `opus` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `sp_corrigir_licao` */;
+ALTER DATABASE `opus` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
 /*!50003 SET character_set_client  = utf8mb4 */ ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_corrigir_licao`(
     IN p_user_id INT,
@@ -605,6 +608,7 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+ALTER DATABASE `opus` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `sp_liga_registrar_xp` */;
@@ -613,18 +617,16 @@ DELIMITER ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
 /*!50003 SET character_set_client  = utf8mb4 */ ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_liga_registrar_xp`(IN p_user_id INT, IN p_xp INT)
 BEGIN
     DECLARE v_semana DATE;
     DECLARE v_grupo_id INT;
-    DECLARE v_divisao VARCHAR(20) DEFAULT 'bronze';
+    DECLARE v_divisao VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'bronze';
 
-    -- Segunda-feira da semana atual
     SET v_semana = DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY);
 
-    -- Verifica ou cria grupo de liga para a semana
     SELECT g.id, u.divisao INTO v_grupo_id, v_divisao
     FROM ligas_usuario u
     JOIN ligas_grupos g ON u.grupo_id = g.id
@@ -650,14 +652,15 @@ DELIMITER ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `sp_penalizar_saida_licao` */;
+ALTER DATABASE `opus` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
 /*!50003 SET character_set_client  = utf8mb4 */ ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_penalizar_saida_licao`(IN p_user_id INT)
 BEGIN
@@ -668,15 +671,17 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+ALTER DATABASE `opus` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `sp_perder_vida` */;
+ALTER DATABASE `opus` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
 /*!50003 SET character_set_client  = utf8mb4 */ ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_perder_vida`(IN p_user_id INT)
 BEGIN
@@ -700,15 +705,17 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+ALTER DATABASE `opus` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `sp_processar_resultado_licao` */;
+ALTER DATABASE `opus` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
 /*!50003 SET character_set_client  = utf8mb4 */ ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_processar_resultado_licao`(
     IN p_user_id INT,
@@ -725,14 +732,11 @@ BEGIN
     DECLARE v_licoes_feitas INT DEFAULT 0;
 
     IF p_acertos = p_total AND p_total > 0 THEN
-        -- 1. Conquista perfeição
         INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'perfeicao');
         INSERT IGNORE INTO conquistas_usuario (usuario_id, conquista_slug) VALUES (p_user_id, 'perfeicao');
 
-        -- 2. Atualiza XP do usuário
         UPDATE usuarios SET xp = xp + v_xp_ganho WHERE id = p_user_id;
 
-        -- 3. Atualiza progresso da unidade
         SELECT licoes_concluidas INTO v_licoes_feitas FROM progresso_usuario WHERE usuario_id = p_user_id AND unidade_numero = p_unidade;
         
         IF v_licoes_feitas IS NULL THEN
@@ -745,22 +749,18 @@ BEGIN
             SET v_avancou = 1;
         END IF;
 
-        -- Se concluiu a 3ª lição, libera baú
         IF v_licoes_feitas >= 3 THEN
             SET v_bau_liberado = 1;
         END IF;
 
-        -- Se concluiu todas as 5 lições da unidade, desbloqueia próxima unidade
         IF v_licoes_feitas >= 5 THEN
             SET v_capitulo_concluido = 1;
             UPDATE progresso_usuario SET status = 'completo' WHERE usuario_id = p_user_id AND unidade_numero = p_unidade;
             
-            -- Desbloqueia próxima unidade
             INSERT INTO progresso_usuario (usuario_id, unidade_numero, status, licoes_concluidas)
             VALUES (p_user_id, p_unidade + 1, 'corrente', 0)
             ON DUPLICATE KEY UPDATE status = IF(status = 'trancado', 'corrente', status);
 
-            -- Troféu do capítulo
             IF p_unidade = 1 THEN INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'capitulo_1'); END IF;
             IF p_unidade = 2 THEN INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'capitulo_2'); END IF;
             IF p_unidade = 3 THEN INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'capitulo_3'); END IF;
@@ -768,7 +768,6 @@ BEGIN
             IF p_unidade = 5 THEN INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'capitulo_5'); END IF;
         END IF;
 
-        -- 4. Registra na liga e missão
         CALL sp_liga_registrar_xp(p_user_id, v_xp_ganho);
         CALL sp_registrar_missao_progresso(p_user_id, v_xp_ganho, 1);
         CALL sp_atualizar_fogo(p_user_id);
@@ -782,15 +781,17 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+ALTER DATABASE `opus` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `sp_processar_virada_semana` */;
+ALTER DATABASE `opus` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
 /*!50003 SET character_set_client  = utf8mb4 */ ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_processar_virada_semana`()
 BEGIN
@@ -799,7 +800,6 @@ BEGIN
     SET v_nova_semana = DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY);
     SET v_semana_antiga = DATE_SUB(v_nova_semana, INTERVAL 7 DAY);
 
-    -- Histórico e Promoções/Rebaixamentos
     INSERT INTO ligas_historico (usuario_id, divisao_anterior, divisao_nova, resultado, posicao_final, xp_final, semana_ref)
     SELECT 
         u.usuario_id, 
@@ -813,7 +813,6 @@ BEGIN
     JOIN ligas_grupos g ON u.grupo_id = g.id
     WHERE g.semana_ref = v_semana_antiga;
 
-    -- Reseta XP da semana para a nova semana
     UPDATE ligas_usuario SET xp_semana = 0 WHERE grupo_id IN (SELECT id FROM ligas_grupos WHERE semana_ref = v_nova_semana);
 END ;;
 DELIMITER ;
@@ -821,15 +820,17 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+ALTER DATABASE `opus` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `sp_registrar_missao_progresso` */;
+ALTER DATABASE `opus` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
 /*!50003 SET character_set_client  = utf8mb4 */ ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_registrar_missao_progresso`(IN p_user_id INT, IN p_xp INT, IN p_perfeita INT)
 BEGIN
@@ -846,15 +847,17 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+ALTER DATABASE `opus` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `sp_resgatar_bau` */;
+ALTER DATABASE `opus` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
 /*!50003 SET character_set_client  = utf8mb4 */ ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_resgatar_bau`(IN p_user_id INT, IN p_unidade INT)
 BEGIN
@@ -885,15 +888,17 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+ALTER DATABASE `opus` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `sp_sincronizar_jogador` */;
+ALTER DATABASE `opus` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
 /*!50003 SET character_set_client  = utf8mb4 */ ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_sincronizar_jogador`(IN p_user_id INT)
 BEGIN
@@ -932,15 +937,17 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+ALTER DATABASE `opus` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `sp_verificar_conquistas` */;
+ALTER DATABASE `opus` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
 /*!50003 SET character_set_client  = utf8mb4 */ ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_verificar_conquistas`(IN p_user_id INT)
 BEGIN
@@ -950,11 +957,9 @@ BEGIN
 
     SELECT xp, dias_fogo, trofeus INTO v_xp, v_fogo, v_trofeus FROM usuarios WHERE id = p_user_id;
 
-    -- Conquista primeiro_passo
     INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'primeiro_passo');
     INSERT IGNORE INTO conquistas_usuario (usuario_id, conquista_slug) VALUES (p_user_id, 'primeiro_passo');
 
-    -- Conquistas de Ofensiva (Fogo)
     IF v_fogo >= 3 THEN
         INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'fogo_3');
         INSERT IGNORE INTO conquistas_usuario (usuario_id, conquista_slug) VALUES (p_user_id, 'fogo_3');
@@ -968,13 +973,11 @@ BEGIN
         INSERT IGNORE INTO conquistas_usuario (usuario_id, conquista_slug) VALUES (p_user_id, 'sequencia_30');
     END IF;
     
-    -- Precisão / XP
     IF v_xp >= 150 THEN
         INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'precisao_absoluta');
         INSERT IGNORE INTO conquistas_usuario (usuario_id, conquista_slug) VALUES (p_user_id, 'precisao_absoluta');
     END IF;
 
-    -- Atualiza contagem total de trofeus do usuário
     UPDATE usuarios SET trofeus = (SELECT COUNT(*) FROM user_trofeus WHERE user_id = p_user_id) WHERE id = p_user_id;
 END ;;
 DELIMITER ;
@@ -982,6 +985,7 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+ALTER DATABASE `opus` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -992,576 +996,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-09-26 23:23:08
-
-
-
--- ==========================================================
--- STORED PROCEDURES DO OPUS
--- ==========================================================
-
-DELIMITER $$
-
-DROP PROCEDURE IF EXISTS `sp_sincronizar_jogador`$$
-CREATE PROCEDURE `sp_sincronizar_jogador`(IN p_user_id INT)
-BEGIN
-    DECLARE v_vidas INT;
-    DECLARE v_proxima_em DATETIME;
-    DECLARE v_agora DATETIME DEFAULT NOW();
-    DECLARE v_tempo_recarga INT DEFAULT 1800; -- 30 minutos em segundos
-    DECLARE v_vidas_ganhas INT DEFAULT 0;
-    DECLARE v_segundos_passados INT;
-    DECLARE v_resto_segundos INT;
-
-    SELECT vidas, vidas_proxima_em INTO v_vidas, v_proxima_em
-    FROM usuarios WHERE id = p_user_id FOR UPDATE;
-
-    IF v_vidas < 3 AND v_proxima_em IS NOT NULL AND v_agora >= v_proxima_em THEN
-        SET v_segundos_passados = TIMESTAMPDIFF(SECOND, v_proxima_em, v_agora) + v_tempo_recarga;
-        SET v_vidas_ganhas = FLOOR(v_segundos_passados / v_tempo_recarga);
-        SET v_resto_segundos = v_segundos_passados % v_tempo_recarga;
-
-        SET v_vidas = LEAST(3, v_vidas + v_vidas_ganhas);
-
-        IF v_vidas >= 3 THEN
-            SET v_proxima_em = NULL;
-        ELSE
-            SET v_proxima_em = DATE_SUB(DATE_ADD(v_agora, INTERVAL v_tempo_recarga SECOND), INTERVAL v_resto_segundos SECOND);
-        END IF;
-
-        UPDATE usuarios SET vidas = v_vidas, vidas_proxima_em = v_proxima_em WHERE id = p_user_id;
-    END IF;
-
-    SELECT id, nome, email, xp, trofeus, dificuldade, foto_perfil, dias_fogo, vidas, vidas_proxima_em, nivel_acesso, cor_fundo, username
-    FROM usuarios WHERE id = p_user_id;
-END$$
-
-DROP PROCEDURE IF EXISTS `sp_perder_vida`$$
-CREATE PROCEDURE `sp_perder_vida`(IN p_user_id INT)
-BEGIN
-    DECLARE v_vidas INT;
-    DECLARE v_proxima_em DATETIME;
-    
-    SELECT vidas, vidas_proxima_em INTO v_vidas, v_proxima_em FROM usuarios WHERE id = p_user_id FOR UPDATE;
-    
-    IF v_vidas > 0 THEN
-        SET v_vidas = v_vidas - 1;
-        IF v_proxima_em IS NULL THEN
-            SET v_proxima_em = DATE_ADD(NOW(), INTERVAL 30 MINUTE);
-        END IF;
-        UPDATE usuarios SET vidas = v_vidas, vidas_proxima_em = v_proxima_em WHERE id = p_user_id;
-    END IF;
-    
-    SELECT v_vidas AS vidas_restantes, v_proxima_em AS proxima_recarga;
-END$$
-
-DROP PROCEDURE IF EXISTS `sp_penalizar_saida_licao`$$
-CREATE PROCEDURE `sp_penalizar_saida_licao`(IN p_user_id INT)
-BEGIN
-    CALL sp_perder_vida(p_user_id);
-END$$
-
-DROP PROCEDURE IF EXISTS `sp_atualizar_fogo`$$
-CREATE PROCEDURE `sp_atualizar_fogo`(IN p_user_id INT)
-BEGIN
-    DECLARE v_ultima DATE;
-    DECLARE v_fogo INT;
-    DECLARE v_hoje DATE DEFAULT CURDATE();
-
-    SELECT ultima_atividade, dias_fogo INTO v_ultima, v_fogo FROM usuarios WHERE id = p_user_id FOR UPDATE;
-
-    IF v_ultima IS NULL THEN
-        SET v_fogo = 1;
-    ELSEIF v_ultima = DATE_SUB(v_hoje, INTERVAL 1 DAY) THEN
-        SET v_fogo = v_fogo + 1;
-    ELSEIF v_ultima < DATE_SUB(v_hoje, INTERVAL 1 DAY) THEN
-        SET v_fogo = 1;
-    END IF;
-
-    UPDATE usuarios SET dias_fogo = v_fogo, ultima_atividade = v_hoje WHERE id = p_user_id;
-    SELECT v_fogo AS dias_fogo;
-END$$
-
-DROP PROCEDURE IF EXISTS `sp_liga_registrar_xp`$$
-CREATE PROCEDURE `sp_liga_registrar_xp`(IN p_user_id INT, IN p_xp INT)
-BEGIN
-    DECLARE v_semana DATE;
-    DECLARE v_grupo_id INT;
-    DECLARE v_divisao VARCHAR(20) DEFAULT 'bronze';
-
-    SET v_semana = DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY);
-
-    SELECT g.id, u.divisao INTO v_grupo_id, v_divisao
-    FROM ligas_usuario u
-    JOIN ligas_grupos g ON u.grupo_id = g.id
-    WHERE u.usuario_id = p_user_id AND g.semana_ref = v_semana
-    LIMIT 1;
-
-    IF v_grupo_id IS NULL THEN
-        SELECT id INTO v_grupo_id FROM ligas_grupos WHERE semana_ref = v_semana AND divisao = v_divisao LIMIT 1;
-        IF v_grupo_id IS NULL THEN
-            INSERT INTO ligas_grupos (divisao, semana_ref, capacidade) VALUES (v_divisao, v_semana, 30);
-            SET v_grupo_id = LAST_INSERT_ID();
-        END IF;
-        INSERT INTO ligas_usuario (usuario_id, divisao, grupo_id, xp_semana) 
-        VALUES (p_user_id, v_divisao, v_grupo_id, p_xp)
-        ON DUPLICATE KEY UPDATE xp_semana = xp_semana + p_xp;
-    ELSE
-        UPDATE ligas_usuario SET xp_semana = xp_semana + p_xp WHERE usuario_id = p_user_id AND grupo_id = v_grupo_id;
-    END IF;
-END$$
-
-DROP PROCEDURE IF EXISTS `sp_registrar_missao_progresso`$$
-CREATE PROCEDURE `sp_registrar_missao_progresso`(IN p_user_id INT, IN p_xp INT, IN p_perfeita INT)
-BEGIN
-    DECLARE v_hoje DATE DEFAULT CURDATE();
-    INSERT INTO missoes_diarias_usuario (usuario_id, data_ref, xp_ganho, licoes_concluidas, licoes_perfeitas)
-    VALUES (p_user_id, v_hoje, p_xp, 1, IF(p_perfeita = 1, 1, 0))
-    ON DUPLICATE KEY UPDATE
-        xp_ganho = xp_ganho + p_xp,
-        licoes_concluidas = licoes_concluidas + 1,
-        licoes_perfeitas = licoes_perfeitas + IF(p_perfeita = 1, 1, 0);
-END$$
-
-DROP PROCEDURE IF EXISTS `sp_verificar_conquistas`$$
-CREATE PROCEDURE `sp_verificar_conquistas`(IN p_user_id INT)
-BEGIN
-    DECLARE v_xp INT;
-    DECLARE v_fogo INT;
-    DECLARE v_trofeus INT;
-
-    SELECT xp, dias_fogo, trofeus INTO v_xp, v_fogo, v_trofeus FROM usuarios WHERE id = p_user_id;
-
-    INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'primeiro_passo');
-    INSERT IGNORE INTO conquistas_usuario (usuario_id, conquista_slug) VALUES (p_user_id, 'primeiro_passo');
-
-    IF v_fogo >= 3 THEN
-        INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'fogo_3');
-        INSERT IGNORE INTO conquistas_usuario (usuario_id, conquista_slug) VALUES (p_user_id, 'fogo_3');
-    END IF;
-    IF v_fogo >= 7 THEN
-        INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'sequencia_7');
-        INSERT IGNORE INTO conquistas_usuario (usuario_id, conquista_slug) VALUES (p_user_id, 'sequencia_7');
-    END IF;
-    IF v_fogo >= 30 THEN
-        INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'sequencia_30');
-        INSERT IGNORE INTO conquistas_usuario (usuario_id, conquista_slug) VALUES (p_user_id, 'sequencia_30');
-    END IF;
-    
-    IF v_xp >= 150 THEN
-        INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'precisao_absoluta');
-        INSERT IGNORE INTO conquistas_usuario (usuario_id, conquista_slug) VALUES (p_user_id, 'precisao_absoluta');
-    END IF;
-
-    UPDATE usuarios SET trofeus = (SELECT COUNT(*) FROM user_trofeus WHERE user_id = p_user_id) WHERE id = p_user_id;
-END$$
-
-DROP PROCEDURE IF EXISTS `sp_resgatar_bau`$$
-CREATE PROCEDURE `sp_resgatar_bau`(IN p_user_id INT, IN p_unidade INT)
-BEGIN
-    DECLARE v_ja_resgatou INT;
-    DECLARE v_concluidas INT;
-    DECLARE v_xp_recompensa INT DEFAULT 100;
-    DECLARE v_vidas_recompensa INT DEFAULT 1;
-
-    SELECT COUNT(*) INTO v_ja_resgatou FROM bau_recompensas WHERE usuario_id = p_user_id AND unidade_numero = p_unidade;
-    SELECT licoes_concluidas INTO v_concluidas FROM progresso_usuario WHERE usuario_id = p_user_id AND unidade_numero = p_unidade;
-
-    IF v_ja_resgatou = 0 AND v_concluidas >= 3 THEN
-        INSERT INTO bau_recompensas (usuario_id, unidade_numero, tipo_recompensa, xp_ganho, vidas_ganhas)
-        VALUES (p_user_id, p_unidade, 'misto', v_xp_recompensa, v_vidas_recompensa);
-
-        UPDATE usuarios SET 
-            xp = xp + v_xp_recompensa,
-            vidas = LEAST(3, vidas + v_vidas_recompensa)
-        WHERE id = p_user_id;
-
-        SELECT 1 AS resgatado, v_xp_recompensa AS xp_ganho, v_vidas_recompensa AS vidas_ganhas;
-    ELSE
-        SELECT 0 AS resgatado, 0 AS xp_ganho, 0 AS vidas_ganhas;
-    END IF;
-END$$
-
-DROP PROCEDURE IF EXISTS `sp_processar_resultado_licao`$$
-CREATE PROCEDURE `sp_processar_resultado_licao`(
-    IN p_user_id INT,
-    IN p_unidade INT,
-    IN p_licao INT,
-    IN p_acertos INT,
-    IN p_total INT
-)
-BEGIN
-    DECLARE v_avancou INT DEFAULT 0;
-    DECLARE v_capitulo_concluido INT DEFAULT 0;
-    DECLARE v_bau_liberado INT DEFAULT 0;
-    DECLARE v_xp_ganho INT DEFAULT 50;
-    DECLARE v_licoes_feitas INT DEFAULT 0;
-
-    IF p_acertos = p_total AND p_total > 0 THEN
-        INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'perfeicao');
-        INSERT IGNORE INTO conquistas_usuario (usuario_id, conquista_slug) VALUES (p_user_id, 'perfeicao');
-
-        UPDATE usuarios SET xp = xp + v_xp_ganho WHERE id = p_user_id;
-
-        SELECT licoes_concluidas INTO v_licoes_feitas FROM progresso_usuario WHERE usuario_id = p_user_id AND unidade_numero = p_unidade;
-        
-        IF v_licoes_feitas IS NULL THEN
-            INSERT INTO progresso_usuario (usuario_id, unidade_numero, status, licoes_concluidas) VALUES (p_user_id, p_unidade, 'corrente', 1);
-            SET v_licoes_feitas = 1;
-            SET v_avancou = 1;
-        ELSEIF p_licao > v_licoes_feitas THEN
-            SET v_licoes_feitas = p_licao;
-            UPDATE progresso_usuario SET licoes_concluidas = v_licoes_feitas WHERE usuario_id = p_user_id AND unidade_numero = p_unidade;
-            SET v_avancou = 1;
-        END IF;
-
-        IF v_licoes_feitas >= 3 THEN
-            SET v_bau_liberado = 1;
-        END IF;
-
-        IF v_licoes_feitas >= 5 THEN
-            SET v_capitulo_concluido = 1;
-            UPDATE progresso_usuario SET status = 'completo' WHERE usuario_id = p_user_id AND unidade_numero = p_unidade;
-            
-            INSERT INTO progresso_usuario (usuario_id, unidade_numero, status, licoes_concluidas)
-            VALUES (p_user_id, p_unidade + 1, 'corrente', 0)
-            ON DUPLICATE KEY UPDATE status = IF(status = 'trancado', 'corrente', status);
-
-            IF p_unidade = 1 THEN INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'capitulo_1'); END IF;
-            IF p_unidade = 2 THEN INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'capitulo_2'); END IF;
-            IF p_unidade = 3 THEN INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'capitulo_3'); END IF;
-            IF p_unidade = 4 THEN INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'capitulo_4'); END IF;
-            IF p_unidade = 5 THEN INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'capitulo_5'); END IF;
-        END IF;
-
-        CALL sp_liga_registrar_xp(p_user_id, v_xp_ganho);
-        CALL sp_registrar_missao_progresso(p_user_id, v_xp_ganho, 1);
-        CALL sp_atualizar_fogo(p_user_id);
-        CALL sp_verificar_conquistas(p_user_id);
-    END IF;
-
-    SELECT v_avancou AS avancou, v_capitulo_concluido AS capitulo_concluido, v_bau_liberado AS bau_liberado, v_xp_ganho AS xp_ganho;
-END$$
-
-DROP PROCEDURE IF EXISTS `sp_corrigir_licao`$$
-CREATE PROCEDURE `sp_corrigir_licao`(
-    IN p_user_id INT,
-    IN p_unidade INT,
-    IN p_licao INT,
-    IN p_acertos INT
-)
-BEGIN
-    CALL sp_processar_resultado_licao(p_user_id, p_unidade, p_licao, p_acertos, 3);
-END$$
-
-DROP PROCEDURE IF EXISTS `sp_processar_virada_semana`$$
-CREATE PROCEDURE `sp_processar_virada_semana`()
-BEGIN
-    DECLARE v_semana_antiga DATE;
-    DECLARE v_nova_semana DATE;
-    SET v_nova_semana = DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY);
-    SET v_semana_antiga = DATE_SUB(v_nova_semana, INTERVAL 7 DAY);
-
-    INSERT INTO ligas_historico (usuario_id, divisao_anterior, divisao_nova, resultado, posicao_final, xp_final, semana_ref)
-    SELECT 
-        u.usuario_id, 
-        u.divisao, 
-        u.divisao, 
-        'manteve', 
-        1, 
-        u.xp_semana, 
-        v_semana_antiga
-    FROM ligas_usuario u
-    JOIN ligas_grupos g ON u.grupo_id = g.id
-    WHERE g.semana_ref = v_semana_antiga;
-
-    UPDATE ligas_usuario SET xp_semana = 0 WHERE grupo_id IN (SELECT id FROM ligas_grupos WHERE semana_ref = v_nova_semana);
-END$$
-
-DELIMITER ;
-
-
-
--- ==========================================================
--- STORED PROCEDURES DO OPUS
--- ==========================================================
-
-DELIMITER $$
-
-DROP PROCEDURE IF EXISTS `sp_sincronizar_jogador`$$
-CREATE PROCEDURE `sp_sincronizar_jogador`(IN p_user_id INT)
-BEGIN
-    DECLARE v_vidas INT;
-    DECLARE v_proxima_em DATETIME;
-    DECLARE v_agora DATETIME DEFAULT NOW();
-    DECLARE v_tempo_recarga INT DEFAULT 1800; -- 30 minutos em segundos
-    DECLARE v_vidas_ganhas INT DEFAULT 0;
-    DECLARE v_segundos_passados INT;
-    DECLARE v_resto_segundos INT;
-
-    SELECT vidas, vidas_proxima_em INTO v_vidas, v_proxima_em
-    FROM usuarios WHERE id = p_user_id FOR UPDATE;
-
-    IF v_vidas < 3 AND v_proxima_em IS NOT NULL AND v_agora >= v_proxima_em THEN
-        SET v_segundos_passados = TIMESTAMPDIFF(SECOND, v_proxima_em, v_agora) + v_tempo_recarga;
-        SET v_vidas_ganhas = FLOOR(v_segundos_passados / v_tempo_recarga);
-        SET v_resto_segundos = v_segundos_passados % v_tempo_recarga;
-
-        SET v_vidas = LEAST(3, v_vidas + v_vidas_ganhas);
-
-        IF v_vidas >= 3 THEN
-            SET v_proxima_em = NULL;
-        ELSE
-            SET v_proxima_em = DATE_SUB(DATE_ADD(v_agora, INTERVAL v_tempo_recarga SECOND), INTERVAL v_resto_segundos SECOND);
-        END IF;
-
-        UPDATE usuarios SET vidas = v_vidas, vidas_proxima_em = v_proxima_em WHERE id = p_user_id;
-    END IF;
-
-    SELECT id, nome, email, xp, trofeus, dificuldade, foto_perfil, dias_fogo, vidas, vidas_proxima_em, nivel_acesso, cor_fundo, username
-    FROM usuarios WHERE id = p_user_id;
-END$$
-
-DROP PROCEDURE IF EXISTS `sp_perder_vida`$$
-CREATE PROCEDURE `sp_perder_vida`(IN p_user_id INT)
-BEGIN
-    DECLARE v_vidas INT;
-    DECLARE v_proxima_em DATETIME;
-    
-    SELECT vidas, vidas_proxima_em INTO v_vidas, v_proxima_em FROM usuarios WHERE id = p_user_id FOR UPDATE;
-    
-    IF v_vidas > 0 THEN
-        SET v_vidas = v_vidas - 1;
-        IF v_proxima_em IS NULL THEN
-            SET v_proxima_em = DATE_ADD(NOW(), INTERVAL 30 MINUTE);
-        END IF;
-        UPDATE usuarios SET vidas = v_vidas, vidas_proxima_em = v_proxima_em WHERE id = p_user_id;
-    END IF;
-    
-    SELECT v_vidas AS vidas_restantes, v_proxima_em AS proxima_recarga;
-END$$
-
-DROP PROCEDURE IF EXISTS `sp_penalizar_saida_licao`$$
-CREATE PROCEDURE `sp_penalizar_saida_licao`(IN p_user_id INT)
-BEGIN
-    CALL sp_perder_vida(p_user_id);
-END$$
-
-DROP PROCEDURE IF EXISTS `sp_atualizar_fogo`$$
-CREATE PROCEDURE `sp_atualizar_fogo`(IN p_user_id INT)
-BEGIN
-    DECLARE v_ultima DATE;
-    DECLARE v_fogo INT;
-    DECLARE v_hoje DATE DEFAULT CURDATE();
-
-    SELECT ultima_atividade, dias_fogo INTO v_ultima, v_fogo FROM usuarios WHERE id = p_user_id FOR UPDATE;
-
-    IF v_ultima IS NULL THEN
-        SET v_fogo = 1;
-    ELSEIF v_ultima = DATE_SUB(v_hoje, INTERVAL 1 DAY) THEN
-        SET v_fogo = v_fogo + 1;
-    ELSEIF v_ultima < DATE_SUB(v_hoje, INTERVAL 1 DAY) THEN
-        SET v_fogo = 1;
-    END IF;
-
-    UPDATE usuarios SET dias_fogo = v_fogo, ultima_atividade = v_hoje WHERE id = p_user_id;
-    SELECT v_fogo AS dias_fogo;
-END$$
-
-DROP PROCEDURE IF EXISTS `sp_liga_registrar_xp`$$
-CREATE PROCEDURE `sp_liga_registrar_xp`(IN p_user_id INT, IN p_xp INT)
-BEGIN
-    DECLARE v_semana DATE;
-    DECLARE v_grupo_id INT;
-    DECLARE v_divisao VARCHAR(20) DEFAULT 'bronze';
-
-    SET v_semana = DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY);
-
-    SELECT g.id, u.divisao INTO v_grupo_id, v_divisao
-    FROM ligas_usuario u
-    JOIN ligas_grupos g ON u.grupo_id = g.id
-    WHERE u.usuario_id = p_user_id AND g.semana_ref = v_semana
-    LIMIT 1;
-
-    IF v_grupo_id IS NULL THEN
-        SELECT id INTO v_grupo_id FROM ligas_grupos WHERE semana_ref = v_semana AND divisao = v_divisao LIMIT 1;
-        IF v_grupo_id IS NULL THEN
-            INSERT INTO ligas_grupos (divisao, semana_ref, capacidade) VALUES (v_divisao, v_semana, 30);
-            SET v_grupo_id = LAST_INSERT_ID();
-        END IF;
-        INSERT INTO ligas_usuario (usuario_id, divisao, grupo_id, xp_semana) 
-        VALUES (p_user_id, v_divisao, v_grupo_id, p_xp)
-        ON DUPLICATE KEY UPDATE xp_semana = xp_semana + p_xp;
-    ELSE
-        UPDATE ligas_usuario SET xp_semana = xp_semana + p_xp WHERE usuario_id = p_user_id AND grupo_id = v_grupo_id;
-    END IF;
-END$$
-
-DROP PROCEDURE IF EXISTS `sp_registrar_missao_progresso`$$
-CREATE PROCEDURE `sp_registrar_missao_progresso`(IN p_user_id INT, IN p_xp INT, IN p_perfeita INT)
-BEGIN
-    DECLARE v_hoje DATE DEFAULT CURDATE();
-    INSERT INTO missoes_diarias_usuario (usuario_id, data_ref, xp_ganho, licoes_concluidas, licoes_perfeitas)
-    VALUES (p_user_id, v_hoje, p_xp, 1, IF(p_perfeita = 1, 1, 0))
-    ON DUPLICATE KEY UPDATE
-        xp_ganho = xp_ganho + p_xp,
-        licoes_concluidas = licoes_concluidas + 1,
-        licoes_perfeitas = licoes_perfeitas + IF(p_perfeita = 1, 1, 0);
-END$$
-
-DROP PROCEDURE IF EXISTS `sp_verificar_conquistas`$$
-CREATE PROCEDURE `sp_verificar_conquistas`(IN p_user_id INT)
-BEGIN
-    DECLARE v_xp INT;
-    DECLARE v_fogo INT;
-    DECLARE v_trofeus INT;
-
-    SELECT xp, dias_fogo, trofeus INTO v_xp, v_fogo, v_trofeus FROM usuarios WHERE id = p_user_id;
-
-    INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'primeiro_passo');
-    INSERT IGNORE INTO conquistas_usuario (usuario_id, conquista_slug) VALUES (p_user_id, 'primeiro_passo');
-
-    IF v_fogo >= 3 THEN
-        INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'fogo_3');
-        INSERT IGNORE INTO conquistas_usuario (usuario_id, conquista_slug) VALUES (p_user_id, 'fogo_3');
-    END IF;
-    IF v_fogo >= 7 THEN
-        INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'sequencia_7');
-        INSERT IGNORE INTO conquistas_usuario (usuario_id, conquista_slug) VALUES (p_user_id, 'sequencia_7');
-    END IF;
-    IF v_fogo >= 30 THEN
-        INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'sequencia_30');
-        INSERT IGNORE INTO conquistas_usuario (usuario_id, conquista_slug) VALUES (p_user_id, 'sequencia_30');
-    END IF;
-    
-    IF v_xp >= 150 THEN
-        INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'precisao_absoluta');
-        INSERT IGNORE INTO conquistas_usuario (usuario_id, conquista_slug) VALUES (p_user_id, 'precisao_absoluta');
-    END IF;
-
-    UPDATE usuarios SET trofeus = (SELECT COUNT(*) FROM user_trofeus WHERE user_id = p_user_id) WHERE id = p_user_id;
-END$$
-
-DROP PROCEDURE IF EXISTS `sp_resgatar_bau`$$
-CREATE PROCEDURE `sp_resgatar_bau`(IN p_user_id INT, IN p_unidade INT)
-BEGIN
-    DECLARE v_ja_resgatou INT;
-    DECLARE v_concluidas INT;
-    DECLARE v_xp_recompensa INT DEFAULT 100;
-    DECLARE v_vidas_recompensa INT DEFAULT 1;
-
-    SELECT COUNT(*) INTO v_ja_resgatou FROM bau_recompensas WHERE usuario_id = p_user_id AND unidade_numero = p_unidade;
-    SELECT licoes_concluidas INTO v_concluidas FROM progresso_usuario WHERE usuario_id = p_user_id AND unidade_numero = p_unidade;
-
-    IF v_ja_resgatou = 0 AND v_concluidas >= 3 THEN
-        INSERT INTO bau_recompensas (usuario_id, unidade_numero, tipo_recompensa, xp_ganho, vidas_ganhas)
-        VALUES (p_user_id, p_unidade, 'misto', v_xp_recompensa, v_vidas_recompensa);
-
-        UPDATE usuarios SET 
-            xp = xp + v_xp_recompensa,
-            vidas = LEAST(3, vidas + v_vidas_recompensa)
-        WHERE id = p_user_id;
-
-        SELECT 1 AS resgatado, v_xp_recompensa AS xp_ganho, v_vidas_recompensa AS vidas_ganhas;
-    ELSE
-        SELECT 0 AS resgatado, 0 AS xp_ganho, 0 AS vidas_ganhas;
-    END IF;
-END$$
-
-DROP PROCEDURE IF EXISTS `sp_processar_resultado_licao`$$
-CREATE PROCEDURE `sp_processar_resultado_licao`(
-    IN p_user_id INT,
-    IN p_unidade INT,
-    IN p_licao INT,
-    IN p_acertos INT,
-    IN p_total INT
-)
-BEGIN
-    DECLARE v_avancou INT DEFAULT 0;
-    DECLARE v_capitulo_concluido INT DEFAULT 0;
-    DECLARE v_bau_liberado INT DEFAULT 0;
-    DECLARE v_xp_ganho INT DEFAULT 50;
-    DECLARE v_licoes_feitas INT DEFAULT 0;
-
-    IF p_acertos = p_total AND p_total > 0 THEN
-        INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'perfeicao');
-        INSERT IGNORE INTO conquistas_usuario (usuario_id, conquista_slug) VALUES (p_user_id, 'perfeicao');
-
-        UPDATE usuarios SET xp = xp + v_xp_ganho WHERE id = p_user_id;
-
-        SELECT licoes_concluidas INTO v_licoes_feitas FROM progresso_usuario WHERE usuario_id = p_user_id AND unidade_numero = p_unidade;
-        
-        IF v_licoes_feitas IS NULL THEN
-            INSERT INTO progresso_usuario (usuario_id, unidade_numero, status, licoes_concluidas) VALUES (p_user_id, p_unidade, 'corrente', 1);
-            SET v_licoes_feitas = 1;
-            SET v_avancou = 1;
-        ELSEIF p_licao > v_licoes_feitas THEN
-            SET v_licoes_feitas = p_licao;
-            UPDATE progresso_usuario SET licoes_concluidas = v_licoes_feitas WHERE usuario_id = p_user_id AND unidade_numero = p_unidade;
-            SET v_avancou = 1;
-        END IF;
-
-        IF v_licoes_feitas >= 3 THEN
-            SET v_bau_liberado = 1;
-        END IF;
-
-        IF v_licoes_feitas >= 5 THEN
-            SET v_capitulo_concluido = 1;
-            UPDATE progresso_usuario SET status = 'completo' WHERE usuario_id = p_user_id AND unidade_numero = p_unidade;
-            
-            INSERT INTO progresso_usuario (usuario_id, unidade_numero, status, licoes_concluidas)
-            VALUES (p_user_id, p_unidade + 1, 'corrente', 0)
-            ON DUPLICATE KEY UPDATE status = IF(status = 'trancado', 'corrente', status);
-
-            IF p_unidade = 1 THEN INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'capitulo_1'); END IF;
-            IF p_unidade = 2 THEN INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'capitulo_2'); END IF;
-            IF p_unidade = 3 THEN INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'capitulo_3'); END IF;
-            IF p_unidade = 4 THEN INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'capitulo_4'); END IF;
-            IF p_unidade = 5 THEN INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'capitulo_5'); END IF;
-        END IF;
-
-        CALL sp_liga_registrar_xp(p_user_id, v_xp_ganho);
-        CALL sp_registrar_missao_progresso(p_user_id, v_xp_ganho, 1);
-        CALL sp_atualizar_fogo(p_user_id);
-        CALL sp_verificar_conquistas(p_user_id);
-    END IF;
-
-    SELECT v_avancou AS avancou, v_capitulo_concluido AS capitulo_concluido, v_bau_liberado AS bau_liberado, v_xp_ganho AS xp_ganho;
-END$$
-
-DROP PROCEDURE IF EXISTS `sp_corrigir_licao`$$
-CREATE PROCEDURE `sp_corrigir_licao`(
-    IN p_user_id INT,
-    IN p_unidade INT,
-    IN p_licao INT,
-    IN p_acertos INT
-)
-BEGIN
-    CALL sp_processar_resultado_licao(p_user_id, p_unidade, p_licao, p_acertos, 3);
-END$$
-
-DROP PROCEDURE IF EXISTS `sp_processar_virada_semana`$$
-CREATE PROCEDURE `sp_processar_virada_semana`()
-BEGIN
-    DECLARE v_semana_antiga DATE;
-    DECLARE v_nova_semana DATE;
-    SET v_nova_semana = DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY);
-    SET v_semana_antiga = DATE_SUB(v_nova_semana, INTERVAL 7 DAY);
-
-    INSERT INTO ligas_historico (usuario_id, divisao_anterior, divisao_nova, resultado, posicao_final, xp_final, semana_ref)
-    SELECT 
-        u.usuario_id, 
-        u.divisao, 
-        u.divisao, 
-        'manteve', 
-        1, 
-        u.xp_semana, 
-        v_semana_antiga
-    FROM ligas_usuario u
-    JOIN ligas_grupos g ON u.grupo_id = g.id
-    WHERE g.semana_ref = v_semana_antiga;
-
-    UPDATE ligas_usuario SET xp_semana = 0 WHERE grupo_id IN (SELECT id FROM ligas_grupos WHERE semana_ref = v_nova_semana);
-END$$
-
-DELIMITER ;
+-- Dump completed on 2026-10-04 21:10:24
