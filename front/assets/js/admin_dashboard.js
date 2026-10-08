@@ -372,14 +372,14 @@
         if (typeof window.opusAlerta === 'function') {
             const confirmou = await window.opusAlerta({
                 tipo: 'warning',
-                titulo: 'Processar Virada Semanal',
-                mensagem: 'Deseja realmente processar a Virada Semanal de Ligas agora?<br><br>As subidas e descidas de divisão serão recalculadas e aplicadas imediatamente.',
+                titulo: 'Processar Virada Mensal',
+                mensagem: 'Deseja realmente processar a Virada Mensal de Ligas agora?<br><br>As subidas e descidas de divisão serão recalculadas e aplicadas imediatamente.',
                 botaoTexto: 'SIM, PROCESSAR AGORA',
                 cancelTexto: 'CANCELAR'
             });
             if (!confirmou) return;
         } else {
-            if (!confirm("Deseja realmente processar a Virada Semanal de Ligas agora?\n\nAs subidas e descidas de divisão serão calculadas e aplicadas imediatamente.")) {
+            if (!confirm("Deseja realmente processar a Virada Mensal de Ligas agora?\n\nAs subidas e descidas de divisão serão calculadas e aplicadas imediatamente.")) {
                 return;
             }
         }

@@ -12,6 +12,13 @@ function toggleOpiChat() {
     }
 }
 
+function toggleExpandOpiChat() {
+    const chatWin = document.getElementById('opiChatWindow');
+    if (!chatWin) return;
+    chatWin.classList.toggle('expanded');
+    scrollChatAoFim();
+}
+
 function handleOpiKeyPress(event) {
     if (event.key === 'Enter') {
         event.preventDefault();

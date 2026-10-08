@@ -24,18 +24,15 @@ function liga_todas_divisoes(): array {
     return array_keys($LIGAS_CONFIG);
 }
 
-/** Retorna a data (Y-m-d) da segunda-feira da semana atual. */
+/** Retorna a data (Y-m-d) do primeiro dia do mês atual. */
 function liga_semana_atual(): string {
     $hoje = new DateTime('today');
-    $diaSemana = (int)$hoje->format('N'); // 1 = segunda
-    $hoje->modify('-' . ($diaSemana - 1) . ' days');
-    return $hoje->format('Y-m-d');
+    return $hoje->format('Y-m-01');
 }
 
-/** Data/hora da próxima virada (segunda 00:00). */
+/** Data/hora da próxima virada (primeiro dia do mês seguinte). */
 function liga_proxima_virada(): DateTime {
-    $prox = new DateTime(liga_semana_atual());
-    $prox->modify('+7 days');
+    $prox = new DateTime('first day of next month');
     return $prox;
 }
 
@@ -66,17 +63,12 @@ function liga_garantir_usuario(mysqli $conn, int $usuario_id): array {
 }
 
 /**
- * Calcula quantos sobem/descem em um grupo de tamanho $n,
- * proporcional ao padrão 7/16/7 de um grupo de 30.
+ * Calcula quantos sobem/descem em um grupo de tamanho $n.
+ * Nova Regra: Os 12 primeiros sobem, todos abaixo descem.
  */
 function liga_calcular_zonas(int $n): array {
-    $sobe = (int)round($n * 7 / 30);
-    $desce = (int)round($n * 7 / 30);
-    $sobe = max(1, min($sobe, $n));
-    $desce = max(1, min($desce, $n));
-    if ($sobe + $desce > $n) {
-        $desce = max(0, $n - $sobe);
-    }
+    $sobe = min(12, $n);
+    $desce = max(0, $n - $sobe);
     return ['sobe' => $sobe, 'desce' => $desce];
 }
 

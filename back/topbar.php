@@ -60,9 +60,10 @@ $titulo_vidas = $proxima_vida_texto !== '' ? $proxima_vida_texto : ($vidas_top .
         </div>
 
         <!-- FOGO (OFENSIVA / DIAS) -->
-        <div class="topbar-stat stat-fogo" title="SequÃªncia DiÃ¡ria">
-            <i class="fa-solid fa-fire"></i>
-            <span><?php echo (int) $dias_fogo_top; ?></span>
+        <?php $fogo_class = ($dados_top["fogo_hoje"] ?? false) ? "fogo-ativo" : "fogo-inativo"; ?>
+        <div class="topbar-stat stat-fogo <?php echo $fogo_class; ?>" title="Sequência Diária" <?php if(!($dados_top["fogo_hoje"] ?? false)) echo "style='color: #999;'"; ?>>
+            <i class="fa-solid fa-fire" <?php if(!($dados_top["fogo_hoje"] ?? false)) echo "style='color: #999;'"; ?>></i>
+            <span <?php if(!($dados_top["fogo_hoje"] ?? false)) echo "style='color: #999;'"; ?>><?php echo (int) $dias_fogo_top; ?></span>
         </div>
 
         <!-- XP TOTAL -->
@@ -91,3 +92,7 @@ $titulo_vidas = $proxima_vida_texto !== '' ? $proxima_vida_texto : ($vidas_top .
 </div>
 
 <script src="../assets/js/notificacoes.js"></script>
+
+
+
+

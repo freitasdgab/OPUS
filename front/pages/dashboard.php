@@ -125,52 +125,409 @@ if ($res_baus) {
 }
 
 // Configuração dos Capítulos
+
+
 $nomes_unidades = [
     1 => [
-        "titulo" => "Unidade 1",
-        "nome" => "Fundamentos e Sintaxe Básica",
-        "descricao" => "Aprenda os conceitos básicos da linguagem, variáveis e tipos de dados.",
-        "cor" => "#1cb0f6",
-        "mascote" => "vistodecimaazul.png",
-        "guia_texto" => "Nesta unidade você aprende como declarar variáveis, compreender tipos de dados (String, Int, Boolean) e exibir informações na tela com echo.",
-        "guia_codigo" => '$nome = "Opus";<br>$idade = 20;<br>echo "Bem-vindo ao " . $nome;'
+        'titulo' => 'Seção 1',
+        'nome' => 'Introdução',
+        'descricao' => 'Módulo focado em Introdução.',
+        'cor' => '#1cb0f6',
+        'mascote' => 'vistodecimaazul.png',
+        'guia_texto' => 'Nesta seção, você dará seus primeiros passos na programação Java! Vamos conhecer a estrutura básica de um programa, como a classe principal e o método main funcionam, e como exibir mensagens na tela.',
+        'guia_codigo' => 'public class Main {<br>&nbsp;&nbsp;&nbsp;&nbsp;public static void main(String[] args) {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(\"Olá, Mundo!\");<br>&nbsp;&nbsp;&nbsp;&nbsp;}<br>}',
+        'licoes' => [1, 2, 3, 4, 5]
     ],
     2 => [
-        "titulo" => "Unidade 2",
-        "nome" => "Estruturas de Decisão",
-        "descricao" => "Domine o fluxo do código usando if, else e switch para tomar decisões.",
-        "cor" => "#ff527b",
-        "mascote" => "vistodecimarosa.png",
-        "guia_texto" => "Aprenda a controlar o fluxo do seu sistema utilizando condicionais. O código executará diferentes blocos com base em condições verdadeiras ou falsas.",
-        "guia_codigo" => '$nota = 8;<br>if ($nota >= 7) {<br>&nbsp;&nbsp;&nbsp;&nbsp;echo "Aprovado!";<br>} else {<br>&nbsp;&nbsp;&nbsp;&nbsp;echo "Revisar conteúdo";<br>}'
+        'titulo' => 'Seção 2',
+        'nome' => 'Variáveis Parte 1',
+        'descricao' => 'Módulo focado em Variáveis Parte 1.',
+        'cor' => '#ff4b4b',
+        'mascote' => 'vistodecimarosa.png',
+        'guia_texto' => 'As variáveis são como caixas onde guardamos informações. Aqui aprenderemos a declarar variáveis para armazenar números inteiros (int) e texto (String), além de ver como atribuir e ler esses valores.',
+        'guia_codigo' => 'int idade = 20;<br>String nome = \"Opus\";<br><br>System.out.println(nome + \" tem \" + idade + \" anos.\");',
+        'licoes' => [1, 2, 3, 4, 5]
     ],
     3 => [
-        "titulo" => "Unidade 3",
-        "nome" => "Estruturas de Repetição",
-        "descricao" => "Automatize tarefas repetitivas com laços for, while e do-while.",
-        "cor" => "#ce82ff",
-        "mascote" => "vistodecimaroxo.png",
-        "guia_texto" => "Evite repetição manual de código. Utilize laços de repetição para executar uma mesma instrução múltiplas vezes até atingir um critério de parada.",
-        "guia_codigo" => 'for ($i = 1; $i <= 3; $i++) {<br>&nbsp;&nbsp;&nbsp;&nbsp;echo "Executando lição " . $i . "&lt;br&gt;";<br>}'
+        'titulo' => 'Seção 3',
+        'nome' => 'Variáveis Parte 2',
+        'descricao' => 'Módulo focado em Variáveis Parte 2.',
+        'cor' => '#ce82ff',
+        'mascote' => 'vistodecimaroxo.png',
+        'guia_texto' => 'Avançando no uso das variáveis! Agora você vai conhecer os tipos para armazenar números decimais (double) e valores lógicos de verdadeiro ou falso (boolean). Entender esses tipos é essencial para lidar com informações reais.',
+        'guia_codigo' => 'double altura = 1.75;<br>boolean aprovado = true;<br><br>if(aprovado) {<br>&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(\"Altura: \" + altura);<br>}',
+        'licoes' => [1, 2, 3, 4, 5]
     ],
     4 => [
-        "titulo" => "Unidade 4",
-        "nome" => "Arrays e Matrizes",
-        "descricao" => "Armazene e manipule coleções de dados de forma eficiente.",
-        "cor" => "#58cc02",
-        "mascote" => "vistodecimaverde.png",
-        "guia_texto" => "Arrays permitem guardar múltiplos valores em uma única variável. Você pode acessar os dados por índices numéricos ou chaves personalizadas.",
-        "guia_codigo" => '$linguagens = ["PHP", "JavaScript", "SQL"];<br>echo $linguagens[0]; // Imprime: PHP'
+        'titulo' => 'Seção 4',
+        'nome' => 'Operadores Parte 1',
+        'descricao' => 'Módulo focado em Operadores Parte 1.',
+        'cor' => '#58cc02',
+        'mascote' => 'vistodecimaverde.png',
+        'guia_texto' => 'Chegou a hora da matemática! Vamos usar os operadores aritméticos básicos para fazer contas no código: adição (+), subtração (-), multiplicação (*) e divisão (/). Você verá como o Java processa essas expressões.',
+        'guia_codigo' => 'int a = 10;<br>int b = 3;<br>int soma = a + b;<br>int resto = a % b;<br>System.out.println(\"Soma: \" + soma);',
+        'licoes' => [1, 2, 3, 4, 5]
     ],
     5 => [
-        "titulo" => "Unidade 5",
-        "nome" => "Introdução à POO",
-        "descricao" => "Crie programas modelando o mundo real com classes e objetos.",
-        "cor" => "#ffc800",
-        "mascote" => "vistodecimalaranja.png",
-        "guia_texto" => "A Programação Orientada a Objetos (POO) estrutura o código em Classes e Objetos, facilitando o reuso e a organização do projeto.",
-        "guia_codigo" => 'class Usuario {<br>&nbsp;&nbsp;&nbsp;&nbsp;public $nome = "Aluno";<br>}<br>$user = new Usuario();<br>echo $user->nome;'
-    ]
+        'titulo' => 'Seção 5',
+        'nome' => 'Operadores Parte 2',
+        'descricao' => 'Módulo focado em Operadores Parte 2.',
+        'cor' => '#ffc800',
+        'mascote' => 'vistodecimalaranja.png',
+        'guia_texto' => 'Além de contas, precisamos tomar decisões. Vamos explorar os operadores relacionais (==, !=, &gt;, &lt;) e lógicos (&amp;&amp;, ||) que permitem comparar variáveis e criar regras complexas para o nosso programa.',
+        'guia_codigo' => 'int nota = 8;<br>boolean passou = (nota &gt;= 7) &amp;&amp; (nota != 0);<br><br>System.out.println(\"Passou? \" + passou);',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    6 => [
+        'titulo' => 'Seção 6',
+        'nome' => 'Tomada de Decisão',
+        'descricao' => 'Módulo focado em Tomada de Decisão.',
+        'cor' => '#1cb0f6',
+        'mascote' => 'vistodecimaazul.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    7 => [
+        'titulo' => 'Seção 7',
+        'nome' => 'I/O Básico',
+        'descricao' => 'Módulo focado em I/O Básico.',
+        'cor' => '#ff4b4b',
+        'mascote' => 'vistodecimarosa.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    8 => [
+        'titulo' => 'Seção 8',
+        'nome' => 'Aplicativo de Calculadora',
+        'descricao' => 'Módulo focado em Aplicativo de Calculadora.',
+        'cor' => '#ce82ff',
+        'mascote' => 'vistodecimaroxo.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    9 => [
+        'titulo' => 'Seção 9',
+        'nome' => 'Laços',
+        'descricao' => 'Módulo focado em Laços.',
+        'cor' => '#58cc02',
+        'mascote' => 'vistodecimaverde.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    10 => [
+        'titulo' => 'Seção 10',
+        'nome' => 'Métodos e Funções',
+        'descricao' => 'Módulo focado em Métodos e Funções.',
+        'cor' => '#ffc800',
+        'mascote' => 'vistodecimalaranja.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    11 => [
+        'titulo' => 'Seção 11',
+        'nome' => 'Funcionamento de Arrays',
+        'descricao' => 'Módulo focado em Funcionamento de Arrays.',
+        'cor' => '#1cb0f6',
+        'mascote' => 'vistodecimaazul.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    12 => [
+        'titulo' => 'Seção 12',
+        'nome' => 'Inteirando sobre Arrays',
+        'descricao' => 'Módulo focado em Inteirando sobre Arrays.',
+        'cor' => '#ff4b4b',
+        'mascote' => 'vistodecimarosa.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    13 => [
+        'titulo' => 'Seção 13',
+        'nome' => 'Operações com String',
+        'descricao' => 'Módulo focado em Operações com String.',
+        'cor' => '#ce82ff',
+        'mascote' => 'vistodecimaroxo.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    14 => [
+        'titulo' => 'Seção 14',
+        'nome' => 'Desafios Finais',
+        'descricao' => 'Módulo focado em Desafios Finais.',
+        'cor' => '#58cc02',
+        'mascote' => 'vistodecimaverde.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    15 => [
+        'titulo' => 'Seção 15',
+        'nome' => 'Certificado',
+        'descricao' => 'Módulo focado em Certificado.',
+        'cor' => '#ffc800',
+        'mascote' => 'vistodecimalaranja.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    16 => [
+        'titulo' => 'Seção 16',
+        'nome' => 'Arrays Multidimensionais',
+        'descricao' => 'Módulo focado em Arrays Multidimensionais.',
+        'cor' => '#1cb0f6',
+        'mascote' => 'vistodecimaazul.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    17 => [
+        'titulo' => 'Seção 17',
+        'nome' => 'HashMap Parte 1',
+        'descricao' => 'Módulo focado em HashMap Parte 1.',
+        'cor' => '#ff4b4b',
+        'mascote' => 'vistodecimarosa.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    18 => [
+        'titulo' => 'Seção 18',
+        'nome' => 'HashMap Parte 2',
+        'descricao' => 'Módulo focado em HashMap Parte 2.',
+        'cor' => '#ce82ff',
+        'mascote' => 'vistodecimaroxo.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    19 => [
+        'titulo' => 'Seção 19',
+        'nome' => 'HashSet Parte 1',
+        'descricao' => 'Módulo focado em HashSet Parte 1.',
+        'cor' => '#58cc02',
+        'mascote' => 'vistodecimaverde.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    20 => [
+        'titulo' => 'Seção 20',
+        'nome' => 'HashSet Parte 2',
+        'descricao' => 'Módulo focado em HashSet Parte 2.',
+        'cor' => '#ffc800',
+        'mascote' => 'vistodecimalaranja.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    21 => [
+        'titulo' => 'Seção 21',
+        'nome' => 'Fluxo de Controle Avançado',
+        'descricao' => 'Módulo focado em Fluxo de Controle Avançado.',
+        'cor' => '#1cb0f6',
+        'mascote' => 'vistodecimaazul.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    22 => [
+        'titulo' => 'Seção 22',
+        'nome' => 'Tratamento Básico de Erros',
+        'descricao' => 'Módulo focado em Tratamento Básico de Erros.',
+        'cor' => '#ff4b4b',
+        'mascote' => 'vistodecimarosa.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    23 => [
+        'titulo' => 'Seção 23',
+        'nome' => 'Operações Avançadas com Strings',
+        'descricao' => 'Módulo focado em Operações Avançadas com Strings.',
+        'cor' => '#ce82ff',
+        'mascote' => 'vistodecimaroxo.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    24 => [
+        'titulo' => 'Seção 24',
+        'nome' => 'Projeto Contador de Palavras Únicas',
+        'descricao' => 'Módulo focado em Projeto Contador de Palavras Únicas.',
+        'cor' => '#58cc02',
+        'mascote' => 'vistodecimaverde.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    25 => [
+        'titulo' => 'Seção 25',
+        'nome' => 'Data e Hora',
+        'descricao' => 'Módulo focado em Data e Hora.',
+        'cor' => '#ffc800',
+        'mascote' => 'vistodecimalaranja.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    26 => [
+        'titulo' => 'Seção 26',
+        'nome' => 'Certificado da Seção 1 e 2',
+        'descricao' => 'Módulo focado em Certificado da Seção 1 e 2.',
+        'cor' => '#1cb0f6',
+        'mascote' => 'vistodecimaazul.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    27 => [
+        'titulo' => 'Seção 27',
+        'nome' => 'Fundamentos de POO',
+        'descricao' => 'Módulo focado em Fundamentos de POO.',
+        'cor' => '#ff4b4b',
+        'mascote' => 'vistodecimarosa.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    28 => [
+        'titulo' => 'Seção 28',
+        'nome' => 'Modificadores de Acesso e Encapsulamento',
+        'descricao' => 'Módulo focado em Modificadores de Acesso e Encapsulamento.',
+        'cor' => '#ce82ff',
+        'mascote' => 'vistodecimaroxo.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    29 => [
+        'titulo' => 'Seção 29',
+        'nome' => 'Prioridades de Classe e Membros Estáticos',
+        'descricao' => 'Módulo focado em Prioridades de Classe e Membros Estáticos.',
+        'cor' => '#58cc02',
+        'mascote' => 'vistodecimaverde.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    30 => [
+        'titulo' => 'Seção 30',
+        'nome' => 'Herança',
+        'descricao' => 'Módulo focado em Herança.',
+        'cor' => '#ffc800',
+        'mascote' => 'vistodecimalaranja.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    31 => [
+        'titulo' => 'Seção 31',
+        'nome' => 'Polimorfismo',
+        'descricao' => 'Módulo focado em Polimorfismo.',
+        'cor' => '#1cb0f6',
+        'mascote' => 'vistodecimaazul.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    32 => [
+        'titulo' => 'Seção 32',
+        'nome' => 'Interfaces e Classes Abstratas',
+        'descricao' => 'Módulo focado em Interfaces e Classes Abstratas.',
+        'cor' => '#ff4b4b',
+        'mascote' => 'vistodecimarosa.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    33 => [
+        'titulo' => 'Seção 33',
+        'nome' => 'Métodos Especiais e Classe Object',
+        'descricao' => 'Módulo focado em Métodos Especiais e Classe Object.',
+        'cor' => '#ce82ff',
+        'mascote' => 'vistodecimaroxo.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    34 => [
+        'titulo' => 'Seção 34',
+        'nome' => 'Conceitos Avançados de OOP (Generics)',
+        'descricao' => 'Módulo focado em Conceitos Avançados de OOP (Generics).',
+        'cor' => '#58cc02',
+        'mascote' => 'vistodecimaverde.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    35 => [
+        'titulo' => 'Seção 35',
+        'nome' => 'Tratamento de Exceção em PPO',
+        'descricao' => 'Módulo focado em Tratamento de Exceção em PPO.',
+        'cor' => '#ffc800',
+        'mascote' => 'vistodecimalaranja.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    36 => [
+        'titulo' => 'Seção 36',
+        'nome' => 'Padrões de Projeto Parte 1',
+        'descricao' => 'Módulo focado em Padrões de Projeto Parte 1.',
+        'cor' => '#1cb0f6',
+        'mascote' => 'vistodecimaazul.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    37 => [
+        'titulo' => 'Seção 37',
+        'nome' => 'Padrões de Projeto Parte 2',
+        'descricao' => 'Módulo focado em Padrões de Projeto Parte 2.',
+        'cor' => '#ff4b4b',
+        'mascote' => 'vistodecimarosa.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    38 => [
+        'titulo' => 'Seção 38',
+        'nome' => 'Projeto Gerenciamento de Biblioteca',
+        'descricao' => 'Módulo focado em Projeto Gerenciamento de Biblioteca.',
+        'cor' => '#ce82ff',
+        'mascote' => 'vistodecimaroxo.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    39 => [
+        'titulo' => 'Seção 39',
+        'nome' => 'Desafio Final',
+        'descricao' => 'Módulo focado em Desafio Final.',
+        'cor' => '#58cc02',
+        'mascote' => 'vistodecimaverde.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
+    40 => [
+        'titulo' => 'Seção 40',
+        'nome' => 'Certificado de tudo',
+        'descricao' => 'Módulo focado em Certificado de tudo.',
+        'cor' => '#ffc800',
+        'mascote' => 'vistodecimalaranja.png',
+        'guia_texto' => 'Acesse as lições desta seção para testar e expandir seu conhecimento de programação!',
+        'guia_codigo' => '// Bons estudos!<br>System.out.println(\"Opus Learning\");',
+        'licoes' => [1, 2, 3, 4, 5]
+    ],
 ];
 ?>
 <!DOCTYPE html>
@@ -226,7 +583,7 @@ $nomes_unidades = [
                                 </div>
                                 
                                 <div class="trail-flex">
-                                    <?php for ($mod = 1; $mod <= 5; $mod++): 
+                                    <?php $total_mods = count($info['licoes']); for ($mod = 1; $mod <= $total_mods; $mod++): 
                                         $classe_modulo = "locked";
                                         $icone_modulo = "fa-star";
                                         $is_clicavel = false;
@@ -346,12 +703,12 @@ $nomes_unidades = [
                     <!-- WIDGET DE OFENSIVA / SEQUÊNCIA DIÁRIA -->
                     <div class="widget-box widget-ofensiva">
                         <div class="widget-header">
-                            <h3><i class="fa-solid fa-fire-flame-curved" style="color: #ff9600;"></i> Ofensiva</h3>
-                            <span style="font-size: 0.85rem; color: #ff9600; font-weight: 800;">
+                            <h3><i class="fa-solid fa-fire-flame-curved" <?php if(!$praticou_hoje) echo 'style="color: #999;"'; else echo 'style="color: #ff9600;"'; ?>></i> Ofensiva</h3>
+                            <span style="font-size: 0.85rem; color: <?php echo $praticou_hoje ? '#ff9600' : '#999'; ?>; font-weight: 800;">
                                 <?php echo $dias_fogo; ?> <?= $dias_fogo === 1 ? 'dia' : 'dias'; ?>
                             </span>
                         </div>
-                        <div class="ofensiva-body">
+                        <div class="ofensiva-body <?php echo $praticou_hoje ? '' : 'fogo-inativo'; ?>">
                             <div class="ofensiva-icon-box">
                                 <i class="fa-solid fa-fire"></i>
                             </div>
@@ -394,7 +751,7 @@ $nomes_unidades = [
                             </div>
                         </div>
                         <div class="widget-footer-info">
-                            <span><i class="fa-solid fa-bolt" style="color: #ffc800;"></i> <strong><?php echo number_format($xp_semana_usuario, 0, ',', '.'); ?> XP</strong> nesta semana</span>
+                            <span><i class="fa-solid fa-bolt" style="color: #ffc800;"></i> <strong><?php echo number_format($xp_semana_usuario, 0, ',', '.'); ?> XP</strong> neste mês</span>
                             <span style="color: #8e95a1; font-size: 0.8rem;">Divisão <?php echo htmlspecialchars($cfg_liga['nome']); ?></span>
                         </div>
                     </div>
@@ -552,3 +909,4 @@ $nomes_unidades = [
     <script src="../assets/js/dashboard.js"></script>
 </body>
 </html>
+

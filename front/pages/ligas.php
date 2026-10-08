@@ -38,7 +38,7 @@ if (!isset($_SESSION['user_id'])) {
                         </div>
                     </div>
                     <div class="liga-timer">
-                        <div class="label">Vira semana em</div>
+                        <div class="label">Vira o mês em</div>
                         <div id="timer-valor" class="valor">--:--:--</div>
                     </div>
                 </div>

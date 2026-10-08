@@ -199,3 +199,10 @@
     border-bottom: 3px solid #e03e3e;
 }
 .notif-btn-decline:active { border-bottom-width: 1px; transform: translateY(2px); }
+
+.stat-fogo.fogo-inativo i {
+    color: #999 !important;
+}
+.stat-fogo.fogo-inativo span {
+    color: #999 !important;
+}

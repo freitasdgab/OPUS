@@ -7,6 +7,8 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+require_once __DIR__ . '/conexao.php';
+
 $input = json_decode(file_get_contents('php://input'), true);
 $mensagem = trim($input['mensagem'] ?? '');
 $contexto = trim($input['contexto'] ?? '');
@@ -18,8 +20,14 @@ if (empty($mensagem)) {
 
 $user_nome = $_SESSION['user_nome'] ?? 'dev';
 
-// Se houver uma chave de API do Gemini/OpenAI configurada via ambiente/constante, pode ser utilizada.
-$api_key = getenv('OPENAI_API_KEY') ?: getenv('GEMINI_API_KEY');
+// Você pode configurar sua chave de API do Groq, Gemini ou OpenAI aqui para que o chatbot responda qualquer dúvida usando IA real.
+// Descomente a linha abaixo e coloque sua chave:
+$api_key = '';
+
+// Se não estiver definida acima, tenta buscar das variáveis de ambiente:
+if (!isset($api_key) || empty($api_key)) {
+    $api_key = getenv('OPENAI_API_KEY') ?: getenv('GEMINI_API_KEY');
+}
 
 if (!empty($api_key)) {
     // Integração remota se chave estiver disponível
@@ -193,15 +201,118 @@ function responder_opi_local($msg, $nome, $ctx) {
     // RESPOSTA PADRÃO INTELIGENTE
     return "💡 **Opi IA responde:**\n\n" .
            "Entendi sua dúvida sobre *\"" . htmlspecialchars($msg) . "\"*!\n\n" .
-           "Estou aqui para ajudar com qualquer assunto de **Java** (variáveis, if/else, loops, arrays, classes) ou sobre o funcionamento do **Opus** (vidas, dias de fogo, baús, ranking).\n\n" .
-           "Tente refrasear ou escolher uma das sugestões rápidas abaixo se precisar de algo específico!";
+           "Atualmente, estou operando no meu modo de respostas pré-definidas. Para que eu possa responder a **qualquer dúvida** usando Inteligência Artificial real, o desenvolvedor precisa configurar uma **Chave de API (Gemini ou OpenAI)** no arquivo `api_chatbot.php`.\n\n" .
+           "Até lá, tente refrasear sua pergunta ou escolher um dos assuntos conhecidos (como variáveis, if/else, loops, arrays, classes, vidas, dias de fogo, etc.)!";
 }
 
 /**
  * Chamada Opcional para LLM Externa se houver API Key
  */
 function chamar_api_llm($key, $prompt, $nome, $contexto) {
-    // Implementação segura com timeout curto
+    // Se a chave começar com 'sk-' ou 'gsk_', não é Gemini.
+    $is_gemini = (strpos($key, 'sk-') !== 0 && strpos($key, 'gsk_') !== 0);
+
+    // Buscar informações reais do progresso do jogador
+    global $conn;
+    $user_id = $_SESSION['user_id'] ?? 0;
+    $contexto_progresso = "";
+    if ($user_id > 0 && isset($conn)) {
+        require_once __DIR__ . '/jogador_status.php';
+        $jogador = opus_sincronizar_jogador($conn, $user_id);
+        $xp = $jogador['xp'];
+        $vidas = $jogador['vidas'];
+        $fogo = $jogador['dias_fogo'];
+        $trofeus = $jogador['trofeus'];
+        $contexto_progresso = " Progresso atual do aluno: $xp XP, $vidas Vidas restantes, Ofensiva de $fogo Dias de Fogo, e $trofeus Troféus.";
+    }
+
+    $system_prompt = "Você é o Opi, o mascote e assistente IA da plataforma Opus, uma plataforma de ensino de Java. Você é amigável, encorajador e ajuda o aluno '$nome' com dúvidas de programação ou sobre a plataforma Opus. Responda de forma direta, simples e concisa. Evite textos excessivamente longos a menos que o aluno peça uma explicação detalhada. Contexto da página: $contexto.$contexto_progresso";
+
+    if ($is_gemini) {
+        $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=' . $key;
+        $data = [
+            'system_instruction' => [
+                'parts' => [
+                    ['text' => $system_prompt]
+                ]
+            ],
+            'contents' => [
+                [
+                    'parts' => [
+                        ['text' => $prompt]
+                    ]
+                ]
+            ]
+        ];
+
+        $max_retries = 2;
+        for ($i = 0; $i < $max_retries; $i++) {
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+            $response = curl_exec($ch);
+            curl_close($ch);
+
+            if ($response) {
+                $json = json_decode($response, true);
+                if (isset($json['candidates'][0]['content']['parts'][0]['text'])) {
+                    return $json['candidates'][0]['content']['parts'][0]['text'];
+                }
+                
+                if (isset($json['error']['code']) && $json['error']['code'] == 503 && $i < ($max_retries - 1)) {
+                    sleep(1);
+                    continue;
+                }
+
+                if (isset($json['error']) && isset($json['error']['message'])) {
+                    return "⚠️ O servidor do Google retornou um erro temporário:\n\n" . $json['error']['message'] . "\n\nPor favor, tente perguntar novamente em alguns minutos.";
+                }
+            }
+            break;
+        }
+    } else {
+        // OpenAI ou Groq (mesmo formato de API)
+        if (strpos($key, 'gsk_') === 0) {
+            $url = 'https://api.groq.com/openai/v1/chat/completions';
+            $model = 'openai/gpt-oss-20b'; // Modelo OpenAI OSS 20B via Groq
+        } else {
+            $url = 'https://api.openai.com/v1/chat/completions';
+            $model = 'gpt-3.5-turbo';
+        }
+
+        $data = [
+            'model' => $model,
+            'messages' => [
+                ['role' => 'system', 'content' => $system_prompt],
+                ['role' => 'user', 'content' => $prompt]
+            ]
+        ];
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . $key
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        if ($response) {
+            $json = json_decode($response, true);
+            if (isset($json['choices'][0]['message']['content'])) {
+                return $json['choices'][0]['message']['content'];
+            }
+        }
+    }
+
     return false;
 }
 ?>

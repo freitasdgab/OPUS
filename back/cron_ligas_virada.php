@@ -1,5 +1,5 @@
 <?php
-// Rode via cron (Linux) ou Agendador de Tarefas (Windows), 1x por semana:
+// Rode via cron (Linux) ou Agendador de Tarefas (Windows), 1x por mês (dia 1):
 // php /caminho/para/back/cron_ligas_virada.php
 require_once __DIR__ . '/conexao.php';
 require_once __DIR__ . '/ligas_logic.php';

@@ -374,7 +374,7 @@ try {
 
             echo json_encode([
                 'sucesso'   => true,
-                'mensagem'  => 'Virada semanal de ligas processada com sucesso! Os grupos foram atualizados e o histórico gravado.',
+                'mensagem'  => 'Virada mensal de ligas processada com sucesso! Os grupos foram atualizados e o histórico gravado.',
                 'executado_em' => date('d/m/Y H:i:s'),
             ]);
             break;

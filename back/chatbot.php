@@ -21,6 +21,7 @@
             </div>
         </div>
         <div class="opi-chat-actions">
+            <button class="opi-chat-btn-action" onclick="toggleExpandOpiChat()" title="Ampliar chat"><i class="fa-solid fa-expand"></i></button>
             <button class="opi-chat-btn-action" onclick="limparChatOpi()" title="Limpar histórico"><i class="fa-solid fa-trash-can"></i></button>
             <button class="opi-chat-btn-action" onclick="toggleOpiChat()" title="Fechar chat"><i class="fa-solid fa-xmark"></i></button>
         </div>

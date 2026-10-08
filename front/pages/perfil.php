@@ -77,7 +77,24 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                         <div class="user-details">
                             <span class="email-text"><?php echo htmlspecialchars($email); ?></span>
                         </div>
-                        <div class="member-since">
+                        <div class="member-social" style="display: flex; gap: 15px; margin-top: 15px; margin-bottom: 15px;">
+    <?php if(!empty($dados_user['link_github'])): ?>
+        <a href="<?php echo htmlspecialchars($dados_user['link_github']); ?>" target="_blank" style="color: #fff; font-size: 1.5rem; transition: 0.2s;" onmouseover="this.style.color='#1cb0f6'" onmouseout="this.style.color='#fff'" title="GitHub"><i class="fa-brands fa-github"></i></a>
+    <?php endif; ?>
+    <?php if(!empty($dados_user['link_instagram'])): ?>
+        <a href="<?php echo htmlspecialchars($dados_user['link_instagram']); ?>" target="_blank" style="color: #fff; font-size: 1.5rem; transition: 0.2s;" onmouseover="this.style.color='#e1306c'" onmouseout="this.style.color='#fff'" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+    <?php endif; ?>
+    <?php if(!empty($dados_user['link_facebook'])): ?>
+        <a href="<?php echo htmlspecialchars($dados_user['link_facebook']); ?>" target="_blank" style="color: #fff; font-size: 1.5rem; transition: 0.2s;" onmouseover="this.style.color='#1877f2'" onmouseout="this.style.color='#fff'" title="Facebook"><i class="fa-brands fa-facebook"></i></a>
+    <?php endif; ?>
+    <?php if(!empty($dados_user['link_youtube'])): ?>
+        <a href="<?php echo htmlspecialchars($dados_user['link_youtube']); ?>" target="_blank" style="color: #fff; font-size: 1.5rem; transition: 0.2s;" onmouseover="this.style.color='#ff0000'" onmouseout="this.style.color='#fff'" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+    <?php endif; ?>
+    <?php if(!empty($dados_user['link_email'])): ?>
+        <a href="mailto:<?php echo htmlspecialchars($dados_user['link_email']); ?>" style="color: #fff; font-size: 1.5rem; transition: 0.2s;" onmouseover="this.style.color='#fbbc05'" onmouseout="this.style.color='#fff'" title="Email Público"><i class="fa-solid fa-envelope"></i></a>
+    <?php endif; ?>
+</div>
+<div class="member-since">
                             <?php echo strtolower($membro_desde); ?>
                         </div>
                         
@@ -188,7 +205,15 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                     <div class="color-option" style="background-color: #ff9600;" data-color="#ff9600"></div>
                 </div>
 
-                <div class="modal-actions">
+                <div class="modal-subtitle">Redes Sociais</div>
+<div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+    <input type="url" name="link_github" placeholder="Link do GitHub (https://github.com/...)" value="<?php echo htmlspecialchars($dados_user['link_github'] ?? ''); ?>" style="padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif;">
+    <input type="url" name="link_instagram" placeholder="Link do Instagram (https://instagram.com/...)" value="<?php echo htmlspecialchars($dados_user['link_instagram'] ?? ''); ?>" style="padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif;">
+    <input type="url" name="link_facebook" placeholder="Link do Facebook (https://facebook.com/...)" value="<?php echo htmlspecialchars($dados_user['link_facebook'] ?? ''); ?>" style="padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif;">
+    <input type="url" name="link_youtube" placeholder="Link do YouTube (https://youtube.com/...)" value="<?php echo htmlspecialchars($dados_user['link_youtube'] ?? ''); ?>" style="padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif;">
+    <input type="email" name="link_email" placeholder="E-mail Público" value="<?php echo htmlspecialchars($dados_user['link_email'] ?? ''); ?>" style="padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif;">
+</div>
+<div class="modal-actions">
                     <button type="button" class="btn-modal btn-cancel" onclick="closeProfileModal()">Cancelar</button>
                     <button type="submit" class="btn-modal btn-save">Salvar</button>
                 </div>

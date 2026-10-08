@@ -122,10 +122,10 @@ $email_admin = htmlspecialchars($current_user['email'] ?? '');
             <!-- 3. BOTÃO DE ATUALIZAR VIRADA DE LIGA -->
             <div class="highlight-card-action">
                 <div class="highlight-action-text">
-                    <h3>Virada Semanal</h3>
+                    <h3>Virada Mensal</h3>
                     <p>Processar subidas e rebaixamentos</p>
                 </div>
-                <button id="btn-virada-ligas" class="btn-virada-destaque" title="Processar virada semanal de ligas agora">
+                <button id="btn-virada-ligas" class="btn-virada-destaque" title="Processar virada mensal de ligas agora">
                     <i class="fa-solid fa-bolt"></i> Atualizar Virada de Liga
                 </button>
             </div>

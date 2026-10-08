@@ -154,3 +154,10 @@ body {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-15px); }
 }
+
+.ofensiva-body.fogo-inativo {
+    background-color: #444 !important;
+}
+.ofensiva-body.fogo-inativo i {
+    color: #999 !important;
+}

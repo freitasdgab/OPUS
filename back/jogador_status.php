@@ -39,6 +39,25 @@ function opus_sincronizar_jogador(mysqli $conn, int $user_id): array {
     $vidas = (int) ($u['vidas'] ?? 3);
     $proxima = $u['vidas_proxima_em'] ?? null;
 
+    $stmt = $conn->prepare("SELECT ultima_atividade FROM usuarios WHERE id = ?");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $res = $stmt->get_result()->fetch_assoc();
+    $ultima = $res['ultima_atividade'] ?? null;
+    $stmt->close();
+
+    $hoje = date('Y-m-d');
+    $ontem = date('Y-m-d', strtotime('-1 day'));
+    $dias_fogo_val = (int) ($u['dias_fogo'] ?? 0);
+
+    // Zera o fogo se nǜo jogou ontem nem hoje
+    if ($ultima !== null && $ultima < $ontem) {
+        $conn->query("UPDATE usuarios SET dias_fogo = 0 WHERE id = $user_id");
+        $dias_fogo_val = 0;
+    }
+    
+    $fogo_hoje = ($ultima === $hoje);
+
     $proxima_texto = '';
     if ($vidas < 3 && !empty($proxima)) {
         $ts = strtotime($proxima);
@@ -55,7 +74,7 @@ function opus_sincronizar_jogador(mysqli $conn, int $user_id): array {
     return [
         'xp' => (int) ($u['xp'] ?? 0),
         'trofeus' => (int) ($u['trofeus'] ?? 0),
-        'dias_fogo' => (int) ($u['dias_fogo'] ?? 0),
+        'dias_fogo' => $dias_fogo_val,
         'vidas' => $vidas,
         'vidas_proxima_em' => $proxima,
         'proxima_vida_texto' => $proxima_texto,
@@ -63,6 +82,7 @@ function opus_sincronizar_jogador(mysqli $conn, int $user_id): array {
         'foto_perfil' => $u['foto_perfil'] ?? '',
         'nivel_acesso' => $nivel_acesso,
         'is_admin' => $is_admin,
+        'fogo_hoje' => $fogo_hoje,
     ];
 }
 
@@ -79,3 +99,4 @@ function opus_atualizar_fogo(mysqli $conn, int $user_id): int {
     $row = opus_call($conn, "CALL sp_atualizar_fogo(?)", "i", [$user_id]);
     return (int) ($row['dias_fogo'] ?? 0);
 }
+
