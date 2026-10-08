@@ -88,6 +88,9 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
     <?php if(!empty($dados_user['link_youtube'])): ?>
         <a href="<?php echo htmlspecialchars($dados_user['link_youtube']); ?>" target="_blank" style="color: #fff; font-size: 1.5rem; transition: 0.2s; margin-left: 10px;" onmouseover="this.style.color='#ff0000'" onmouseout="this.style.color='#fff'" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
     <?php endif; ?>
+        <?php if(!empty($dados_user['link_linkedin'])): ?>
+        <a href="<?php echo htmlspecialchars($dados_user['link_linkedin']); ?>" target="_blank" style="color: #fff; font-size: 1.5rem; transition: 0.2s; margin-left: 10px;" onmouseover="this.style.color='#0077b5'" onmouseout="this.style.color='#fff'" title="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+    <?php endif; ?>
     <?php if(!empty($dados_user['link_email'])): ?>
         <a href="mailto:<?php echo htmlspecialchars($dados_user['link_email']); ?>" style="color: #fff; font-size: 1.5rem; transition: 0.2s; margin-left: 10px;" onmouseover="this.style.color='#fbbc05'" onmouseout="this.style.color='#fff'" title="Email Público"><i class="fa-solid fa-envelope"></i></a>
     <?php endif; ?>
@@ -106,6 +109,7 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                         </div>
 
                             <button style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 8px; font-weight: bold; font-family: 'Nunito', sans-serif; cursor: pointer; text-transform: uppercase; background-color: #1cb0f6; color: white; border: none;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'" onclick="document.getElementById('socialEditModal').style.display='flex'">Adicionar Redes Sociais</button>
+                            <button style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 8px; font-weight: bold; font-family: 'Nunito', sans-serif; cursor: pointer; text-transform: uppercase; background-color: transparent; color: #1cb0f6; border: 2px solid #1cb0f6;" onmouseover="this.style.backgroundColor='#1cb0f6'; this.style.color='white'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#1cb0f6'" onclick="document.getElementById('projetosEditModal').style.display='flex'">Adicionar Projetos Git</button>
 <div class="social-links">
                             <a href="#" onclick="openSocialModal('seguindo')">seguindo <span id="lblSeguindoCount">0</span></a>
                             <a href="#" onclick="openSocialModal('seguidores')">seguidores <span id="lblSeguidoresCount">0</span></a>
@@ -147,8 +151,44 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                         </div>
                     </div>
 
-                </div>
+                
+                    <div class="stats-section" style="margin-top: 40px;">
+                        <h2>Meus Projetos no Git</h2>
+                        <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
+                            <?php if(!empty($dados_user['projeto_titulo_1'])): ?>
+                                <a href="<?php echo htmlspecialchars($dados_user['projeto_url_1']); ?>" target="_blank" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #191924; border: 1px solid #2e2e42; border-radius: 12px; text-decoration: none; color: #fff; transition: 0.2s;" onmouseover="this.style.borderColor='#1cb0f6'" onmouseout="this.style.borderColor='#2e2e42'">
+                                    <i class="fa-brands fa-git-alt" style="font-size: 2rem; color: #f34f29;"></i>
+                                    <div style="display: flex; flex-direction: column;">
+                                        <span style="font-weight: bold; font-size: 1.1rem;"><?php echo htmlspecialchars($dados_user['projeto_titulo_1']); ?></span>
+                                        <span style="color: #7a7a9d; font-size: 0.9rem;">Ver repositório</span>
+                                    </div>
+                                </a>
+                            <?php endif; ?>
+                            <?php if(!empty($dados_user['projeto_titulo_2'])): ?>
+                                <a href="<?php echo htmlspecialchars($dados_user['projeto_url_2']); ?>" target="_blank" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #191924; border: 1px solid #2e2e42; border-radius: 12px; text-decoration: none; color: #fff; transition: 0.2s;" onmouseover="this.style.borderColor='#1cb0f6'" onmouseout="this.style.borderColor='#2e2e42'">
+                                    <i class="fa-brands fa-git-alt" style="font-size: 2rem; color: #f34f29;"></i>
+                                    <div style="display: flex; flex-direction: column;">
+                                        <span style="font-weight: bold; font-size: 1.1rem;"><?php echo htmlspecialchars($dados_user['projeto_titulo_2']); ?></span>
+                                        <span style="color: #7a7a9d; font-size: 0.9rem;">Ver repositório</span>
+                                    </div>
+                                </a>
+                            <?php endif; ?>
+                            <?php if(!empty($dados_user['projeto_titulo_3'])): ?>
+                                <a href="<?php echo htmlspecialchars($dados_user['projeto_url_3']); ?>" target="_blank" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #191924; border: 1px solid #2e2e42; border-radius: 12px; text-decoration: none; color: #fff; transition: 0.2s;" onmouseover="this.style.borderColor='#1cb0f6'" onmouseout="this.style.borderColor='#2e2e42'">
+                                    <i class="fa-brands fa-git-alt" style="font-size: 2rem; color: #f34f29;"></i>
+                                    <div style="display: flex; flex-direction: column;">
+                                        <span style="font-weight: bold; font-size: 1.1rem;"><?php echo htmlspecialchars($dados_user['projeto_titulo_3']); ?></span>
+                                        <span style="color: #7a7a9d; font-size: 0.9rem;">Ver repositório</span>
+                                    </div>
+                                </a>
+                            <?php endif; ?>
+                            <?php if(empty($dados_user['projeto_titulo_1']) && empty($dados_user['projeto_titulo_2']) && empty($dados_user['projeto_titulo_3'])): ?>
+                                <div style="color: #7a7a9d; font-style: italic; text-align: center; padding: 20px; background: #191924; border: 1px solid #2e2e42; border-radius: 12px;">Nenhum projeto adicionado ainda.</div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
 
+                </div>
                 <!-- COLUNA DIREITA -->
                 <div class="side-column">
                     <div class="side-card interact-card">
@@ -228,7 +268,37 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
         </div>
     </div>
 
-        <!-- MODAL DE EDITAR REDES SOCIAIS -->
+            <!-- MODAL DE EDITAR PROJETOS -->
+    <div class="modal-overlay" id="projetosEditModal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-title">Meus Projetos Git</div>
+            <form method="POST" action="../../back/atualizar_perfil.php">
+                <input type="hidden" name="action" value="update_projetos">
+                <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; max-height: 400px; overflow-y: auto; padding-right: 10px;">
+                    <div>
+                        <label style="color: #1cb0f6; font-weight: bold; margin-bottom: 5px; display: block;">Projeto 1</label>
+                        <input type="text" name="projeto_titulo_1" placeholder="Nome do Projeto" value="<?php echo htmlspecialchars($dados_user['projeto_titulo_1'] ?? ''); ?>" style="width: 100%; padding: 10px; margin-bottom: 5px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif; box-sizing: border-box;">
+                        <input type="url" name="projeto_url_1" placeholder="URL do Repositório (https://github.com/...)" value="<?php echo htmlspecialchars($dados_user['projeto_url_1'] ?? ''); ?>" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label style="color: #1cb0f6; font-weight: bold; margin-bottom: 5px; display: block;">Projeto 2</label>
+                        <input type="text" name="projeto_titulo_2" placeholder="Nome do Projeto" value="<?php echo htmlspecialchars($dados_user['projeto_titulo_2'] ?? ''); ?>" style="width: 100%; padding: 10px; margin-bottom: 5px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif; box-sizing: border-box;">
+                        <input type="url" name="projeto_url_2" placeholder="URL do Repositório (https://github.com/...)" value="<?php echo htmlspecialchars($dados_user['projeto_url_2'] ?? ''); ?>" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label style="color: #1cb0f6; font-weight: bold; margin-bottom: 5px; display: block;">Projeto 3</label>
+                        <input type="text" name="projeto_titulo_3" placeholder="Nome do Projeto" value="<?php echo htmlspecialchars($dados_user['projeto_titulo_3'] ?? ''); ?>" style="width: 100%; padding: 10px; margin-bottom: 5px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif; box-sizing: border-box;">
+                        <input type="url" name="projeto_url_3" placeholder="URL do Repositório (https://github.com/...)" value="<?php echo htmlspecialchars($dados_user['projeto_url_3'] ?? ''); ?>" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif; box-sizing: border-box;">
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-modal btn-cancel" onclick="document.getElementById('projetosEditModal').style.display='none'">Cancelar</button>
+                    <button type="submit" class="btn-modal btn-save">Salvar Projetos</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- MODAL DE EDITAR REDES SOCIAIS -->
     <div class="modal-overlay" id="socialEditModal">
         <div class="modal-content" style="max-width: 400px;">
             <div class="modal-title">Adicionar Redes Sociais</div>
@@ -239,6 +309,7 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                     <input type="url" name="link_instagram" placeholder="Link do Instagram (https://instagram.com/...)" value="<?php echo htmlspecialchars($dados_user['link_instagram'] ?? ''); ?>" style="padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif;">
                     <input type="url" name="link_facebook" placeholder="Link do Facebook (https://facebook.com/...)" value="<?php echo htmlspecialchars($dados_user['link_facebook'] ?? ''); ?>" style="padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif;">
                     <input type="url" name="link_youtube" placeholder="Link do YouTube (https://youtube.com/...)" value="<?php echo htmlspecialchars($dados_user['link_youtube'] ?? ''); ?>" style="padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif;">
+                    <input type="url" name="link_linkedin" placeholder="Link do LinkedIn (https://linkedin.com/...)" value="<?php echo htmlspecialchars($dados_user['link_linkedin'] ?? ''); ?>" style="padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif;">
                     <input type="email" name="link_email" placeholder="E-mail Público" value="<?php echo htmlspecialchars($dados_user['link_email'] ?? ''); ?>" style="padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif;">
                 </div>
                 <div class="modal-actions">
