@@ -53,6 +53,11 @@ $titulo_vidas = $proxima_vida_texto !== '' ? $proxima_vida_texto : ($vidas_top .
     </div>
 
     <div class="topbar-stats">
+                <!-- CHAT -->
+        <div class="topbar-stat stat-chat" title="Chat" onclick="window.location.href='chat.php'">
+            <i class="fa-solid fa-comments"></i>
+        </div>
+
         <!-- NOTIFICAÇÕES / MENSAGENS -->
         <div class="topbar-stat stat-notificacao" id="btn-notificacoes" title="Notificações" onclick="toggleNotificacoes()">
             <i class="fa-solid fa-bell"></i>

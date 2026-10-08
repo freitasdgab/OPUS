@@ -72,14 +72,22 @@ if ($action === 'get_conversations') {
     $stmt->execute();
     $res = $stmt->get_result();
     
-    $convs = [];
+        $convs = [];
     while ($row = $res->fetch_assoc()) {
+        // Verificar se tem batalha ativa com esse amigo
+        $amigo_id = $row['id'];
+        $b_stmt = $conn->prepare("SELECT id FROM batalhas_amigos WHERE ((user1_id = ? AND user2_id = ?) OR (user1_id = ? AND user2_id = ?)) AND vencedor_id IS NULL");
+        $b_stmt->bind_param("iiii", $user_id, $amigo_id, $amigo_id, $user_id);
+        $b_stmt->execute();
+        $is_battling = $b_stmt->get_result()->num_rows > 0;
+        
         $convs[] = [
             'id' => $row['id'],
             'nome' => $row['nome'],
             'foto' => $row['foto_perfil'] ?: '../assets/img/opi pulando feliz.png',
             'ultima_msg' => $row['ultima_msg'] ?: 'Nova conexão! Diga olá.',
-            'unread' => $row['unread']
+            'unread' => $row['unread'],
+            'is_battling' => $is_battling
         ];
     }
     echo json_encode($convs);
@@ -107,6 +115,7 @@ if ($action === 'get_messages') {
     
     $msgs = [];
     $has_duel = false;
+    $duel_info = null;
     while ($row = $res->fetch_assoc()) {
         $msgs[] = [
             'id' => $row['id'],
@@ -129,7 +138,7 @@ if ($action === 'get_messages') {
     echo json_encode([
         'messages' => $msgs, 
         'friend' => ['id' => $target_id, 'nome' => $amigo['nome'], 'foto' => $foto],
-        'has_active_duel' => $has_duel // Ativa o ícone flutuante
+        'has_active_duel' => $has_duel, 'duel_info' => $duel_info
     ]);
     exit();
 }

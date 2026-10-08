@@ -69,7 +69,7 @@ $convite_url = "http://" . $_SERVER['HTTP_HOST'] . "/OPUS/front/pages/auth.html?
     </div>
 
     <script src="../assets/js/script.js"></script>
-    <script src="../assets/js/chat.js"></script>
+    <script src="../assets/js/chat.js?v=1791479069,11463"></script>
     <script>
         function copiarConvite(url) {
             navigator.clipboard.writeText(url).then(() => {

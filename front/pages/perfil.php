@@ -152,7 +152,9 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                     </div>
 
                 
-                    <div class="stats-section" style="margin-top: 40px;">
+                                        
+
+<div class="stats-section" style="margin-top: 40px;">
                         <h2>Meus Projetos no Git</h2>
                         <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
                             <?php if(!empty($dados_user['projeto_titulo_1'])): ?>
