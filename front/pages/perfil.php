@@ -24,6 +24,9 @@ $email = !empty($dados_user['email']) ?$dados_user['email'] : 'usuario@email.com
 // Estatísticas
 $xp_total = isset($dados_user['xp']) ?$dados_user['xp'] : 0; 
 $dias_ofensiva = isset($dados_user['dias_fogo']) ?$dados_user['dias_fogo'] : 0;
+$ultima_atividade = !empty($dados_user['ultima_atividade']) ? strtotime($dados_user['ultima_atividade']) : 0;
+$fogo_hoje = ($ultima_atividade && date('Y-m-d', $ultima_atividade) === date('Y-m-d'));
+$fogo_cor = $fogo_hoje ? '#ff9600' : '#4a4a5a';
 $ligas_validas = ['Bronze', 'Prata', 'Ouro', 'Diamante'];$divisao = isset($dados_user['divisao']) && in_array($dados_user['divisao'], $ligas_validas) ?$dados_user['divisao'] : 'Bronze';
 
 // Data formatada
@@ -73,28 +76,26 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                         <div style="display: flex; align-items: center; gap: 15px;">
                             <h1><?php echo htmlspecialchars($nome_principal); ?></h1>
                             <i class="fa-brands fa-java" style="font-size: 2rem; color: #5382a1;"></i>
+    <?php if(!empty($dados_user['link_github'])): ?>
+        <a href="<?php echo htmlspecialchars($dados_user['link_github']); ?>" target="_blank" style="color: #fff; font-size: 1.5rem; transition: 0.2s; margin-left: 10px;" onmouseover="this.style.color='#1cb0f6'" onmouseout="this.style.color='#fff'" title="GitHub"><i class="fa-brands fa-github"></i></a>
+    <?php endif; ?>
+    <?php if(!empty($dados_user['link_instagram'])): ?>
+        <a href="<?php echo htmlspecialchars($dados_user['link_instagram']); ?>" target="_blank" style="color: #fff; font-size: 1.5rem; transition: 0.2s; margin-left: 10px;" onmouseover="this.style.color='#e1306c'" onmouseout="this.style.color='#fff'" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+    <?php endif; ?>
+    <?php if(!empty($dados_user['link_facebook'])): ?>
+        <a href="<?php echo htmlspecialchars($dados_user['link_facebook']); ?>" target="_blank" style="color: #fff; font-size: 1.5rem; transition: 0.2s; margin-left: 10px;" onmouseover="this.style.color='#1877f2'" onmouseout="this.style.color='#fff'" title="Facebook"><i class="fa-brands fa-facebook"></i></a>
+    <?php endif; ?>
+    <?php if(!empty($dados_user['link_youtube'])): ?>
+        <a href="<?php echo htmlspecialchars($dados_user['link_youtube']); ?>" target="_blank" style="color: #fff; font-size: 1.5rem; transition: 0.2s; margin-left: 10px;" onmouseover="this.style.color='#ff0000'" onmouseout="this.style.color='#fff'" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+    <?php endif; ?>
+    <?php if(!empty($dados_user['link_email'])): ?>
+        <a href="mailto:<?php echo htmlspecialchars($dados_user['link_email']); ?>" style="color: #fff; font-size: 1.5rem; transition: 0.2s; margin-left: 10px;" onmouseover="this.style.color='#fbbc05'" onmouseout="this.style.color='#fff'" title="Email Público"><i class="fa-solid fa-envelope"></i></a>
+    <?php endif; ?>
                         </div>
                         <div class="user-details">
                             <span class="email-text"><?php echo htmlspecialchars($email); ?></span>
                         </div>
-                        <div class="member-social" style="display: flex; gap: 15px; margin-top: 15px; margin-bottom: 15px;">
-    <?php if(!empty($dados_user['link_github'])): ?>
-        <a href="<?php echo htmlspecialchars($dados_user['link_github']); ?>" target="_blank" style="color: #fff; font-size: 1.5rem; transition: 0.2s;" onmouseover="this.style.color='#1cb0f6'" onmouseout="this.style.color='#fff'" title="GitHub"><i class="fa-brands fa-github"></i></a>
-    <?php endif; ?>
-    <?php if(!empty($dados_user['link_instagram'])): ?>
-        <a href="<?php echo htmlspecialchars($dados_user['link_instagram']); ?>" target="_blank" style="color: #fff; font-size: 1.5rem; transition: 0.2s;" onmouseover="this.style.color='#e1306c'" onmouseout="this.style.color='#fff'" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
-    <?php endif; ?>
-    <?php if(!empty($dados_user['link_facebook'])): ?>
-        <a href="<?php echo htmlspecialchars($dados_user['link_facebook']); ?>" target="_blank" style="color: #fff; font-size: 1.5rem; transition: 0.2s;" onmouseover="this.style.color='#1877f2'" onmouseout="this.style.color='#fff'" title="Facebook"><i class="fa-brands fa-facebook"></i></a>
-    <?php endif; ?>
-    <?php if(!empty($dados_user['link_youtube'])): ?>
-        <a href="<?php echo htmlspecialchars($dados_user['link_youtube']); ?>" target="_blank" style="color: #fff; font-size: 1.5rem; transition: 0.2s;" onmouseover="this.style.color='#ff0000'" onmouseout="this.style.color='#fff'" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
-    <?php endif; ?>
-    <?php if(!empty($dados_user['link_email'])): ?>
-        <a href="mailto:<?php echo htmlspecialchars($dados_user['link_email']); ?>" style="color: #fff; font-size: 1.5rem; transition: 0.2s;" onmouseover="this.style.color='#fbbc05'" onmouseout="this.style.color='#fff'" title="Email Público"><i class="fa-solid fa-envelope"></i></a>
-    <?php endif; ?>
-</div>
-<div class="member-since">
+                        <div class="member-since">
                             <?php echo strtolower($membro_desde); ?>
                         </div>
                         
@@ -104,7 +105,8 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                             <div id="listaPedidosPerfil" style="display:flex; flex-direction:column; gap:10px;"></div>
                         </div>
 
-                        <div class="social-links">
+                            <button style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 8px; font-weight: bold; font-family: 'Nunito', sans-serif; cursor: pointer; text-transform: uppercase; background-color: #1cb0f6; color: white; border: none;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'" onclick="document.getElementById('socialEditModal').style.display='flex'">Adicionar Redes Sociais</button>
+<div class="social-links">
                             <a href="#" onclick="openSocialModal('seguindo')">seguindo <span id="lblSeguindoCount">0</span></a>
                             <a href="#" onclick="openSocialModal('seguidores')">seguidores <span id="lblSeguidoresCount">0</span></a>
                             <a href="#" onclick="openSocialModal('amigos')">amigos <span id="lblAmigosCount">0</span></a>
@@ -115,7 +117,7 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                         <h2>Estatisticas</h2>
                         <div class="stats-grid">
                             <div class="stat-card">
-                                <div class="stat-card-icon" style="color: #4a4a5a;"><i class="fa-solid fa-fire"></i></div>
+                                <div class="stat-card-icon" style="color: <?php echo $fogo_cor; ?>;"><i class="fa-solid fa-fire"></i></div>
                                 <div class="stat-card-content">
                                     <span class="stat-card-value"><?php echo $dias_ofensiva; ?></span>
                                     <span class="stat-card-label">dias<br>seguidos</span>
@@ -205,15 +207,7 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                     <div class="color-option" style="background-color: #ff9600;" data-color="#ff9600"></div>
                 </div>
 
-                <div class="modal-subtitle">Redes Sociais</div>
-<div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
-    <input type="url" name="link_github" placeholder="Link do GitHub (https://github.com/...)" value="<?php echo htmlspecialchars($dados_user['link_github'] ?? ''); ?>" style="padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif;">
-    <input type="url" name="link_instagram" placeholder="Link do Instagram (https://instagram.com/...)" value="<?php echo htmlspecialchars($dados_user['link_instagram'] ?? ''); ?>" style="padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif;">
-    <input type="url" name="link_facebook" placeholder="Link do Facebook (https://facebook.com/...)" value="<?php echo htmlspecialchars($dados_user['link_facebook'] ?? ''); ?>" style="padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif;">
-    <input type="url" name="link_youtube" placeholder="Link do YouTube (https://youtube.com/...)" value="<?php echo htmlspecialchars($dados_user['link_youtube'] ?? ''); ?>" style="padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif;">
-    <input type="email" name="link_email" placeholder="E-mail Público" value="<?php echo htmlspecialchars($dados_user['link_email'] ?? ''); ?>" style="padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif;">
-</div>
-<div class="modal-actions">
+                <div class="modal-actions">
                     <button type="button" class="btn-modal btn-cancel" onclick="closeProfileModal()">Cancelar</button>
                     <button type="submit" class="btn-modal btn-save">Salvar</button>
                 </div>
@@ -234,7 +228,27 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
         </div>
     </div>
 
-    <!-- MODAL DE CONFIRMAÇÃO DE SAÍDA -->
+        <!-- MODAL DE EDITAR REDES SOCIAIS -->
+    <div class="modal-overlay" id="socialEditModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-title">Adicionar Redes Sociais</div>
+            <form method="POST" action="../../back/atualizar_perfil.php">
+                <input type="hidden" name="action" value="update_social">
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+                    <input type="url" name="link_github" placeholder="Link do GitHub (https://github.com/...)" value="<?php echo htmlspecialchars($dados_user['link_github'] ?? ''); ?>" style="padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif;">
+                    <input type="url" name="link_instagram" placeholder="Link do Instagram (https://instagram.com/...)" value="<?php echo htmlspecialchars($dados_user['link_instagram'] ?? ''); ?>" style="padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif;">
+                    <input type="url" name="link_facebook" placeholder="Link do Facebook (https://facebook.com/...)" value="<?php echo htmlspecialchars($dados_user['link_facebook'] ?? ''); ?>" style="padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif;">
+                    <input type="url" name="link_youtube" placeholder="Link do YouTube (https://youtube.com/...)" value="<?php echo htmlspecialchars($dados_user['link_youtube'] ?? ''); ?>" style="padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif;">
+                    <input type="email" name="link_email" placeholder="E-mail Público" value="<?php echo htmlspecialchars($dados_user['link_email'] ?? ''); ?>" style="padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif;">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-modal btn-cancel" onclick="document.getElementById('socialEditModal').style.display='none'">Cancelar</button>
+                    <button type="submit" class="btn-modal btn-save">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+<!-- MODAL DE CONFIRMAÇÃO DE SAÍDA -->
     <div class="modal-overlay" id="logoutModal">
         <div class="modal-content" style="max-width: 380px; text-align: center;">
             <div class="modal-title">Sair da Conta</div>
