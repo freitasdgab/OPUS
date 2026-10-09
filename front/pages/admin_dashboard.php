@@ -72,6 +72,8 @@ $email_admin = htmlspecialchars($current_user['email'] ?? '');
 
     <link rel="stylesheet" href="../assets/css/admin_dashboard.css">
     <link rel="stylesheet" href="../assets/css/opus_alerta.css">
+    <link rel="stylesheet" href="../assets/css/light-mode.css">
+    <script src="../assets/js/theme.js"></script>
 </head>
 <body>
     <!-- BARRA SUPERIOR EXCLUSIVA DO ADMINISTRADOR -->

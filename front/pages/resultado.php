@@ -128,6 +128,8 @@ $vidas_restantes = (int) $status_atual['vidas'];
     <link rel="stylesheet" href="../assets/css/dashboard.css">
     <link rel="stylesheet" href="../assets/css/topbar.css">
     <link rel="stylesheet" href="../assets/css/resultado.css">
+    <link rel="stylesheet" href="../assets/css/light-mode.css">
+    <script src="../assets/js/theme.js"></script>
 </head>
 <body style="--cor-tema: <?php echo $cor_tema; ?>;">
         <div class="app-container">

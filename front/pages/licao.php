@@ -16,6 +16,8 @@ require_once '../../back/licao_logic.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/licao.css">
     <link rel="stylesheet" href="../assets/css/opus_alerta.css">
+    <link rel="stylesheet" href="../assets/css/light-mode.css">
+    <script src="../assets/js/theme.js"></script>
 </head>
 <body class="licao-page">
 

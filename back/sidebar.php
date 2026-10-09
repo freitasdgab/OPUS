@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="../assets/css/light-mode.css">
 <?php
 // Barra lateral única, incluída em todas as páginas internas.
 // Detecta a página atual automaticamente para marcar o link "active".
@@ -21,13 +22,19 @@ $itens_menu = [
             </a>
         <?php endforeach; ?>
 
-        <a href="../../back/logout.php" class="nav-link nav-link-logout" style="margin-top: 25px; color: #ff4757;" onclick="return confirm('Deseja realmente sair da conta?')">
+        <a href="#" class="nav-link nav-link-theme" id="themeToggleBtn" style="margin-top: 15px;">
+            <i class="fa-solid fa-sun" id="themeIcon"></i> <span id="themeText">Modo Claro</span>
+        </a>
+
+        <a href="../../back/logout.php" class="nav-link nav-link-logout" style="margin-top: 15px; color: #ff4757;" onclick="return confirm('Deseja realmente sair da conta?')">
             <i class="fa-solid fa-arrow-right-from-bracket"></i> Sair
         </a>
     </nav>
 </aside>
 
+<script src="../assets/js/theme.js"></script>
+
 <?php
-// Inclui o assistente flutuante Opi IA em todas as páginas com a sidebar
+// Inclui o assistente flutuante Opi IA em todas as pginas com a sidebar
 include __DIR__ . '/chatbot.php';
 ?>

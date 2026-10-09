@@ -1,0 +1,468 @@
+/*========================================================================
+   ESTILOS DO MODO CLARO (LIGHT MODE) - MELHORADO E ABRANGENTE
+  ========================================================================*/
+
+/* VARIÁVEIS GLOBAIS (Redefinindo as variáveis root dos outros arquivos CSS) */
+body.light-mode {
+    --bg-dark: #f0f2f5 !important;
+    --card-bg: #ffffff !important;
+    --border-color: #e5e7eb !important;
+    --border-highlight: #d1d5db !important;
+    --border-bottom: #d1d5db !important;
+    --border-subtle: rgba(0, 0, 0, 0.08) !important;
+    --text-main: #111827 !important;
+    --text-muted: #6b7280 !important;
+    --tooltip-bg: #ffffff !important;
+    --me-bg: rgba(28, 176, 246, 0.1) !important;
+    
+    background-color: #f0f2f5 !important;
+    background: #f0f2f5 !important;
+    color: #111827 !important;
+}
+
+/* SIDEBAR E TOPBAR */
+body.light-mode .sidebar {
+    background-color: #ffffff !important;
+    border-right: 1px solid #e5e7eb !important;
+}
+body.light-mode .sidebar .logo { color: #1a36ca !important; }
+body.light-mode .sidebar .nav-link { color: #4b5563 !important; }
+body.light-mode .sidebar .nav-link:hover, 
+body.light-mode .sidebar .nav-link.active {
+    background: rgba(26, 54, 202, 0.1) !important;
+    color: #1a36ca !important;
+}
+
+body.light-mode .top-bar, 
+body.light-mode .topbar {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-bottom: 1px solid #e5e7eb !important;
+}
+body.light-mode .topbar-title,
+body.light-mode .user-info span,
+body.light-mode .topbar-stat i,
+body.light-mode .topbar-stat span {
+    color: #111827 !important;
+}
+body.light-mode .topbar-stat.fogo-ativo i { color: #ff9600 !important; }
+body.light-mode .topbar-stat.stat-vida i { color: #ff4b4b !important; }
+body.light-mode .topbar-stat.stat-xp i { color: #1cb0f6 !important; }
+body.light-mode .topbar-stat.stat-chat i { color: #ce82ff !important; }
+body.light-mode .topbar-stat.stat-notificacao i { color: #4b5563 !important; }
+
+/* NOTIFICAÇÕES DROPDOWN */
+body.light-mode .notif-dropdown {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+}
+body.light-mode .notif-header {
+    border-bottom: 1px solid #e5e7eb !important;
+    background: #f9fafb !important;
+}
+body.light-mode .notif-header h3 { color: #111827 !important; }
+body.light-mode .notif-item {
+    border-bottom: 1px solid #f3f4f6 !important;
+    background: #ffffff !important;
+}
+body.light-mode .notif-item:hover { background: #f9fafb !important; }
+body.light-mode .notif-item-text p { color: #374151 !important; }
+body.light-mode .notif-item-text span { color: #6b7280 !important; }
+body.light-mode .notif-empty { color: #6b7280 !important; }
+
+/* =======================================================================
+   WIDGETS, BOXES E CONTAINERS GENÉRICOS 
+   ======================================================================= */
+body.light-mode .widget-box,
+body.light-mode .progresso-stat-card,
+body.light-mode .missao-item,
+body.light-mode .unit-item,
+body.light-mode .card,
+body.light-mode .ranking-box,
+body.light-mode .liga-tier-card,
+body.light-mode .conquista-card,
+body.light-mode .dicionario-card,
+body.light-mode .map-card {
+    background-color: #ffffff !important;
+    border: 2px solid #e5e7eb !important;
+    box-shadow: 0 6px 0 #d1d5db !important;
+    color: #111827 !important;
+}
+body.light-mode .widget-box:hover,
+body.light-mode .card:hover,
+body.light-mode .conquista-card:hover {
+    border-color: #d1d5db !important;
+}
+
+body.light-mode .widget-header h3,
+body.light-mode .widget-vidas h4,
+body.light-mode .ofensiva-info h4,
+body.light-mode .ranking-info h4,
+body.light-mode .missao-info h4 {
+    color: #111827 !important;
+}
+
+body.light-mode .vidas-info p,
+body.light-mode .ranking-info p,
+body.light-mode .progresso-stat-card .lbl {
+    color: #6b7280 !important;
+}
+
+body.light-mode .vidas-body,
+body.light-mode .ofensiva-body,
+body.light-mode .ranking-body {
+    background-color: transparent !important;
+}
+
+body.light-mode .widget-ofensiva {
+    background: #fff5e6 !important; /* Ligeiro fundo laranja */
+    border-color: #ffcc80 !important;
+    box-shadow: 0 6px 0 #ffb74d !important;
+}
+body.light-mode .widget-vidas {
+    background: #ffebee !important;
+    border-color: #ffcdd2 !important;
+    box-shadow: 0 6px 0 #ef9a9a !important;
+}
+body.light-mode .widget-footer-info {
+    border-top: 1px solid #e5e7eb !important;
+    color: #6b7280 !important;
+}
+
+/* =======================================================================
+   TRILHA DE APRENDIZAGEM (DASHBOARD)
+   ======================================================================= */
+body.light-mode .capitulo-header-text h2,
+body.light-mode .capitulo-header-text h3 {
+    color: #ffffff !important; /* Mantém os textos brancos nos fundos coloridos */
+}
+body.light-mode .btn-guia {
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.6) !important;
+}
+
+body.light-mode .modulo-node.locked .circle-button {
+    background: #e5e7eb !important;
+    color: #9ca3af !important;
+    box-shadow: 0 6px 0 #d1d5db !important;
+}
+body.light-mode .active-ring {
+    background: #e5e7eb !important;
+}
+body.light-mode .chest-node.locked {
+    background: #e5e7eb !important;
+    color: #9ca3af !important;
+    box-shadow: 0 6px 0 #d1d5db !important;
+}
+body.light-mode .chest-node.claimed {
+    background: #f3f4f6 !important;
+    color: #9ca3af !important;
+    border-color: #d1d5db !important;
+    box-shadow: 0 6px 0 #d1d5db !important;
+}
+
+/* BARRAS DE PROGRESSO */
+body.light-mode .progress-bar-bg {
+    background: #e5e7eb !important;
+    border: 1px solid #d1d5db !important;
+}
+body.light-mode .progress-text {
+    color: #111827 !important;
+    text-shadow: none !important;
+    font-weight: 800 !important;
+}
+body.light-mode .bar-bg {
+    background: #e5e7eb !important;
+}
+
+/* =======================================================================
+   MODAIS E POPUPS
+   ======================================================================= */
+body.light-mode .modal-box {
+    background: #ffffff !important;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+}
+body.light-mode .modal-header h2 { color: #111827 !important; }
+body.light-mode .modal-header h3 { color: #4b5563 !important; }
+body.light-mode .modal-body { color: #374151 !important; }
+body.light-mode .close-btn-modal {
+    background: rgba(0,0,0,0.05) !important;
+    color: #111827 !important;
+}
+body.light-mode .close-btn-modal:hover { background: rgba(0,0,0,0.1) !important; }
+body.light-mode .code-box {
+    background: #f8fafc !important;
+    border-left: 4px solid #1cb0f6 !important;
+    color: #047857 !important;
+}
+
+/* Modal Baú (Baú de Recompensas) */
+body.light-mode .modal-bau-box {
+    background: #ffffff !important;
+    border: 2px solid #e5e7eb !important;
+    box-shadow: 0 12px 0 #d1d5db, 0 20px 50px rgba(0,0,0,0.2) !important;
+}
+body.light-mode .modal-bau-title { color: #111827 !important; }
+body.light-mode .modal-bau-sub { color: #d97706 !important; }
+body.light-mode .reward-card {
+    background: #f9fafb !important;
+    border: 2px solid #e5e7eb !important;
+    border-bottom: 4px solid #d1d5db !important;
+}
+body.light-mode .reward-card .rc-val { color: #111827 !important; }
+body.light-mode .reward-card .rc-lbl { color: #6b7280 !important; }
+
+/* =======================================================================
+   CHAT
+   ======================================================================= */
+body.light-mode .chat-hub-container {
+    background: #ffffff !important;
+    border-color: #e5e7eb !important;
+    border-bottom-color: #d1d5db !important;
+}
+body.light-mode .chat-sidebar {
+    background: #f9fafb !important;
+    border-right: 2px solid #e5e7eb !important;
+}
+body.light-mode .chat-sidebar-header {
+    border-bottom: 2px solid #e5e7eb !important;
+    color: #111827 !important;
+}
+body.light-mode .chat-sidebar-header h2 { color: #111827 !important; }
+body.light-mode .chat-search-input {
+    background: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+    color: #111827 !important;
+}
+body.light-mode .chat-search-input::placeholder { color: #9ca3af !important; }
+body.light-mode .chat-item {
+    border-bottom: 1px solid #e5e7eb !important;
+}
+body.light-mode .chat-item:hover { background: #f3f4f6 !important; }
+body.light-mode .chat-item.active { background: #e0f2fe !important; }
+body.light-mode .chat-item-name { color: #111827 !important; }
+body.light-mode .chat-item-msg,
+body.light-mode .chat-item-time { color: #6b7280 !important; }
+body.light-mode .chat-main { background: #ffffff !important; }
+body.light-mode .chat-header {
+    border-bottom: 2px solid #e5e7eb !important;
+    background: #ffffff !important;
+}
+body.light-mode .chat-header-info h3 { color: #111827 !important; }
+body.light-mode .chat-header-info p { color: #6b7280 !important; }
+body.light-mode .chat-messages { background: #f0f2f5 !important; }
+body.light-mode .chat-bubble.other {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    color: #111827 !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+}
+body.light-mode .chat-bubble.mine {
+    background: #1cb0f6 !important;
+    color: #ffffff !important;
+}
+body.light-mode .chat-bubble-time { color: #9ca3af !important; }
+body.light-mode .chat-input-area {
+    background: #ffffff !important;
+    border-top: 2px solid #e5e7eb !important;
+}
+body.light-mode .chat-input-wrapper { background: transparent !important; }
+body.light-mode .chat-input {
+    background: #f3f4f6 !important;
+    border: 1px solid #e5e7eb !important;
+    color: #111827 !important;
+}
+body.light-mode .chat-input::placeholder { color: #9ca3af !important; }
+body.light-mode .chat-no-selection { color: #6b7280 !important; }
+body.light-mode .chat-no-selection-icon { color: #d1d5db !important; }
+
+/* =======================================================================
+   DICIONÁRIO / GLOSSÁRIO
+   ======================================================================= */
+body.light-mode .dicio-header {
+    background: linear-gradient(135deg, rgba(28, 176, 246, 0.1) 0%, rgba(255, 255, 255, 0) 100%) !important;
+    border: 1px solid rgba(28, 176, 246, 0.2) !important;
+}
+body.light-mode .dicio-header-text h1 { color: #111827 !important; }
+body.light-mode .dicio-header-text p { color: #4b5563 !important; }
+body.light-mode .search-bar {
+    background: #ffffff !important;
+    border: 2px solid #e5e7eb !important;
+}
+body.light-mode .search-bar i { color: #9ca3af !important; }
+body.light-mode .search-bar input {
+    color: #111827 !important;
+}
+body.light-mode .search-bar input::placeholder { color: #9ca3af !important; }
+body.light-mode .letter-btn {
+    background: #ffffff !important;
+    border: 2px solid #e5e7eb !important;
+    color: #4b5563 !important;
+}
+body.light-mode .letter-btn:hover { border-color: #1cb0f6 !important; color: #1cb0f6 !important; }
+body.light-mode .letter-btn.active {
+    background: #1cb0f6 !important;
+    color: #ffffff !important;
+    border-color: #1cb0f6 !important;
+}
+body.light-mode .term-header h3 { color: #111827 !important; }
+body.light-mode .term-desc { color: #4b5563 !important; }
+body.light-mode .term-example-box {
+    background: #f8fafc !important;
+    border-left-color: #58cc02 !important;
+}
+body.light-mode .term-example-box code { color: #047857 !important; }
+body.light-mode .empty-state h3 { color: #111827 !important; }
+body.light-mode .empty-state p { color: #6b7280 !important; }
+
+/* =======================================================================
+   CONQUISTAS E AMIGOS
+   ======================================================================= */
+body.light-mode .header-conquistas {
+    background: linear-gradient(135deg, rgba(255, 200, 0, 0.1) 0%, rgba(255, 255, 255, 0) 100%) !important;
+    border: 1px solid rgba(255, 200, 0, 0.3) !important;
+}
+body.light-mode .header-conquistas h1 { color: #111827 !important; }
+body.light-mode .header-conquistas p { color: #4b5563 !important; }
+body.light-mode .section-title {
+    color: #111827 !important;
+    border-bottom: 2px solid #e5e7eb !important;
+}
+body.light-mode .conquista-card {
+    background: #ffffff !important;
+    border: 2px solid #e5e7eb !important;
+}
+body.light-mode .conquista-info h3 { color: #111827 !important; }
+body.light-mode .conquista-info p { color: #6b7280 !important; }
+
+body.light-mode .tabs-container {
+    border-bottom: 2px solid #e5e7eb !important;
+}
+body.light-mode .tab-btn { color: #6b7280 !important; }
+body.light-mode .tab-btn.active { color: #1cb0f6 !important; border-bottom: 3px solid #1cb0f6 !important; }
+
+body.light-mode .amigo-card {
+    background: #ffffff !important;
+    border: 2px solid #e5e7eb !important;
+    box-shadow: 0 6px 0 #d1d5db !important;
+}
+body.light-mode .amigo-info h3 { color: #111827 !important; }
+body.light-mode .amigo-info p { color: #6b7280 !important; }
+body.light-mode .input-search-amigo {
+    background: #ffffff !important;
+    border: 2px solid #e5e7eb !important;
+    color: #111827 !important;
+}
+
+/* =======================================================================
+   PERFIL
+   ======================================================================= */
+body.light-mode .profile-banner {
+    border-color: #e5e7eb !important;
+}
+body.light-mode .profile-header-info h1 { color: #111827 !important; }
+body.light-mode .profile-header-info h3 { color: #4b5563 !important; }
+body.light-mode .stat-summary-box {
+    background: #f9fafb !important;
+    border: 1px solid #e5e7eb !important;
+}
+body.light-mode .stat-summary-box .val { color: #111827 !important; }
+body.light-mode .stat-summary-box .lbl { color: #6b7280 !important; }
+body.light-mode .edit-profile-form label { color: #374151 !important; }
+body.light-mode .input-text,
+body.light-mode select {
+    background: #ffffff !important;
+    border: 2px solid #d1d5db !important;
+    color: #111827 !important;
+}
+body.light-mode .input-text:focus,
+body.light-mode select:focus {
+    border-color: #1cb0f6 !important;
+    background: #f0f9ff !important;
+}
+
+/* =======================================================================
+   RANKING / LIGAS
+   ======================================================================= */
+body.light-mode .ranking-header, body.light-mode .liga-header {
+    background: #ffffff !important;
+    border: 2px solid #e5e7eb !important;
+    box-shadow: 0 4px 0 #d1d5db !important;
+}
+body.light-mode .ranking-table-container,
+body.light-mode .liga-table-container {
+    background: #ffffff !important;
+    border: 2px solid #e5e7eb !important;
+    box-shadow: 0 6px 0 #d1d5db !important;
+}
+body.light-mode .ranking-table th,
+body.light-mode .liga-table th {
+    background: #f9fafb !important;
+    color: #6b7280 !important;
+    border-bottom: 2px solid #e5e7eb !important;
+}
+body.light-mode .ranking-table td,
+body.light-mode .liga-table td {
+    border-bottom: 1px solid #f3f4f6 !important;
+    color: #111827 !important;
+}
+body.light-mode .ranking-table tr:hover td,
+body.light-mode .liga-table tr:hover td {
+    background: #f3f4f6 !important;
+}
+body.light-mode .ranking-table tr.me td,
+body.light-mode .liga-table tr.me td {
+    background: rgba(28, 176, 246, 0.1) !important;
+}
+
+body.light-mode .liga-zona-sobe {
+    background: rgba(88, 204, 2, 0.1) !important;
+    border-left: 4px solid #58cc02 !important;
+}
+body.light-mode .liga-zona-desce {
+    background: rgba(255, 75, 75, 0.1) !important;
+    border-left: 4px solid #ff4b4b !important;
+}
+body.light-mode .liga-card {
+    background: #ffffff !important;
+    border: 2px solid #e5e7eb !important;
+    box-shadow: 0 6px 0 #d1d5db !important;
+}
+body.light-mode .liga-card-title { color: #111827 !important; }
+body.light-mode .liga-card-desc { color: #4b5563 !important; }
+
+/* =======================================================================
+   OPI (ASSISTENTE / CHATBOT)
+   ======================================================================= */
+body.light-mode #opi-chatbot {
+    background: #ffffff !important;
+    border: 2px solid #e5e7eb !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+}
+body.light-mode .opi-header {
+    background: #ffffff !important;
+    border-bottom: 1px solid #e5e7eb !important;
+}
+body.light-mode .opi-header h3 { color: #111827 !important; }
+body.light-mode .opi-body {
+    background: #f9fafb !important;
+}
+body.light-mode .opi-msg.bot {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    color: #111827 !important;
+}
+body.light-mode .opi-msg.user {
+    background: #1cb0f6 !important;
+    color: #ffffff !important;
+}
+body.light-mode .opi-footer {
+    background: #ffffff !important;
+    border-top: 1px solid #e5e7eb !important;
+}
+body.light-mode #opi-input {
+    background: #f3f4f6 !important;
+    border: 1px solid #d1d5db !important;
+    color: #111827 !important;
+}
+body.light-mode #opi-input::placeholder { color: #9ca3af !important; }
