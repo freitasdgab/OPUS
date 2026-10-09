@@ -538,7 +538,7 @@ $nomes_unidades = [
     <title>Painel de Progresso - Opus</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css?v=2">
     <link rel="stylesheet" href="../assets/css/topbar.css">
     <link rel="shortcut icon" href="../assets/img/logo.png">
     

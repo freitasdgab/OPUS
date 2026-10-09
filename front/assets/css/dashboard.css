@@ -156,7 +156,13 @@ body {
 }
 
 .ofensiva-body.fogo-inativo {
-    background-color: #444 !important;
+    background-color: transparent !important;
+}
+.ofensiva-body.fogo-inativo .ofensiva-icon-box {
+    background: #2e2e3e;
+    border: 1px solid #444;
+    box-shadow: none;
+    color: #999;
 }
 .ofensiva-body.fogo-inativo i {
     color: #999 !important;
