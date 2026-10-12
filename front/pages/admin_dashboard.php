@@ -59,10 +59,10 @@ $email_admin = htmlspecialchars($current_user['email'] ?? '');
     <title>Painel do Administrador - OPUS</title>
     <link rel="shortcut icon" href="../assets/img/logo.png">
 
-    <!-- Google Fonts -->
+    <!-- Google Fonts: Nunito (Estilo Cartoon Duolingo) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     
     <!-- FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -70,9 +70,9 @@ $email_admin = htmlspecialchars($current_user['email'] ?? '');
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
-    <link rel="stylesheet" href="../assets/css/admin_dashboard.css">
-    <link rel="stylesheet" href="../assets/css/opus_alerta.css">
-    <link rel="stylesheet" href="../assets/css/light-mode.css">
+    <link rel="stylesheet" href="../assets/css/admin_dashboard.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/opus_alerta.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/light-mode.css?v=<?= time() ?>">
     <script src="../assets/js/theme.js"></script>
 </head>
 <body>
@@ -84,11 +84,16 @@ $email_admin = htmlspecialchars($current_user['email'] ?? '');
         </div>
 
         <div class="admin-nav-user">
+            <!-- BOTÃO ALTERNAR TEMA (CLARO / ESCURO) -->
+            <button type="button" class="btn-theme-toggle" id="themeToggleBtn" title="Alternar Modo Claro e Escuro">
+                <span id="themeText">Modo Claro</span>
+            </button>
+
             <div class="admin-user-info">
                 <div class="admin-user-name"><?= $nome_admin ?></div>
                 <div class="admin-user-email"><?= $email_admin ?></div>
             </div>
-            <a href="../../back/logout.php" class="btn-logout" title="Encerrar Sessão" onclick="return confirm('Deseja realmente sair da conta?')">
+            <a href="../../back/logout.php" class="btn-logout" title="Encerrar Sessão">
                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Sair
             </a>
         </div>
@@ -294,23 +299,11 @@ $email_admin = htmlspecialchars($current_user['email'] ?? '');
         </div>
     </div>
 
-    <!-- MODAL DE CONFIRMAÇÃO DE SAÍDA -->
-    <div class="modal-bg" id="logout-modal-admin">
-        <div class="modal-box" style="max-width: 380px; text-align: center; padding: 40px 30px;">
-            <h2 style="margin-bottom: 12px;">Sair da Conta</h2>
-            <p style="color: #8e95a1; margin-bottom: 25px;">Tem certeza que deseja encerrar sua sessão de administrador?</p>
-            <div style="display: flex; gap: 15px;">
-                <button type="button" onclick="fecharModalLogoutAdmin()" style="flex:1; padding: 14px; border-radius: 12px; font-weight: 800; border: none; cursor: pointer; background: rgba(255,255,255,0.08); color: #fff;">Cancelar</button>
-                <a href="../../back/logout.php" style="flex:1; padding: 14px; border-radius: 12px; font-weight: 800; border: none; cursor: pointer; background: #ef4444; color: #fff; text-decoration: none; display: flex; align-items: center; justify-content: center;">Sim, Sair</a>
-            </div>
-        </div>
-    </div>
-
     <!-- TOAST CONTAINER -->
     <div class="toast-box" id="toast-wrapper"></div>
 
-    <script src="../assets/js/opus_alerta.js"></script>
-    <script src="../assets/js/admin_dashboard.js"></script>
+    <script src="../assets/js/opus_alerta.js?v=<?= time() ?>"></script>
+    <script src="../assets/js/admin_dashboard.js?v=<?= time() ?>"></script>
 </body>
 </html>
 

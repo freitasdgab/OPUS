@@ -35,8 +35,8 @@ if (isset($_SESSION['user_id'])) {
 
 $titulo_vidas = $proxima_vida_texto !== '' ? $proxima_vida_texto : ($vidas_top . ' de 3 vidas');
 ?>
-<link rel="stylesheet" href="../assets/css/opus_alerta.css">
-<script src="../assets/js/opus_alerta.js"></script>
+<link rel="stylesheet" href="../assets/css/opus_alerta.css?v=<?= time() ?>">
+<script src="../assets/js/opus_alerta.js?v=<?= time() ?>"></script>
 
 <style>
 /* Anula o cache do navegador e força a barra a colar perfeitamente no topo */

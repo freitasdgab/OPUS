@@ -3,6 +3,7 @@
   ========================================================================*/
 
 /* VARIÁVEIS GLOBAIS E FUNDO GERAL */
+html.light-mode,
 body.light-mode {
     --bg-dark: #ffffff !important; /* Branco puro como o Duolingo */
     --card-bg: #ffffff !important;
@@ -18,6 +19,14 @@ body.light-mode {
     color: #4b4b4b !important;
 }
 
+html.light-mode body,
+body.light-mode {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #4b4b4b !important;
+}
+
+html.light-mode .main-content,
 body.light-mode .main-content {
     background-color: #ffffff !important;
 }

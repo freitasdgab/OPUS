@@ -248,6 +248,18 @@
     // ── Atalhos Globais ──────────────────────────────────────────────────────
     window.opusToast = opusToast;
     window.opusAlerta = opusAlerta;
+    window.opusConfirm = function(opcoes = {}) {
+        return opusAlerta({
+            titulo: opcoes.titulo || 'Tem certeza?',
+            mensagem: opcoes.mensagem || 'Deseja realmente continuar?',
+            tipo: opcoes.tipo || 'warning',
+            icone: opcoes.icone || 'fa-solid fa-arrow-right-from-bracket',
+            botaoTexto: opcoes.botaoTexto || 'SIM, SAIR',
+            cancelTexto: opcoes.cancelTexto || 'CANCELAR',
+            onConfirm: opcoes.onConfirm,
+            onCancel: opcoes.onCancel
+        });
+    };
     window.mostrarAviso = (msg, tipo = 'info', titulo = null) => {
         if (tipo === 'success') {
             opusToast(msg, 'success', 4000, titulo);
@@ -332,5 +344,33 @@
             window.history.replaceState({}, document.title, newUrl);
         }
     });
+
+    // ── Interceptador Global de Saída (Logout) ──────────────────────────────
+    // Registrado imediatamente no window em fase de captura para impedir qualquer navegação direta
+    window.addEventListener('click', function(e) {
+        const logoutLink = e.target.closest('a[href*="logout.php"]');
+        if (!logoutLink) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+
+        const urlDestino = logoutLink.getAttribute('href');
+        const isAdmin = document.querySelector('.admin-navbar') !== null;
+
+        opusConfirm({
+            titulo: 'Sair da Conta?',
+            mensagem: isAdmin 
+                ? 'Tem certeza de que deseja encerrar sua sessão de administrador?' 
+                : 'Você está prestes a sair do OPUS. Tem certeza que deseja encerrar sua sessão agora?',
+            tipo: 'warning',
+            icone: 'fa-solid fa-arrow-right-from-bracket',
+            botaoTexto: 'SIM, QUERO SAIR',
+            cancelTexto: 'CONTINUAR NO SITE',
+            onConfirm: function() {
+                window.location.href = urlDestino;
+            }
+        });
+    }, true);
 
 })();

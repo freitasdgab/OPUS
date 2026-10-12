@@ -220,7 +220,7 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                         </div>
                     </div>
 
-                    <button class="btn-outline" style="margin-top: auto;" onclick="openLogoutModal()">Sair da Conta</button>
+                    <a href="../../back/logout.php" class="btn-outline" style="margin-top: auto; text-align: center; text-decoration: none; display: block;">Sair da Conta</a>
                 </div>
             </div>
         </main>

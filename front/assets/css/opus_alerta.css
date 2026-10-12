@@ -69,8 +69,8 @@
     box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(255, 71, 87, 0.2);
 }
 .opus-toast.toast-warning {
-    border-color: rgba(255, 150, 0, 0.45);
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(255, 150, 0, 0.2);
+    border-color: rgba(28, 176, 246, 0.45);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(28, 176, 246, 0.2);
 }
 .opus-toast.toast-info {
     border-color: rgba(28, 176, 246, 0.45);
@@ -101,9 +101,9 @@
     border: 1px solid rgba(255, 71, 87, 0.4);
 }
 .toast-warning .opus-toast-icon {
-    background: linear-gradient(135deg, rgba(255, 150, 0, 0.25), rgba(210, 120, 0, 0.1));
-    color: #ff9600;
-    border: 1px solid rgba(255, 150, 0, 0.4);
+    background: linear-gradient(135deg, rgba(28, 176, 246, 0.25), rgba(15, 120, 190, 0.1));
+    color: #1cb0f6;
+    border: 1px solid rgba(28, 176, 246, 0.4);
 }
 .toast-info .opus-toast-icon {
     background: linear-gradient(135deg, rgba(28, 176, 246, 0.25), rgba(15, 120, 190, 0.1));
@@ -164,7 +164,7 @@
 
 .toast-success .opus-toast-progress { background: #00e676; }
 .toast-error .opus-toast-progress { background: #ff4757; }
-.toast-warning .opus-toast-progress { background: #ff9600; }
+.toast-warning .opus-toast-progress { background: #1cb0f6; }
 .toast-info .opus-toast-progress { background: #1cb0f6; }
 
 
@@ -195,19 +195,19 @@
 
 .opus-modal-box {
     position: relative;
-    background: #151828;
-    background: linear-gradient(180deg, #1a1e33 0%, #111422 100%);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 20px;
+    background: #18272f;
+    border: 3px solid #2b3e48;
+    border-bottom: 7px solid #1f2e37;
+    border-radius: 24px;
     padding: 34px 28px 28px 28px;
     width: 100%;
-    max-width: 440px;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(28, 176, 246, 0.15);
+    max-width: 420px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
     text-align: center;
-    transform: scale(0.85) translateY(20px);
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform: scale(0.9) translateY(15px);
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     color: #ffffff;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Nunito', 'Poppins', sans-serif;
     overflow: hidden;
 }
 
@@ -215,74 +215,53 @@
     transform: scale(1) translateY(0);
 }
 
-/* Linha de topo brilhante no Modal */
 .opus-modal-box::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #1cb0f6, #4d66f5, #00e676);
+    display: none;
 }
 
-.opus-modal-box.modal-type-error::before {
-    background: linear-gradient(90deg, #ff4757, #ff6b81, #ffa502);
-}
-.opus-modal-box.modal-type-warning::before {
-    background: linear-gradient(90deg, #ff9600, #ffb142, #ff5252);
-}
-.opus-modal-box.modal-type-success::before {
-    background: linear-gradient(90deg, #00e676, #1cb0f6, #00d2d3);
-}
-
-/* Ícone central do modal */
+/* Ícone central do modal estilo cartoon Duolingo */
 .opus-modal-icon-wrap {
-    width: 84px;
-    height: 84px;
+    width: 80px;
+    height: 80px;
     margin: 0 auto 20px auto;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.3rem;
+    font-size: 2.2rem;
     position: relative;
-    border: 3px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    border: 3px solid rgba(255, 255, 255, 0.15);
+    border-bottom: 5px solid rgba(0, 0, 0, 0.25);
     animation: opusIconFloat 3s ease-in-out infinite;
 }
 
 @keyframes opusIconFloat {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-6px); }
+    50% { transform: translateY(-5px); }
 }
 
 .modal-type-success .opus-modal-icon-wrap {
-    background: linear-gradient(135deg, #00e676, #00994d);
-    border-color: #00ff88;
-    color: #0d2818;
-    box-shadow: 0 0 30px rgba(0, 230, 118, 0.45);
+    background: #58cc02;
+    border-color: #46a302;
+    color: #ffffff;
 }
 
 .modal-type-error .opus-modal-icon-wrap {
-    background: linear-gradient(135deg, #ff4757, #b31e2b);
-    border-color: #ff6b81;
+    background: #ff4b4b;
+    border-color: #d43232;
     color: #ffffff;
-    box-shadow: 0 0 30px rgba(255, 71, 87, 0.45);
 }
 
 .modal-type-warning .opus-modal-icon-wrap {
-    background: linear-gradient(135deg, #ff9600, #c76f00);
-    border-color: #ffb142;
+    background: #1cb0f6;
+    border-color: #148bc4;
     color: #ffffff;
-    box-shadow: 0 0 30px rgba(255, 150, 0, 0.45);
 }
 
 .modal-type-info .opus-modal-icon-wrap {
-    background: linear-gradient(135deg, #1cb0f6, #097ab2);
-    border-color: #53c8ff;
+    background: #1cb0f6;
+    border-color: #148bc4;
     color: #ffffff;
-    box-shadow: 0 0 30px rgba(28, 176, 246, 0.45);
 }
 
 /* Botão Fechar no canto do Modal */
@@ -312,19 +291,19 @@
 
 /* Textos do Modal */
 .opus-modal-title {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.35rem;
-    font-weight: 800;
-    letter-spacing: 1px;
-    margin-bottom: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.45rem;
+    font-weight: 900;
+    margin-bottom: 10px;
     color: #ffffff;
 }
 
 .opus-modal-message {
-    font-size: 0.95rem;
-    line-height: 1.6;
-    color: #b8bdd4;
-    margin-bottom: 22px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.5;
+    color: #b8c7cf;
+    margin-bottom: 24px;
     word-break: break-word;
 }
 
@@ -372,7 +351,7 @@
     background: transparent;
     border: none;
     color: #1cb0f6;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Nunito', sans-serif;
     font-size: 0.85rem;
     outline: none;
 }
@@ -387,14 +366,14 @@
     font-weight: 600;
     cursor: pointer;
     transition: background 0.2s, transform 0.1s;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Nunito', sans-serif;
 }
 
 .opus-modal-copy-btn:hover {
     background: #009ce3;
 }
 
-/* Ações / Botões do Modal */
+/* Ações / Botões do Modal estilo 3D Duolingo */
 .opus-modal-actions {
     display: flex;
     gap: 12px;
@@ -404,74 +383,135 @@
 .opus-modal-btn {
     flex: 1;
     padding: 14px 20px;
-    border-radius: 12px;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 0.92rem;
-    font-weight: 700;
-    letter-spacing: 0.8px;
+    border-radius: 16px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 900;
     cursor: pointer;
-    transition: all 0.2s;
-    border: none;
+    transition: transform 0.1s ease, border-bottom-width 0.1s ease;
+    border: 2px solid transparent;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
+    text-transform: uppercase;
+}
+
+.opus-modal-btn:hover {
+    filter: brightness(1.06);
+}
+
+.opus-modal-btn:active {
+    transform: translateY(3px);
 }
 
 .opus-modal-btn-primary {
     background: #1cb0f6;
     color: #ffffff;
-    border-bottom: 4px solid #148bc4;
-    box-shadow: 0 4px 15px rgba(28, 176, 246, 0.35);
-}
-
-.opus-modal-btn-primary:hover {
-    background: #25b8fc;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(28, 176, 246, 0.5);
+    border-color: #148bc4;
+    border-bottom: 5px solid #148bc4;
 }
 
 .opus-modal-btn-primary:active {
-    transform: translateY(2px);
     border-bottom-width: 2px;
 }
 
 .modal-type-error .opus-modal-btn-primary {
-    background: #ff4757;
-    border-bottom-color: #c42635;
-    box-shadow: 0 4px 15px rgba(255, 71, 87, 0.35);
-}
-.modal-type-error .opus-modal-btn-primary:hover {
-    background: #ff5e6c;
+    background: #ff4b4b;
+    border-color: #d43232;
+    border-bottom: 5px solid #d43232;
 }
 
 .modal-type-success .opus-modal-btn-primary {
-    background: #00e676;
-    color: #0b2414;
-    border-bottom-color: #00b359;
-    box-shadow: 0 4px 15px rgba(0, 230, 118, 0.35);
-}
-.modal-type-success .opus-modal-btn-primary:hover {
-    background: #1aff85;
+    background: #58cc02;
+    border-color: #46a302;
+    border-bottom: 5px solid #46a302;
 }
 
 .modal-type-warning .opus-modal-btn-primary {
-    background: #ff9600;
-    border-bottom-color: #c76f00;
-    box-shadow: 0 4px 15px rgba(255, 150, 0, 0.35);
-}
-.modal-type-warning .opus-modal-btn-primary:hover {
-    background: #ffa726;
+    background: #1cb0f6;
+    border-color: #148bc4;
+    border-bottom: 5px solid #148bc4;
 }
 
 .opus-modal-btn-secondary {
-    background: rgba(255, 255, 255, 0.08);
-    color: #c5cae0;
-    border-bottom: 4px solid rgba(255, 255, 255, 0.05);
+    background: #2b3e48;
+    color: #d4e0e7;
+    border-color: #1f2e37;
+    border-bottom: 5px solid #19252c;
 }
 
-.opus-modal-btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.14);
-    color: #ffffff;
-    transform: translateY(-2px);
+.opus-modal-btn-secondary:active {
+    border-bottom-width: 2px;
+}
+
+/* ==========================================================================
+   MODO CLARO PARA NOTIFICAÇÕES E MODAIS (DUOLINGO CARTOON LIGHT)
+   ========================================================================== */
+body.light-mode .opus-modal-overlay,
+html.light-mode .opus-modal-overlay {
+    background: rgba(0, 0, 0, 0.45);
+}
+
+body.light-mode .opus-modal-box,
+html.light-mode .opus-modal-box {
+    background: #ffffff;
+    border-color: #e5e5e5;
+    border-bottom-color: #cecece;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+    color: #4b4b4b;
+}
+
+body.light-mode .opus-modal-title,
+html.light-mode .opus-modal-title {
+    color: #3c3c3c;
+}
+
+body.light-mode .opus-modal-message,
+html.light-mode .opus-modal-message {
+    color: #777777;
+}
+
+body.light-mode .opus-modal-close-btn,
+html.light-mode .opus-modal-close-btn {
+    background: #f0f0f0;
+    color: #777777;
+}
+
+body.light-mode .opus-modal-close-btn:hover,
+html.light-mode .opus-modal-close-btn:hover {
+    background: #e5e5e5;
+    color: #333333;
+}
+
+body.light-mode .opus-modal-btn-secondary,
+html.light-mode .opus-modal-btn-secondary {
+    background: #f7f7f7;
+    color: #555555;
+    border-color: #e5e5e5;
+    border-bottom: 5px solid #d5d5d5;
+}
+
+body.light-mode .opus-toast,
+html.light-mode .opus-toast {
+    background: #ffffff;
+    border: 2px solid #e5e5e5;
+    border-bottom: 5px solid #cecece;
+    color: #4b4b4b;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .opus-toast-title,
+html.light-mode .opus-toast-title {
+    color: #3c3c3c;
+}
+
+body.light-mode .opus-toast-message,
+html.light-mode .opus-toast-message {
+    color: #777777;
+}
+
+body.light-mode .opus-toast-close,
+html.light-mode .opus-toast-close {
+    color: #999999;
 }

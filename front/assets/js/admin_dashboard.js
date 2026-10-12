@@ -118,14 +118,24 @@
         });
     }
 
+    let ultimasEstatisticas = null;
+
     // ── Renderização dos Gráficos (Chart.js) ──────────────────────────────────
     function renderizarGraficos(data) {
+        if (!data) return;
+        ultimasEstatisticas = data;
+
         Object.values(chartInstances).forEach(inst => {
             if (inst && typeof inst.destroy === 'function') inst.destroy();
         });
 
-        Chart.defaults.color = '#8e95a1';
-        Chart.defaults.font.family = "'Poppins', sans-serif";
+        const isLight = document.body.classList.contains('light-mode');
+        Chart.defaults.color = isLight ? '#4b4b4b' : '#8e9fa8';
+        Chart.defaults.font.family = "'Nunito', sans-serif";
+        Chart.defaults.font.weight = '700';
+
+        const gridColor = isLight ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.06)';
+        const chartBorderColor = isLight ? '#ffffff' : '#18272f';
 
         // 1. GRÁFICO DE LIGAS (DONUT)
         const ctxLigas = document.getElementById('chartLigas')?.getContext('2d');
@@ -138,16 +148,16 @@
                     datasets: [{
                         data: divKeys.map(k => data.divisoes[k].quantidade),
                         backgroundColor: divKeys.map(k => data.divisoes[k].corClara),
-                        borderWidth: 2,
-                        borderColor: '#12141c',
-                        hoverOffset: 8
+                        borderWidth: 3,
+                        borderColor: chartBorderColor,
+                        hoverOffset: 6
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'bottom', labels: { boxWidth: 12, padding: 14, font: { weight: '600' } } }
+                        legend: { position: 'bottom', labels: { boxWidth: 12, padding: 14, font: { weight: '700', family: "'Nunito', sans-serif" } } }
                     },
                     cutout: '68%'
                 }
@@ -178,7 +188,7 @@
                         legend: { display: false }
                     },
                     scales: {
-                        y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' } },
+                        y: { beginAtZero: true, grid: { color: gridColor } },
                         x: { grid: { display: false } }
                     }
                 }
@@ -212,7 +222,7 @@
                         legend: { display: false }
                     },
                     scales: {
-                        x: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' } },
+                        x: { beginAtZero: true, grid: { color: gridColor } },
                         y: { grid: { display: false } }
                     }
                 }
@@ -752,6 +762,13 @@
 
         // Botão de Virada de Ligas
         document.getElementById('btn-virada-ligas')?.addEventListener('click', dispararViradaLigas);
+
+        // Atualizar gráficos quando o tema for alternado
+        document.getElementById('themeToggleBtn')?.addEventListener('click', () => {
+            setTimeout(() => {
+                if (ultimasEstatisticas) renderizarGraficos(ultimasEstatisticas);
+            }, 50);
+        });
 
         // Busca com Debounce
         document.getElementById('input-busca-email')?.addEventListener('input', () => {
