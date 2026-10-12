@@ -109,11 +109,28 @@ body, html {
     font-family: 'Nunito', sans-serif; 
     font-size: 1rem; 
     font-weight: 800; 
-    white-space: nowrap; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
     width: 100%; 
-    margin-bottom: 5px;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.podium-user-text {
+    max-width: 95px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.podium-country-badge {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
 }
 
 .podium-xp { 
@@ -225,6 +242,41 @@ body, html {
     font-family: 'Nunito', sans-serif; 
     font-weight: 800; 
     font-size: 1.15rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.row-user-text {
+    color: var(--text-main);
+}
+
+.user-country-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: var(--text-muted);
+}
+
+.country-name-label {
+    letter-spacing: 0.2px;
+}
+
+.ranking-flag {
+    width: 20px;
+    height: 15px;
+    border-radius: 3px;
+    object-fit: cover;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .row-xp { 

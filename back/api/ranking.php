@@ -11,13 +11,13 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 // 1. Busca as informações do usuário logado
-$stmt = $conn->prepare("SELECT nome, xp, trofeus, dificuldade, foto_perfil FROM usuarios WHERE id = ?");
+$stmt = $conn->prepare("SELECT nome, xp, trofeus, dificuldade, foto_perfil, pais, pais_codigo FROM usuarios WHERE id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $user_info = $stmt->get_result()->fetch_assoc();
 
-// 2. Busca TODOS os usuários ordenados pelo XP (AQUI FOI ADICIONADO O foto_perfil)
-$query = "SELECT id, nome, xp, foto_perfil FROM usuarios ORDER BY xp DESC, id ASC";
+// 2. Busca TODOS os usuários ordenados pelo XP
+$query = "SELECT id, nome, xp, foto_perfil, pais, pais_codigo FROM usuarios ORDER BY xp DESC, id ASC";
 $result = $conn->query($query);
 
 $ranking = [];
@@ -31,12 +31,13 @@ while ($row = $result->fetch_assoc()) {
         $minha_posicao = $pos;
     }
     
-    // Monta o array de cada usuário com a foto incluída
     $ranking[] = [
         "posicao" => $pos,
         "nome" => $row['nome'],
         "xp" => $row['xp'],
-        "foto_perfil" => $row['foto_perfil'], // Agora a foto vai para o JavaScript!
+        "foto_perfil" => $row['foto_perfil'],
+        "pais" => !empty($row['pais']) ? $row['pais'] : 'Brasil',
+        "pais_codigo" => !empty($row['pais_codigo']) ? strtolower($row['pais_codigo']) : 'br',
         "is_me" => $is_me
     ];
     

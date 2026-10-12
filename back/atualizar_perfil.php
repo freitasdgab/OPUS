@@ -19,6 +19,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $avatar = !empty($_POST['avatar_selecionado']) ? $_POST['avatar_selecionado'] : $dados['foto_perfil'];
     $cor = !empty($_POST['cor_selecionada']) ? $_POST['cor_selecionada'] : $dados['cor_fundo'];
     
+    $paises_map = [
+        'br' => 'Brasil',
+        'de' => 'Alemanha',
+        'us' => 'Estados Unidos',
+        'pt' => 'Portugal',
+        'ar' => 'Argentina',
+        'ca' => 'Canadá',
+        'es' => 'Espanha',
+        'fr' => 'França',
+        'it' => 'Itália',
+        'jp' => 'Japão',
+        'gb' => 'Reino Unido',
+        'mx' => 'México',
+        'cl' => 'Chile',
+        'co' => 'Colômbia',
+        'uy' => 'Uruguai'
+    ];
+    $pais_codigo = !empty($_POST['pais_codigo']) ? strtolower(trim($_POST['pais_codigo'])) : (!empty($dados['pais_codigo']) ? $dados['pais_codigo'] : 'br');
+    $pais = $paises_map[$pais_codigo] ?? ($dados['pais'] ?? 'Brasil');
+    
     $action = $_POST['action'] ?? '';
     
     $link_github = $dados['link_github'];
@@ -51,13 +71,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $projeto_url_3 = $_POST['projeto_url_3'] ?? '';
     }
 
-    $stmt = $conn->prepare("UPDATE usuarios SET foto_perfil = ?, cor_fundo = ?, link_github = ?, link_instagram = ?, link_facebook = ?, link_youtube = ?, link_linkedin = ?, link_email = ?, projeto_titulo_1 = ?, projeto_url_1 = ?, projeto_titulo_2 = ?, projeto_url_2 = ?, projeto_titulo_3 = ?, projeto_url_3 = ? WHERE id = ?");
+    $stmt = $conn->prepare("UPDATE usuarios SET foto_perfil = ?, cor_fundo = ?, pais = ?, pais_codigo = ?, link_github = ?, link_instagram = ?, link_facebook = ?, link_youtube = ?, link_linkedin = ?, link_email = ?, projeto_titulo_1 = ?, projeto_url_1 = ?, projeto_titulo_2 = ?, projeto_url_2 = ?, projeto_titulo_3 = ?, projeto_url_3 = ? WHERE id = ?");
     
-    $stmt->bind_param("ssssssssssssssi", $avatar, $cor, $link_github, $link_instagram, $link_facebook, $link_youtube, $link_linkedin, $link_email, $projeto_titulo_1, $projeto_url_1, $projeto_titulo_2, $projeto_url_2, $projeto_titulo_3, $projeto_url_3, $user_id);
+    $stmt->bind_param("ssssssssssssssssi", $avatar, $cor, $pais, $pais_codigo, $link_github, $link_instagram, $link_facebook, $link_youtube, $link_linkedin, $link_email, $projeto_titulo_1, $projeto_url_1, $projeto_titulo_2, $projeto_url_2, $projeto_titulo_3, $projeto_url_3, $user_id);
     
     if ($stmt->execute()) {
         $_SESSION['foto_perfil'] = $avatar;
         $_SESSION['cor_fundo'] = $cor;
+        $_SESSION['pais'] = $pais;
+        $_SESSION['pais_codigo'] = $pais_codigo;
 
         if (isset($_SERVER['HTTP_REFERER']) && !empty($_SERVER['HTTP_REFERER'])) {
             header("Location: " . $_SERVER['HTTP_REFERER']); 

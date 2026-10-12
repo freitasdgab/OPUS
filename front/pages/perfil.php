@@ -15,6 +15,8 @@ $dados_user =$stmt_user->get_result()->fetch_assoc();
 
 // Personalização de Avatar e Fundo (Corrigido para os nomes reais)
 $foto_perfil = !empty($dados_user['foto_perfil']) ? $dados_user['foto_perfil'] : '../assets/img/opi pulando feliz.png';$cor_fundo = !empty($dados_user['cor_fundo']) ?$dados_user['cor_fundo'] : '#1cb0f6';
+$pais_usuario = !empty($dados_user['pais']) ? $dados_user['pais'] : 'Brasil';
+$pais_codigo_usuario = !empty($dados_user['pais_codigo']) ? strtolower($dados_user['pais_codigo']) : 'br';
 
 // Dados do Usuário
 $nome_principal = !empty($dados_user['nome']) ?$dados_user['nome'] : 'Usuário';
@@ -95,8 +97,13 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
         <a href="mailto:<?php echo htmlspecialchars($dados_user['link_email']); ?>" style="color: #fff; font-size: 1.5rem; transition: 0.2s; margin-left: 10px;" onmouseover="this.style.color='#fbbc05'" onmouseout="this.style.color='#fff'" title="Email Público"><i class="fa-solid fa-envelope"></i></a>
     <?php endif; ?>
                         </div>
-                        <div class="user-details">
+                        <div class="user-details" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                             <span class="email-text"><?php echo htmlspecialchars($email); ?></span>
+                            <div onclick="openProfileModal()" style="display: inline-flex; align-items: center; gap: 6px; background: #191924; border: 1px solid #2e2e42; border-radius: 20px; padding: 3px 10px; font-weight: 700; font-size: 0.85rem; color: #fff; cursor: pointer; transition: 0.2s;" onmouseover="this.style.borderColor='#1cb0f6'" onmouseout="this.style.borderColor='#2e2e42'" title="Alterar país de origem">
+                                <img src="https://flagcdn.com/24x18/<?php echo htmlspecialchars($pais_codigo_usuario); ?>.png" srcset="https://flagcdn.com/48x36/<?php echo htmlspecialchars($pais_codigo_usuario); ?>.png 2x" width="18" height="13" alt="<?php echo htmlspecialchars($pais_usuario); ?>" style="border-radius: 2px;">
+                                <span><?php echo htmlspecialchars($pais_usuario); ?></span>
+                                <i class="fa-solid fa-pen" style="font-size: 0.7rem; color: #7a7a9d; margin-left: 2px;"></i>
+                            </div>
                         </div>
                         <div class="member-since">
                             <?php echo strtolower($membro_desde); ?>
@@ -247,6 +254,27 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                     <div class="color-option" style="background-color: #78c800;" data-color="#78c800"></div>
                     <div class="color-option" style="background-color: #ce82ff;" data-color="#ce82ff"></div>
                     <div class="color-option" style="background-color: #ff9600;" data-color="#ff9600"></div>
+                </div>
+
+                <div class="modal-subtitle">País de Origem</div>
+                <div style="margin-bottom: 20px;">
+                    <select name="pais_codigo" id="select-pais" style="width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; outline: none;">
+                        <option value="br" <?php echo ($pais_codigo_usuario === 'br') ? 'selected' : ''; ?>>🇧🇷 Brasil</option>
+                        <option value="de" <?php echo ($pais_codigo_usuario === 'de') ? 'selected' : ''; ?>>🇩🇪 Alemanha</option>
+                        <option value="us" <?php echo ($pais_codigo_usuario === 'us') ? 'selected' : ''; ?>>🇺🇸 Estados Unidos</option>
+                        <option value="pt" <?php echo ($pais_codigo_usuario === 'pt') ? 'selected' : ''; ?>>🇵🇹 Portugal</option>
+                        <option value="ar" <?php echo ($pais_codigo_usuario === 'ar') ? 'selected' : ''; ?>>🇦🇷 Argentina</option>
+                        <option value="ca" <?php echo ($pais_codigo_usuario === 'ca') ? 'selected' : ''; ?>>🇨🇦 Canadá</option>
+                        <option value="es" <?php echo ($pais_codigo_usuario === 'es') ? 'selected' : ''; ?>>🇪🇸 Espanha</option>
+                        <option value="fr" <?php echo ($pais_codigo_usuario === 'fr') ? 'selected' : ''; ?>>🇫🇷 França</option>
+                        <option value="it" <?php echo ($pais_codigo_usuario === 'it') ? 'selected' : ''; ?>>🇮🇹 Itália</option>
+                        <option value="jp" <?php echo ($pais_codigo_usuario === 'jp') ? 'selected' : ''; ?>>🇯🇵 Japão</option>
+                        <option value="gb" <?php echo ($pais_codigo_usuario === 'gb') ? 'selected' : ''; ?>>🇬🇧 Reino Unido</option>
+                        <option value="mx" <?php echo ($pais_codigo_usuario === 'mx') ? 'selected' : ''; ?>>🇲🇽 México</option>
+                        <option value="cl" <?php echo ($pais_codigo_usuario === 'cl') ? 'selected' : ''; ?>>🇨🇱 Chile</option>
+                        <option value="co" <?php echo ($pais_codigo_usuario === 'co') ? 'selected' : ''; ?>>🇨🇴 Colômbia</option>
+                        <option value="uy" <?php echo ($pais_codigo_usuario === 'uy') ? 'selected' : ''; ?>>🇺🇾 Uruguai</option>
+                    </select>
                 </div>
 
                 <div class="modal-actions">
