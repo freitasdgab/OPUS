@@ -755,7 +755,7 @@ $nomes_unidades = [
                             </div>
                         </div>
                         <div class="widget-footer-info">
-                            <span><i class="fa-solid fa-bolt" style="color: #ffc800;"></i> <strong><?php echo number_format($xp_semana_usuario, 0, ',', '.'); ?> XP</strong> neste mês</span>
+                            <span><i class="fa-solid fa-bolt" style="color: #ffc800;"></i> <strong><?php echo number_format($xp_semana_usuario, 0, ',', '.'); ?> XP</strong> nesta semana</span>
                             <span style="color: #8e95a1; font-size: 0.8rem;">Divisão <?php echo htmlspecialchars($cfg_liga['nome']); ?></span>
                         </div>
                     </div>

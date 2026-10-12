@@ -39,7 +39,7 @@ if (!isset($_SESSION['user_id'])) {
                         </div>
                     </div>
                     <div class="liga-timer">
-                        <div class="label">Vira o mês em</div>
+                        <div class="label">Vira a semana em</div>
                         <div id="timer-valor" class="valor">--:--:--</div>
                     </div>
                 </div>
@@ -47,7 +47,7 @@ if (!isset($_SESSION['user_id'])) {
                 <div class="liga-legenda">
                     <span><i class="dot sobe"></i> Zona de subida</span>
                     <span><i class="dot neutro"></i> Permanece</span>
-                    <span><i class="dot desce"></i> Zona de rebaixamento</span>
+                    <span id="legenda-desce"><i class="dot desce"></i> Zona de rebaixamento</span>
                 </div>
 
                 <div id="liga-list" class="liga-list"></div>

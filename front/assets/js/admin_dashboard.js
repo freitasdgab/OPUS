@@ -372,14 +372,14 @@
         if (typeof window.opusAlerta === 'function') {
             const confirmou = await window.opusAlerta({
                 tipo: 'warning',
-                titulo: 'Processar Virada Mensal',
-                mensagem: 'Deseja realmente processar a Virada Mensal de Ligas agora?<br><br>As subidas e descidas de divisão serão recalculadas e aplicadas imediatamente.',
+                titulo: 'Processar Virada Semanal',
+                mensagem: 'Deseja realmente processar a Virada Semanal de Ligas agora?<br><br>As subidas, rebaixamentos e permanências serão calculados e aplicados imediatamente com base nos rankings dos grupos.',
                 botaoTexto: 'SIM, PROCESSAR AGORA',
                 cancelTexto: 'CANCELAR'
             });
             if (!confirmou) return;
         } else {
-            if (!confirm("Deseja realmente processar a Virada Mensal de Ligas agora?\n\nAs subidas e descidas de divisão serão calculadas e aplicadas imediatamente.")) {
+            if (!confirm("Deseja realmente processar a Virada Semanal de Ligas agora?\n\nAs subidas e descidas de divisão serão calculadas e aplicadas imediatamente.")) {
                 return;
             }
         }
@@ -411,6 +411,35 @@
         } finally {
             btn.disabled = false;
             btn.innerHTML = '<i class="fa-solid fa-bolt"></i> Atualizar Virada de Liga';
+        }
+    }
+
+    // ── Alterar Divisão do Aluno Manualmente ──────────────────────────────────
+    async function alterarDivisaoAluno(userId, novaDivisao) {
+        if (!userId || !novaDivisao) return;
+        try {
+            const formData = new FormData();
+            formData.append('action', 'change_user_division');
+            formData.append('user_id', userId);
+            formData.append('divisao', novaDivisao);
+
+            const res = await fetch('../../back/api/admin.php', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+
+            if (data.sucesso) {
+                showToast(data.mensagem, 'success');
+                carregarEstatisticas();
+                carregarUsuarios(currentPage);
+                abrirDetalhesAluno(userId);
+            } else {
+                showToast(data.mensagem || 'Erro ao alterar divisão.', 'error');
+            }
+        } catch (err) {
+            console.error("Erro ao alterar divisão:", err);
+            showToast('Falha na comunicação ao alterar divisão.', 'error');
         }
     }
 
@@ -604,8 +633,17 @@
                     <!-- DIVISÃO DE LIGA -->
                     <div class="pstat-card stat-league" style="border-left: 3px solid ${divInfo.corClara};">
                         <div class="pstat-icon" style="color: ${divInfo.corClara};"><i class="fa-solid fa-shield-halved"></i></div>
-                        <div class="pstat-data">
-                            <div class="pstat-val" style="color: ${divInfo.corClara};">${divInfo.nome}</div>
+                        <div class="pstat-data" style="width: 100%;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                                <div class="pstat-val" style="color: ${divInfo.corClara};">${divInfo.nome}</div>
+                                <select onchange="alterarDivisaoAluno(${u.id}, this.value)" title="Trocar liga do aluno a qualquer momento" style="background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 3px 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; outline: none;">
+                                    <option value="bronze" style="background: #1e1e28; color: #fff;" ${(u.divisao || 'bronze') === 'bronze' ? 'selected' : ''}>Bronze</option>
+                                    <option value="prata" style="background: #1e1e28; color: #fff;" ${u.divisao === 'prata' ? 'selected' : ''}>Prata</option>
+                                    <option value="ouro" style="background: #1e1e28; color: #fff;" ${u.divisao === 'ouro' ? 'selected' : ''}>Ouro</option>
+                                    <option value="diamante" style="background: #1e1e28; color: #fff;" ${u.divisao === 'diamante' ? 'selected' : ''}>Diamante</option>
+                                    <option value="mestre" style="background: #1e1e28; color: #fff;" ${u.divisao === 'mestre' ? 'selected' : ''}>Mestre</option>
+                                </select>
+                            </div>
                             <div class="pstat-lbl">${Number(u.xp_semana || 0).toLocaleString('pt-BR')} XP nesta semana</div>
                         </div>
                     </div>
@@ -703,6 +741,7 @@
     // ── Exportações Globais ───────────────────────────────────────────────────
     window.abrirDetalhesAluno = abrirDetalhesAluno;
     window.fecharModalAluno = fecharModalAluno;
+    window.alterarDivisaoAluno = alterarDivisaoAluno;
     window.abrirModalLogoutAdmin = abrirModalLogoutAdmin;
     window.fecharModalLogoutAdmin = fecharModalLogoutAdmin;
 

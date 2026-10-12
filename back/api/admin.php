@@ -192,11 +192,19 @@ try {
 
             $where_sql = implode(" AND ", $where);
 
-            // Contagem total para paginação
+            // Contagem total para paginação (utiliza a última liga de cada usuário)
             $stmt_count = $conn->prepare("
                 SELECT COUNT(*) AS total
                 FROM usuarios u
-                LEFT JOIN ligas_usuario l ON l.usuario_id = u.id
+                LEFT JOIN (
+                    SELECT lu.* 
+                    FROM ligas_usuario lu
+                    INNER JOIN (
+                        SELECT usuario_id, MAX(id) as max_id 
+                        FROM ligas_usuario 
+                        GROUP BY usuario_id
+                    ) latest ON lu.id = latest.max_id
+                ) l ON l.usuario_id = u.id
                 WHERE $where_sql
             ");
             if (!empty($params)) {
@@ -211,9 +219,19 @@ try {
                 SELECT u.id, u.nome, u.email, u.foto_perfil,
                        u.dias_fogo, u.vidas, u.vidas_proxima_em, u.ultima_atividade,
                        u.criado_em,
-                       COALESCE(l.divisao, 'bronze') AS divisao
+                       COALESCE(l.divisao, 'bronze') AS divisao,
+                       l.grupo_id,
+                       COALESCE(l.xp_semana, 0) AS xp_semana
                 FROM usuarios u
-                LEFT JOIN ligas_usuario l ON l.usuario_id = u.id
+                LEFT JOIN (
+                    SELECT lu.* 
+                    FROM ligas_usuario lu
+                    INNER JOIN (
+                        SELECT usuario_id, MAX(id) as max_id 
+                        FROM ligas_usuario 
+                        GROUP BY usuario_id
+                    ) latest ON lu.id = latest.max_id
+                ) l ON l.usuario_id = u.id
                 WHERE $where_sql
                 ORDER BY u.id $order_dir
                 LIMIT ?, ?
@@ -369,14 +387,44 @@ try {
                 exit();
             }
 
-            // Executa a lógica de virada semanal
-            liga_processar_virada_semana($conn);
+            // Executa a lógica de virada semanal (domingo a domingo)
+            $resVirada = liga_processar_virada_semana($conn);
 
             echo json_encode([
-                'sucesso'   => true,
-                'mensagem'  => 'Virada mensal de ligas processada com sucesso! Os grupos foram atualizados e o histórico gravado.',
+                'sucesso'      => true,
+                'mensagem'     => "Virada semanal de ligas processada com sucesso! {$resVirada['processados']} alunos processados ({$resVirada['subiram']} subiram, {$resVirada['mantiveram']} mantiveram, {$resVirada['desceram']} desceram).",
+                'detalhes'     => $resVirada,
                 'executado_em' => date('d/m/Y H:i:s'),
             ]);
+            break;
+
+        // ------------------------------------------------
+        // ALTERAR DIVISÃO DO USUÁRIO MANUALMENTE (PELO ADMIN)
+        // ------------------------------------------------
+        case 'change_user_division':
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                echo json_encode(['sucesso' => false, 'mensagem' => 'Método inválido. Use POST.']);
+                exit();
+            }
+
+            $target_id = (int) ($_POST['user_id'] ?? 0);
+            $nova_divisao = strtolower(trim($_POST['divisao'] ?? ''));
+
+            if ($target_id <= 0 || !in_array($nova_divisao, ['bronze', 'prata', 'ouro', 'diamante', 'mestre'])) {
+                echo json_encode(['sucesso' => false, 'mensagem' => 'Dados inválidos para alteração de divisão.']);
+                exit();
+            }
+
+            $ok = liga_alterar_divisao_usuario($conn, $target_id, $nova_divisao);
+            if ($ok) {
+                echo json_encode([
+                    'sucesso'      => true,
+                    'mensagem'     => "Divisão do aluno alterada para " . ucfirst($nova_divisao) . " com sucesso!",
+                    'nova_divisao' => $nova_divisao
+                ]);
+            } else {
+                echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao atualizar divisão do aluno.']);
+            }
             break;
 
         default:

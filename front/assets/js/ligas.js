@@ -12,6 +12,12 @@ function formatarTempo(segundos) {
     return `${d}d ${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m`;
 }
 
+function obterBandeira(codigo, nome) {
+    const code = (codigo || 'br').toLowerCase();
+    const countryName = nome || 'Brasil';
+    return `<img src="https://flagcdn.com/24x18/${code}.png" srcset="https://flagcdn.com/48x36/${code}.png 2x" width="18" height="13" alt="${countryName}" title="${countryName}" class="ranking-flag" style="border-radius:2px; vertical-align:middle;">`;
+}
+
 function mostrarErro(msg) {
     document.getElementById('badge-nome').innerText = 'Erro ao carregar';
     document.getElementById('badge-sub').innerText = msg;
@@ -61,8 +67,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const nomeKey = data.divisao_nome.toLowerCase();
             const mainIconHtml = iconesPorLiga[nomeKey] || '<i class="fa-solid fa-shield-halved"></i>';
 
-            document.getElementById('badge-icon').innerHTML = mainIconHtml;
-            document.getElementById('badge-icon').style.background = data.divisao_cor;
+            const badgeElem = document.getElementById('badge-icon');
+            if (badgeElem) {
+                badgeElem.innerHTML = mainIconHtml;
+                badgeElem.style.background = data.divisao_cor;
+                badgeElem.setAttribute('data-divisao', nomeKey);
+                badgeElem.className = `liga-badge-icon liga-${nomeKey}`;
+            }
             document.getElementById('badge-nome').innerText = data.divisao_nome;
             document.getElementById('badge-sub').innerText =
                 `${data.minha_posicao}º lugar de ${data.tamanho_grupo} · ${data.meu_xp_semana} XP nesta semana`;
@@ -78,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let iconHTML = iconesPorLiga[nomeLiga.toLowerCase()] || '<i class="fa-solid fa-shield"></i>';
                 
                 if (index < ligaAtualIndex) {
+                    statusClass = 'completed';
                     iconHTML = '<i class="fa-solid fa-check"></i>';
                 } else if (index === ligaAtualIndex) {
                     statusClass = 'active';
@@ -87,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 
                 trackHTML += `
-                    <div class="league-node ${statusClass}">
+                    <div class="league-node ${statusClass}" data-league="${nomeLiga.toLowerCase()}">
                         <div class="league-node-icon">${iconHTML}</div>
                         <div class="league-node-name">${nomeLiga}</div>
                     </div>
@@ -96,28 +108,25 @@ document.addEventListener('DOMContentLoaded', () => {
             const trackContainer = document.getElementById('league-track');
             if (trackContainer) trackContainer.innerHTML = trackHTML;
 
-function obterBandeira(codigo, nome) {
-    const code = (codigo || 'br').toLowerCase();
-    const countryName = nome || 'Brasil';
-    return `<img src="https://flagcdn.com/24x18/${code}.png" srcset="https://flagcdn.com/48x36/${code}.png 2x" width="18" height="13" alt="${countryName}" title="${countryName}" class="ranking-flag" style="border-radius:2px; vertical-align:middle;">`;
-}
+            // Ajusta a legenda de rebaixamento caso a divisão não tenha queda (ex: Bronze ou Mestre)
+            const legendaDesce = document.getElementById('legenda-desce');
+            if (legendaDesce) {
+                legendaDesce.style.display = data.pode_descer ? 'inline-flex' : 'none';
+            }
 
             // ── Ranking ──
             let html = '';
             data.membros.forEach(m => {
-                let icon = '';
-                if (m.zona === 'sobe') icon = '<i class="fa-solid fa-arrow-up" style="color:#58cc02"></i>';
-                if (m.zona === 'desce') icon = '<i class="fa-solid fa-arrow-down" style="color:#ff4b4b"></i>';
-
-                // medalha para top 3
-                let medalha = '';
-                if (m.posicao === 1) medalha = '🥇';
-                else if (m.posicao === 2) medalha = '🥈';
-                else if (m.posicao === 3) medalha = '🥉';
+                let tooltipZona = 'Permanece na divisão';
+                if (m.zona === 'sobe') tooltipZona = 'Zona de subida (Sobe de divisão)';
+                else if (m.zona === 'desce') tooltipZona = 'Zona de rebaixamento (Cai de divisão)';
 
                 html += `
                     <div class="liga-row ${m.zona} ${m.is_me ? 'is-me' : ''}">
-                        <div class="row-pos">${medalha || m.posicao + 'º'}</div>
+                        <div class="row-pos">
+                            <span class="pos-num">${m.posicao}</span>
+                            <span class="pos-status-dot ${m.zona}" title="${tooltipZona}"></span>
+                        </div>
                         <div class="row-avatar-wrapper" onclick="abrirPerfilPublico(${m.id})" style="cursor:pointer;" title="Ver Perfil">
                             <img src="${obterFoto(m.foto_perfil)}" class="img-cover" alt="${m.nome}">
                         </div>
@@ -129,7 +138,6 @@ function obterBandeira(codigo, nome) {
                             </span>
                         </div>
                         <div class="row-xp">${m.xp} XP</div>
-                        <div class="row-icon">${icon}</div>
                         <button type="button" class="btn-user-action" onclick="abrirPerfilPublico(${m.id})" title="Ver Perfil">
                             <i class="fa-solid fa-plus"></i>
                             <span>Ver Perfil</span>

@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="../assets/css/light-mode.css">
+<link rel="stylesheet" href="../assets/css/light-mode.css?v=<?= time() ?>">
 <?php
 // Barra lateral única, incluída em todas as páginas internas.
 // Detecta a página atual automaticamente para marcar o link "active".
