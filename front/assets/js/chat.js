@@ -1,4 +1,4 @@
-﻿let currentChatUser = 0;
+let currentChatUser = 0;
 let chatRefreshInterval;
 
 function carregarConversas() {
@@ -346,22 +346,60 @@ function carregarNotificacoesChat() {
 
             let html = '';
             data.notificacoes.forEach(n => {
+                const foto = n.foto || '../assets/img/opi pulando feliz.png';
                 if (n.type === 'friend_request') {
+                    const nomeEsc = n.nome.replace(/'/g, "\\'");
                     html += `
                     <div class="notif-card" id="notif-req-${n.id}">
                         <div class="notif-card-header">
-                            <img src="${n.foto}" class="notif-card-avatar" alt="${n.nome}">
+                            <img src="${foto}" class="notif-card-avatar" alt="${n.nome}">
                             <div class="notif-card-info">
                                 <div class="notif-card-name">${n.nome}</div>
-                                <div class="notif-card-desc">Enviou um pedido de conexão</div>
+                                <div class="notif-card-desc"><i class="fa-solid fa-user-plus" style="color:#1cb0f6;"></i> Enviou uma solicitação para te seguir</div>
+                            </div>
+                        </div>
+                        <div class="notif-card-actions" id="actions-chat-req-${n.id}">
+                            <button class="btn-notif-action btn-notif-accept" onclick="abrirOpcaoAmigoChat(${n.id}, '${nomeEsc}', ${n.remetente_id})">
+                                <i class="fa-solid fa-check"></i> Aceitar
+                            </button>
+                            <button class="btn-notif-action btn-notif-decline" onclick="responderPedidoChat(${n.id}, 'recusado', '${nomeEsc}', ${n.remetente_id}, 0)">
+                                <i class="fa-solid fa-xmark"></i> Recusar
+                            </button>
+                        </div>
+                    </div>`;
+                } else if (n.type === 'friend_accepted') {
+                    html += `
+                    <div class="notif-card" style="border-left: 4px solid #58cc02;">
+                        <div class="notif-card-header">
+                            <img src="${foto}" class="notif-card-avatar" alt="${n.nome}">
+                            <div class="notif-card-info">
+                                <div class="notif-card-name">${n.nome}</div>
+                                <div class="notif-card-desc" style="color: #58cc02; font-weight: 700;">
+                                    <i class="fa-solid fa-circle-check"></i> Aceitou seu pedido e seguiu de volta! Vocês agora são amigos.
+                                </div>
                             </div>
                         </div>
                         <div class="notif-card-actions">
-                            <button class="btn-notif-action btn-notif-accept" onclick="responderPedidoChat(${n.id}, 'aceito', '${n.nome.replace(/'/g, "\\'")}', ${n.remetente_id})">
-                                <i class="fa-solid fa-check"></i> Aceitar
+                            <button class="btn-notif-action btn-notif-accept" onclick="abrirChatEFecharNotif(${n.amigo_id}, ${n.id})">
+                                <i class="fa-solid fa-comments"></i> Mandar Mensagem
                             </button>
-                            <button class="btn-notif-action btn-notif-decline" onclick="responderPedidoChat(${n.id}, 'recusado', '${n.nome.replace(/'/g, "\\'")}')">
-                                <i class="fa-solid fa-xmark"></i> Recusar
+                        </div>
+                    </div>`;
+                } else if (n.type === 'follow_accepted') {
+                    html += `
+                    <div class="notif-card" style="border-left: 4px solid #1cb0f6;">
+                        <div class="notif-card-header">
+                            <img src="${foto}" class="notif-card-avatar" alt="${n.nome}">
+                            <div class="notif-card-info">
+                                <div class="notif-card-name">${n.nome}</div>
+                                <div class="notif-card-desc" style="color: #1cb0f6; font-weight: 700;">
+                                    <i class="fa-solid fa-check"></i> Aceitou sua solicitação para seguir.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="notif-card-actions">
+                            <button class="btn-notif-action" style="background:#3c3c52; color:#fff;" onclick="dismissAcceptedTopbar(${n.id}); carregarNotificacoesChat();">
+                                <i class="fa-solid fa-check"></i> Ciente
                             </button>
                         </div>
                     </div>`;
@@ -369,7 +407,7 @@ function carregarNotificacoesChat() {
                     html += `
                     <div class="notif-card" style="cursor: pointer;" onclick="abrirChat(${n.remetente_id}); alternarAbaChat('conversas');">
                         <div class="notif-card-header">
-                            <img src="${n.foto}" class="notif-card-avatar" alt="${n.nome}">
+                            <img src="${foto}" class="notif-card-avatar" alt="${n.nome}">
                             <div class="notif-card-info">
                                 <div class="notif-card-name">${n.nome}</div>
                                 <div class="notif-card-desc"><i class="fa-solid fa-message" style="color:#1cb0f6;"></i> Enviou <strong>${n.qtd}</strong> nova(s) mensagem(ns)</div>
@@ -384,11 +422,46 @@ function carregarNotificacoesChat() {
         .catch(() => {});
 }
 
-function responderPedidoChat(id, response, nome = '', remetenteId = null) {
+function abrirOpcaoAmigoChat(id, nome, remetenteId) {
+    const actBox = document.getElementById(`actions-chat-req-${id}`);
+    if (!actBox) return;
+    const nomeEsc = nome.replace(/'/g, "\\'");
+    actBox.innerHTML = `
+        <div class="notif-ask-box" style="width: 100%;">
+            <div class="notif-ask-title"><i class="fa-solid fa-user-group"></i> Quer ser amigo?</div>
+            <div class="notif-ask-sub">Siga <strong>${nome}</strong> de volta para se tornarem amigos e liberarem mensagens!</div>
+            <div class="notif-card-actions" style="margin-top: 8px;">
+                <button class="btn-notif-action btn-notif-accept" onclick="responderPedidoChat(${id}, 'aceito', '${nomeEsc}', ${remetenteId}, 1)">
+                    <i class="fa-solid fa-check"></i> Sim, ser amigos
+                </button>
+                <button class="btn-notif-action" style="background: #3c3c52; color: #fff;" onclick="responderPedidoChat(${id}, 'aceito', '${nomeEsc}', ${remetenteId}, 0)">
+                    Apenas aceitar
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function abrirChatEFecharNotif(amigoId, notifId) {
+    if (notifId) {
+        const fd = new FormData();
+        fd.append('action', 'dismiss_accepted');
+        fd.append('id', notifId);
+        fetch('../../back/api/notificacoes.php', { method: 'POST', body: fd }).catch(() => {});
+    }
+    abrirChat(amigoId);
+    alternarAbaChat('conversas');
+    if (typeof window.fetchNotificacoesBadge === 'function') {
+        window.fetchNotificacoesBadge();
+    }
+}
+
+function responderPedidoChat(id, response, nome = '', remetenteId = null, seguirDeVolta = 1) {
     const fd = new FormData();
     fd.append('action', 'respond_request');
     fd.append('id', id);
     fd.append('response', response);
+    fd.append('seguir_de_volta', seguirDeVolta);
 
     fetch('../../back/api/notificacoes.php', { method: 'POST', body: fd })
         .then(r => r.json())
@@ -396,9 +469,13 @@ function responderPedidoChat(id, response, nome = '', remetenteId = null) {
             if (data.success) {
                 if (typeof window.opusToast === 'function') {
                     if (response === 'aceito') {
-                        window.opusToast(`Pedido de ${nome} aceito! Vocês agora são conexões.`, 'success');
+                        if (seguirDeVolta === 1) {
+                            window.opusToast(`Você e ${nome} agora são amigos!`, 'success');
+                        } else {
+                            window.opusToast(`${nome} agora está te seguindo.`, 'info');
+                        }
                     } else {
-                        window.opusToast(`Pedido de ${nome} recusado.`, 'info');
+                        window.opusToast(`Solicitação de ${nome} recusada.`, 'info');
                     }
                 }
                 carregarNotificacoesChat();
@@ -407,7 +484,7 @@ function responderPedidoChat(id, response, nome = '', remetenteId = null) {
                     window.fetchNotificacoesBadge();
                 }
 
-                if (response === 'aceito' && remetenteId) {
+                if (response === 'aceito' && seguirDeVolta === 1 && remetenteId) {
                     abrirChat(remetenteId);
                     alternarAbaChat('conversas');
                 }

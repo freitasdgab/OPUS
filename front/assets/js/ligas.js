@@ -96,6 +96,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const trackContainer = document.getElementById('league-track');
             if (trackContainer) trackContainer.innerHTML = trackHTML;
 
+function obterBandeira(codigo, nome) {
+    const code = (codigo || 'br').toLowerCase();
+    const countryName = nome || 'Brasil';
+    return `<img src="https://flagcdn.com/24x18/${code}.png" srcset="https://flagcdn.com/48x36/${code}.png 2x" width="18" height="13" alt="${countryName}" title="${countryName}" class="ranking-flag" style="border-radius:2px; vertical-align:middle;">`;
+}
+
             // ── Ranking ──
             let html = '';
             data.membros.forEach(m => {
@@ -112,12 +118,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 html += `
                     <div class="liga-row ${m.zona} ${m.is_me ? 'is-me' : ''}">
                         <div class="row-pos">${medalha || m.posicao + 'º'}</div>
-                        <div class="row-avatar-wrapper">
+                        <div class="row-avatar-wrapper" onclick="abrirPerfilPublico(${m.id})" style="cursor:pointer;" title="Ver Perfil">
                             <img src="${obterFoto(m.foto_perfil)}" class="img-cover" alt="${m.nome}">
                         </div>
-                        <div class="row-name">${m.nome}${m.is_me ? ' <span style="color:#1cb0f6;font-size:0.78rem">(Você)</span>' : ''}</div>
+                        <div class="row-name">
+                            <span class="row-user-text">${m.nome}${m.is_me ? ' <span style="color:#1cb0f6;font-size:0.78rem">(Você)</span>' : ''}</span>
+                            <span class="user-country-tag" title="${m.pais || 'Brasil'}">
+                                ${obterBandeira(m.pais_codigo, m.pais)}
+                                <span class="country-name-label">${m.pais || 'Brasil'}</span>
+                            </span>
+                        </div>
                         <div class="row-xp">${m.xp} XP</div>
                         <div class="row-icon">${icon}</div>
+                        <button type="button" class="btn-user-action" onclick="abrirPerfilPublico(${m.id})" title="Ver Perfil">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Ver Perfil</span>
+                        </button>
                     </div>`;
             });
             document.getElementById('liga-list').innerHTML = html;

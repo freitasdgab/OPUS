@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // Garante que a conexão sempre exista, independentemente de quem chamou a topbar
 require_once __DIR__ . '/conexao.php';
 require_once __DIR__ . '/jogador_status.php';
@@ -53,7 +53,7 @@ $titulo_vidas = $proxima_vida_texto !== '' ? $proxima_vida_texto : ($vidas_top .
 
     <div class="topbar-stats">
         <!-- CHAT & NOTIFICAÇÕES -->
-        <div class="topbar-stat stat-chat" id="btn-chat" title="Chat e Notificações" onclick="window.location.href='chat.php'">
+        <div class="topbar-stat stat-chat" id="btn-chat" title="Chat e Notificações" onclick="handleChatClick(event)">
             <i class="fa-solid fa-comments"></i>
             <span class="badge-notif" id="badge-notif" style="display: none;">0</span>
         </div>

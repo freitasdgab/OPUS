@@ -19,6 +19,7 @@ if (!isset($_SESSION['user_id'])) {
     <link rel="stylesheet" href="../assets/css/topbar.css?v=<?= time() ?>">
     
     <link rel="stylesheet" href="../assets/css/ranking.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/perfil_modal.css?v=<?= time() ?>">
 </head>
 <body>
         <div class="app-container">
@@ -41,6 +42,7 @@ if (!isset($_SESSION['user_id'])) {
     </div>
     
     <script src="../assets/js/script.js?v=<?= time() ?>"></script>
+    <script src="../assets/js/perfil_modal.js?v=<?= time() ?>"></script>
     <script src="../assets/js/ranking.js?v=<?= time() ?>"></script>
 </body>
 </html>

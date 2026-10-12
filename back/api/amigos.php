@@ -127,12 +127,24 @@ if ($action === 'toggle_seguir') {
     $check = $conn->query("SELECT id FROM seguidores WHERE seguidor_id = $user_id AND seguido_id = $target_id");
     if ($check && $check->num_rows > 0) {
         $conn->query("DELETE FROM seguidores WHERE seguidor_id = $user_id AND seguido_id = $target_id");
+        $conn->query("UPDATE pedidos_conexao SET viraram_amigos = 0 WHERE (remetente_id = $user_id AND destinatario_id = $target_id) OR (remetente_id = $target_id AND destinatario_id = $user_id)");
         $novo_estado = false;
         $msg = 'Você deixou de seguir este usuário.';
     } else {
-        $conn->query("INSERT IGNORE INTO seguidores (seguidor_id, seguido_id) VALUES ($user_id, $target_id)");
-        $novo_estado = true;
-        $msg = 'Agora você está seguindo este amigo!';
+        // Verifica se o outro usuário já me segue (seguir de volta -> amigos)
+        $check_outro = $conn->query("SELECT id FROM seguidores WHERE seguidor_id = $target_id AND seguido_id = $user_id");
+        if ($check_outro && $check_outro->num_rows > 0) {
+            $conn->query("INSERT IGNORE INTO seguidores (seguidor_id, seguido_id) VALUES ($user_id, $target_id)");
+            $conn->query("UPDATE pedidos_conexao SET status = 'aceito', viraram_amigos = 1 WHERE (remetente_id = $user_id AND destinatario_id = $target_id) OR (remetente_id = $target_id AND destinatario_id = $user_id)");
+            $novo_estado = true;
+            $msg = 'Você seguiu de volta! Vocês agora são amigos.';
+        } else {
+            // "Para seguir, ele também tem que aceitar."
+            // Cria solicitação pendente!
+            $conn->query("INSERT INTO pedidos_conexao (remetente_id, destinatario_id, status, notificado_aceite) VALUES ($user_id, $target_id, 'pendente', 0) ON DUPLICATE KEY UPDATE status = 'pendente', notificado_aceite = 0");
+            $novo_estado = false;
+            $msg = 'Solicitação para seguir enviada!';
+        }
     }
 
     // Recalcula contagens

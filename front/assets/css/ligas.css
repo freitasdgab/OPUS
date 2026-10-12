@@ -268,6 +268,41 @@ body, html {
     font-family: 'Nunito', sans-serif; 
     font-weight: 800; 
     font-size: 1.15rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.row-user-text {
+    color: var(--text-main);
+}
+
+.user-country-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: var(--text-muted);
+}
+
+.country-name-label {
+    letter-spacing: 0.2px;
+}
+
+.ranking-flag {
+    width: 18px;
+    height: 13px;
+    border-radius: 2px;
+    object-fit: cover;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .row-xp { 
@@ -280,7 +315,7 @@ body, html {
 .row-icon { 
     width: 25px; 
     text-align: center; 
-    margin-left: 14px; 
+    margin-left: 10px; 
     font-size: 1.2rem;
 }
 

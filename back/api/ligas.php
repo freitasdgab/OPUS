@@ -23,7 +23,7 @@ $conn->query("CREATE TABLE IF NOT EXISTS `seguidores` (
 try {
     liga_garantir_usuario($conn, $user_id);
 
-    $stmt = $conn->prepare("SELECT divisao, grupo_id, xp_semana FROM ligas_usuario WHERE usuario_id = ?");
+    $stmt = $conn->prepare("SELECT divisao, grupo_id, xp_semana FROM ligas_usuario WHERE usuario_id = ? AND grupo_id > 0 ORDER BY id DESC LIMIT 1");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $minhaLiga = $stmt->get_result()->fetch_assoc();
@@ -31,7 +31,7 @@ try {
     // Segurança extra: se por algum motivo ainda não tiver grupo, tenta de novo
     if (!$minhaLiga || empty($minhaLiga['grupo_id'])) {
         liga_garantir_usuario($conn, $user_id);
-        $stmt = $conn->prepare("SELECT divisao, grupo_id, xp_semana FROM ligas_usuario WHERE usuario_id = ?");
+        $stmt = $conn->prepare("SELECT divisao, grupo_id, xp_semana FROM ligas_usuario WHERE usuario_id = ? AND grupo_id > 0 ORDER BY id DESC LIMIT 1");
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
         $minhaLiga = $stmt->get_result()->fetch_assoc();
@@ -42,7 +42,7 @@ try {
     }
 
     $stmt = $conn->prepare("
-        SELECT lu.usuario_id, lu.xp_semana, u.nome, u.foto_perfil
+        SELECT lu.usuario_id, lu.xp_semana, u.nome, u.foto_perfil, u.pais, u.pais_codigo
         FROM ligas_usuario lu
         JOIN usuarios u ON u.id = lu.usuario_id
         WHERE lu.grupo_id = ?
@@ -76,6 +76,8 @@ try {
             "nome"        => $m['nome'],
             "xp"          => (int)$m['xp_semana'],
             "foto_perfil" => $m['foto_perfil'],
+            "pais"        => !empty($m['pais']) ? $m['pais'] : 'Brasil',
+            "pais_codigo" => !empty($m['pais_codigo']) ? strtolower($m['pais_codigo']) : 'br',
             "is_me"       => $mid === $user_id,
             "is_seguindo" => $is_seguindo,
             "zona"        => $zona,

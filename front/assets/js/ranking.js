@@ -32,13 +32,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.top3[1]) {
                 const u2 = data.top3[1];
                 podiumHTML += `<div class="podium-item rank-2">
-                    <div class="podium-avatar"><img src="${obterFoto(u2.foto_perfil)}" class="img-cover"></div>
+                    <div class="podium-avatar" onclick="abrirPerfilPublico(${u2.id})" style="cursor:pointer;" title="Ver Perfil">
+                        <img src="${obterFoto(u2.foto_perfil)}" class="img-cover">
+                    </div>
                     <div class="podium-xp">${Number(u2.xp).toLocaleString('pt-BR')} XP</div>
                     <div class="podium-name" title="${u2.nome} (${u2.pais || 'Brasil'})">
                         <span class="podium-user-text">${u2.nome}</span>
                         ${obterBandeira(u2.pais_codigo, u2.pais)}
                     </div>
                     <div class="podium-country-badge">${u2.pais || 'Brasil'}</div>
+                    <button type="button" class="podium-btn-action" onclick="abrirPerfilPublico(${u2.id})" title="Ver Perfil">
+                        <i class="fa-solid fa-plus"></i> Ver Perfil
+                    </button>
                     <div class="podium-bar">2</div>
                 </div>`;
             }
@@ -47,13 +52,19 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.top3[0]) {
                 const u1 = data.top3[0];
                 podiumHTML += `<div class="podium-item rank-1">
-                    <div class="podium-avatar"><i class="fa-solid fa-crown crown"></i><img src="${obterFoto(u1.foto_perfil)}" class="img-cover"></div>
+                    <div class="podium-avatar" onclick="abrirPerfilPublico(${u1.id})" style="cursor:pointer;" title="Ver Perfil">
+                        <i class="fa-solid fa-crown crown"></i>
+                        <img src="${obterFoto(u1.foto_perfil)}" class="img-cover">
+                    </div>
                     <div class="podium-xp">${Number(u1.xp).toLocaleString('pt-BR')} XP</div>
                     <div class="podium-name" title="${u1.nome} (${u1.pais || 'Brasil'})">
                         <span class="podium-user-text">${u1.nome}</span>
                         ${obterBandeira(u1.pais_codigo, u1.pais)}
                     </div>
                     <div class="podium-country-badge">${u1.pais || 'Brasil'}</div>
+                    <button type="button" class="podium-btn-action" onclick="abrirPerfilPublico(${u1.id})" title="Ver Perfil">
+                        <i class="fa-solid fa-plus"></i> Ver Perfil
+                    </button>
                     <div class="podium-bar">1</div>
                 </div>`;
             }
@@ -62,13 +73,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.top3[2]) {
                 const u3 = data.top3[2];
                 podiumHTML += `<div class="podium-item rank-3">
-                    <div class="podium-avatar"><img src="${obterFoto(u3.foto_perfil)}" class="img-cover"></div>
+                    <div class="podium-avatar" onclick="abrirPerfilPublico(${u3.id})" style="cursor:pointer;" title="Ver Perfil">
+                        <img src="${obterFoto(u3.foto_perfil)}" class="img-cover">
+                    </div>
                     <div class="podium-xp">${Number(u3.xp).toLocaleString('pt-BR')} XP</div>
                     <div class="podium-name" title="${u3.nome} (${u3.pais || 'Brasil'})">
                         <span class="podium-user-text">${u3.nome}</span>
                         ${obterBandeira(u3.pais_codigo, u3.pais)}
                     </div>
                     <div class="podium-country-badge">${u3.pais || 'Brasil'}</div>
+                    <button type="button" class="podium-btn-action" onclick="abrirPerfilPublico(${u3.id})" title="Ver Perfil">
+                        <i class="fa-solid fa-plus"></i> Ver Perfil
+                    </button>
                     <div class="podium-bar">3</div>
                 </div>`;
             }
@@ -80,7 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
             data.lista_resto.forEach(user => {
                 listHTML += `<div class="ranking-row ${user.is_me ? 'is-me' : ''}">
                     <div class="row-pos">${user.posicao}º</div>
-                    <div class="row-avatar"><img src="${obterFoto(user.foto_perfil)}" class="img-cover"></div>
+                    <div class="row-avatar" onclick="abrirPerfilPublico(${user.id})" style="cursor:pointer;" title="Ver Perfil">
+                        <img src="${obterFoto(user.foto_perfil)}" class="img-cover">
+                    </div>
                     <div class="row-name">
                         <span class="row-user-text">${user.nome}${user.is_me ? ' (Você)' : ''}</span>
                         <span class="user-country-tag" title="${user.pais || 'Brasil'}">
@@ -89,6 +107,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         </span>
                     </div>
                     <div class="row-xp">${Number(user.xp).toLocaleString('pt-BR')} XP</div>
+                    <button type="button" class="btn-user-action" onclick="abrirPerfilPublico(${user.id})" title="Ver Perfil">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Ver Perfil</span>
+                    </button>
                 </div>`;
             });
             

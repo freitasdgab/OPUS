@@ -32,6 +32,7 @@ while ($row = $result->fetch_assoc()) {
     }
     
     $ranking[] = [
+        "id" => (int)$row['id'],
         "posicao" => $pos,
         "nome" => $row['nome'],
         "xp" => $row['xp'],

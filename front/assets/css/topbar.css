@@ -85,13 +85,25 @@
     position: absolute;
     top: -5px;
     right: -8px;
-    background: #ff4b4b;
+    background: #ff3344;
     color: white;
     font-size: 10px;
-    font-weight: 800;
+    font-weight: 900;
     padding: 2px 6px;
-    border-radius: 10px;
+    min-width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
     border: 2px solid #161a24;
+    box-shadow: 0 0 10px rgba(255, 51, 68, 0.7);
+    animation: badgeNotifPulse 2s infinite ease-in-out;
+}
+
+@keyframes badgeNotifPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 8px rgba(255, 51, 68, 0.6); }
+    50% { transform: scale(1.15); box-shadow: 0 0 14px rgba(255, 51, 68, 0.95); }
 }
 
 .notif-dropdown {
@@ -199,6 +211,42 @@
     border-bottom: 3px solid #e03e3e;
 }
 .notif-btn-decline:active { border-bottom-width: 1px; transform: translateY(2px); }
+
+.notif-btn-neutral {
+    background: #3c3c52;
+    color: #e2e8f0;
+    border-bottom: 3px solid #28283a;
+}
+.notif-btn-neutral:hover {
+    background: #4a4a66;
+}
+.notif-btn-neutral:active {
+    border-bottom-width: 1px;
+    transform: translateY(2px);
+}
+
+.notif-ask-box {
+    background: rgba(28, 176, 246, 0.08);
+    border: 1px solid rgba(28, 176, 246, 0.25);
+    border-radius: 10px;
+    padding: 8px 10px;
+    margin-top: 6px;
+}
+.notif-ask-title {
+    font-size: 12px;
+    font-weight: 800;
+    color: #1cb0f6;
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.notif-ask-sub {
+    font-size: 11px;
+    color: #cbd5e1;
+    line-height: 1.3;
+    margin-bottom: 8px;
+}
 
 .stat-fogo.fogo-inativo i {
     color: #999 !important;

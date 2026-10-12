@@ -17,6 +17,7 @@ if (!isset($_SESSION['user_id'])) {
     <link rel="stylesheet" href="../assets/css/dashboard.css?v=<?= time() ?>">
     <link rel="stylesheet" href="../assets/css/topbar.css?v=<?= time() ?>">
     <link rel="stylesheet" href="../assets/css/ligas.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/perfil_modal.css?v=<?= time() ?>">
 </head>
 <body>
         <div class="app-container">
@@ -57,6 +58,7 @@ if (!isset($_SESSION['user_id'])) {
     </div>
 
     <script src="../assets/js/script.js?v=<?= time() ?>"></script>
+    <script src="../assets/js/perfil_modal.js?v=<?= time() ?>"></script>
     <script src="../assets/js/ligas.js?v=<?= time() ?>"></script>
 </body>
 </html>
