@@ -2,7 +2,7 @@ let currentChatUser = 0;
 let chatRefreshInterval;
 
 function carregarConversas() {
-    fetch('../../back/api_chat.php?action=get_conversations')
+    fetch('../../back/api/chat.php?action=get_conversations')
         .then(r => r.json())
         .then(data => {
             const list = document.getElementById('chat-list');
@@ -43,7 +43,7 @@ function buscarAmigos() {
         return;
     }
     
-    fetch('../../back/api_chat.php?action=search_users&q=' + encodeURIComponent(q))
+    fetch('../../back/api/chat.php?action=search_users&q=' + encodeURIComponent(q))
         .then(r => r.json())
         .then(data => {
             const resBox = document.getElementById('search-results');
@@ -78,7 +78,7 @@ function enviarPedido(id) {
     const fd = new FormData();
     fd.append('action', 'send_request');
     fd.append('target_id', id);
-    fetch('../../back/api_chat.php', { method: 'POST', body: fd })
+    fetch('../../back/api/chat.php', { method: 'POST', body: fd })
         .then(r => r.json())
         .then(d => {
             if (d.success) {
@@ -100,7 +100,7 @@ function abrirChat(userId) {
 function atualizarChatWindow() {
     if (currentChatUser === 0) return;
     
-    fetch('../../back/api_chat.php?action=get_messages&target_id=' + currentChatUser)
+    fetch('../../back/api/chat.php?action=get_messages&target_id=' + currentChatUser)
         .then(r => r.json())
         .then(data => {
             const f = data.friend;
@@ -215,7 +215,7 @@ function enviarMensagem() {
     fd.append('target_id', currentChatUser);
     fd.append('mensagem', msg);
     
-    fetch('../../back/api_chat.php', { method: 'POST', body: fd })
+    fetch('../../back/api/chat.php', { method: 'POST', body: fd })
         .then(r => r.json())
         .then(d => {
             if (d.success) {
@@ -231,7 +231,7 @@ function enviarConviteDuelo(id) {
     fd.append('target_id', id);
     fd.append('mensagem', '[DUEL_INVITE]');
     
-    fetch('../../back/api_chat.php', { method: 'POST', body: fd })
+    fetch('../../back/api/chat.php', { method: 'POST', body: fd })
         .then(r => r.json())
         .then(d => {
             if (d.success) {
@@ -255,7 +255,7 @@ function aceitarBatalha(amigoId) {
     const fd = new FormData();
     fd.append('action', 'desafiar');
     fd.append('amigo_id', amigoId);
-    fetch('../../back/api_batalha.php', { method: 'POST', body: fd })
+    fetch('../../back/api/batalha.php', { method: 'POST', body: fd })
     .then(r => r.json())
     .then(d => {
         if(d.success) {

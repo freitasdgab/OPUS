@@ -25,7 +25,7 @@ function toggleSeguirLiga(targetId, btn) {
     fd.append('action', 'toggle_seguir');
     fd.append('target_id', targetId);
 
-    fetch('../../back/api_amigos.php', { method: 'POST', body: fd })
+    fetch('../../back/api/amigos.php', { method: 'POST', body: fd })
         .then(r => r.json())
         .then(data => {
             if (data.success) {
@@ -43,7 +43,7 @@ function toggleSeguirLiga(targetId, btn) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    fetch('../../back/api_ligas.php')
+    fetch('../../back/api/ligas.php')
         .then(r => r.json())
         .then(data => {
             if (data.error === "unauthorized") { window.location.href = "auth.html"; return; }

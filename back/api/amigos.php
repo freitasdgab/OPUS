@@ -1,8 +1,8 @@
 <?php
 session_start();
 header('Content-Type: application/json; charset=utf-8');
-require_once 'conexao.php';
-require_once 'jogador_status.php';
+require_once __DIR__ . '/../conexao.php';
+require_once __DIR__ . '/../jogador_status.php';
 
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'mensagem' => 'Não autenticado']);
@@ -478,7 +478,7 @@ if ($action === 'detalhes_grupo') {
 
 // ── 10. RECOMENDAÇÕES DA LIGA ─────────────────────────────────
 if ($action === 'buscar_recomendacoes') {
-    require_once 'ligas_logic.php';
+    require_once __DIR__ . '/../ligas_logic.php';
     try {
         liga_garantir_usuario($conn, $user_id);
         $stmt = $conn->prepare("SELECT grupo_id FROM ligas_usuario WHERE usuario_id = ?");

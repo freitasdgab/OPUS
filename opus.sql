@@ -728,26 +728,42 @@ BEGIN
     DECLARE v_avancou INT DEFAULT 0;
     DECLARE v_capitulo_concluido INT DEFAULT 0;
     DECLARE v_bau_liberado INT DEFAULT 0;
-    DECLARE v_xp_ganho INT DEFAULT 50;
+    DECLARE v_xp_ganho INT DEFAULT 10;
     DECLARE v_licoes_feitas INT DEFAULT 0;
+    DECLARE v_eh_repeticao INT DEFAULT 0;
 
-    IF p_acertos = p_total AND p_total > 0 THEN
-        INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'perfeicao');
-        INSERT IGNORE INTO conquistas_usuario (usuario_id, conquista_slug) VALUES (p_user_id, 'perfeicao');
+    IF p_acertos > 0 THEN
+        IF p_acertos >= p_total AND p_total > 0 THEN
+            SET v_xp_ganho = 50;
+            INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'perfeicao');
+            INSERT IGNORE INTO conquistas_usuario (usuario_id, conquista_slug) VALUES (p_user_id, 'perfeicao');
+        ELSEIF p_acertos = 2 THEN
+            SET v_xp_ganho = 25;
+        ELSE
+            SET v_xp_ganho = 10;
+        END IF;
 
-        UPDATE usuarios SET xp = xp + v_xp_ganho WHERE id = p_user_id;
-
-        SELECT licoes_concluidas INTO v_licoes_feitas FROM progresso_usuario WHERE usuario_id = p_user_id AND unidade_numero = p_unidade;
+        SELECT licoes_concluidas INTO v_licoes_feitas 
+        FROM progresso_usuario 
+        WHERE usuario_id = p_user_id AND unidade_numero = p_unidade;
         
         IF v_licoes_feitas IS NULL THEN
-            INSERT INTO progresso_usuario (usuario_id, unidade_numero, status, licoes_concluidas) VALUES (p_user_id, p_unidade, 'corrente', 1);
+            INSERT INTO progresso_usuario (usuario_id, unidade_numero, status, licoes_concluidas) 
+            VALUES (p_user_id, p_unidade, 'corrente', 1);
             SET v_licoes_feitas = 1;
             SET v_avancou = 1;
         ELSEIF p_licao > v_licoes_feitas THEN
             SET v_licoes_feitas = p_licao;
-            UPDATE progresso_usuario SET licoes_concluidas = v_licoes_feitas WHERE usuario_id = p_user_id AND unidade_numero = p_unidade;
+            UPDATE progresso_usuario 
+            SET licoes_concluidas = v_licoes_feitas 
+            WHERE usuario_id = p_user_id AND unidade_numero = p_unidade;
             SET v_avancou = 1;
+        ELSE
+            SET v_eh_repeticao = 1;
+            SET v_xp_ganho = 10;
         END IF;
+
+        UPDATE usuarios SET xp = xp + v_xp_ganho WHERE id = p_user_id;
 
         IF v_licoes_feitas >= 3 THEN
             SET v_bau_liberado = 1;
@@ -774,7 +790,7 @@ BEGIN
         CALL sp_verificar_conquistas(p_user_id);
     END IF;
 
-    SELECT v_avancou AS avancou, v_capitulo_concluido AS capitulo_concluido, v_bau_liberado AS bau_liberado, v_xp_ganho AS xp_ganho;
+    SELECT v_avancou AS avancou, v_capitulo_concluido AS capitulo_concluido, v_bau_liberado AS bau_liberado, v_xp_ganho AS xp_ganho, v_eh_repeticao AS eh_repeticao;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;

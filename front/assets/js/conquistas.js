@@ -1,5 +1,5 @@
 // conquistas.js
-        fetch('../../back/api_conquistas.php')
+        fetch('../../back/api/conquistas.php')
         .then(r => r.json())
         .then(data => {
             const container = document.getElementById('trophy-container');

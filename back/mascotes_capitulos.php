@@ -58,5 +58,10 @@ $MASCOTES_POR_CAPITULO = [
 function opus_mascote_do_capitulo(int $unidade_numero): array
 {
     global $MASCOTES_POR_CAPITULO;
-    return $MASCOTES_POR_CAPITULO[$unidade_numero] ?? $MASCOTES_POR_CAPITULO[1];
+    if (isset($MASCOTES_POR_CAPITULO[$unidade_numero])) {
+        return $MASCOTES_POR_CAPITULO[$unidade_numero];
+    }
+    // Para unidades > 5, cicla entre os 5 mascotes/temas disponíveis
+    $ciclo = (($unidade_numero - 1) % 5) + 1;
+    return $MASCOTES_POR_CAPITULO[$ciclo] ?? $MASCOTES_POR_CAPITULO[1];
 }

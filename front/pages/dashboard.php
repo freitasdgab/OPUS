@@ -542,7 +542,7 @@ $nomes_unidades = [
     <link rel="stylesheet" href="../assets/css/topbar.css">
     <link rel="shortcut icon" href="../assets/img/logo.png">
     
-    <link rel="stylesheet" href="../assets/css/dashboard-page.css">
+    <link rel="stylesheet" href="../assets/css/dashboard-page.css?v=2">
 </head>
 <body>
     <div class="app-container">
@@ -588,6 +588,10 @@ $nomes_unidades = [
                                         $icone_modulo = "fa-star";
                                         $is_clicavel = false;
                                         $is_current = false;
+
+                                        if ($num_cap == 1 && $mod == 5) {
+                                            $icone_modulo = "fa-terminal";
+                                        }
 
                                         if ($status_cap_banco === 'completo') {
                                             $classe_modulo = "completed";
@@ -900,12 +904,12 @@ $nomes_unidades = [
     </div>
 
     <!-- BOTÃO FLUTUANTE COM FORMATO DE SETA PARA ROLAGEM DIRETA À LIÇÃO ATUAL -->
-    <button class="btn-scroll-to-lesson" id="btnScrollToLesson" onclick="rolarAteLicaoAtual()" title="Ir direto para a lição atual na trilha">
+    <button class="btn-scroll-to-lesson" id="btnScrollToLesson" onclick="rolarAteLicaoAtual(true)" title="Ir direto para a lição atual na trilha">
         <i class="fa-solid fa-arrow-right"></i>
     </button>
 
     <script src="../assets/js/script.js"></script> 
-    
+    <script src="../assets/js/opus_audio.js"></script>
     <script src="../assets/js/dashboard.js"></script>
 </body>
 </html>

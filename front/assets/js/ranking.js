@@ -8,7 +8,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            fetch('../../back/api_ranking.php')
+            fetch('../../back/api/ranking.php')
                 .then(response => response.json())
                 .then(data => {
                     if (data.error === "unauthorized") { window.location.href = "auth.html"; return; }

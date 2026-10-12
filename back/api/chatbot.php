@@ -7,7 +7,7 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-require_once __DIR__ . '/conexao.php';
+require_once __DIR__ . '/../conexao.php';
 
 $input = json_decode(file_get_contents('php://input'), true);
 $mensagem = trim($input['mensagem'] ?? '');
@@ -26,7 +26,7 @@ $api_key = '';
 
 // Se não estiver definida acima, tenta buscar das variáveis de ambiente:
 if (!isset($api_key) || empty($api_key)) {
-    $api_key = getenv('OPENAI_API_KEY') ?: getenv('GEMINI_API_KEY');
+    $api_key = getenv('GROQ_API_KEY') ?: getenv('OPENAI_API_KEY') ?: getenv('GEMINI_API_KEY');
 }
 
 if (!empty($api_key)) {
@@ -201,7 +201,7 @@ function responder_opi_local($msg, $nome, $ctx) {
     // RESPOSTA PADRÃO INTELIGENTE
     return "💡 **Opi IA responde:**\n\n" .
            "Entendi sua dúvida sobre *\"" . htmlspecialchars($msg) . "\"*!\n\n" .
-           "Atualmente, estou operando no meu modo de respostas pré-definidas. Para que eu possa responder a **qualquer dúvida** usando Inteligência Artificial real, o desenvolvedor precisa configurar uma **Chave de API (Gemini ou OpenAI)** no arquivo `api_chatbot.php`.\n\n" .
+           "Atualmente, estou operando no meu modo de respostas pré-definidas. Para que eu possa responder a **qualquer dúvida** usando Inteligência Artificial real, o desenvolvedor precisa configurar uma **Chave de API da Groq** no arquivo `api_chatbot.php`.\n\n" .
            "Até lá, tente refrasear sua pergunta ou escolher um dos assuntos conhecidos (como variáveis, if/else, loops, arrays, classes, vidas, dias de fogo, etc.)!";
 }
 
@@ -217,16 +217,16 @@ function chamar_api_llm($key, $prompt, $nome, $contexto) {
     $user_id = $_SESSION['user_id'] ?? 0;
     $contexto_progresso = "";
     if ($user_id > 0 && isset($conn)) {
-        require_once __DIR__ . '/jogador_status.php';
+        require_once __DIR__ . '/../jogador_status.php';
         $jogador = opus_sincronizar_jogador($conn, $user_id);
         $xp = $jogador['xp'];
         $vidas = $jogador['vidas'];
         $fogo = $jogador['dias_fogo'];
         $trofeus = $jogador['trofeus'];
-        $contexto_progresso = " Progresso atual do aluno: $xp XP, $vidas Vidas restantes, Ofensiva de $fogo Dias de Fogo, e $trofeus Troféus.";
+        $contexto_progresso = " Progresso atual: $xp XP, $vidas Vidas, Ofensiva de $fogo Dias, e $trofeus Trofeus.";
     }
 
-    $system_prompt = "Você é o Opi, o mascote e assistente IA da plataforma Opus, uma plataforma de ensino de Java. Você é amigável, encorajador e ajuda o aluno '$nome' com dúvidas de programação ou sobre a plataforma Opus. Responda de forma direta, simples e concisa. Evite textos excessivamente longos a menos que o aluno peça uma explicação detalhada. Contexto da página: $contexto.$contexto_progresso";
+    $system_prompt = "Voce e o Opi, assistente IA da Opus de Java. Ajude o aluno '$nome' com duvidas. Contexto: $contexto $contexto_progresso";
 
     if ($is_gemini) {
         $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=' . $key;
@@ -278,7 +278,7 @@ function chamar_api_llm($key, $prompt, $nome, $contexto) {
         // OpenAI ou Groq (mesmo formato de API)
         if (strpos($key, 'gsk_') === 0) {
             $url = 'https://api.groq.com/openai/v1/chat/completions';
-            $model = 'openai/gpt-oss-20b'; // Modelo OpenAI OSS 20B via Groq
+            $model = 'openai/gpt-oss-20b'; // Modelo Groq Válido
         } else {
             $url = 'https://api.openai.com/v1/chat/completions';
             $model = 'gpt-3.5-turbo';
@@ -316,3 +316,4 @@ function chamar_api_llm($key, $prompt, $nome, $contexto) {
     return false;
 }
 ?>
+

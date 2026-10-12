@@ -11,7 +11,7 @@
 
             mostrarMensagem("Aguarde, enviando e-mail...", "success");
 
-            fetch('../../back/solicitar_codigo.php', {
+            fetch('../../back/api/solicitar_senha.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'email=' + encodeURIComponent(email)
@@ -35,7 +35,7 @@
 
             if(!codigo || !novaSenha) return mostrarMensagem("Preencha o código e a nova senha.", "error");
 
-            fetch('../../back/redefinir_senha_acao.php', {
+            fetch('../../back/api/redefinir_senha.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: `email=${encodeURIComponent(email)}&codigo=${encodeURIComponent(codigo)}&nova_senha=${encodeURIComponent(novaSenha)}`

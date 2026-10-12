@@ -9,7 +9,7 @@ function toggleNotificacoes() {
 }
 
 function fetchNotificacoes() {
-    fetch('../../back/api_notificacoes.php?action=get_notificacoes')
+    fetch('../../back/api/notificacoes.php?action=get_notificacoes')
         .then(res => res.json())
         .then(data => {
             if (data.error) return;
@@ -62,7 +62,7 @@ function responderPedido(id, response) {
     fd.append('id', id);
     fd.append('response', response);
     
-    fetch('../../back/api_notificacoes.php', { method: 'POST', body: fd })
+    fetch('../../back/api/notificacoes.php', { method: 'POST', body: fd })
         .then(r => r.json())
         .then(data => {
             if (data.success) {

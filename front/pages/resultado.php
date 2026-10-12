@@ -138,7 +138,22 @@ $vidas_restantes = (int) $status_atual['vidas'];
             <?php include '../../back/topbar.php'; ?>
             <div class="result-container">
                 <div class="result-card">
-                    <img src="<?php echo $imagem_mascote; ?>" alt="Mascote Opus" class="mascote-img">
+                    <div class="result-mascote-wrapper">
+                        <div class="result-speech-bubble" id="resultSpeechBubble">
+                            <?php 
+                            if ($acertos == 3) {
+                                echo "Incrível! Você dominou todo o conteúdo desta lição! 🏆";
+                            } elseif ($acertos == 2) {
+                                echo "Mandou muito bem! Quase gabaritou! 🚀";
+                            } elseif ($acertos == 1) {
+                                echo "Bom esforço! Pratique mais para dominar de vez! 💡";
+                            } else {
+                                echo "Não desanime! Programação é prática e persistência! 💪";
+                            }
+                            ?>
+                        </div>
+                        <img src="<?php echo $imagem_mascote; ?>" alt="Mascote Opus" class="mascote-img" id="resultMascoteImg" title="Clique no mascote para incentivo!">
+                    </div>
                     
                     <h1 class="result-title"><?php echo $acertos; ?> / 3 Acertos</h1>
                     <p class="result-message"><?php echo $mensagem; ?></p>
@@ -201,6 +216,45 @@ $vidas_restantes = (int) $status_atual['vidas'];
             </div>
         </main>
     </div>
+    <script src="../assets/js/opus_audio.js"></script>
     <script src="../assets/js/script.js"></script>
+    <script>
+        // Interações sonoras e reativas na tela de Resultado
+        document.addEventListener('DOMContentLoaded', function() {
+            // Feedback tátil em todos os botões de ação
+            document.querySelectorAll('.btn-action').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    if (window.OpusAudio) window.OpusAudio.playClick();
+                });
+            });
+
+            // Mascote reativo com salto e falas motivacionais
+            const mascote = document.getElementById('resultMascoteImg');
+            const balao = document.getElementById('resultSpeechBubble');
+            const falas = [
+                "Bora codar mais um pouco! ☕",
+                "Você está evoluindo a cada lição! 🚀",
+                "A prática constante é o segredo do Java! 💡",
+                "Rumo à maestria em programação! ⭐",
+                "Vamos conquistar a próxima lição juntos! 🔥"
+            ];
+
+            if (mascote) {
+                mascote.addEventListener('click', function() {
+                    if (window.OpusAudio) window.OpusAudio.playClick();
+                    mascote.classList.remove('mascote-jump');
+                    void mascote.offsetWidth;
+                    mascote.classList.add('mascote-jump');
+
+                    if (balao) {
+                        balao.textContent = falas[Math.floor(Math.random() * falas.length)];
+                        balao.style.animation = 'none';
+                        void balao.offsetWidth;
+                        balao.style.animation = 'bubblePop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

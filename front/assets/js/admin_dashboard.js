@@ -58,7 +58,7 @@
     // ── Carregar Estatísticas Gerais da API ───────────────────────────────────
     async function carregarEstatisticas() {
         try {
-            const res = await fetch('../../back/api_admin.php?action=stats');
+            const res = await fetch('../../back/api/admin.php?action=stats');
             const data = await res.json();
 
             if (!data.sucesso) {
@@ -249,7 +249,7 @@
                 order_dir: orderDir
             });
 
-            const res = await fetch(`../../back/api_admin.php?${params.toString()}`);
+            const res = await fetch(`../../back/api/admin.php?${params.toString()}`);
             const data = await res.json();
 
             if (!data.sucesso) {
@@ -392,7 +392,7 @@
             const formData = new FormData();
             formData.append('action', 'trigger_league_turnover');
 
-            const res = await fetch('../../back/api_admin.php', {
+            const res = await fetch('../../back/api/admin.php', {
                 method: 'POST',
                 body: formData
             });
@@ -429,7 +429,7 @@
         modal.classList.add('active');
 
         try {
-            const res = await fetch(`../../back/api_admin.php?action=user_details&user_id=${userId}`);
+            const res = await fetch(`../../back/api/admin.php?action=user_details&user_id=${userId}`);
             const data = await res.json();
 
             if (!data.sucesso) {

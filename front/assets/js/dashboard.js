@@ -2,6 +2,7 @@
         let capAtualBau = 0;
 
         function abrirModalBau(cap, titulo) {
+            if (window.OpusAudio) window.OpusAudio.playClick();
             capAtualBau = cap;
             document.getElementById('modalBauTitle').innerText = 'Baú de Recompensas!';
             document.getElementById('modalBauSub').innerText = titulo + ' · Recompensa de Meio de Trilha';
@@ -18,12 +19,14 @@
         }
 
         function fecharModalBau() {
+            if (window.OpusAudio) window.OpusAudio.playClick();
             const modal = document.getElementById('modalBauRecompensa');
             modal.classList.remove('active');
             setTimeout(() => modal.style.display = 'none', 300);
         }
 
         function fecharAvisoBau() {
+            if (window.OpusAudio) window.OpusAudio.playClick();
             const modal = document.getElementById('modalAvisoBau');
             if (!modal) return;
             modal.classList.remove('active');
@@ -79,7 +82,10 @@
                     return;
                 }
 
-                // Exibe resultados
+                // Exibe resultados com efeito sonoro mágico
+                if (window.OpusAudio) {
+                    window.OpusAudio.playChest();
+                }
                 document.getElementById('rewardContainerPre').style.display = 'none';
                 document.getElementById('rewardContainerPos').style.display = 'block';
                 document.getElementById('resgateXpVal').innerText = '+' + data.xp_ganho + ' XP';
@@ -133,6 +139,7 @@
         }
 
         function abrirGuia(btn) {
+            if (window.OpusAudio) window.OpusAudio.playClick();
             const titulo = btn.getAttribute('data-titulo');
             const nome = btn.getAttribute('data-nome');
             const cor = btn.getAttribute('data-cor');
@@ -156,6 +163,7 @@
         }
 
         function fecharGuia() {
+            if (window.OpusAudio) window.OpusAudio.playClick();
             const modal = document.getElementById('modalGuia');
             modal.classList.remove('active');
             
@@ -176,7 +184,8 @@
         }
 
         // ── Scroll para a lição atual e Botão Flutuante de Seta ───────────
-        function rolarAteLicaoAtual() {
+        function rolarAteLicaoAtual(tocarSom = false) {
+            if (tocarSom && window.OpusAudio) window.OpusAudio.playClick();
             const licaoAtual = document.getElementById('currentLessonNode') 
                             || document.querySelector('.modulo-node.current')
                             || document.querySelector('.capitulo-container.current-chapter')
@@ -188,10 +197,6 @@
                 // Animação de pulso para evidenciar onde o jogador está
                 licaoAtual.classList.add('pulse-highlight');
                 setTimeout(() => licaoAtual.classList.remove('pulse-highlight'), 2200);
-
-                if (typeof opusToast === 'function') {
-                    opusToast('Lição atual localizada na trilha!', 'info', 2000);
-                }
             } else {
                 const primeiroCap = document.querySelector('.capitulo-container');
                 if (primeiroCap) {
@@ -225,9 +230,66 @@
             checar();
         }
 
+        // Animação e interação viva dos mascotes laterais no Dashboard
+        function inicializarMascotesDashboard() {
+            const mascotes = document.querySelectorAll('.mascote-lateral');
+            const falas = [
+                "Bora codar em Java hoje! 🔥",
+                "Mantenha seus dias de fogo! 💪",
+                "Você está mandando muito bem! 🚀",
+                "Cada lição te deixa mais perto de mestre! ☕",
+                "Vamos rumo ao topo da liga! 🏆"
+            ];
+
+            mascotes.forEach(m => {
+                m.style.pointerEvents = 'auto';
+                m.style.cursor = 'pointer';
+                m.setAttribute('title', 'Clique no mascote para incentivo!');
+
+                m.addEventListener('click', function(e) {
+                    if (window.OpusAudio) window.OpusAudio.playClick();
+
+                    // Animação de pulo/spin festivo
+                    m.classList.remove('mascote-jump-active');
+                    void m.offsetWidth;
+                    m.classList.add('mascote-jump-active');
+
+                    // Remove balão anterior se existir
+                    const balaoAntigo = m.parentElement.querySelector('.mascote-balao-dash');
+                    if (balaoAntigo) balaoAntigo.remove();
+
+                    // Cria balãozinho cartoon temporário
+                    const balao = document.createElement('div');
+                    balao.className = 'mascote-balao-dash';
+                    balao.innerText = falas[Math.floor(Math.random() * falas.length)];
+                    m.parentElement.appendChild(balao);
+
+                    // Posiciona conforme lateral
+                    if (m.classList.contains('mascote-esquerda')) {
+                        balao.style.left = '20px';
+                    } else {
+                        balao.style.right = '20px';
+                    }
+
+                    setTimeout(() => {
+                        balao.classList.add('fade-out');
+                        setTimeout(() => balao.remove(), 300);
+                    }, 2400);
+                });
+            });
+
+            // Adiciona feedback sonoro sutil aos nós de lição clicáveis
+            document.querySelectorAll('.modulo-node.completed, .modulo-node.current').forEach(node => {
+                node.addEventListener('click', function() {
+                    if (window.OpusAudio) window.OpusAudio.playClick();
+                });
+            });
+        }
+
         // Aguarda o carregamento completo para calcular posições
         window.addEventListener('load', function () {
             setTimeout(rolarAteLicaoAtual, 150);
             setTimeout(monitorarVisibilidadeLicaoAtual, 300);
+            inicializarMascotesDashboard();
         });
 

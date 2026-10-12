@@ -503,3 +503,555 @@ body.light-mode .ofensiva-body.fogo-inativo .ofensiva-icon-box {
 body.light-mode .ofensiva-body.fogo-inativo i {
     color: #afafaf !important;
 }
+
+/* =======================================================================
+   ESTILOS DO MODO ESCURO (DARK MODE) - DUOLINGO STYLE (TEAL ESCURO)
+   Aplicado quando a classe .light-mode NÃO está no body
+   ======================================================================= */
+
+body:not(.light-mode) {
+    --bg-dark-duo: #131f24 !important;
+    --border-dark-duo: #37464f !important;
+    --text-muted-duo: #a5b4bc !important;
+    
+    background-color: #131f24 !important;
+    background: #131f24 !important;
+    color: #ffffff !important;
+}
+
+body:not(.light-mode) .main-content {
+    background-color: #131f24 !important;
+}
+
+/* SIDEBAR / MENU ESQUERDO */
+body:not(.light-mode) .sidebar {
+    background-color: #131f24 !important;
+    border-right: 2px solid #37464f !important;
+}
+body:not(.light-mode) .sidebar .logo { color: #1cb0f6 !important; }
+body:not(.light-mode) .sidebar .nav-link { 
+    color: #a5b4bc !important; 
+    font-weight: 700 !important;
+    text-transform: uppercase;
+}
+body:not(.light-mode) .sidebar .nav-link:hover, 
+body:not(.light-mode) .sidebar .nav-link.active {
+    background: rgba(28, 176, 246, 0.1) !important;
+    color: #1cb0f6 !important;
+    border: 2px solid #1cb0f6 !important;
+    border-radius: 12px;
+}
+body:not(.light-mode) .sidebar .nav-link:not(.active) {
+    border: 2px solid transparent !important;
+}
+
+/* NAVBAR / TOPBAR */
+body:not(.light-mode) .top-bar, 
+body:not(.light-mode) .topbar,
+body:not(.light-mode) .admin-navbar {
+    background: #131f24 !important;
+    border-bottom: 2px solid transparent !important; /* Na print não tem borda visível forte */
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+}
+body:not(.light-mode) .topbar-title,
+body:not(.light-mode) .user-info span {
+    color: #ffffff !important;
+}
+body:not(.light-mode) .topbar-stat i { color: #ffffff !important; }
+body:not(.light-mode) .topbar-stat.stat-xp i { color: #1cb0f6 !important; }
+body:not(.light-mode) .topbar-stat.stat-fogo i { color: #37464f !important; }
+body:not(.light-mode) .topbar-stat.fogo-ativo i { color: #ff9600 !important; }
+body:not(.light-mode) .topbar-stat.stat-vida i { color: #ff4b4b !important; }
+
+/* WIDGETS E CARDS (Bordas 3D escuras) */
+body:not(.light-mode) .widget-box,
+body:not(.light-mode) .progresso-stat-card,
+body:not(.light-mode) .unit-item,
+body:not(.light-mode) .card,
+body:not(.light-mode) .ranking-box,
+body:not(.light-mode) .map-card,
+body:not(.light-mode) .liga-header {
+    background-color: #131f24 !important;
+    border: 2px solid #37464f !important;
+    border-bottom: 4px solid #37464f !important;
+    box-shadow: none !important;
+    border-radius: 16px !important;
+}
+
+body:not(.light-mode) .missao-item {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+body:not(.light-mode) .widget-header h3,
+body:not(.light-mode) .widget-vidas h4,
+body:not(.light-mode) .ofensiva-info h4,
+body:not(.light-mode) .ranking-info h4,
+body:not(.light-mode) .missao-info h4 {
+    color: #ffffff !important;
+}
+
+body:not(.light-mode) .vidas-info p,
+body:not(.light-mode) .ranking-info p,
+body:not(.light-mode) .progresso-stat-card .lbl,
+body:not(.light-mode) .widget-footer-info {
+    color: #a5b4bc !important;
+    border-top: none !important;
+}
+
+/* TRILHA / BOTÕES */
+body:not(.light-mode) .modulo-node .circle-button {
+    box-shadow: 0 6px 0 #1899d6 !important; /* Azul escuro igual da foto */
+}
+body:not(.light-mode) .modulo-node.locked .circle-button {
+    background: #37464f !important;
+    color: #777777 !important;
+    border: none !important;
+    box-shadow: 0 6px 0 #28343b !important;
+}
+body:not(.light-mode) .chest-node.locked {
+    background: #37464f !important;
+    color: #777777 !important;
+    border: none !important;
+    box-shadow: 0 6px 0 #28343b !important;
+}
+body:not(.light-mode) .chest-node.claimed {
+    background: #131f24 !important;
+    color: #a5b4bc !important;
+    border: 2px solid #37464f !important;
+    box-shadow: 0 6px 0 #37464f !important;
+}
+
+/* Balão Começar no Escuro */
+body:not(.light-mode) .start-balloon {
+    background: #131f24 !important;
+    color: #1cb0f6 !important;
+    border: 2px solid #37464f !important;
+    border-bottom: 4px solid #37464f !important;
+    box-shadow: none !important;
+    text-transform: uppercase;
+    font-weight: 800 !important;
+}
+body:not(.light-mode) .start-balloon::after {
+    border-top-color: #37464f !important;
+}
+
+/* Cabeçalho Unidade */
+body:not(.light-mode) .capitulo-header-text h2,
+body:not(.light-mode) .capitulo-header-text h3 { color: #ffffff !important; }
+body:not(.light-mode) .btn-guia { color: #ffffff !important; border-color: rgba(255,255,255,0.4) !important; }
+
+/* Barras de Progresso */
+body:not(.light-mode) .progress-bar-bg { background: #37464f !important; border: none !important; }
+body:not(.light-mode) .progress-text { color: #ffffff !important; text-shadow: none !important; font-weight: 800 !important; }
+
+body:not(.light-mode) .ranking-icon { background: #131f24 !important; color: #ffc800 !important; }
+
+/* RANKING E LIGAS */
+body:not(.light-mode) .ranking-row,
+body:not(.light-mode) .liga-row,
+body:not(.light-mode) .recomendado-card {
+    background: #131f24 !important;
+    border: 2px solid #37464f !important;
+    border-bottom: 4px solid #37464f !important;
+}
+body:not(.light-mode) .ranking-row:hover,
+body:not(.light-mode) .liga-row:hover,
+body:not(.light-mode) .recomendado-card:hover {
+    background: #1f3039 !important;
+    border-color: #4b5e68 !important;
+    border-bottom-color: #4b5e68 !important;
+}
+body:not(.light-mode) .ranking-row.is-me,
+body:not(.light-mode) .liga-row.is-me {
+    background: rgba(28, 176, 246, 0.1) !important;
+    border-color: #1cb0f6 !important;
+    border-bottom: 4px solid #1899d6 !important;
+}
+
+/* DICIONÁRIO E PERFIL E CHAT */
+body:not(.light-mode) .comando-btn,
+body:not(.light-mode) .codex-header,
+body:not(.light-mode) .categoria-section,
+body:not(.light-mode) .stat-card,
+body:not(.light-mode) .interact-card,
+body:not(.light-mode) .friends-card,
+body:not(.light-mode) .trophy-profile-card,
+body:not(.light-mode) .modal-content,
+body:not(.light-mode) .modal-bau-box,
+body:not(.light-mode) .modal-box,
+body:not(.light-mode) .chat-hub-container,
+body:not(.light-mode) .chat-sidebar,
+body:not(.light-mode) .chat-main,
+body:not(.light-mode) .chat-messages,
+body:not(.light-mode) .chat-header,
+body:not(.light-mode) .chat-sidebar-header,
+body:not(.light-mode) .chat-input-area {
+    background: #131f24 !important;
+    border-color: #37464f !important;
+}
+body:not(.light-mode) .comando-btn,
+body:not(.light-mode) .categoria-section,
+body:not(.light-mode) .stat-card,
+body:not(.light-mode) .interact-card,
+body:not(.light-mode) .friends-card,
+body:not(.light-mode) .modal-content,
+body:not(.light-mode) .chat-hub-container,
+body:not(.light-mode) .msg-bubble.other {
+    border: 2px solid #37464f !important;
+    border-bottom: 4px solid #37464f !important;
+}
+body:not(.light-mode) .chat-item:hover { background: #1f3039 !important; }
+body:not(.light-mode) .chat-input-area input,
+body:not(.light-mode) .chat-input-area textarea {
+    background: #1f3039 !important;
+    border: 2px solid #37464f !important;
+    color: #fff !important;
+}
+body:not(.light-mode) .ofensiva-body.fogo-inativo .ofensiva-icon-box {
+    background: #1f3039 !important;
+    border: 2px solid #37464f !important;
+}
+body:not(.light-mode) input[type="text"],
+body:not(.light-mode) input[type="url"],
+body:not(.light-mode) input[type="email"] {
+    background: #1f3039 !important;
+    color: #fff !important;
+    border: 2px solid #37464f !important;
+}
+body:not(.light-mode) .trophy-progress { background: #37464f !important; }
+body:not(.light-mode) .trophy-progress-fill { background: #ffc800 !important; }
+
+/* Ajusta as imagens para nǜo terem fundo no dark mode */
+body:not(.light-mode) img.img-cover,
+body:not(.light-mode) .avatar-img,
+body:not(.light-mode) .row-avatar,
+body:not(.light-mode) .podium-avatar {
+    background-color: transparent !important;
+    border-color: transparent !important;
+}
+
+/* =======================================================================
+   CHATBOT OPI IA - ADAPTAÇÃO PARA MODO CLARO E ESCURO
+   ======================================================================= */
+
+/* MODO CLARO */
+body.light-mode .opi-chat-window {
+    background: #ffffff !important;
+    border: 2px solid #e5e5e5 !important;
+    border-bottom: 4px solid #e5e5e5 !important;
+    box-shadow: none !important;
+}
+body.light-mode .opi-chat-header {
+    background: #ffffff !important;
+    border-bottom: 2px solid #e5e5e5 !important;
+}
+body.light-mode .opi-chat-name { color: #4b4b4b !important; }
+body.light-mode .opi-chat-sub { color: #afafaf !important; }
+body.light-mode .opi-chat-btn-action { color: #afafaf !important; }
+body.light-mode .opi-chat-btn-action:hover { color: #4b4b4b !important; background: #f3f4f6 !important; }
+body.light-mode .opi-chat-messages { background: #ffffff !important; }
+body.light-mode .opi-msg-bot .opi-msg-bubble {
+    background: #ffffff !important;
+    color: #4b4b4b !important;
+    border: 2px solid #e5e5e5 !important;
+    border-bottom: 4px solid #e5e5e5 !important;
+}
+body.light-mode .opi-msg-user .opi-msg-bubble {
+    border-bottom: 4px solid #1899d6 !important;
+}
+body.light-mode .opi-chat-suggestions {
+    background: #ffffff !important;
+    border-top: 2px solid #e5e5e5 !important;
+}
+body.light-mode .opi-chip {
+    background: #ffffff !important;
+    border: 2px solid #e5e5e5 !important;
+    color: #4b4b4b !important;
+    border-bottom: 3px solid #e5e5e5 !important;
+}
+body.light-mode .opi-chat-input-container {
+    background: #ffffff !important;
+    border-top: 2px solid #e5e5e5 !important;
+}
+body.light-mode .opi-chat-input-container input {
+    background: #f3f4f6 !important;
+    border: 2px solid #e5e5e5 !important;
+    color: #4b4b4b !important;
+}
+
+/* MODO ESCURO (TEAL) */
+body:not(.light-mode) .opi-chat-window,
+body:not(.light-mode) .opi-chat-header,
+body:not(.light-mode) .opi-chat-messages,
+body:not(.light-mode) .opi-chat-suggestions,
+body:not(.light-mode) .opi-chat-input-container {
+    background: #131f24 !important;
+    border-color: #37464f !important;
+}
+body:not(.light-mode) .opi-chat-window {
+    box-shadow: none !important;
+    border: 2px solid #37464f !important;
+    border-bottom: 4px solid #37464f !important;
+}
+body:not(.light-mode) .opi-msg-bot .opi-msg-bubble {
+    background: #131f24 !important;
+    border: 2px solid #37464f !important;
+    border-bottom: 4px solid #37464f !important;
+    color: #ffffff !important;
+}
+body:not(.light-mode) .opi-msg-user .opi-msg-bubble {
+    border-bottom: 4px solid #1899d6 !important;
+}
+body:not(.light-mode) .opi-chip {
+    background: #1f3039 !important;
+    border: 2px solid #37464f !important;
+    border-bottom: 3px solid #37464f !important;
+    color: #a5b4bc !important;
+}
+body:not(.light-mode) .opi-chat-input-container input {
+    background: #1f3039 !important;
+    border: 2px solid #37464f !important;
+    color: #ffffff !important;
+}
+
+/* ========================================================================
+   COMPATIBILIDADE TOTAL COM TELA DE LIÇÃO (.licao-page) - MODO CLARO
+   ======================================================================== */
+body.light-mode.licao-page {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #4b4b4b !important;
+}
+
+body.light-mode.licao-page .phase-header,
+body.light-mode.licao-page .phase-footer {
+    background: #ffffff !important;
+    border-color: #e5e5e5 !important;
+}
+
+body.light-mode.licao-page .btn-close-phase {
+    color: #777777 !important;
+}
+body.light-mode.licao-page .btn-close-phase:hover {
+    color: #1cb0f6 !important;
+}
+body.light-mode.licao-page .lesson-title {
+    color: #4b4b4b !important;
+}
+
+/* Quiz Progress Bar no Modo Claro */
+body.light-mode.licao-page .btn-close-quiz {
+    color: #afafaf !important;
+}
+body.light-mode.licao-page .btn-close-quiz:hover {
+    color: #4b4b4b !important;
+}
+body.light-mode.licao-page .progress-track {
+    background: #e5e5e5 !important;
+}
+body.light-mode.licao-page .progress-text {
+    color: #777777 !important;
+}
+
+/* Botão de Som 3D no Modo Claro */
+body.light-mode.licao-page .btn-sound-toggle {
+    background: #ffffff !important;
+    border: 2px solid #e5e5e5 !important;
+    border-bottom: 4px solid #d5d5d5 !important;
+    color: #777777 !important;
+}
+body.light-mode.licao-page .btn-sound-toggle:hover {
+    color: #1cb0f6 !important;
+    border-color: #1cb0f6 !important;
+    border-bottom-color: #1899d6 !important;
+}
+body.light-mode.licao-page .btn-sound-toggle.muted {
+    color: #ff4b4b !important;
+    border-color: #ff4b4b !important;
+    border-bottom-color: #cc3c3c !important;
+}
+
+/* Pergunta e Título no Modo Claro */
+body.light-mode.licao-page .question-number {
+    color: #afafaf !important;
+}
+body.light-mode.licao-page .question-text {
+    color: #4b4b4b !important;
+}
+
+/* Balão de Fala do Mascote no Modo Claro */
+body.light-mode.licao-page .quiz-speech-bubble {
+    background: #ffffff !important;
+    border: 2px solid #e5e5e5 !important;
+    border-bottom: 5px solid #d5d5d5 !important;
+    color: #4b4b4b !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.06) !important;
+}
+body.light-mode.licao-page .quiz-speech-bubble::after {
+    border-color: #ffffff transparent !important;
+}
+body.light-mode.licao-page .quiz-speech-bubble::before {
+    border-color: #d5d5d5 transparent !important;
+}
+body.light-mode.licao-page .quiz-speech-bubble.bubble-correct {
+    background: #d7ffb8 !important;
+    border-color: #58cc02 !important;
+    border-bottom-color: #46a302 !important;
+    color: #357a01 !important;
+}
+body.light-mode.licao-page .quiz-speech-bubble.bubble-correct::after {
+    border-color: #d7ffb8 transparent !important;
+}
+body.light-mode.licao-page .quiz-speech-bubble.bubble-correct::before {
+    border-color: #46a302 transparent !important;
+}
+body.light-mode.licao-page .quiz-speech-bubble.bubble-wrong {
+    background: #ffdfe0 !important;
+    border-color: #ff4b4b !important;
+    border-bottom-color: #cc3c3c !important;
+    color: #cc3c3c !important;
+}
+body.light-mode.licao-page .quiz-speech-bubble.bubble-wrong::after {
+    border-color: #ffdfe0 transparent !important;
+}
+body.light-mode.licao-page .quiz-speech-bubble.bubble-wrong::before {
+    border-color: #cc3c3c transparent !important;
+}
+
+/* Alternativas 3D Chunky no Modo Claro */
+body.light-mode.licao-page .duo-option {
+    background: #ffffff !important;
+    border: 2px solid #e5e5e5 !important;
+    border-bottom: 5px solid #d5d5d5 !important;
+    color: #4b4b4b !important;
+}
+body.light-mode.licao-page .duo-option:hover:not(.disabled) {
+    background: #f7f9fa !important;
+    border-color: #d0d0d0 !important;
+    border-bottom-color: #bcbcbc !important;
+}
+body.light-mode.licao-page .duo-option.selected {
+    background: #ddf4ff !important;
+    border-color: #1cb0f6 !important;
+    border-bottom: 5px solid #1899d6 !important;
+}
+body.light-mode.licao-page .option-letter {
+    background: #f7f7f7 !important;
+    border: 2px solid #e5e5e5 !important;
+    border-bottom: 3px solid #d5d5d5 !important;
+    color: #777777 !important;
+}
+body.light-mode.licao-page .duo-option.selected .option-letter {
+    background: #1cb0f6 !important;
+    border-color: #1cb0f6 !important;
+    border-bottom: 3px solid #1899d6 !important;
+    color: #ffffff !important;
+}
+body.light-mode.licao-page .option-text {
+    color: #4b4b4b !important;
+}
+body.light-mode.licao-page .duo-option.selected .option-text {
+    color: #1899d6 !important;
+}
+body.light-mode.licao-page .duo-option.correct {
+    background: #d7ffb8 !important;
+    border-color: #58cc02 !important;
+    border-bottom: 5px solid #46a302 !important;
+}
+body.light-mode.licao-page .duo-option.correct .option-letter {
+    background: #58cc02 !important;
+    border-color: #58cc02 !important;
+    border-bottom: 3px solid #46a302 !important;
+    color: #ffffff !important;
+}
+body.light-mode.licao-page .duo-option.correct .option-text {
+    color: #357a01 !important;
+}
+body.light-mode.licao-page .duo-option.wrong {
+    background: #ffdfe0 !important;
+    border-color: #ff4b4b !important;
+    border-bottom: 5px solid #cc3c3c !important;
+}
+body.light-mode.licao-page .duo-option.wrong .option-letter {
+    background: #ff4b4b !important;
+    border-color: #ff4b4b !important;
+    border-bottom: 3px solid #cc3c3c !important;
+    color: #ffffff !important;
+}
+body.light-mode.licao-page .duo-option.wrong .option-text {
+    color: #cc3c3c !important;
+}
+body.light-mode.licao-page .duo-option.reveal-correct {
+    background: #f2ffe6 !important;
+    border-color: #58cc02 !important;
+    border-bottom: 5px solid #46a302 !important;
+}
+body.light-mode.licao-page .duo-option.reveal-correct .option-letter {
+    border-color: #58cc02 !important;
+    border-bottom: 3px solid #46a302 !important;
+    color: #58cc02 !important;
+    background: transparent !important;
+}
+body.light-mode.licao-page .duo-option.reveal-correct .option-text {
+    color: #357a01 !important;
+}
+
+/* Rodapé do Quiz no Modo Claro */
+body.light-mode.licao-page .quiz-footer {
+    background: #ffffff !important;
+    border-top: 2px solid #e5e5e5 !important;
+}
+body.light-mode.licao-page .quiz-footer.feedback-correct {
+    background: #d7ffb8 !important;
+    border-top-color: #58cc02 !important;
+}
+body.light-mode.licao-page .quiz-footer.feedback-wrong {
+    background: #ffdfe0 !important;
+    border-top-color: #ff4b4b !important;
+}
+body.light-mode.licao-page .btn-quiz-action.btn-check:disabled {
+    background: #e5e5e5 !important;
+    border-bottom: 5px solid #d0d0d0 !important;
+    color: #afafaf !important;
+}
+
+/* Modal de Aviso de Saída no Modo Claro */
+body.light-mode.licao-page .exit-warning-card {
+    background: #ffffff !important;
+    border: 2px solid #e5e5e5 !important;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+}
+body.light-mode.licao-page .exit-warning-title {
+    color: #4b4b4b !important;
+}
+body.light-mode.licao-page .exit-warning-text {
+    color: #777777 !important;
+}
+
+/* Balão do Mascote no Dashboard no Modo Claro */
+body.light-mode .mascote-balao-dash {
+    background: #ffffff !important;
+    border: 2px solid #e5e5e5 !important;
+    border-bottom: 4px solid #d5d5d5 !important;
+    color: #4b4b4b !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important;
+}
+
+/* Novos Tipos de Lição no Modo Claro */
+body.light-mode.licao-page .code-editor {
+    background-color: #1e222d !important;
+    border: 2px solid #e5e5e5 !important;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08) !important;
+}
+body.light-mode.licao-page .code-editor pre code,
+body.light-mode.licao-page .code-editor pre {
+    color: #f8f8f2 !important;
+}
+body.light-mode.licao-page .typing-input {
+    color: #50fa7b !important;
+}
+
+

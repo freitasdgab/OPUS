@@ -12,6 +12,6 @@ $_SESSION['start_time'] = date('Y-m-d H:i:s');
 
 // Após processar a lógica, redireciona o usuário para a tela principal (Ex: dashboard.php ou as lições)
 // Se a tela destino estiver dentro da pasta 'back/', basta mudar o caminho.
-header("Location: dashboard.php");
+header("Location: ../front/pages/dashboard.php");
 exit();
 ?>

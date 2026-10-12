@@ -27,7 +27,7 @@ function trocarAbaAmigos(aba) {
 
 // ── 1. CARREGAR QUADRADINHOS DE BATALHAS 1V1 (MINHAS BATALHAS) ──
 function carregarBatalhas1v1() {
-    fetch('../../back/api_amigos.php?action=listar_amigos&tipo=seguindo')
+    fetch('../../back/api/amigos.php?action=listar_amigos&tipo=seguindo')
     .then(r => r.json())
     .then(data => {
         const container = document.getElementById('containerBatalhas1v1');
@@ -99,7 +99,7 @@ function selecionarRival1v1(rivalId, cardElem) {
 }
 
 function carregarBatalha(rivalId) {
-    fetch(`../../back/api_amigos.php?action=obter_batalha&rival_id=${rivalId}`)
+    fetch(`../../back/api/amigos.php?action=obter_batalha&rival_id=${rivalId}`)
     .then(r => r.json())
     .then(data => {
         if (!data.success || !data.batalha) return;
@@ -218,7 +218,7 @@ function enviarConviteChatGrupo(codigoConvite, nomeGrupo) {
 
 // ── 3. LÓGICA DOS QUADRADINHOS DE GRUPOS ─────────────────────────
 function carregarGrupos() {
-    fetch('../../back/api_amigos.php?action=listar_grupos')
+    fetch('../../back/api/amigos.php?action=listar_grupos')
     .then(r => r.json())
     .then(data => {
         const containerMeus = document.getElementById('containerMeusGrupos');
@@ -309,7 +309,7 @@ function entrarNoGrupoDireto(codigo) {
     fd.append('action', 'entrar_grupo');
     fd.append('codigo_convite', codigo);
 
-    fetch('../../back/api_amigos.php', { method: 'POST', body: fd })
+    fetch('../../back/api/amigos.php', { method: 'POST', body: fd })
     .then(r => r.json())
     .then(data => {
         if (data.success) {
@@ -344,7 +344,7 @@ function fecharModalCriarGrupo() {
 
 
 function carregarAmigosParaModalCriarGrupo() {
-    fetch('../../back/api_amigos.php?action=listar_amigos&tipo=seguindo')
+    fetch('../../back/api/amigos.php?action=listar_amigos&tipo=seguindo')
     .then(r => r.json())
     .then(data => {
         const container = document.getElementById('listaAmigosParaGrupo');
@@ -399,7 +399,7 @@ function confirmarCriarGrupo() {
         btnCriar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Criando...';
     }
 
-    fetch('../../back/api_amigos.php', { method: 'POST', body: fd })
+    fetch('../../back/api/amigos.php', { method: 'POST', body: fd })
     .then(r => r.json())
     .then(data => {
         if (btnCriar) {
@@ -476,7 +476,7 @@ function entrarGrupoPorCodigo() {
     fd.append('action', 'entrar_grupo');
     fd.append('codigo_convite', codigo);
 
-    fetch('../../back/api_amigos.php', { method: 'POST', body: fd })
+    fetch('../../back/api/amigos.php', { method: 'POST', body: fd })
     .then(r => r.json())
     .then(data => {
         if (data.success) {
@@ -499,7 +499,7 @@ function entrarGrupoPorCodigo() {
 
 // ── 5. MODAL VISUALIZAR BATALHA DO GRUPO ─────────────────────────
 function visualizarGrupo(grupoId) {
-    fetch(`../../back/api_amigos.php?action=detalhes_grupo&grupo_id=${grupoId}`)
+    fetch(`../../back/api/amigos.php?action=detalhes_grupo&grupo_id=${grupoId}`)
     .then(r => r.json())
     .then(data => {
         if (!data.success || !data.grupo) {
@@ -598,7 +598,7 @@ function buscarAmigosExato() {
     const q = document.getElementById('inputBuscaAmigo').value.trim();
     if (!q) return;
 
-    fetch(`../../back/api_amigos.php?action=buscar_usuarios&q=${encodeURIComponent(q)}`)
+    fetch(`../../back/api/amigos.php?action=buscar_usuarios&q=${encodeURIComponent(q)}`)
     .then(r => r.json())
     .then(data => {
         const container = document.getElementById('containerResultadoBusca');
@@ -611,7 +611,7 @@ function buscarAmigosExato() {
 }
 
 function carregarRecomendacoesLiga() {
-    fetch('../../back/api_amigos.php?action=buscar_recomendacoes')
+    fetch('../../back/api/amigos.php?action=buscar_recomendacoes')
     .then(r => r.json())
     .then(data => {
         const container = document.getElementById('containerRecomendacoesLiga');
@@ -652,7 +652,7 @@ function enviarPedidoConexao(targetId, btnElement) {
     fd.append('action', 'solicitar_conexao');
     fd.append('target_id', targetId);
 
-    fetch('../../back/api_amigos.php', { method: 'POST', body: fd })
+    fetch('../../back/api/amigos.php', { method: 'POST', body: fd })
     .then(r => r.json())
     .then(data => {
         if (data.success) {
@@ -670,7 +670,7 @@ function enviarPedidoConexao(targetId, btnElement) {
 
 // ── 8. CHAT E PEDIDOS ──────────────────────────────────────────
 function carregarPedidosPendentes() {
-    fetch('../../back/api_amigos.php?action=listar_pedidos')
+    fetch('../../back/api/amigos.php?action=listar_pedidos')
     .then(r => r.json())
     .then(data => {
         const container = document.getElementById('listaPedidosPendentes');
@@ -702,7 +702,7 @@ function responderPedido(pedidoId, resposta) {
     fd.append('pedido_id', pedidoId);
     fd.append('resposta', resposta);
 
-    fetch('../../back/api_amigos.php', { method: 'POST', body: fd })
+    fetch('../../back/api/amigos.php', { method: 'POST', body: fd })
     .then(r => r.json())
     .then(data => {
         if (data.success) {
@@ -713,7 +713,7 @@ function responderPedido(pedidoId, resposta) {
 }
 
 function carregarAmigosChat() {
-    fetch('../../back/api_amigos.php?action=listar_amigos&tipo=seguindo')
+    fetch('../../back/api/amigos.php?action=listar_amigos&tipo=seguindo')
     .then(r => r.json())
     .then(data => {
         const container = document.getElementById('listaAmigosChat');
@@ -764,7 +764,7 @@ function abrirChatComAmigo(id, nome, foto, cardElem) {
 
 function carregarMensagensChat(id, silent = false) {
     if (amigoChatAtual !== id) return;
-    fetch(`../../back/api_amigos.php?action=listar_mensagens&amigo_id=${id}`)
+    fetch(`../../back/api/amigos.php?action=listar_mensagens&amigo_id=${id}`)
     .then(r => r.json())
     .then(data => {
         if (!data.success) return;
@@ -807,7 +807,7 @@ function enviarMensagemChat() {
     fd.append('destinatario_id', amigoChatAtual);
     fd.append('mensagem', msg);
 
-    fetch('../../back/api_amigos.php', { method: 'POST', body: fd })
+    fetch('../../back/api/amigos.php', { method: 'POST', body: fd })
     .then(() => carregarMensagensChat(amigoChatAtual));
 }
 
@@ -826,7 +826,7 @@ window.provocarRival = function() {
             fd.append('action', 'enviar_mensagem');
             fd.append('destinatario_id', rivalId);
             fd.append('mensagem', `Seu duelo tá fraco, ${rivalNome}! Quero ver me passar! 😎🔥`);
-            fetch('../../back/api_amigos.php', { method: 'POST', body: fd });
+            fetch('../../back/api/amigos.php', { method: 'POST', body: fd });
             if (typeof opusAlerta === 'function') {
                 opusAlerta({
                     tipo: 'success',

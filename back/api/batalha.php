@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'conexao.php';
+require_once __DIR__ . '/../conexao.php';
 header('Content-Type: application/json');
 
 if (!isset($_SESSION['user_id'])) {

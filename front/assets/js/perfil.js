@@ -38,7 +38,7 @@ colorOptions.forEach(opt => {
 });
 
 // Busca estatísticas de Seguidores e Seguindo
-fetch('../../back/api_amigos.php?action=estatisticas_sociais')
+fetch('../../back/api/amigos.php?action=estatisticas_sociais')
 .then(r => r.json())
 .then(data => {
     if (data.success) {
@@ -80,7 +80,7 @@ function copiarConvitePerfil(userId) {
 }
 
 // Consumo da API de Conquistas e Criação dos Cards no Perfil
-fetch('../../back/api_conquistas.php')
+fetch('../../back/api/conquistas.php')
 .then(r => r.json())
 .then(data => {
     const container = document.getElementById('trophy-container');
@@ -119,7 +119,7 @@ fetch('../../back/api_conquistas.php')
 
 
 // Busca pedidos pendentes para a Caixa de Aprovação
-fetch('../../back/api_amigos.php?action=listar_pedidos')
+fetch('../../back/api/amigos.php?action=listar_pedidos')
 .then(r => r.json())
 .then(data => {
     if (data.success && data.pedidos.length > 0) {
@@ -148,7 +148,7 @@ function responderPedidoPerfil(pedidoId, resposta) {
     fd.append('pedido_id', pedidoId);
     fd.append('resposta', resposta);
 
-    fetch('../../back/api_amigos.php', { method: 'POST', body: fd })
+    fetch('../../back/api/amigos.php', { method: 'POST', body: fd })
     .then(r => r.json())
     .then(data => {
         if (data.success) {
@@ -166,7 +166,7 @@ function responderPedidoPerfil(pedidoId, resposta) {
 }
 
 function carregarAmigosPerfil() {
-    fetch('../../back/api_amigos.php?action=listar_amigos&tipo=amigos')
+    fetch('../../back/api/amigos.php?action=listar_amigos&tipo=amigos')
     .then(r => r.json())
     .then(data => {
         const container = document.getElementById('listaAmigosPerfil');
@@ -206,7 +206,7 @@ function openSocialModal(type) {
     const container = document.getElementById('socialModalList');
     container.innerHTML = '<div style="color:var(--text-muted); text-align:center;">Carregando...</div>';
     
-    fetch(`../../back/api_amigos.php?action=listar_amigos&tipo=${type}`)
+    fetch(`../../back/api/amigos.php?action=listar_amigos&tipo=${type}`)
     .then(r => r.json())
     .then(data => {
         if (!data.success || data.amigos.length === 0) {

@@ -56,7 +56,7 @@ function enviarMensagemOpi(textoManual) {
     if (sendBtn) sendBtn.disabled = true;
 
     // 3. Faz chamada à API do Opi IA
-    fetch('../../back/api_chatbot.php', {
+    fetch('../../back/api/chatbot.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json; charset=utf-8' },
         body: JSON.stringify({ mensagem: mensagem })

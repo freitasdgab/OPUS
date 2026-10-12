@@ -56,15 +56,14 @@ $tipos_intercalados = ['multipla_escolha', 'digitar_codigo', 'completar_codigo',
 $idx_tipo = 0;
 
 while ($row = $result_perguntas->fetch_assoc()) {
-    // Se o banco ainda não tiver a coluna 'tipo', ou se todas estiverem como o padrão 'multipla_escolha',
-    // mockamos para intercalar os tipos e demonstrar as novas lições.
-    if (!isset($row['tipo']) || $row['tipo'] === 'multipla_escolha' || empty($row['tipo'])) {
+    // Se o banco ainda não tiver a coluna 'tipo' preenchida para outros capítulos antigos, usa fallback
+    if (!isset($row['tipo']) || empty($row['tipo'])) {
         $row['tipo'] = $tipos_intercalados[$idx_tipo % 4];
     }
     
-    // Para 'digitar_codigo' e 'completar_codigo_escrito', garantir que alternativa_correta seja o alvo.
+    // Para 'digitar_codigo' e 'completar_codigo_escrito', garantir que alternativa_correta seja o alvo se não definido.
     if (($row['tipo'] === 'digitar_codigo' || $row['tipo'] === 'completar_codigo_escrito') && !isset($row['codigo_esperado'])) {
-        $row['codigo_esperado'] = $row['alternativa_correta']; // mock
+        $row['codigo_esperado'] = $row['alternativa_correta'];
     }
     
     $perguntas[] = $row;
