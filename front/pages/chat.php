@@ -51,8 +51,43 @@ $convite_url = "http://" . $_SERVER['HTTP_HOST'] . "/OPUS/front/pages/auth.html?
                     
                     <div id="search-results" style="display: none; margin: 10px; padding: 10px; background: #232330; border-radius: 12px; border: 2px solid #2e2e3e;"></div>
 
-                    <div class="chat-list" id="chat-list">
-                        <div class="chat-loading"><i class="fa-solid fa-spinner fa-spin"></i> Carregando conversas...</div>
+                    <!-- ABAS DO CHAT: CONVERSAS & NOTIFICAÇÕES -->
+                    <div class="chat-tabs">
+                        <button type="button" class="chat-tab-btn active" id="tabBtnConversas" onclick="alternarAbaChat('conversas')">
+                            <i class="fa-solid fa-comments"></i> Conversas
+                        </button>
+                        <button type="button" class="chat-tab-btn" id="tabBtnNotificacoes" onclick="alternarAbaChat('notificacoes')">
+                            <i class="fa-solid fa-bell"></i> Notificações
+                            <span class="tab-badge" id="tabBadgeNotif" style="display: none;">0</span>
+                        </button>
+                    </div>
+
+                    <!-- CONTEÚDO DA ABA CONVERSAS -->
+                    <div class="chat-tab-panel active" id="tabPanelConversas">
+                        <div id="pending-requests-banner" style="display: none;" class="chat-alert-banner" onclick="alternarAbaChat('notificacoes')">
+                            <div class="cab-icon"><i class="fa-solid fa-user-plus"></i></div>
+                            <div class="cab-text">
+                                <strong id="pending-requests-count">1 pedido</strong> de conexão pendente!
+                            </div>
+                            <i class="fa-solid fa-chevron-right cab-arrow"></i>
+                        </div>
+
+                        <div class="chat-list" id="chat-list">
+                            <div class="chat-loading"><i class="fa-solid fa-spinner fa-spin"></i> Carregando conversas...</div>
+                        </div>
+                    </div>
+
+                    <!-- CONTEÚDO DA ABA NOTIFICAÇÕES -->
+                    <div class="chat-tab-panel" id="tabPanelNotificacoes" style="display: none;">
+                        <div class="notif-panel-header">
+                            <span><i class="fa-solid fa-inbox"></i> Pedidos e Avisos</span>
+                            <button type="button" class="btn-refresh-panel" onclick="carregarNotificacoesChat()" title="Atualizar">
+                                <i class="fa-solid fa-rotate-right"></i>
+                            </button>
+                        </div>
+                        <div class="notif-chat-list" id="notif-chat-list">
+                            <div class="chat-loading"><i class="fa-solid fa-spinner fa-spin"></i> Carregando notificações...</div>
+                        </div>
                     </div>
                 </div>
 

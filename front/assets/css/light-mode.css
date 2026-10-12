@@ -494,6 +494,75 @@ body.light-mode .chat-empty-state h3 {
     color: #4b4b4b !important;
 }
 
+/* Abas de navegação do Chat em Modo Claro */
+body.light-mode .chat-tabs {
+    background: #f7f9fa !important;
+    border-bottom: 2px solid #e5e5e5 !important;
+}
+body.light-mode .chat-tab-btn {
+    color: #777777 !important;
+}
+body.light-mode .chat-tab-btn:hover {
+    color: #4b4b4b !important;
+    background: #e5e5e5 !important;
+}
+body.light-mode .chat-tab-btn.active {
+    color: #1cb0f6 !important;
+    background: #ffffff !important;
+    border: 2px solid #e5e5e5 !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06) !important;
+}
+body.light-mode .chat-tab-btn.active i {
+    color: #1cb0f6 !important;
+}
+
+/* Banner de solicitações pendentes em Modo Claro */
+body.light-mode .chat-alert-banner {
+    background: #eaf8ff !important;
+    border: 2px solid #1cb0f6 !important;
+}
+body.light-mode .chat-alert-banner .cab-text {
+    color: #4b4b4b !important;
+}
+
+/* Hub de Notificações Integrado em Modo Claro */
+body.light-mode .notif-panel-header {
+    background: #ffffff !important;
+    border-bottom: 2px solid #e5e5e5 !important;
+    color: #777777 !important;
+}
+body.light-mode .notif-card {
+    background: #ffffff !important;
+    border: 2px solid #e5e5e5 !important;
+    border-bottom: 3px solid #e5e5e5 !important;
+}
+body.light-mode .notif-card:hover {
+    border-color: #d1d5db !important;
+}
+body.light-mode .notif-card-name {
+    color: #4b4b4b !important;
+}
+body.light-mode .notif-card-desc {
+    color: #777777 !important;
+}
+body.light-mode .btn-notif-decline {
+    background: #f3f4f6 !important;
+    color: #777777 !important;
+    border: 2px solid #e5e5e5 !important;
+    border-bottom: 3px solid #d1d5db !important;
+}
+body.light-mode .btn-notif-decline:hover {
+    background: #ff4b4b !important;
+    color: #ffffff !important;
+    border-color: #ff4b4b !important;
+}
+body.light-mode .notif-empty-state i {
+    color: #e5e5e5 !important;
+}
+body.light-mode .notif-empty-state p {
+    color: #777777 !important;
+}
+
 /* Conserto do Widget de Ofensiva (Zero Dias/Inativo) */
 body.light-mode .ofensiva-body.fogo-inativo .ofensiva-icon-box {
     background: #f3f4f6 !important;
@@ -709,6 +778,20 @@ body:not(.light-mode) .chat-input-area textarea {
     background: #1f3039 !important;
     border: 2px solid #37464f !important;
     color: #fff !important;
+}
+body:not(.light-mode) .chat-tabs {
+    background: #131f24 !important;
+    border-bottom: 2px solid #37464f !important;
+}
+body:not(.light-mode) .chat-tab-btn.active {
+    background: #1f3039 !important;
+}
+body:not(.light-mode) .notif-panel-header {
+    border-bottom: 2px solid #37464f !important;
+}
+body:not(.light-mode) .notif-card {
+    background: #18252d !important;
+    border: 2px solid #37464f !important;
 }
 body:not(.light-mode) .ofensiva-body.fogo-inativo .ofensiva-icon-box {
     background: #1f3039 !important;

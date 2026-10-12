@@ -1,4 +1,4 @@
-let currentChatUser = 0;
+﻿let currentChatUser = 0;
 let chatRefreshInterval;
 
 function carregarConversas() {
@@ -241,14 +241,7 @@ function enviarConviteDuelo(id) {
         });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    carregarConversas();
-    const urlParams = new URLSearchParams(window.location.search);
-    const targetUserId = urlParams.get('user_id');
-    if (targetUserId) {
-        abrirChat(parseInt(targetUserId));
-    }
-});
+
 
 
 function aceitarBatalha(amigoId) {
@@ -266,3 +259,188 @@ function aceitarBatalha(amigoId) {
         }
     });
 }
+
+
+// ==========================================
+// INTEGRAÇÃO DE NOTIFICAÇÕES & ABAS NO CHAT
+// ==========================================
+let currentChatTab = 'conversas';
+
+function alternarAbaChat(aba) {
+    currentChatTab = aba;
+    const btnConv = document.getElementById('tabBtnConversas');
+    const btnNotif = document.getElementById('tabBtnNotificacoes');
+    const panelConv = document.getElementById('tabPanelConversas');
+    const panelNotif = document.getElementById('tabPanelNotificacoes');
+
+    if (aba === 'conversas') {
+        if (btnConv) btnConv.classList.add('active');
+        if (btnNotif) btnNotif.classList.remove('active');
+        if (panelConv) { panelConv.classList.add('active'); panelConv.style.display = 'flex'; }
+        if (panelNotif) { panelNotif.classList.remove('active'); panelNotif.style.display = 'none'; }
+    } else {
+        if (btnConv) btnConv.classList.remove('active');
+        if (btnNotif) btnNotif.classList.add('active');
+        if (panelConv) { panelConv.classList.remove('active'); panelConv.style.display = 'none'; }
+        if (panelNotif) { panelNotif.classList.add('active'); panelNotif.style.display = 'flex'; }
+        carregarNotificacoesChat();
+    }
+}
+
+function carregarNotificacoesChat() {
+    fetch('../../back/api/notificacoes.php?action=get_notificacoes')
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) return;
+
+            const listaElem = document.getElementById('notif-chat-list');
+            const tabBadge = document.getElementById('tabBadgeNotif');
+            const banner = document.getElementById('pending-requests-banner');
+            const bannerCount = document.getElementById('pending-requests-count');
+            const topbarBadge = document.getElementById('badge-notif');
+
+            const friendRequests = (data.notificacoes || []).filter(n => n.type === 'friend_request');
+            const totalPendentes = friendRequests.length;
+
+            // Atualiza badge da aba de Notificações
+            if (tabBadge) {
+                if (totalPendentes > 0) {
+                    tabBadge.innerText = totalPendentes;
+                    tabBadge.style.display = 'inline-block';
+                } else {
+                    tabBadge.style.display = 'none';
+                }
+            }
+
+            // Atualiza badge da topbar
+            if (topbarBadge) {
+                if (data.count > 0) {
+                    topbarBadge.innerText = data.count > 99 ? '99+' : data.count;
+                    topbarBadge.style.display = 'block';
+                } else {
+                    topbarBadge.style.display = 'none';
+                }
+            }
+
+            // Atualiza banner na aba Conversas
+            if (banner && bannerCount) {
+                if (totalPendentes > 0) {
+                    bannerCount.innerText = totalPendentes === 1 ? '1 pedido' : `${totalPendentes} pedidos`;
+                    banner.style.display = 'flex';
+                } else {
+                    banner.style.display = 'none';
+                }
+            }
+
+            if (!listaElem) return;
+
+            if (!data.notificacoes || data.notificacoes.length === 0) {
+                listaElem.innerHTML = `
+                    <div class="notif-empty-state">
+                        <i class="fa-regular fa-bell-slash"></i>
+                        <p>Nenhuma notificação ou pedido pendente no momento.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            data.notificacoes.forEach(n => {
+                if (n.type === 'friend_request') {
+                    html += `
+                    <div class="notif-card" id="notif-req-${n.id}">
+                        <div class="notif-card-header">
+                            <img src="${n.foto}" class="notif-card-avatar" alt="${n.nome}">
+                            <div class="notif-card-info">
+                                <div class="notif-card-name">${n.nome}</div>
+                                <div class="notif-card-desc">Enviou um pedido de conexão</div>
+                            </div>
+                        </div>
+                        <div class="notif-card-actions">
+                            <button class="btn-notif-action btn-notif-accept" onclick="responderPedidoChat(${n.id}, 'aceito', '${n.nome.replace(/'/g, "\\'")}', ${n.remetente_id})">
+                                <i class="fa-solid fa-check"></i> Aceitar
+                            </button>
+                            <button class="btn-notif-action btn-notif-decline" onclick="responderPedidoChat(${n.id}, 'recusado', '${n.nome.replace(/'/g, "\\'")}')">
+                                <i class="fa-solid fa-xmark"></i> Recusar
+                            </button>
+                        </div>
+                    </div>`;
+                } else if (n.type === 'unread_messages') {
+                    html += `
+                    <div class="notif-card" style="cursor: pointer;" onclick="abrirChat(${n.remetente_id}); alternarAbaChat('conversas');">
+                        <div class="notif-card-header">
+                            <img src="${n.foto}" class="notif-card-avatar" alt="${n.nome}">
+                            <div class="notif-card-info">
+                                <div class="notif-card-name">${n.nome}</div>
+                                <div class="notif-card-desc"><i class="fa-solid fa-message" style="color:#1cb0f6;"></i> Enviou <strong>${n.qtd}</strong> nova(s) mensagem(ns)</div>
+                            </div>
+                        </div>
+                    </div>`;
+                }
+            });
+
+            listaElem.innerHTML = html;
+        })
+        .catch(() => {});
+}
+
+function responderPedidoChat(id, response, nome = '', remetenteId = null) {
+    const fd = new FormData();
+    fd.append('action', 'respond_request');
+    fd.append('id', id);
+    fd.append('response', response);
+
+    fetch('../../back/api/notificacoes.php', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                if (typeof window.opusToast === 'function') {
+                    if (response === 'aceito') {
+                        window.opusToast(`Pedido de ${nome} aceito! Vocês agora são conexões.`, 'success');
+                    } else {
+                        window.opusToast(`Pedido de ${nome} recusado.`, 'info');
+                    }
+                }
+                carregarNotificacoesChat();
+                carregarConversas();
+                if (typeof window.fetchNotificacoesBadge === 'function') {
+                    window.fetchNotificacoesBadge();
+                }
+
+                if (response === 'aceito' && remetenteId) {
+                    abrirChat(remetenteId);
+                    alternarAbaChat('conversas');
+                }
+            } else {
+                if (typeof window.opusToast === 'function') {
+                    window.opusToast('Não foi possível responder ao pedido.', 'error');
+                }
+            }
+        })
+        .catch(() => {
+            if (typeof window.opusToast === 'function') {
+                window.opusToast('Erro ao processar resposta.', 'error');
+            }
+        });
+}
+
+// Inicialização e URL params
+document.addEventListener('DOMContentLoaded', () => {
+    carregarConversas();
+    carregarNotificacoesChat();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetUserId = urlParams.get('user_id') || urlParams.get('user');
+    if (targetUserId) {
+        abrirChat(parseInt(targetUserId));
+    }
+    if (urlParams.get('tab') === 'notificacoes') {
+        alternarAbaChat('notificacoes');
+    }
+
+    // Atualiza conversas e notificações periodicamente a cada 15s
+    setInterval(() => {
+        carregarConversas();
+        carregarNotificacoesChat();
+    }, 15000);
+});

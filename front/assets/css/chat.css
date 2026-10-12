@@ -248,3 +248,250 @@
     background: #1cb0f6; color: #fff; border: none; padding: 5px 10px; border-radius: 8px; font-weight: 800; cursor: pointer; border-bottom: 2px solid #1899d6;
 }
 .btn-add-friend:active { transform: translateY(2px); border-bottom-width: 0; }
+
+/* ABAS DE NAVEGAÇÃO DO CHAT */
+.chat-tabs {
+    display: flex;
+    background: #1e1e28;
+    padding: 8px 12px;
+    gap: 8px;
+    border-bottom: 2px solid #2e2e3e;
+}
+.chat-tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: transparent;
+    border: none;
+    border-radius: 12px;
+    color: #94a3b8;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+.chat-tab-btn:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+}
+.chat-tab-btn.active {
+    color: #fff;
+    background: #2e2e42;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+.chat-tab-btn.active i {
+    color: #1cb0f6;
+}
+.tab-badge {
+    background: #ff4b4b;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 900;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 14px;
+    text-align: center;
+}
+
+/* PAINEIS DAS ABAS */
+.chat-tab-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.chat-tab-panel:not(.active) {
+    display: none !important;
+}
+
+/* BANNER DE NOTIFICAÇÃO PENDENTE NA ABA DE CONVERSAS */
+.chat-alert-banner {
+    margin: 12px 14px 6px 14px;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, rgba(28, 176, 246, 0.18), rgba(88, 204, 2, 0.15));
+    border: 2px solid #1cb0f6;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.2s ease;
+}
+.chat-alert-banner:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, rgba(28, 176, 246, 0.28), rgba(88, 204, 2, 0.22));
+}
+.cab-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #1cb0f6;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+.cab-text {
+    flex: 1;
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+.cab-text strong {
+    color: #1cb0f6;
+}
+.cab-arrow {
+    color: #94a3b8;
+    font-size: 0.8rem;
+}
+
+/* LISTA DE NOTIFICAÇÕES NO CHAT */
+.notif-panel-header {
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #2e2e3e;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.notif-panel-header span i {
+    color: #1cb0f6;
+    margin-right: 6px;
+}
+.btn-refresh-panel {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+.btn-refresh-panel:hover {
+    color: #1cb0f6;
+}
+
+.notif-chat-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.notif-card {
+    background: #1e1e28;
+    border: 2px solid #2e2e3e;
+    border-radius: 16px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: border-color 0.2s;
+}
+.notif-card:hover {
+    border-color: #3b3b52;
+}
+.notif-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.notif-card-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #2e2e3e;
+}
+.notif-card-info {
+    flex: 1;
+}
+.notif-card-name {
+    color: #fff;
+    font-weight: 800;
+    font-size: 0.95rem;
+    margin-bottom: 2px;
+}
+.notif-card-desc {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.notif-card-actions {
+    display: flex;
+    gap: 8px;
+    padding-top: 4px;
+}
+.btn-notif-action {
+    flex: 1;
+    padding: 7px 10px;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.8rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: transform 0.1s, filter 0.2s;
+}
+.btn-notif-action:active {
+    transform: translateY(2px);
+}
+.btn-notif-accept {
+    background: #58cc02;
+    color: #fff;
+    border-bottom: 3px solid #4db002;
+}
+.btn-notif-accept:active {
+    border-bottom-width: 0;
+}
+.btn-notif-decline {
+    background: #2e2e42;
+    color: #e0e0e0;
+    border-bottom: 3px solid #232332;
+}
+.btn-notif-decline:hover {
+    background: #ff4b4b;
+    color: #fff;
+    border-bottom-color: #cc3636;
+}
+.btn-notif-decline:active {
+    border-bottom-width: 0;
+}
+
+.notif-empty-state {
+    padding: 40px 20px;
+    text-align: center;
+    color: #94a3b8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+.notif-empty-state i {
+    font-size: 2.5rem;
+    color: #2e2e3e;
+}
+.notif-empty-state p {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+

@@ -72,13 +72,13 @@
     }
 }
 
-/* NOTIFICAÇÕES */
-.stat-notificacao {
+/* CHAT E NOTIFICACOES */
+.stat-chat, .stat-notificacao {
     color: #1cb0f6;
     cursor: pointer;
     position: relative;
 }
-.stat-notificacao:hover {
+.stat-chat, .stat-notificacao:hover {
     background: rgba(28, 176, 246, 0.15);
 }
 .badge-notif {
@@ -205,4 +205,20 @@
 }
 .stat-fogo.fogo-inativo span {
     color: #999 !important;
+}
+
+/* Chama da topbar "viva" quando o fogo de hoje já está aceso */
+.stat-fogo.fogo-ativo i {
+    display: inline-block;
+    transform-origin: 50% 100%;
+    animation: topbarFlameFlicker 1.8s ease-in-out infinite;
+    filter: drop-shadow(0 0 4px rgba(255, 150, 0, 0.55));
+}
+@keyframes topbarFlameFlicker {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    30%      { transform: scale(1.06, 0.95) rotate(-3deg); }
+    60%      { transform: scale(0.96, 1.07) rotate(2deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .stat-fogo.fogo-ativo i { animation: none; }
 }

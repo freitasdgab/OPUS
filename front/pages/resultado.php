@@ -58,6 +58,21 @@ if ($acertos == 3) {
     $xp_ganho = 10; 
 }
 
+// Ofensiva de fogo: detecta se ESTA lição foi a que acendeu o fogo de hoje
+// (antes: ultima_atividade != hoje / depois: ultima_atividade == hoje).
+$fogo_acendeu_agora = false;
+$dias_fogo_atual = 0;
+$ler_ultima_atividade = function () use ($conn, $user_id) {
+    $st = $conn->prepare("SELECT dias_fogo, (ultima_atividade = CURDATE()) AS aceso_hoje, WEEKDAY(CURDATE()) AS dia_semana FROM usuarios WHERE id = ?");
+    $st->bind_param("i", $user_id);
+    $st->execute();
+    $row = $st->get_result()->fetch_assoc() ?: [];
+    $st->close();
+    return $row;
+};
+$fogo_antes = $ler_ultima_atividade();
+$fogo_ja_aceso_hoje = ((int) ($fogo_antes['aceso_hoje'] ?? 0) === 1);
+
 if (!$ja_processado) {
     // Atualiza XP, liga, missão, sequência de fogo, troféus e avanço de
     // progresso — tudo isso mora em sp_processar_resultado_licao
@@ -115,6 +130,31 @@ $liberou_bau = ($licao_atual == 3 && $acertos > 0);
 
 $status_atual = opus_sincronizar_jogador($conn, $user_id);
 $vidas_restantes = (int) $status_atual['vidas'];
+
+// Resultado da ofensiva após processar a lição
+$fogo_depois = $ler_ultima_atividade();
+$dias_fogo_atual = (int) ($fogo_depois['dias_fogo'] ?? 0);
+$fogo_acendeu_agora = !$ja_processado
+    && !$fogo_ja_aceso_hoje
+    && ((int) ($fogo_depois['aceso_hoje'] ?? 0) === 1);
+
+// Semana atual (Seg → Dom). Acende os dias cobertos pela sequência
+// (hoje e os (dias_fogo - 1) dias anteriores); hoje é destacado e os
+// dias futuros ficam cinzas para incentivar a continuar.
+$semana_fogo = [];
+if ($fogo_acendeu_agora) {
+    $nomes_dias = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+    // WEEKDAY() do MySQL: 0 = segunda (mesma data usada pela procedure)
+    $idx_hoje = (int) ($fogo_depois['dia_semana'] ?? ((int) date('N') - 1));
+    for ($i = 0; $i < 7; $i++) {
+        $diff = $i - $idx_hoje; // negativo = passado
+        $semana_fogo[] = [
+            'nome'  => $nomes_dias[$i],
+            'hoje'  => ($diff === 0),
+            'aceso' => ($diff <= 0 && -$diff < $dias_fogo_atual),
+        ];
+    }
+}
 
 ?>
 
@@ -216,11 +256,109 @@ $vidas_restantes = (int) $status_atual['vidas'];
             </div>
         </main>
     </div>
+
+    <?php if ($fogo_acendeu_agora): ?>
+    <!-- OFENSIVA DE FOGO: chama acendendo + dias da semana -->
+    <div class="streak-overlay" id="streakOverlay" role="dialog" aria-modal="true" aria-labelledby="streakTitle">
+        <div class="streak-card">
+            <div class="streak-flame-stage">
+                <div class="streak-glow"></div>
+                <div class="streak-spark"></div>
+                <svg class="streak-flame" viewBox="0 0 120 160" aria-hidden="true">
+                    <defs>
+                        <linearGradient id="flameOuter" x1="0" y1="1" x2="0" y2="0">
+                            <stop offset="0%" stop-color="#ff4b00"/>
+                            <stop offset="60%" stop-color="#ff9600"/>
+                            <stop offset="100%" stop-color="#ffc800"/>
+                        </linearGradient>
+                        <linearGradient id="flameInner" x1="0" y1="1" x2="0" y2="0">
+                            <stop offset="0%" stop-color="#ffc800"/>
+                            <stop offset="100%" stop-color="#fff6c2"/>
+                        </linearGradient>
+                    </defs>
+                    <path class="flame-outer" fill="url(#flameOuter)"
+                          d="M60 6 C72 38 104 58 104 100 C104 132 84 154 60 154 C36 154 16 132 16 100 C16 74 32 60 40 40 C44 58 52 66 58 68 C54 46 54 26 60 6 Z"/>
+                    <path class="flame-inner" fill="url(#flameInner)"
+                          d="M60 70 C68 88 84 98 84 118 C84 136 74 148 60 148 C46 148 36 136 36 118 C36 104 44 96 48 86 C50 96 54 100 58 101 C56 90 56 80 60 70 Z"/>
+                </svg>
+            </div>
+
+            <div class="streak-count" id="streakCount" data-target="<?php echo $dias_fogo_atual; ?>">0</div>
+            <h2 class="streak-title" id="streakTitle">
+                <?php echo $dias_fogo_atual === 1 ? 'dia de ofensiva!' : 'dias de ofensiva!'; ?>
+            </h2>
+            <p class="streak-sub">
+                <?php if ($dias_fogo_atual <= 1): ?>
+                    Você acendeu sua primeira chama! Volte amanhã para manter o fogo aceso. 🔥
+                <?php else: ?>
+                    Seu fogo continua aceso! Pratique todos os dias para não perder a sequência.
+                <?php endif; ?>
+            </p>
+
+            <div class="streak-week">
+                <?php foreach ($semana_fogo as $i => $dia): ?>
+                    <div class="streak-day <?php echo $dia['aceso'] ? 'is-lit' : ''; ?> <?php echo $dia['hoje'] ? 'is-today' : ''; ?>"
+                         style="--d: <?php echo $i; ?>;">
+                        <span class="streak-day-name"><?php echo $dia['nome']; ?></span>
+                        <span class="streak-day-dot">
+                            <i class="fa-solid fa-fire"></i>
+                        </span>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+
+            <button type="button" class="streak-btn" id="streakContinueBtn">CONTINUAR</button>
+        </div>
+    </div>
+    <?php endif; ?>
     <script src="../assets/js/opus_audio.js"></script>
     <script src="../assets/js/script.js"></script>
     <script>
         // Interações sonoras e reativas na tela de Resultado
         document.addEventListener('DOMContentLoaded', function() {
+            // ── Ofensiva de fogo: chama acendendo + semana ──────────────
+            const streakOverlay = document.getElementById('streakOverlay');
+            if (streakOverlay) {
+                const countEl = document.getElementById('streakCount');
+                const alvo = parseInt(countEl.dataset.target, 10) || 1;
+
+                requestAnimationFrame(() => streakOverlay.classList.add('is-open'));
+
+                // Chama acende após o card entrar
+                setTimeout(() => {
+                    streakOverlay.classList.add('is-lit');
+                    if (window.OpusAudio && window.OpusAudio.playSuccess) window.OpusAudio.playSuccess();
+                }, 450);
+
+                // Contador sobe até o total de dias
+                setTimeout(() => {
+                    const dur = Math.min(900, 120 * alvo);
+                    const ini = performance.now();
+                    (function tick(t) {
+                        const p = Math.min(1, (t - ini) / dur);
+                        countEl.textContent = Math.max(1, Math.round(alvo * p));
+                        if (p < 1) requestAnimationFrame(tick);
+                        else countEl.classList.add('pop');
+                    })(ini);
+                }, 1100);
+
+                // Semana aparece dia a dia
+                setTimeout(() => streakOverlay.classList.add('show-week'), 1500);
+
+                const fechar = () => {
+                    if (window.OpusAudio) window.OpusAudio.playClick();
+                    streakOverlay.classList.remove('is-open');
+                    streakOverlay.classList.add('is-closing');
+                    setTimeout(() => streakOverlay.remove(), 350);
+                };
+                document.getElementById('streakContinueBtn').addEventListener('click', fechar);
+                document.addEventListener('keydown', function onEsc(e) {
+                    if (e.key === 'Escape' && document.body.contains(streakOverlay)) {
+                        fechar();
+                        document.removeEventListener('keydown', onEsc);
+                    }
+                });
+            }
             // Feedback tátil em todos os botões de ação
             document.querySelectorAll('.btn-action').forEach(function(btn) {
                 btn.addEventListener('click', function() {

@@ -1,10 +1,11 @@
 <?php
 // chatbot.php - Componente flutuante do Opi IA
 ?>
-<!-- BOTÃO FLUTUANTE DO CHATBOT OPI IA -->
-<div class="opi-chat-trigger flat-ai-btn" id="opiChatTrigger" onclick="toggleOpiChat()" title="Tirar dúvidas com o Opi IA">
-    IA
-</div>
+<!-- BOTÃO FLUTUANTE DO CHATBOT OPI IA (COM FOTINHA DA AMARELA E IDENTIFICAÇÃO IA) -->
+<button class="opi-chat-trigger opi-btn-mascot" id="opiChatTrigger" onclick="toggleOpiChat()" title="Tirar dúvidas com o Opi IA">
+    <img src="../assets/img/amarela.png" alt="Opi IA" class="opi-trigger-avatar">
+    <span class="opi-trigger-badge">IA</span>
+</button>
 
 <!-- JANELA DO CHATBOT -->
 <div class="opi-chat-window" id="opiChatWindow">
@@ -12,7 +13,7 @@
     <div class="opi-chat-header">
         <div class="opi-chat-user-info">
             <div class="opi-chat-avatar-wrapper">
-                <img src="../assets/img/opi pulando feliz.png" alt="Opi Assistant" class="opi-chat-header-img">
+                <img src="../assets/img/amarela.png" alt="Opi Assistant" class="opi-chat-header-img">
                 <span class="opi-online-status"></span>
             </div>
             <div class="opi-chat-title-box">
@@ -31,7 +32,7 @@
     <div class="opi-chat-messages" id="opiChatMessages">
         <div class="opi-msg opi-msg-bot">
             <div class="opi-msg-avatar">
-                <img src="../assets/img/opi pulando feliz.png" alt="Opi">
+                <img src="../assets/img/amarela.png" alt="Opi">
             </div>
             <div class="opi-msg-bubble">
                 Olá! Eu sou o <strong>Opi IA</strong> 🤖<br>
@@ -40,16 +41,19 @@
         </div>
     </div>
 
-    <!-- PÍLULAS DE SUGESTÃO RÁPIDA -->
+
+
+    <!-- PÍLULAS DE SUGESTÃO RÁPIDA (Rolar ou arrastar para o lado) -->
     <div class="opi-chat-suggestions" id="opiChatSuggestions">
+        <button class="opi-chip" onclick="enviarSugestaoOpi('Quantas sessões faltam para eu terminar o curso?')">📊 Sessões Restantes</button>
+        <button class="opi-chip" onclick="enviarSugestaoOpi('E por porcentagem?')">📈 Por Porcentagem</button>
+        <button class="opi-chip" onclick="enviarSugestaoOpi('Nas ligas, quanto XP eu tenho que ganhar para conseguir subir de liga?')">🏆 Subir de Liga</button>
+        <button class="opi-chip" onclick="enviarSugestaoOpi('Hoje eu fiz quantas lições?')">📅 Lições de Hoje</button>
+        <button class="opi-chip" onclick="enviarSugestaoOpi('O que eu vou aprender na sessão dois?')">📚 Sessão 2</button>
+        <button class="opi-chip" onclick="enviarSugestaoOpi('Com esse conhecimento eu consigo uma vaga de emprego ou estágio?')">💼 Emprego & Estágio</button>
         <button class="opi-chip" onclick="enviarSugestaoOpi('Como funcionam as Vidas e o Fogo no Opus?')">❤️ Vidas & Fogo</button>
-        <button class="opi-chip" onclick="enviarSugestaoOpi('Como funciona o Baú de Recompensas?')">🎁 Baú de Recompensas</button>
-        <button class="opi-chip" onclick="enviarSugestaoOpi('O que é uma variável em Java?')">💻 Variáveis em Java</button>
-        <button class="opi-chip" onclick="enviarSugestaoOpi('Como funciona o laço for em Java?')">🔄 Loops em Java</button>
-        <button class="opi-chip" onclick="enviarSugestaoOpi('O que é Orientação a Objetos?')">🏗️ POO em Java</button>
     </div>
 
-    <!-- BARRA DE DIGITAÇÃO -->
     <div class="opi-chat-input-container">
         <input type="text" id="opiChatInput" placeholder="Pergunte ao Opi sobre Java ou sobre o sistema..." onkeypress="handleOpiKeyPress(event)" autocomplete="off">
         <button id="opiChatSendBtn" onclick="enviarMensagemOpi()" title="Enviar mensagem">

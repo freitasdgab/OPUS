@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // Garante que a conexão sempre exista, independentemente de quem chamou a topbar
 require_once __DIR__ . '/conexao.php';
 require_once __DIR__ . '/jogador_status.php';
@@ -24,7 +24,6 @@ if (isset($_SESSION['user_id'])) {
     $vidas_top = (int) ($dados_top['vidas'] ?? 3);
     $proxima_vida_texto = $dados_top['proxima_vida_texto'] ?? '';
     
-    // CORREÇÃO AQUI: Pega da sessão (para atualizar na hora) ou do banco, sem bloquear caminhos normais
     $foto_banco = $_SESSION['foto_perfil'] ?? $dados_top['foto_perfil'] ?? '';
 
     if (!empty($foto_banco)) {
@@ -53,20 +52,15 @@ $titulo_vidas = $proxima_vida_texto !== '' ? $proxima_vida_texto : ($vidas_top .
     </div>
 
     <div class="topbar-stats">
-                <!-- CHAT -->
-        <div class="topbar-stat stat-chat" title="Chat" onclick="window.location.href='chat.php'">
+        <!-- CHAT & NOTIFICAÇÕES -->
+        <div class="topbar-stat stat-chat" id="btn-chat" title="Chat e Notificações" onclick="window.location.href='chat.php'">
             <i class="fa-solid fa-comments"></i>
-        </div>
-
-        <!-- NOTIFICAÇÕES / MENSAGENS -->
-        <div class="topbar-stat stat-notificacao" id="btn-notificacoes" title="Notificações" onclick="toggleNotificacoes()">
-            <i class="fa-solid fa-bell"></i>
             <span class="badge-notif" id="badge-notif" style="display: none;">0</span>
         </div>
 
         <!-- FOGO (OFENSIVA / DIAS) -->
         <?php $fogo_class = ($dados_top["fogo_hoje"] ?? false) ? "fogo-ativo" : "fogo-inativo"; ?>
-        <div class="topbar-stat stat-fogo <?php echo $fogo_class; ?>" title="Sequ�ncia Di�ria" <?php if(!($dados_top["fogo_hoje"] ?? false)) echo "style='color: #999;'"; ?>>
+        <div class="topbar-stat stat-fogo <?php echo $fogo_class; ?>" title="Sequência Diária" <?php if(!($dados_top["fogo_hoje"] ?? false)) echo "style='color: #999;'"; ?>>
             <i class="fa-solid fa-fire" <?php if(!($dados_top["fogo_hoje"] ?? false)) echo "style='color: #999;'"; ?>></i>
             <span <?php if(!($dados_top["fogo_hoje"] ?? false)) echo "style='color: #999;'"; ?>><?php echo (int) $dias_fogo_top; ?></span>
         </div>
@@ -85,19 +79,4 @@ $titulo_vidas = $proxima_vida_texto !== '' ? $proxima_vida_texto : ($vidas_top .
     </div>
 </header>
 
-<!-- DROPDOWN NOTIFICAÇÕES -->
-<div class="notif-dropdown" id="notif-dropdown" style="display: none;">
-    <div class="notif-header">
-        <h3>Notificações</h3>
-        <a href="chat.php" class="notif-link"><i class="fa-solid fa-paper-plane"></i> Abrir Chat</a>
-    </div>
-    <div class="notif-body" id="notif-list">
-        <div class="notif-empty">Nenhuma notificação nova</div>
-    </div>
-</div>
-
 <script src="../assets/js/notificacoes.js"></script>
-
-
-
-

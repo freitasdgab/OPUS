@@ -1,79 +1,75 @@
 /* chatbot.css - Estilos do Chatbot Opi IA do Opus */
 
-.opi-chat-trigger.flat-ai-btn {
+/* BOTÃO FLUTUANTE DO OPI IA (COMPACTO COM FOTINHA DA AMARELA E IDENTIFICAÇÃO IA) */
+.opi-chat-trigger {
     position: fixed;
     bottom: 25px;
-    right: 25px;
-    z-index: 9999;
-    background: #4CAF50; /* Flat green, or anything really, let's keep it simple dark */
-    color: #ffffff;
-    font-family: sans-serif;
-    font-weight: bold;
-    font-size: 16px;
+    right: 35px;
+    z-index: 999;
+    background-color: #1cb0f6;
     border: none;
-    border-radius: 4px;
-    padding: 12px 20px;
+    border-bottom: 3px solid #1482b8;
+    color: #ffffff;
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: none;
-    transition: none;
-    text-transform: uppercase;
-}
-
-.opi-chat-trigger.flat-ai-btn:hover {
-    transform: none;
-    box-shadow: none;
-}
-
-.opi-chat-trigger.flat-ai-btn:active {
-    transform: none;
-    border: none;
+    box-shadow: 0 5px 14px rgba(28, 176, 246, 0.4);
+    transition: all 0.15s ease;
+    user-select: none;
+    outline: none;
+    padding: 0;
 }
 
 .opi-trigger-avatar {
-    position: relative;
-    width: 42px;
-    height: 42px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.opi-trigger-img {
-    width: 40px;
-    height: 40px;
+    width: 34px;
+    height: 34px;
     object-fit: contain;
-    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+    transition: transform 0.15s ease;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
 }
 
-.opi-online-dot {
+.opi-trigger-badge {
     position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 12px;
-    height: 12px;
-    background-color: #58cc02;
-    border: 2px solid #fff;
-    border-radius: 50%;
-    box-shadow: 0 0 8px #58cc02;
+    bottom: -3px;
+    right: -3px;
+    background: #ffc800;
+    color: #1e1e2d;
+    font-family: 'Nunito', 'Poppins', sans-serif;
+    font-weight: 900;
+    font-size: 0.65rem;
+    padding: 1px 4px;
+    border-radius: 6px;
+    border: 1.5px solid #181824;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.4px;
+    line-height: 1;
 }
 
-.opi-trigger-text {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 800;
-    font-size: 1rem;
-    color: #ffffff;
-    letter-spacing: 0.5px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+.opi-chat-trigger:hover {
+    filter: brightness(1.08);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(28, 176, 246, 0.55);
+    background-color: #1cb0f6;
+}
+
+.opi-chat-trigger:hover .opi-trigger-avatar {
+    transform: scale(1.08);
+}
+
+.opi-chat-trigger:active {
+    transform: translateY(1px);
+    border-bottom-width: 1px;
 }
 
 /* JANELA DO CHATBOT */
 .opi-chat-window {
     position: fixed;
-    bottom: 90px;
-    right: 25px;
+    bottom: 85px;
+    right: 35px;
     width: 390px;
     max-width: calc(100vw - 40px);
     height: 540px;
@@ -141,8 +137,12 @@
 
 .opi-chat-avatar-wrapper {
     position: relative;
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
 .opi-chat-header-img {
@@ -241,10 +241,16 @@
     align-self: flex-start;
 }
 
+.opi-msg-avatar {
+    flex-shrink: 0;
+    align-self: flex-end;
+}
+
 .opi-msg-avatar img {
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
     object-fit: contain;
+    display: block;
 }
 
 .opi-msg-bubble {
@@ -281,6 +287,38 @@
     color: #4ade80;
     overflow-x: auto;
     margin: 10px 0 4px 0;
+}
+
+.opi-code-block {
+    margin: 10px 0 6px 0;
+    border-radius: 10px;
+    background: #0d0d14;
+    border: 1px solid #28283c;
+    overflow: hidden;
+}
+
+.opi-code-header {
+    background: #181826;
+    padding: 4px 10px;
+    display: flex;
+    justify-content: flex-end;
+    border-bottom: 1px solid #28283c;
+}
+
+.opi-code-lang {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #94a3b8;
+    letter-spacing: 0.5px;
+}
+
+.opi-msg-bubble .opi-code-block pre {
+    background: transparent;
+    border-left: none;
+    padding: 10px 12px;
+    margin: 0;
+    border-radius: 0;
 }
 
 .opi-msg-bubble code {
@@ -320,20 +358,46 @@
     40% { transform: scale(1); }
 }
 
-/* PÍLULAS DE SUGESTÃO */
+/* PÍLULAS DE SUGESTÃO COM SUPORTE A ARRASTO HORIZONTAL */
 .opi-chat-suggestions {
     display: flex;
     gap: 8px;
-    padding: 10px 14px;
+    padding: 10px 14px 12px 14px;
     background: #181824;
     border-top: 1px solid #272738;
     overflow-x: auto;
     white-space: nowrap;
-    scroll-bar-width: none;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: #2e2e42 #181824;
+}
+
+.opi-chat-suggestions.is-dragging {
+    cursor: grabbing;
+    scroll-behavior: auto;
 }
 
 .opi-chat-suggestions::-webkit-scrollbar {
-    display: none;
+    height: 6px;
+    display: block !important;
+}
+
+.opi-chat-suggestions::-webkit-scrollbar-track {
+    background: #181824;
+    border-radius: 4px;
+}
+
+.opi-chat-suggestions::-webkit-scrollbar-thumb {
+    background: #2e2e42;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.opi-chat-suggestions::-webkit-scrollbar-thumb:hover {
+    background: #1cb0f6;
 }
 
 .opi-chip {
@@ -391,9 +455,9 @@
 #opiChatSendBtn {
     width: 44px;
     height: 44px;
-    background: #58cc02;
+    background: #1cb0f6;
     border: none;
-    border-bottom: 3px solid #429902;
+    border-bottom: 3px solid #0288d1;
     border-radius: 16px;
     color: #ffffff;
     font-size: 1rem;
@@ -407,6 +471,7 @@
 #opiChatSendBtn:hover {
     filter: brightness(1.1);
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(28, 176, 246, 0.35);
 }
 
 #opiChatSendBtn:active {
