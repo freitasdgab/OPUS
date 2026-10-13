@@ -205,18 +205,44 @@
             }
         }
 
-        // Monitora o scroll para diminuir a opacidade do botão quando o usuário já estiver olhando para a lição
+        // Monitora o scroll para orientar a direção da seta (cima ou baixo) e ajustar a opacidade quando visível
         function monitorarVisibilidadeLicaoAtual() {
             const btn = document.getElementById('btnScrollToLesson');
-            const alvo = document.getElementById('currentLessonNode') || document.querySelector('.modulo-node.current');
+            const alvo = document.getElementById('currentLessonNode') 
+                      || document.querySelector('.modulo-node.current')
+                      || document.querySelector('.capitulo-container.current-chapter');
             const container = document.querySelector('.main-content');
-            if (!btn || !alvo || !container) return;
+            if (!btn || !alvo) return;
+
+            const icone = btn.querySelector('i');
 
             const checar = () => {
                 const rect = alvo.getBoundingClientRect();
-                const containerRect = container.getBoundingClientRect();
-                const visivel = (rect.top >= containerRect.top + 60 && rect.bottom <= containerRect.bottom - 60);
+                const containerRect = container ? container.getBoundingClientRect() : { top: 0, bottom: window.innerHeight };
                 
+                // Posição central do elemento alvo e do container de rolagem
+                const alvoCentro = (rect.top + rect.bottom) / 2;
+                const containerCentro = (containerRect.top + containerRect.bottom) / 2;
+                
+                // Verifica se a lição/capítulo está no campo de visão
+                const visivel = (rect.top >= containerRect.top + 60 && rect.bottom <= containerRect.bottom - 60);
+
+                if (icone) {
+                    if (alvoCentro < containerCentro) {
+                        // O capítulo/lição recomendado está acima: seta aponta para CIMA
+                        if (!icone.classList.contains('fa-arrow-up')) {
+                            icone.className = 'fa-solid fa-arrow-up';
+                        }
+                        btn.setAttribute('title', 'Rolar para cima até a lição atual');
+                    } else {
+                        // O capítulo/lição recomendado está abaixo: seta aponta para BAIXO
+                        if (!icone.classList.contains('fa-arrow-down')) {
+                            icone.className = 'fa-solid fa-arrow-down';
+                        }
+                        btn.setAttribute('title', 'Rolar para baixo até a lição atual');
+                    }
+                }
+
                 if (visivel) {
                     btn.style.opacity = '0.35';
                     btn.style.transform = 'scale(0.92)';
@@ -226,7 +252,10 @@
                 }
             };
 
-            container.addEventListener('scroll', checar, { passive: true });
+            if (container) {
+                container.addEventListener('scroll', checar, { passive: true });
+            }
+            window.addEventListener('scroll', checar, { passive: true });
             checar();
         }
 

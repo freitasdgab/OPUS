@@ -910,7 +910,7 @@ $nomes_unidades = [
 
     <script src="../assets/js/script.js"></script> 
     <script src="../assets/js/opus_audio.js"></script>
-    <script src="../assets/js/dashboard.js"></script>
+    <script src="../assets/js/dashboard.js?v=<?= time() ?>"></script>
 </body>
 </html>
 
