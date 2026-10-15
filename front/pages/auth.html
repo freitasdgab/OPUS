@@ -134,69 +134,14 @@
     <script>
         // ── Google Sign-In ────────────────────────────────────────
         const GOOGLE_CLIENT_ID = '111201670633-jful75g6i79jm1teb4fuqg28mrqjj284.apps.googleusercontent.com';
-
-        function iniciarGoogleLogin() {
-            const btn = document.getElementById('btnGoogleLogin');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i><span>Conectando...</span>';
-
-            google.accounts.id.initialize({
-                client_id: GOOGLE_CLIENT_ID,
-                callback: handleGoogleCredential,
-                ux_mode: 'popup',
-            });
-            google.accounts.id.prompt(function(notification) {
-                // Se o usuário fechar o popup sem logar, reabilita o botão
-                if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-                    resetarBtnGoogle();
-                    google.accounts.id.renderButton(
-                        document.createElement('div'),
-                        { theme: 'outline', size: 'large' }
-                    );
-                    // Fallback: abre o seletor de conta diretamente
-                    google.accounts.oauth2.initCodeClient({
-                        client_id: GOOGLE_CLIENT_ID,
-                        scope: 'email profile',
-                        ux_mode: 'popup',
-                        callback: () => {},
-                    });
-                    resetarBtnGoogle();
-                }
-            });
-        }
-
-        function handleGoogleCredential(response) {
-            fetch('../../back/google_callback.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ credential: response.credential }),
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.ok) {
-                    localStorage.setItem('opus_cadastrado', 'true');
-                    document.cookie = "opus_cadastrado=1; path=/; max-age=31536000";
-                    window.location.href = data.redirect_url;
-                } else {
-                    opusAlerta({
-                        tipo: 'error',
-                        titulo: 'Erro no Google Sign-In',
-                        mensagem: data.erro || 'Não foi possível autenticar sua conta Google. Tente novamente.'
-                    });
-                    resetarBtnGoogle();
-                }
-            })
-            .catch(() => {
-                opusAlerta({
-                    tipo: 'error',
-                    titulo: 'Falha de Conexão',
-                    mensagem: 'Não foi possível conectar ao servidor. Verifique sua conexão e tente novamente.'
-                });
-                resetarBtnGoogle();
-            });
-        }
+        let googleTokenClient = null;
+        let googleSafetyTimeout = null;
 
         function resetarBtnGoogle() {
+            if (googleSafetyTimeout) {
+                clearTimeout(googleSafetyTimeout);
+                googleSafetyTimeout = null;
+            }
             const btn = document.getElementById('btnGoogleLogin');
             if (!btn) return;
             btn.disabled = false;
@@ -211,9 +156,181 @@
                 <span>Entrar com Google</span>`;
         }
 
-        // Inicializa silenciosamente o GIS assim que o script carregar
+        function enviarAutenticacaoBackend(dados) {
+            fetch('../../back/google_callback.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados),
+            })
+            .then(async (r) => {
+                const text = await r.text();
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    console.error('Resposta não-JSON do servidor:', text);
+                    if (text.includes('Erro de Conexão com o Banco de Dados') || text.includes('Erro no Banco de Dados')) {
+                        throw new Error("O banco de dados 'opus' não foi encontrado no XAMPP. Importe o arquivo opus.sql no phpMyAdmin.");
+                    }
+                    throw new Error("Erro interno no servidor ao processar o login.");
+                }
+                return data;
+            })
+            .then(data => {
+                resetarBtnGoogle();
+                if (data.ok) {
+                    localStorage.setItem('opus_cadastrado', 'true');
+                    document.cookie = "opus_cadastrado=1; path=/; max-age=31536000";
+                    window.location.href = data.redirect_url;
+                } else {
+                    opusAlerta({
+                        tipo: 'error',
+                        titulo: 'Erro no Google Sign-In',
+                        mensagem: data.erro || 'Não foi possível autenticar sua conta Google. Tente novamente.'
+                    });
+                }
+            })
+            .catch(err => {
+                resetarBtnGoogle();
+                opusAlerta({
+                    tipo: 'error',
+                    titulo: 'Falha no Servidor',
+                    mensagem: err.message || 'Não foi possível conectar ao servidor. Verifique se o Apache e o MySQL estão ativos no XAMPP.'
+                });
+            });
+        }
+
+        // Callback caso venha pelo One Tap (JWT id_token)
+        function handleGoogleCredential(response) {
+            if (!response || !response.credential) {
+                resetarBtnGoogle();
+                return;
+            }
+            enviarAutenticacaoBackend({ credential: response.credential });
+        }
+
+        function getGoogleTokenClient() {
+            if (!googleTokenClient && window.google && google.accounts && google.accounts.oauth2) {
+                googleTokenClient = google.accounts.oauth2.initTokenClient({
+                    client_id: GOOGLE_CLIENT_ID,
+                    scope: 'email profile openid',
+                    callback: (tokenResponse) => {
+                        if (tokenResponse.error) {
+                            console.error('Google OAuth error:', tokenResponse);
+                            resetarBtnGoogle();
+                            let msg = 'Falha na autenticação do Google.';
+                            if (tokenResponse.error === 'popup_closed_by_user') {
+                                msg = 'A janela do Google foi fechada antes de concluir o login.';
+                            } else if (tokenResponse.error === 'access_denied') {
+                                msg = 'Acesso não autorizado ou cancelado.';
+                            }
+                            opusAlerta({
+                                tipo: 'warning',
+                                titulo: 'Login Cancelado',
+                                mensagem: msg
+                            });
+                            return;
+                        }
+                        if (tokenResponse.access_token) {
+                            enviarAutenticacaoBackend({ access_token: tokenResponse.access_token });
+                        }
+                    },
+                    error_callback: (err) => {
+                        console.error('Google token error:', err);
+                        resetarBtnGoogle();
+                        let msgErro = 'Não foi possível iniciar o login do Google.';
+                        if (err && (err.type === 'origin_mismatch' || (err.message && err.message.includes('origin')))) {
+                            msgErro = 'Origem não autorizada no Google Console. Acesse via http://localhost/OPUS ao invés de IP.';
+                        }
+                        opusAlerta({
+                            tipo: 'error',
+                            titulo: 'Erro do Google',
+                            mensagem: msgErro
+                        });
+                    }
+                });
+            }
+            return googleTokenClient;
+        }
+
+        function iniciarGoogleLogin() {
+            // Verificação de URL/Origem (alerta se o usuário estiver usando 127.0.0.1 em vez de localhost)
+            if (window.location.hostname === '127.0.0.1') {
+                const urlAtual = window.location.href;
+                const urlLocalhost = urlAtual.replace('127.0.0.1', 'localhost');
+                opusAlerta({
+                    tipo: 'info',
+                    titulo: 'Dica de Conexão',
+                    mensagem: 'O Google OAuth exige o endereço "localhost" em vez de "127.0.0.1". Redirecionando...',
+                    botaoTexto: 'OK',
+                    onConfirm: () => {
+                        window.location.href = urlLocalhost;
+                    }
+                });
+                setTimeout(() => { window.location.href = urlLocalhost; }, 2000);
+                return;
+            }
+
+            const btn = document.getElementById('btnGoogleLogin');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i><span>Conectando...</span>';
+
+            // Timeout de segurança: nunca deixa o botão travado em carregamento infinito
+            if (googleSafetyTimeout) clearTimeout(googleSafetyTimeout);
+            googleSafetyTimeout = setTimeout(() => {
+                if (btn.disabled) {
+                    resetarBtnGoogle();
+                    opusAlerta({
+                        tipo: 'warning',
+                        titulo: 'Tempo Esgotado',
+                        mensagem: 'O Google demorou para responder. Verifique se a janela pop-up não foi bloqueada pelo navegador ou se a rede da faculdade possui restrições.'
+                    });
+                }
+            }, 15000);
+
+            // Verifica se a biblioteca do Google carregou
+            if (typeof google === 'undefined' || !google.accounts) {
+                resetarBtnGoogle();
+                opusAlerta({
+                    tipo: 'error',
+                    titulo: 'Google Indisponível',
+                    mensagem: 'A biblioteca do Google não pôde ser carregada. Verifique sua conexão com a internet ou firewall da faculdade.'
+                });
+                return;
+            }
+
+            // Tenta fluxo popup moderno (OAuth 2.0 Token Client)
+            try {
+                const client = getGoogleTokenClient();
+                if (client) {
+                    client.requestAccessToken({ prompt: 'select_account' });
+                    return;
+                }
+            } catch (err) {
+                console.warn('OAuth token client falhou, tentando One Tap fallback:', err);
+            }
+
+            // Fallback: One Tap prompt
+            try {
+                google.accounts.id.initialize({
+                    client_id: GOOGLE_CLIENT_ID,
+                    callback: handleGoogleCredential,
+                    ux_mode: 'popup',
+                });
+                google.accounts.id.prompt((notification) => {
+                    if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+                        resetarBtnGoogle();
+                    }
+                });
+            } catch (e) {
+                console.error(e);
+                resetarBtnGoogle();
+            }
+        }
+
+        // Inicializa silenciosamente o One Tap caso o usuário já esteja logado no navegador
         window.addEventListener('load', function () {
-            if (typeof google !== 'undefined') {
+            if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
                 google.accounts.id.initialize({
                     client_id: GOOGLE_CLIENT_ID,
                     callback: handleGoogleCredential,

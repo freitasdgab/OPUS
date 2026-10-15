@@ -17,11 +17,26 @@ try {
 
     $dica = "";
     if ($codigo === 1049) {
-        $dica = " — O banco de dados '<strong>$nome_db</strong>' não existe. Importe o arquivo <code>banco_de_dados/opus.sql</code> no phpMyAdmin.";
+        $dica = " — O banco de dados '<strong>$nome_db</strong>' não existe. Importe o arquivo <code>opus.sql</code> no phpMyAdmin.";
     } elseif ($codigo === 1045) {
         $dica = " — Usuário ou senha do MySQL incorretos. Verifique as variáveis em <code>back/conexao.php</code>.";
     } elseif ($codigo === 2002) {
         $dica = " — Não foi possível conectar ao servidor MySQL. Verifique se o <strong>Apache</strong> e o <strong>MySQL</strong> estão rodando no XAMPP.";
+    }
+
+    $is_ajax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')
+        || (isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false)
+        || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)
+        || (strpos($_SERVER['PHP_SELF'] ?? '', 'callback') !== false);
+
+    if ($is_ajax) {
+        header('Content-Type: application/json; charset=utf-8');
+        http_response_code(500);
+        echo json_encode([
+            'ok' => false,
+            'erro' => "Erro no Banco de Dados ($codigo): " . strip_tags($detalhe . $dica)
+        ], JSON_UNESCAPED_UNICODE);
+        exit();
     }
 
     die("<style>body{font-family:sans-serif;padding:30px;background:#1e1e2e;color:#cdd6f4;}

@@ -1,48 +1,119 @@
 <?php
 // ============================================================
 //  OPUS – Google OAuth Callback
-//  Recebe o credential JWT do front-end, valida com o Google,
-//  cria ou autentica o usuário e retorna JSON com redirect.
+//  Recebe credential (JWT ID-token) OU access_token do front-end,
+//  valida com o Google, cria ou autentica o usuário e retorna JSON.
 // ============================================================
 session_start();
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 require_once 'conexao.php';
 require_once 'jogador_status.php';
 
+// Função para requisições seguras à API do Google com suporte a XAMPP/SSL local
+function requisitarGoogleApi(string $url, array $headers = []): ?string {
+    if (function_exists('curl_init')) {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => 12,
+            CURLOPT_HTTPHEADER     => $headers,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
+        ]);
+
+        // Procura bundle de certificados CA comum no XAMPP
+        $possibleCas = [
+            'C:\\xampp\\apache\\bin\\curl-ca-bundle.crt',
+            'C:\\xampp\\php\\extras\\ssl\\cacert.pem',
+            ini_get('curl.cainfo'),
+            ini_get('openssl.cafile')
+        ];
+        foreach ($possibleCas as $ca) {
+            if (!empty($ca) && file_exists($ca)) {
+                curl_setopt($ch, CURLOPT_CAINFO, $ca);
+                break;
+            }
+        }
+
+        $response  = curl_exec($ch);
+        $curlErrNo = curl_errno($ch);
+        curl_close($ch);
+
+        // Se falhar por erro de certificado local no XAMPP da faculdade (erro 60 ou 77), tenta com bypass
+        if ($response === false && in_array($curlErrNo, [60, 77])) {
+            $ch = curl_init($url);
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT        => 12,
+                CURLOPT_HTTPHEADER     => $headers,
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_SSL_VERIFYHOST => 0,
+            ]);
+            $response = curl_exec($ch);
+            curl_close($ch);
+        }
+
+        if ($response !== false) {
+            return $response;
+        }
+    }
+
+    // Fallback via file_get_contents
+    $opts = [
+        'http' => [
+            'timeout' => 12,
+            'header'  => implode("\r\n", $headers)
+        ],
+        'ssl' => [
+            'verify_peer'      => false,
+            'verify_peer_name' => false,
+        ]
+    ];
+    $context = stream_context_create($opts);
+    $res = @file_get_contents($url, false, $context);
+    return $res !== false ? $res : null;
+}
+
 // ── 1. Lê o token enviado pelo front ────────────────────────
-$input      = json_decode(file_get_contents('php://input'), true);
-$credential = trim($input['credential'] ?? '');
+$input        = json_decode(file_get_contents('php://input'), true);
+$credential   = trim($input['credential'] ?? '');
+$access_token = trim($input['access_token'] ?? '');
 
-if (empty($credential)) {
+if (empty($credential) && empty($access_token)) {
     http_response_code(400);
-    echo json_encode(['ok' => false, 'erro' => 'Token não recebido.']);
+    echo json_encode(['ok' => false, 'erro' => 'Token do Google não recebido.']);
     exit();
 }
 
-// ── 2. Verifica o token com a API do Google ──────────────────
-//    Endpoint tokeninfo aceita o ID-token diretamente.
-$url      = 'https://oauth2.googleapis.com/tokeninfo?id_token=' . urlencode($credential);
-$response = @file_get_contents($url);
+$payload = null;
 
-if ($response === false) {
-    // Fallback via cURL (servidores sem allow_url_fopen)
-    $ch = curl_init($url);
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT        => 10,
-        CURLOPT_SSL_VERIFYPEER => true,
-    ]);
-    $response = curl_exec($ch);
-    curl_close($ch);
+// ── 2. Valida com a API do Google (Access Token ou ID Token) ─
+if (!empty($access_token)) {
+    // Via OAuth 2.0 Access Token (userinfo)
+    $url = 'https://www.googleapis.com/oauth2/v3/userinfo';
+    $resp = requisitarGoogleApi($url, ["Authorization: Bearer $access_token"]);
+    if ($resp) {
+        $payload = json_decode($resp, true);
+    }
 }
 
-if (!$response) {
+if (!$payload && !empty($credential)) {
+    // Via ID-Token (tokeninfo)
+    $url = 'https://oauth2.googleapis.com/tokeninfo?id_token=' . urlencode($credential);
+    $resp = requisitarGoogleApi($url);
+    if ($resp) {
+        $payload = json_decode($resp, true);
+    }
+}
+
+if (!$payload) {
     http_response_code(502);
-    echo json_encode(['ok' => false, 'erro' => 'Não foi possível validar o token com o Google.']);
+    echo json_encode([
+        'ok'   => false,
+        'erro' => 'Não foi possível validar as credenciais com os servidores do Google. Verifique a conexão com a internet ou se a rede da faculdade bloqueia APIs externas.'
+    ]);
     exit();
 }
-
-$payload = json_decode($response, true);
 
 // ── 3. Valida campos obrigatórios do payload ──────────────────
 if (empty($payload['sub']) || empty($payload['email'])) {
@@ -91,7 +162,7 @@ if ($usuario) {
 
     if (!$stmt_insert->execute()) {
         http_response_code(500);
-        echo json_encode(['ok' => false, 'erro' => 'Erro ao criar conta.']);
+        echo json_encode(['ok' => false, 'erro' => 'Erro ao criar conta no banco de dados: ' . $stmt_insert->error]);
         exit();
     }
 
