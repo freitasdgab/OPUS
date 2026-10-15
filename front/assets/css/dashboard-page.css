@@ -223,7 +223,55 @@
 
         .trail-flex {
             display: flex; flex-direction: column; align-items: center;
-            width: 100%; position: relative; padding: 20px 0;
+            width: 100%; position: relative; padding: 20px 0 50px 0;
+        }
+
+        /* SVG DA TRILHA CONECTANDO OS MÓDULOS (ESTILO DUOLINGO / CANVA) */
+        .trail-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: visible;
+        }
+
+        .trail-path-shadow {
+            fill: none;
+            stroke: rgba(10, 11, 17, 0.85);
+            stroke-width: 14px;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .trail-path-base {
+            fill: none;
+            stroke: #b0b8c4;
+            stroke-width: 8px;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
+            transition: stroke 0.3s ease;
+        }
+
+        .trail-path-locked {
+            fill: none;
+            stroke: rgba(176, 184, 196, 0.3);
+            stroke-width: 7px;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 8 10;
+        }
+
+        .trail-path-completed, .trail-path-active {
+            fill: none;
+            stroke-width: 8.5px;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 0 8px currentColor);
+            transition: stroke 0.3s ease;
         }
 
         @keyframes floatNode {
@@ -231,14 +279,23 @@
             50% { transform: translateY(-12px); }
         }
 
-        .pos-0 { margin-left: 0px; animation-delay: 0s !important; }
-        .pos-1 { margin-left: 120px; animation-delay: 0.4s !important; }
-        .pos-2 { margin-left: 160px; animation-delay: 0.8s !important; }
-        .pos-3 { margin-right: 120px; animation-delay: 1.2s !important; }
-        .pos-4 { margin-left: 0px; animation-delay: 1.6s !important; }
+        /* POSICIONAMENTO PERFEITAMENTE SIMÉTRICO E EQUILIBRADO (ZIG-ZAG ESQUERDA/DIREITA) */
+        .pos-0 { margin-left: 0 !important; margin-right: 0 !important; animation-delay: 0s !important; }
+        .pos-1 { margin-left: 170px !important; margin-right: 0 !important; animation-delay: 0.3s !important; }
+        .pos-2 { margin-left: 0 !important; margin-right: 170px !important; animation-delay: 0.6s !important; }
+        .pos-chest { margin-left: 140px !important; margin-right: 0 !important; animation-delay: 0.9s !important; }
+        .pos-3 { margin-left: 0 !important; margin-right: 170px !important; animation-delay: 1.2s !important; }
+        .pos-4 { margin-left: 0 !important; margin-right: 0 !important; animation-delay: 1.5s !important; }
+
+        @media (max-width: 600px) {
+            .pos-1 { margin-left: 90px !important; margin-right: 0 !important; }
+            .pos-2 { margin-left: 0 !important; margin-right: 90px !important; }
+            .pos-chest { margin-left: 75px !important; margin-right: 0 !important; }
+            .pos-3 { margin-left: 0 !important; margin-right: 90px !important; }
+        }
 
         .modulo-node {
-            text-decoration: none; position: relative; z-index: 1; display: flex;
+            text-decoration: none; position: relative; z-index: 10 !important; display: flex;
             justify-content: center; align-items: center; margin-bottom: 35px;
         }
         .modulo-node.current {
@@ -269,10 +326,10 @@
         }
         @keyframes bounce { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -8px); } }
 
-        /* BAÃ DE RECOMPENSAS NO MEIO DA TRILHA */
+        /* BAÚ DE RECOMPENSAS NO MEIO DA TRILHA */
         .reward-chest-container {
             margin: 35px 0 95px 0; display: flex; flex-direction: column; align-items: center;
-            position: relative; z-index: 2; animation: floatNode 4s ease-in-out infinite;
+            position: relative; z-index: 10 !important; animation: floatNode 4s ease-in-out infinite;
         }
         .chest-node {
             width: 84px; height: 74px; border-radius: 18px; display: flex; align-items: center;

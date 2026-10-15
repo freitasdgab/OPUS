@@ -114,6 +114,7 @@
                     chestNode.innerHTML = '<i class="fa-solid fa-box-open"></i><span class="chest-tag-done"><i class="fa-solid fa-check"></i> Coletado</span>';
                     const balloon = chestNode.parentElement.querySelector('.chest-balloon');
                     if (balloon) balloon.remove();
+                    setTimeout(renderizarTrilhasConexao, 60);
                 }
 
                 // Atualiza Topbar Vidas e XP em tempo real
@@ -315,10 +316,247 @@
             });
         }
 
-        // Aguarda o carregamento completo para calcular posições
+        // ── TRILHA VISUAL CONECTANDO OS MÓDULOS (ESTILO DUOLINGO / CANVA) ──
+        function getElementCenterStatic(targetEl, containerEl) {
+            if (!targetEl || !containerEl) return { x: 0, y: 0 };
+            
+            const tRect = targetEl.getBoundingClientRect();
+            const cRect = containerEl.getBoundingClientRect();
+            
+            // Cancela o deslocamento vertical temporário de qualquer animação floatNode
+            let animOffsetY = 0;
+            let curr = targetEl;
+            while (curr && curr !== containerEl) {
+                const tr = window.getComputedStyle(curr).transform;
+                if (tr && tr !== 'none') {
+                    const m = tr.match(/matrix.*\((.+)\)/);
+                    if (m) {
+                        const parts = m[1].split(',').map(v => parseFloat(v.trim()));
+                        if (parts.length === 6) animOffsetY += parts[5];
+                        else if (parts.length === 16) animOffsetY += parts[13];
+                    }
+                }
+                curr = curr.parentElement;
+            }
+
+            const x = (tRect.left + tRect.right) / 2 - cRect.left;
+            const y = ((tRect.top + tRect.bottom) / 2 - cRect.top) - animOffsetY;
+            return { x, y };
+        }
+
+        function renderizarTrilhasConexao() {
+            const trails = document.querySelectorAll('.trail-flex');
+            if (!trails || trails.length === 0) return;
+
+            trails.forEach(trail => {
+                let svg = trail.querySelector('.trail-svg');
+                if (!svg) {
+                    svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                    svg.classList.add('trail-svg');
+                    svg.setAttribute('aria-hidden', 'true');
+                    trail.insertBefore(svg, trail.firstChild);
+                }
+
+                const trailW = trail.clientWidth;
+                const trailH = trail.clientHeight;
+                if (trailW === 0 || trailH === 0) return;
+
+                svg.setAttribute('width', trailW);
+                svg.setAttribute('height', trailH);
+                svg.setAttribute('viewBox', `0 0 ${trailW} ${trailH}`);
+
+                // Busca todos os marcos na ordem do percurso (nós de lição e baús)
+                const milestoneEls = Array.from(trail.querySelectorAll('.modulo-node, .reward-chest-container'));
+                if (milestoneEls.length < 2) {
+                    svg.innerHTML = '';
+                    return;
+                }
+
+                const capStatus = trail.getAttribute('data-status') || '';
+                const unitColor = trail.getAttribute('data-cor') || '#1cb0f6';
+                const capitulo = trail.closest('.capitulo-container');
+
+                // Coleta coordenadas e status de cada marco
+                const milestones = milestoneEls.map(el => {
+                    const isChest = el.classList.contains('reward-chest-container');
+                    const target = isChest 
+                        ? (el.querySelector('.chest-node') || el)
+                        : (el.querySelector('.circle-button') || el);
+
+                    const pos = getElementCenterStatic(target, trail);
+
+                    let status = 'locked';
+                    if (isChest) {
+                        const chestNode = el.querySelector('.chest-node');
+                        if (chestNode && chestNode.classList.contains('claimed')) status = 'completed';
+                        else if (chestNode && chestNode.classList.contains('available')) status = 'current';
+                    } else {
+                        if (el.classList.contains('completed')) status = 'completed';
+                        else if (el.classList.contains('current')) status = 'current';
+                    }
+
+                    return { el, pos, status, isChest };
+                });
+
+                // Conexão 1: Do cabeçalho da seção atual até o primeiro módulo (Módulo 1)
+                let headerToFirstD = '';
+                const currHeader = capitulo ? capitulo.querySelector('.capitulo-header') : null;
+                if (currHeader && milestones.length > 0) {
+                    const chRect = currHeader.getBoundingClientRect();
+                    const tRect = trail.getBoundingClientRect();
+                    const hX = (chRect.left + chRect.right) / 2 - tRect.left;
+                    const hY = chRect.bottom - tRect.top - 8;
+                    const firstM = milestones[0];
+                    const dyH = firstM.pos.y - hY;
+                    if (dyH > 0) {
+                        headerToFirstD = `M ${hX.toFixed(1)} ${hY.toFixed(1)} C ${hX.toFixed(1)} ${(hY + dyH * 0.5).toFixed(1)}, ${firstM.pos.x.toFixed(1)} ${(firstM.pos.y - dyH * 0.5).toFixed(1)}, ${firstM.pos.x.toFixed(1)} ${firstM.pos.y.toFixed(1)}`;
+                    }
+                }
+
+                // Constrói os caminhos Bezier perfeitamente simétricos entre os marcos
+                const segments = [];
+                let fullPathD = '';
+
+                for (let i = 0; i < milestones.length - 1; i++) {
+                    const p1 = milestones[i].pos;
+                    const p2 = milestones[i + 1].pos;
+                    const dy = p2.y - p1.y;
+
+                    // Curva S natural e simétrica entre os pontos alternados
+                    const cp1x = p1.x;
+                    const cp1y = p1.y + dy * 0.5;
+                    const cp2x = p2.x;
+                    const cp2y = p2.y - dy * 0.5;
+
+                    const segmentD = `M ${p1.x.toFixed(1)} ${p1.y.toFixed(1)} C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)}, ${cp2x.toFixed(1)} ${cp2y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+
+                    if (i === 0) {
+                        fullPathD = segmentD;
+                    } else {
+                        fullPathD += ` C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)}, ${cp2x.toFixed(1)} ${cp2y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+                    }
+
+                    // Determina se este segmento específico está concluído ou futuro
+                    let segState = 'future';
+                    if (capStatus === 'completo') {
+                        segState = 'completed';
+                    } else if (capStatus === 'trancado') {
+                        segState = 'locked';
+                    } else {
+                        const mNext = milestones[i + 1];
+                        const mCurr = milestones[i];
+
+                        if (mNext.status === 'completed') {
+                            segState = 'completed';
+                        } else if (mNext.status === 'current') {
+                            // Trecho até a lição atual: azulzinho sólido (ou cor da seção), sem animação tracejada
+                            segState = 'completed';
+                        } else if (mCurr.status === 'completed' && mNext.status === 'locked' && i === 0) {
+                            segState = 'completed';
+                        } else {
+                            segState = 'future';
+                        }
+                    }
+
+                    segments.push({ d: segmentD, state: segState });
+                }
+
+                // Conexão 2: Do último módulo (Módulo 5) diretamente ao cabeçalho da PRÓXIMA seção
+                let lastToNextD = '';
+                if (capitulo && milestones.length > 0) {
+                    const nextCap = capitulo.nextElementSibling;
+                    if (nextCap && nextCap.classList.contains('capitulo-container')) {
+                        const nextHeader = nextCap.querySelector('.capitulo-header');
+                        if (nextHeader) {
+                            const nhRect = nextHeader.getBoundingClientRect();
+                            const tRect = trail.getBoundingClientRect();
+                            const nextX = (nhRect.left + nhRect.right) / 2 - tRect.left;
+                            const nextY = nhRect.top - tRect.top + 16;
+                            const lastM = milestones[milestones.length - 1];
+                            const dyNext = nextY - lastM.pos.y;
+                            if (dyNext > 0) {
+                                lastToNextD = `M ${lastM.pos.x.toFixed(1)} ${lastM.pos.y.toFixed(1)} C ${lastM.pos.x.toFixed(1)} ${(lastM.pos.y + dyNext * 0.5).toFixed(1)}, ${nextX.toFixed(1)} ${(nextY - dyNext * 0.5).toFixed(1)}, ${nextX.toFixed(1)} ${nextY.toFixed(1)}`;
+                            }
+                        }
+                    }
+                }
+
+                // Monta o SVG limpo, simétrico e contínuo
+                let html = '';
+
+                // 1. Sombras 3D de profundidade
+                if (headerToFirstD) {
+                    html += `<path class="trail-path-shadow" d="${headerToFirstD}"></path>`;
+                }
+                if (fullPathD) {
+                    html += `<path class="trail-path-shadow" d="${fullPathD}"></path>`;
+                }
+                if (lastToNextD) {
+                    html += `<path class="trail-path-shadow" d="${lastToNextD}"></path>`;
+                }
+
+                // 2. Trilha base conectando os módulos (cinza clarinho elegante)
+                const baseClass = (capStatus === 'trancado') ? 'trail-path-locked' : 'trail-path-base';
+                if (headerToFirstD) {
+                    html += `<path class="${baseClass}" d="${headerToFirstD}"></path>`;
+                }
+                if (fullPathD) {
+                    html += `<path class="${baseClass}" d="${fullPathD}"></path>`;
+                }
+                if (lastToNextD) {
+                    html += `<path class="${baseClass}" d="${lastToNextD}"></path>`;
+                }
+
+                // 3. Segmentos concluídos na cor específica da seção (azul na seção azul, rosa na seção rosa, etc.)
+                // Conector do cabeçalho ao módulo 1
+                if (headerToFirstD && (capStatus === 'completo' || (milestones[0] && (milestones[0].status === 'completed' || milestones[0].status === 'current')))) {
+                    html += `<path class="trail-path-completed" d="${headerToFirstD}" style="stroke: ${unitColor}; color: ${unitColor};"></path>`;
+                }
+
+                // Segmentos entre os módulos
+                segments.forEach(seg => {
+                    if (seg.state === 'completed') {
+                        html += `<path class="trail-path-completed" d="${seg.d}" style="stroke: ${unitColor}; color: ${unitColor};"></path>`;
+                    }
+                });
+
+                // Conector da última lição ao cabeçalho da próxima seção (colorido se a seção atual estiver completa)
+                if (lastToNextD && capStatus === 'completo') {
+                    html += `<path class="trail-path-completed" d="${lastToNextD}" style="stroke: ${unitColor}; color: ${unitColor};"></path>`;
+                }
+
+                svg.innerHTML = html;
+            });
+        }
+
+        // Aguarda o carregamento completo para calcular posições e desenhar trilhas
         window.addEventListener('load', function () {
             setTimeout(rolarAteLicaoAtual, 150);
             setTimeout(monitorarVisibilidadeLicaoAtual, 300);
             inicializarMascotesDashboard();
+            setTimeout(renderizarTrilhasConexao, 60);
+            setTimeout(renderizarTrilhasConexao, 400); // Garante após webfonts e layout final
         });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            renderizarTrilhasConexao();
+        });
+
+        // Atualização reativa com redimensionamento de tela
+        let resizeTimerTrail;
+        window.addEventListener('resize', function () {
+            cancelAnimationFrame(resizeTimerTrail);
+            resizeTimerTrail = requestAnimationFrame(renderizarTrilhasConexao);
+        }, { passive: true });
+
+        const observerCurriculum = (window.ResizeObserver && document.querySelector('.curriculum-column'))
+            ? new ResizeObserver(function () {
+                requestAnimationFrame(renderizarTrilhasConexao);
+            })
+            : null;
+
+        if (observerCurriculum) {
+            observerCurriculum.observe(document.querySelector('.curriculum-column'));
+        }
+
 

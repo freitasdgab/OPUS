@@ -1088,6 +1088,8 @@ body.light-mode.licao-page .phase-header,
 body.light-mode.licao-page .phase-footer {
     background: #ffffff !important;
     border-color: #e5e5e5 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
 
 body.light-mode.licao-page .btn-close-phase {
@@ -1098,6 +1100,69 @@ body.light-mode.licao-page .btn-close-phase:hover {
 }
 body.light-mode.licao-page .lesson-title {
     color: #4b4b4b !important;
+}
+
+/* Card de Explicação da Lição no Modo Claro - Preto sólido sem efeito de blur */
+html.light-mode body.licao-page .explanation-card-wrapper,
+body.light-mode.licao-page .explanation-card-wrapper {
+    background: #0d0d0f !important;
+    background-color: #0d0d0f !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    filter: none !important;
+    border: 2px solid #1e222d !important;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.18) !important;
+}
+
+html.light-mode body.licao-page .explanation-text-content,
+body.light-mode.licao-page .explanation-text-content {
+    color: #f1f5f9 !important;
+}
+
+html.light-mode body.licao-page .explanation-text-content p,
+body.light-mode.licao-page .explanation-text-content p {
+    color: #f1f5f9 !important;
+}
+
+html.light-mode body.licao-page .explanation-text-content strong,
+body.light-mode.licao-page .explanation-text-content strong {
+    color: #ffffff !important;
+}
+
+/* Botões de navegação dos slides de explicação no Modo Claro */
+body.light-mode.licao-page .btn-nav {
+    background: #f0f2f5 !important;
+    border: 2px solid #e5e5e5 !important;
+    border-bottom: 4px solid #d5d5d5 !important;
+    color: #555c68 !important;
+}
+body.light-mode.licao-page .btn-nav:hover:not(:disabled) {
+    background: #e5e7eb !important;
+    color: #1f2937 !important;
+}
+body.light-mode.licao-page .btn-nav:disabled {
+    opacity: 0.35 !important;
+    background: #f3f4f6 !important;
+    border-color: #e5e7eb !important;
+    border-bottom-color: #e5e7eb !important;
+    color: #9ca3af !important;
+}
+body.light-mode.licao-page .btn-nav.btn-next-slide {
+    background: #1cb0f6 !important;
+    border: 2px solid #1899d6 !important;
+    border-bottom: 4px solid #1480b3 !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+}
+body.light-mode.licao-page .btn-nav.btn-next-slide:hover {
+    background: #1899d6 !important;
+}
+body.light-mode.licao-page .dot-indicator {
+    background: #e5e5e5 !important;
+}
+body.light-mode.licao-page .dot-indicator.active {
+    background: #1cb0f6 !important;
+    box-shadow: none !important;
 }
 
 /* Quiz Progress Bar no Modo Claro */
@@ -1298,11 +1363,16 @@ body.light-mode .mascote-balao-dash {
     box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important;
 }
 
-/* Novos Tipos de Lição no Modo Claro */
+/* Novos Tipos de Lição no Modo Claro - Preto sólido sem blur */
+html.light-mode body.licao-page .code-editor,
 body.light-mode.licao-page .code-editor {
-    background-color: #1e222d !important;
-    border: 2px solid #e5e5e5 !important;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08) !important;
+    background: #0d0d0f !important;
+    background-color: #0d0d0f !important;
+    border: 2px solid #1e222d !important;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    filter: none !important;
 }
 body.light-mode.licao-page .code-editor pre code,
 body.light-mode.licao-page .code-editor pre {
@@ -1310,6 +1380,131 @@ body.light-mode.licao-page .code-editor pre {
 }
 body.light-mode.licao-page .typing-input {
     color: #50fa7b !important;
+    background: transparent !important;
 }
+
+/* Word chips e interações de código no Modo Claro */
+body.light-mode.licao-page .word-chip {
+    background: #ffffff !important;
+    border: 2px solid #e5e5e5 !important;
+    border-bottom: 5px solid #d5d5d5 !important;
+    color: #4b4b4b !important;
+}
+body.light-mode.licao-page .word-chip:hover:not(.used):not(:disabled) {
+    background: #f7f9fa !important;
+    border-color: #d0d0d0 !important;
+    border-bottom-color: #bcbcbc !important;
+    color: #1cb0f6 !important;
+}
+body.light-mode.licao-page .word-chip.used {
+    background: #e5e5e5 !important;
+    border-color: #d5d5d5 !important;
+    border-bottom: 2px solid #d5d5d5 !important;
+    color: transparent !important;
+}
+body.light-mode.licao-page .code-blank-slot {
+    background: #0d0d0f !important;
+    border-color: #1cb0f6 !important;
+    color: #1cb0f6 !important;
+}
+body.light-mode.licao-page .code-blank-slot.filled {
+    border-color: #58cc02 !important;
+    border-bottom-color: #46a302 !important;
+    background: #0d0d0f !important;
+    color: #50fa7b !important;
+}
+body.light-mode.licao-page .code-input-inline {
+    background: #0d0d0f !important;
+    border-color: #2a2d38 !important;
+    border-bottom-color: #1cb0f6 !important;
+    color: #50fa7b !important;
+}
+
+/* =========================================================================
+   ESTILOS CODÉDEX NO MODO CLARO (BRANCO PURO + PRETO SÓLIDO NA IDE SEM BLUR)
+   ========================================================================= */
+body.light-mode.licao-page .codedex-container {
+    background: #ffffff !important;
+    color: #4b4b4b !important;
+}
+body.light-mode.licao-page .codedex-topbar {
+    background: #ffffff !important;
+    border-bottom: 2px solid #e5e5e5 !important;
+}
+body.light-mode.licao-page .codedex-topbar-title {
+    color: #4b4b4b !important;
+}
+body.light-mode.licao-page .codedex-btn-back {
+    color: #777777 !important;
+    background: #f7f9fa !important;
+    border-color: #e5e5e5 !important;
+}
+body.light-mode.licao-page .codedex-btn-back:hover {
+    color: #1cb0f6 !important;
+    border-color: #1cb0f6 !important;
+}
+body.light-mode.licao-page .codedex-instructions-panel {
+    background: #ffffff !important;
+    border-right: 2px solid #e5e5e5 !important;
+}
+body.light-mode.licao-page .codedex-lesson-heading {
+    color: #4b4b4b !important;
+}
+body.light-mode.licao-page .codedex-text-content {
+    color: #6b7280 !important;
+}
+body.light-mode.licao-page .codedex-text-content strong {
+    color: #1f2937 !important;
+}
+body.light-mode.licao-page .codedex-card-box {
+    background: #f8fafc !important;
+    border: 2px solid #e2e8f0 !important;
+    border-left: 4px solid #1cb0f6 !important;
+}
+body.light-mode.licao-page .codedex-card-box h4 {
+    color: #1e293b !important;
+}
+body.light-mode.licao-page .codedex-card-box p {
+    color: #475569 !important;
+}
+body.light-mode.licao-page .codedex-sample-code-box {
+    background: #0d0d0f !important;
+    border: 2px solid #1e222d !important;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12) !important;
+}
+body.light-mode.licao-page .codedex-editor-top {
+    background: #f1f5f9 !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+}
+body.light-mode.licao-page .codedex-tab-file {
+    background: #0d0d0f !important;
+    color: #ffffff !important;
+    border-top: 2px solid #e76f51 !important;
+}
+body.light-mode.licao-page .codedex-ide-actions {
+    background: #f8fafc !important;
+    border-top: 2px solid #e2e8f0 !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+}
+body.light-mode.licao-page .codedex-terminal-header {
+    background: #111318 !important;
+    border-bottom: 1px solid #1f232e !important;
+}
+body.light-mode.licao-page .codedex-terminal-panel,
+body.light-mode.licao-page .codedex-terminal-output,
+body.light-mode.licao-page .codedex-editor-area {
+    background: #0d0d0f !important;
+}
+body.light-mode.licao-page .codedex-btn-reset {
+    background: #ffffff !important;
+    border: 2px solid #e5e5e5 !important;
+    color: #555c68 !important;
+}
+body.light-mode.licao-page .codedex-btn-reset:hover {
+    color: #1f2937 !important;
+    border-color: #d0d0d0 !important;
+}
+
+
 
 

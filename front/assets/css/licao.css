@@ -1122,3 +1122,463 @@
     0% { transform: scale(0.85); opacity: 0.6; }
     100% { transform: scale(1); opacity: 1; }
 }
+
+/* =========================================================================
+   INTERFACE CODÉDEX (LIÇÃO 5 - DESAFIO FINAL DA SEÇÃO COM IDE SPLIT-SCREEN)
+   ========================================================================= */
+.codedex-container {
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: #0d0d0f;
+    color: #fff;
+    position: relative;
+    z-index: 2;
+}
+
+.codedex-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 30px;
+    background: #12141a;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.codedex-topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.codedex-btn-back {
+    color: #8e95a1;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: 0.2s;
+}
+.codedex-btn-back:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.codedex-topbar-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.codedex-badge-section {
+    background: rgba(28, 176, 246, 0.15);
+    color: #1cb0f6;
+    border: 1px solid rgba(28, 176, 246, 0.3);
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.codedex-workspace {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 45% 55%;
+    gap: 0;
+    min-height: 0;
+    height: calc(100vh - 61px);
+    overflow: hidden;
+}
+
+/* PAINEL ESQUERDO: INSTRUÇÕES E TEORIA CODÉDEX */
+.codedex-instructions-panel {
+    background: #111318;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 28px 36px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.codedex-lesson-badge {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #569cd6;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.codedex-lesson-heading {
+    font-size: 1.65rem;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.3;
+    margin-top: 4px;
+}
+
+.codedex-text-content {
+    font-size: 1rem;
+    line-height: 1.65;
+    color: #b0b8c6;
+}
+
+.codedex-text-content strong {
+    color: #fff;
+}
+
+.codedex-card-box {
+    background: #161a24;
+    border: 1px solid rgba(26, 54, 202, 0.25);
+    border-left: 4px solid #1cb0f6;
+    border-radius: 12px;
+    padding: 18px 22px;
+}
+
+.codedex-card-box h4 {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.codedex-card-box p {
+    font-size: 0.95rem;
+    color: #c4cad4;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Bloco de Código de Exemplo com Botão Copiar */
+.codedex-sample-code-box {
+    background: #0d0d0f;
+    border: 1px solid #2a2d38;
+    border-radius: 12px;
+    padding: 16px;
+    position: relative;
+}
+
+.codedex-sample-code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.codedex-btn-copy {
+    background: rgba(28, 176, 246, 0.12);
+    border: 1px solid rgba(28, 176, 246, 0.3);
+    color: #1cb0f6;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+.codedex-btn-copy:hover {
+    background: #1cb0f6;
+    color: #fff;
+}
+
+.codedex-sample-pre {
+    margin: 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+    color: #50fa7b;
+    line-height: 1.5;
+    overflow-x: auto;
+}
+
+/* PAINEL DIREITO: EDITOR + TERMINAL INTEGRADO */
+.codedex-ide-panel {
+    display: flex;
+    flex-direction: column;
+    background: #0d0d0f;
+    min-height: 0;
+    height: 100%;
+}
+
+.codedex-editor-top {
+    background: #161a24;
+    padding: 8px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #232734;
+}
+
+.codedex-tab-file {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #0d0d0f;
+    padding: 6px 14px;
+    border-radius: 6px 6px 0 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #fff;
+    border-top: 2px solid #e76f51;
+}
+.codedex-tab-file i {
+    color: #e76f51;
+}
+
+.codedex-editor-area {
+    flex: 1.3;
+    min-height: 250px;
+    position: relative;
+    background: #0d0d0f;
+}
+
+#codedexAceEditor {
+    width: 100%;
+    height: 100%;
+    font-size: 15px;
+    font-family: 'Courier New', monospace;
+}
+
+/* BARRA DE AÇÕES ENTRE EDITOR E TERMINAL */
+.codedex-ide-actions {
+    background: #161a24;
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid #232734;
+    border-bottom: 1px solid #232734;
+}
+
+.codedex-btn-reset {
+    background: transparent;
+    border: 1px solid #374151;
+    color: #9ca3af;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.codedex-btn-reset:hover {
+    color: #fff;
+    border-color: #6b7280;
+}
+
+.codedex-btn-run {
+    background: #1cb0f6;
+    color: #fff;
+    border: 2px solid #1899d6;
+    border-bottom: 4px solid #1480b3;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 800;
+    padding: 8px 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: transform 0.08s ease, filter 0.15s ease;
+}
+.codedex-btn-run:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+.codedex-btn-run:active {
+    transform: translateY(2px);
+    border-bottom-width: 2px;
+}
+
+/* TERMINAL DE SAÍDA */
+.codedex-terminal-panel {
+    flex: 1;
+    min-height: 180px;
+    background: #0d0d0f;
+    display: flex;
+    flex-direction: column;
+}
+
+.codedex-terminal-header {
+    background: #111318;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #1f232e;
+}
+
+.codedex-term-dots {
+    display: flex;
+    gap: 6px;
+}
+.codedex-term-dots span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+.codedex-term-dots .dot-r { background: #ff5f56; }
+.codedex-term-dots .dot-y { background: #ffbd2e; }
+.codedex-term-dots .dot-g { background: #27c93f; }
+
+.codedex-term-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #8e95a1;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.codedex-term-status {
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: #1e222d;
+    color: #8e95a1;
+}
+.codedex-term-status.running {
+    background: rgba(255, 189, 46, 0.15);
+    color: #ffbd2e;
+}
+.codedex-term-status.success {
+    background: rgba(39, 201, 63, 0.15);
+    color: #27c93f;
+}
+.codedex-term-status.error {
+    background: rgba(255, 95, 86, 0.15);
+    color: #ff5f56;
+}
+
+.codedex-terminal-output {
+    flex: 1;
+    padding: 14px 18px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.95rem;
+    color: #f1f5f9;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    line-height: 1.45;
+}
+
+.codedex-output-prompt {
+    color: #6272a4;
+    margin-bottom: 6px;
+}
+.codedex-output-result {
+    color: #50fa7b;
+    font-weight: 700;
+}
+
+/* BANNER DE SUCESSO E CONCLUSÃO */
+.codedex-success-card {
+    display: none;
+    background: linear-gradient(135deg, rgba(88, 204, 2, 0.15), rgba(46, 204, 113, 0.08));
+    border: 2px solid #58cc02;
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-top: 10px;
+    animation: popInChip 0.3s ease-out;
+}
+
+.codedex-success-card.active {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.codedex-success-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.codedex-success-info i {
+    font-size: 28px;
+    color: #58cc02;
+}
+
+.codedex-success-info h4 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #58cc02;
+    margin: 0;
+}
+
+.codedex-success-info p {
+    font-size: 0.85rem;
+    color: #d1d5db;
+    margin: 2px 0 0 0;
+}
+
+.codedex-btn-finish {
+    background: #58cc02;
+    color: #ffffff;
+    border: 2px solid #46a302;
+    border-bottom: 4px solid #378002;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 800;
+    padding: 10px 24px;
+    border-radius: 12px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: transform 0.08s ease, filter 0.15s ease;
+}
+.codedex-btn-finish:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+}
+.codedex-btn-finish:active {
+    transform: translateY(2px);
+    border-bottom-width: 2px;
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 900px) {
+    .codedex-workspace {
+        grid-template-columns: 1fr;
+        height: auto;
+        overflow-y: auto;
+    }
+    .codedex-instructions-panel {
+        max-height: 45vh;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+}
+

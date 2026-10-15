@@ -37,21 +37,24 @@ if (!$ja_processado && $attempt_token !== '') {
 $mascote_capitulo = opus_mascote_do_capitulo($cap_atual);
 $cor_tema = $mascote_capitulo['cor'];
 
-// 1. Mensagens e Imagens PNG Dinâmicas com base nos acertos
-//    Lógica de humor do mascote: 3 acertos = feliz | 2 = animado/confiante
-//    (estado "explicando") | 0 ou 1 = triste, incentivando a revisão.
-if ($acertos == 3) {
+$total_questoes = isset($_POST['total_questoes']) ? (int)$_POST['total_questoes'] : 6;
+if ($total_questoes <= 0) $total_questoes = 6;
+
+// 1. Mensagens e Imagens PNG Dinâmicas com base na taxa de acertos
+$taxa_acertos = ($total_questoes > 0) ? ($acertos / $total_questoes) : 1;
+
+if ($taxa_acertos >= 0.8) {
     $mensagem = "Perfeito! Você dominou o conteúdo!";
     $imagem_mascote = "../assets/img/" . $mascote_capitulo['feliz'];
     $xp_ganho = 50;
-} elseif ($acertos == 2) {
+} elseif ($taxa_acertos >= 0.5) {
     $mensagem = "Muito bom! Você está no caminho certo!";
     $imagem_mascote = "../assets/img/" . $mascote_capitulo['explicando'];
-    $xp_ganho = 25;
-} elseif ($acertos == 1) {
+    $xp_ganho = 35;
+} elseif ($taxa_acertos >= 0.2) {
     $mensagem = "Foi por pouco! Que tal revisar o conteúdo?";
     $imagem_mascote = "../assets/img/" . $mascote_capitulo['triste'];
-    $xp_ganho = 10;
+    $xp_ganho = 15;
 } else {
     $mensagem = "Não desanime! A programação exige prática. Tente novamente!";
     $imagem_mascote = "../assets/img/" . $mascote_capitulo['triste'];
@@ -74,14 +77,8 @@ $fogo_antes = $ler_ultima_atividade();
 $fogo_ja_aceso_hoje = ((int) ($fogo_antes['aceso_hoje'] ?? 0) === 1);
 
 if (!$ja_processado) {
-    // Atualiza XP, liga, missão, sequência de fogo, troféus e avanço de
-    // progresso — tudo isso mora em sp_processar_resultado_licao
-    // (back/sql/opus_procedures.sql). Se for repetição de uma lição já
-    // concluída, a procedure reduz o XP pra 10 (como se tivesse zerado)
-    // e devolve o valor realmente aplicado. Usa opus_call() porque essa
-    // procedure chama sp_atualizar_fogo por dentro, então o resultado
-    // final não é o primeiro result set.
-    $res_proc = opus_call($conn, "CALL sp_processar_resultado_licao(?, ?, ?, ?, ?)", "iiiii", [$user_id, $cap_atual, $licao_atual, $acertos, 3]);
+    // Atualiza XP, liga, missão, sequência de fogo, troféus e avanço de progresso
+    $res_proc = opus_call($conn, "CALL sp_processar_resultado_licao(?, ?, ?, ?, ?)", "iiiii", [$user_id, $cap_atual, $licao_atual, $acertos, $total_questoes]);
 
     if ($res_proc && isset($res_proc['xp_ganho'])) {
         $xp_ganho = (int) $res_proc['xp_ganho'];
@@ -181,11 +178,11 @@ if ($fogo_acendeu_agora) {
                     <div class="result-mascote-wrapper">
                         <div class="result-speech-bubble" id="resultSpeechBubble">
                             <?php 
-                            if ($acertos == 3) {
+                            if ($acertos >= $total_questoes) {
                                 echo "Incrível! Você dominou todo o conteúdo desta lição! 🏆";
-                            } elseif ($acertos == 2) {
+                            } elseif ($taxa_acertos >= 0.6) {
                                 echo "Mandou muito bem! Quase gabaritou! 🚀";
-                            } elseif ($acertos == 1) {
+                            } elseif ($acertos > 0) {
                                 echo "Bom esforço! Pratique mais para dominar de vez! 💡";
                             } else {
                                 echo "Não desanime! Programação é prática e persistência! 💪";
@@ -195,7 +192,7 @@ if ($fogo_acendeu_agora) {
                         <img src="<?php echo $imagem_mascote; ?>" alt="Mascote Opus" class="mascote-img" id="resultMascoteImg" title="Clique no mascote para incentivo!">
                     </div>
                     
-                    <h1 class="result-title"><?php echo $acertos; ?> / 3 Acertos</h1>
+                    <h1 class="result-title"><?php echo $acertos; ?> / <?php echo $total_questoes; ?> Acertos</h1>
                     <p class="result-message"><?php echo $mensagem; ?></p>
                     
                     <div class="xp-box">

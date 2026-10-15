@@ -1,0 +1,606 @@
+/* =========================================================================
+   CODEDEX.CSS - INTERFACE ESTILO CODÉDEX / REPLIT (SPLIT-SCREEN IDE + TERMINAL)
+   ========================================================================= */
+
+.codedex-container {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: #0d0d12;
+    color: #f8fafc;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* TOPBAR */
+.codedex-topbar {
+    height: 56px;
+    min-height: 56px;
+    background: #13151f;
+    border-bottom: 1px solid #232738;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    z-index: 10;
+}
+
+.codedex-topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.codedex-btn-back {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    background: #1e2230;
+    border: 1px solid #2d3348;
+    transition: all 0.2s ease;
+}
+
+.codedex-btn-back:hover {
+    color: #ffffff;
+    background: #282e42;
+    border-color: #3b4460;
+    transform: translateX(-2px);
+}
+
+.codedex-topbar-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: 0.3px;
+}
+
+/* ÁREA DE TRABALHO SPLIT-SCREEN */
+.codedex-workspace {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 44% 56%;
+    height: calc(100vh - 56px);
+    overflow: hidden;
+    background: #0d0d12;
+}
+
+/* PAINEL ESQUERDO: INSTRUÇÕES E TEORIA */
+.codedex-instructions-panel {
+    background: #13151f;
+    border-right: 1px solid #232738;
+    padding: 28px 32px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.codedex-instructions-panel::-webkit-scrollbar {
+    width: 6px;
+}
+.codedex-instructions-panel::-webkit-scrollbar-thumb {
+    background: #2a2e40;
+    border-radius: 4px;
+}
+
+.codedex-lesson-badge {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: #e76f51;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.codedex-lesson-heading {
+    font-size: 1.65rem;
+    font-weight: 900;
+    color: #ffffff;
+    line-height: 1.3;
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+.codedex-text-content {
+    font-size: 0.96rem;
+    line-height: 1.65;
+    color: #cbd5e1;
+}
+.codedex-text-content p {
+    margin: 0 0 10px 0;
+}
+.codedex-text-content code {
+    background: #1e2230;
+    color: #38bdf8;
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    font-weight: 700;
+}
+
+/* Card de Instruções */
+.codedex-card-box {
+    background: #181b28;
+    border: 1px solid #2b3147;
+    border-left: 4px solid #1cb0f6;
+    border-radius: 12px;
+    padding: 18px 22px;
+}
+
+.codedex-card-box h4 {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.codedex-card-box p {
+    font-size: 0.92rem;
+    color: #cbd5e1;
+    line-height: 1.55;
+    margin: 0;
+}
+
+.codedex-card-box ul {
+    margin: 10px 0 0 20px;
+    color: #cbd5e1;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    padding: 0;
+}
+.codedex-card-box li {
+    margin-bottom: 4px;
+}
+.codedex-card-box li strong {
+    color: #ffffff;
+}
+
+/* SEÇÃO DE DICA (EXPANSÍVEL) */
+.codedex-hint-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.codedex-btn-hint {
+    background: rgba(255, 200, 0, 0.1);
+    border: 1px solid rgba(255, 200, 0, 0.3);
+    color: #ffc800;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    padding: 9px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    transition: all 0.2s ease;
+}
+.codedex-btn-hint:hover {
+    background: rgba(255, 200, 0, 0.2);
+    border-color: #ffc800;
+    transform: translateY(-1px);
+}
+
+.codedex-hint-card {
+    background: #161824;
+    border: 1px solid #2c2f42;
+    border-left: 4px solid #ffc800;
+    border-radius: 12px;
+    padding: 16px 20px;
+    animation: fadeInHint 0.25s ease-out;
+}
+@keyframes fadeInHint {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.codedex-hint-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #ffc800;
+    margin-bottom: 8px;
+}
+
+.codedex-hint-card p {
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    margin: 0 0 8px 0;
+    line-height: 1.5;
+}
+
+.codedex-hint-code {
+    background: #0a0b0e;
+    border: 1px solid #232738;
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: #50fa7b;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.92rem;
+    font-weight: 700;
+    user-select: all;
+}
+
+/* PAINEL DIREITO: IDE & TERMINAL */
+.codedex-ide-panel {
+    display: flex;
+    flex-direction: column;
+    background: #0d0d12;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Aba do Arquivo */
+.codedex-editor-top {
+    height: 42px;
+    background: #13151f;
+    border-bottom: 1px solid #232738;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.codedex-tab-file {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #0d0d12;
+    padding: 7px 16px;
+    border-radius: 6px 6px 0 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #ffffff;
+    border-top: 2px solid #e76f51;
+    margin-top: 5px;
+}
+.codedex-tab-file i {
+    color: #e76f51;
+}
+
+/* Área do Editor Ace */
+.codedex-editor-area {
+    height: 52%;
+    min-height: 260px;
+    position: relative;
+    background: #0d0d12;
+}
+
+#codedexAceEditor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 15px;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+/* Barra de Ações (Entre Editor e Terminal) */
+.codedex-ide-actions {
+    height: 54px;
+    background: #13151f;
+    border-top: 1px solid #232738;
+    border-bottom: 1px solid #232738;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 5;
+}
+
+.codedex-btn-reset {
+    background: transparent;
+    border: 1px solid #333a4d;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.codedex-btn-reset:hover {
+    color: #ffffff;
+    border-color: #4b5563;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.codedex-btn-run {
+    background: #1cb0f6;
+    color: #ffffff;
+    border: none;
+    border-bottom: 4px solid #1480b3;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 800;
+    padding: 9px 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    transition: all 0.15s ease;
+}
+.codedex-btn-run:hover:not(:disabled) {
+    filter: brightness(1.12);
+    transform: translateY(-2px);
+}
+.codedex-btn-run:active:not(:disabled) {
+    transform: translateY(2px);
+    border-bottom-width: 2px;
+}
+.codedex-btn-run:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Botão CONTINUAR (Surge ao lado de EXECUTAR quando acertar) */
+.codedex-btn-continue {
+    background: #58cc02;
+    color: #ffffff;
+    border: none;
+    border-bottom: 4px solid #46a302;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 800;
+    padding: 9px 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    transition: all 0.15s ease;
+    animation: popInBtn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(88, 204, 2, 0.4);
+}
+.codedex-btn-continue:hover {
+    filter: brightness(1.12);
+    transform: translateY(-2px);
+}
+.codedex-btn-continue:active {
+    transform: translateY(2px);
+    border-bottom-width: 2px;
+}
+@keyframes popInBtn {
+    0% { transform: scale(0.75); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Painel do Terminal */
+.codedex-terminal-panel {
+    flex: 1;
+    min-height: 180px;
+    background: #08090c;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.codedex-terminal-header {
+    height: 38px;
+    background: #0f1118;
+    border-bottom: 1px solid #1e2230;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.codedex-term-dots {
+    display: flex;
+    gap: 6px;
+}
+.codedex-term-dots span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+.codedex-term-dots .dot-r { background: #ff5f56; }
+.codedex-term-dots .dot-y { background: #ffbd2e; }
+.codedex-term-dots .dot-g { background: #27c93f; }
+
+.codedex-term-title {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #94a3b8;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.codedex-term-status {
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 12px;
+    background: #1a1e2b;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.codedex-term-status.running {
+    background: rgba(255, 189, 46, 0.2);
+    color: #ffbd2e;
+}
+.codedex-term-status.success {
+    background: rgba(39, 201, 63, 0.2);
+    color: #27c93f;
+}
+.codedex-term-status.error {
+    background: rgba(255, 95, 86, 0.2);
+    color: #ff5f56;
+}
+
+.codedex-terminal-output {
+    flex: 1;
+    padding: 16px 20px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.95rem;
+    color: #f1f5f9;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    line-height: 1.5;
+    background: #08090c;
+}
+
+.codedex-output-prompt {
+    color: #6272a4;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+.codedex-output-result {
+    color: #50fa7b;
+    font-weight: 700;
+}
+
+/* =========================================================================
+   INTEGRAÇÃO VISUAL DO CHATBOT OPI IA NO CODÉDEX
+   ========================================================================= */
+.opi-chat-trigger {
+    z-index: 100000 !important;
+}
+.opi-chat-window {
+    z-index: 100001 !important;
+}
+
+/* =========================================================================
+   MODO CLARO (LIGHT-MODE) - CONTRASTE ELEGANTE COM IDE PRETA SÓLIDA
+   ========================================================================= */
+body.light-mode.licao-page .codedex-container {
+    background: #f8fafc;
+    color: #1e293b;
+}
+
+body.light-mode.licao-page .codedex-topbar {
+    background: #ffffff;
+    border-bottom: 2px solid #e2e8f0;
+}
+body.light-mode.licao-page .codedex-topbar-title {
+    color: #1e293b;
+}
+body.light-mode.licao-page .codedex-btn-back {
+    color: #475569;
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+body.light-mode.licao-page .codedex-btn-back:hover {
+    color: #1cb0f6;
+    background: #e2e8f0;
+    border-color: #1cb0f6;
+}
+
+body.light-mode.licao-page .codedex-instructions-panel {
+    background: #ffffff;
+    border-right: 2px solid #e2e8f0;
+}
+body.light-mode.licao-page .codedex-lesson-heading {
+    color: #0f172a;
+}
+body.light-mode.licao-page .codedex-text-content {
+    color: #475569;
+}
+body.light-mode.licao-page .codedex-text-content code {
+    background: #f1f5f9;
+    color: #0284c7;
+}
+
+body.light-mode.licao-page .codedex-card-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #1cb0f6;
+}
+body.light-mode.licao-page .codedex-card-box h4 {
+    color: #0f172a;
+}
+body.light-mode.licao-page .codedex-card-box p,
+body.light-mode.licao-page .codedex-card-box ul {
+    color: #475569;
+}
+body.light-mode.licao-page .codedex-card-box li strong {
+    color: #0f172a;
+}
+
+body.light-mode.licao-page .codedex-hint-card {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    border-left-color: #ffc800;
+}
+body.light-mode.licao-page .codedex-hint-card p {
+    color: #475569;
+}
+body.light-mode.licao-page .codedex-hint-code {
+    background: #0d0d12;
+    border-color: #1e2230;
+    color: #50fa7b;
+}
+
+body.light-mode.licao-page .codedex-editor-top {
+    background: #ffffff;
+    border-bottom: 2px solid #e2e8f0;
+}
+body.light-mode.licao-page .codedex-tab-file {
+    background: #0d0d12;
+    color: #ffffff;
+}
+
+body.light-mode.licao-page .codedex-ide-actions {
+    background: #ffffff;
+    border-top: 2px solid #e2e8f0;
+    border-bottom: 2px solid #e2e8f0;
+}
+body.light-mode.licao-page .codedex-btn-reset {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+}
+body.light-mode.licao-page .codedex-btn-reset:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+body.light-mode.licao-page .codedex-terminal-header {
+    background: #0d0d12;
+    border-bottom: 1px solid #1e2230;
+}
+body.light-mode.licao-page .codedex-terminal-panel,
+body.light-mode.licao-page .codedex-terminal-output,
+body.light-mode.licao-page .codedex-editor-area {
+    background: #08090c;
+}

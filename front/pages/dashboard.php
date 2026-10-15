@@ -542,7 +542,7 @@ $nomes_unidades = [
     <link rel="stylesheet" href="../assets/css/topbar.css">
     <link rel="shortcut icon" href="../assets/img/logo.png">
     
-    <link rel="stylesheet" href="../assets/css/dashboard-page.css?v=2">
+    <link rel="stylesheet" href="../assets/css/dashboard-page.css?v=<?= time() ?>">
 </head>
 <body>
     <div class="app-container">
@@ -582,7 +582,8 @@ $nomes_unidades = [
                                     </button>
                                 </div>
                                 
-                                <div class="trail-flex">
+                                <div class="trail-flex" data-capitulo="<?php echo $num_cap; ?>" data-status="<?php echo $status_cap_banco; ?>" data-cor="<?php echo $cor_unidade; ?>">
+                                    <svg class="trail-svg" id="trail_svg_<?php echo $num_cap; ?>" aria-hidden="true"></svg>
                                     <?php $total_mods = count($info['licoes']); for ($mod = 1; $mod <= $total_mods; $mod++): 
                                         $classe_modulo = "locked";
                                         $icone_modulo = "fa-star";
@@ -652,7 +653,7 @@ $nomes_unidades = [
                                                 $chest_state = "locked";
                                             }
                                         ?>
-                                            <div class="reward-chest-container <?php echo $pos_class; ?>" style="margin-left: 0; margin-right: 80px;">
+                                            <div class="reward-chest-container pos-chest <?php echo $chest_state; ?>" data-chest-state="<?php echo $chest_state; ?>">
                                                 <?php if ($chest_state === 'available'): ?>
                                                     <div class="chest-balloon"><i class="fa-solid fa-gift"></i> ABRIR BAÚ!</div>
                                                     <div class="chest-node available" id="chestNode_<?php echo $num_cap; ?>" onclick="abrirModalBau(<?php echo $num_cap; ?>, '<?php echo htmlspecialchars($info['titulo']); ?>')">

@@ -1,14 +1,41 @@
-    // ====================================
-    // CONTROLE DOS SLIDES DE EXPLICAÇÃO
-    // ====================================
-    let currentSlide = 0;
+// =========================================================================
+// LICAO.JS - FLUXO DE SLIDES DE EXPLICAÇÃO + QUIZ INTERATIVO COM CHIPS
+// =========================================================================
+
+(function() {
+    // 1. Elementos e Contadores Globais do Quiz e Slides
     const slidesExpl = document.querySelectorAll('.explanation-slide');
     const totalSlides = slidesExpl.length;
     const dotsContainer = document.getElementById('slideDots');
     const btnPrev = document.getElementById('btnPrevSlide');
     const btnNext = document.getElementById('btnNextSlide');
 
-    // Inicializa os dots
+    const slidesQuiz = document.querySelectorAll('.question-slide');
+    const totalQuestions = slidesQuiz.length;
+    let currentSlide = 0;
+    let currentIndex = 0;
+    let totalAcertos = 0;
+    let state = 'selecting'; // 'selecting' | 'checked'
+    let selectedValue = null;
+
+    const opiQuizImg = document.getElementById('opiQuizImg');
+    const quizSpeechBubble = document.getElementById('quizSpeechBubble');
+    const quizGridBody = document.querySelector('.quiz-grid-body');
+
+    const MASCOTE_EXPLICANDO = quizGridBody ? (quizGridBody.dataset.mascoteExplicando || '') : '';
+    const MASCOTE_FELIZ = quizGridBody ? (quizGridBody.dataset.mascoteFeliz || '') : '';
+    const MASCOTE_TRISTE = quizGridBody ? (quizGridBody.dataset.mascoteTriste || '') : '';
+
+    // Helper de áudio
+    function playAudio(type) {
+        if (window.OpusAudio && typeof window.OpusAudio[type] === 'function') {
+            try { window.OpusAudio[type](); } catch(e) {}
+        }
+    }
+
+    // ====================================
+    // CONTROLE DOS SLIDES DE EXPLICAÇÃO
+    // ====================================
     function initDots() {
         if (!dotsContainer) return;
         dotsContainer.innerHTML = '';
@@ -27,14 +54,12 @@
         currentSlide = index;
         slidesExpl[currentSlide].classList.add('active');
 
-        // Atualizar dots
         const dots = document.querySelectorAll('.dot-indicator');
         dots.forEach((dot, idx) => {
             if (idx === currentSlide) dot.classList.add('active');
             else dot.classList.remove('active');
         });
 
-        // Configurar botões
         if (btnPrev) btnPrev.disabled = currentSlide === 0;
         
         if (btnNext) {
@@ -58,9 +83,10 @@
 
     function startQuizPhase() {
         if (totalQuestions === 0) {
-            // Se não houver perguntas, finaliza a lição automaticamente com sucesso
-            document.getElementById('input_acertos').value = 3; 
-            document.getElementById('quiz-form-hidden').submit();
+            const elAcertos = document.getElementById('input_acertos');
+            if (elAcertos) elAcertos.value = 6;
+            const form = document.getElementById('quiz-form-hidden');
+            if (form) form.submit();
             return;
         }
 
@@ -93,28 +119,9 @@
         startQuizPhase();
     }
 
-
     // ====================================
-    // LÓGICA DO QUIZ ESTILO DUOLINGO
+    // LÓGICA DO QUIZ (PERGUNTAS / ALTERNATIVAS)
     // ====================================
-    const slidesQuiz = document.querySelectorAll('.question-slide');
-    const totalQuestions = slidesQuiz.length;
-    let currentIndex = 0;
-    let totalAcertos = 0;
-    let state = 'selecting'; // 'selecting' | 'checked'
-    let selectedValue = null;
-
-    const opiQuizImg = document.getElementById('opiQuizImg');
-    const quizSpeechBubble = document.getElementById('quizSpeechBubble');
-
-    // Helper seguro para tocar efeitos sonoros via OpusAudio
-    function playAudio(type) {
-        if (window.OpusAudio && typeof window.OpusAudio[type] === 'function') {
-            window.OpusAudio[type]();
-        }
-    }
-
-    // Configuração e persistência do botão de som
     const btnSoundToggle = document.getElementById('btnSoundToggle');
     function syncSoundToggleUI() {
         if (!btnSoundToggle) return;
@@ -139,80 +146,55 @@
     }
     window.addEventListener('opus:sound-toggle', syncSoundToggleUI);
 
-    // Atualiza fala do mascote com animação pop viva
     function setMascotSpeech(text, statusClass = '') {
         if (!quizSpeechBubble) return;
         quizSpeechBubble.className = 'quiz-speech-bubble ' + statusClass;
         quizSpeechBubble.textContent = text;
         quizSpeechBubble.classList.remove('bubble-pop');
-        void quizSpeechBubble.offsetWidth; // reflow para reiniciar animação
+        void quizSpeechBubble.offsetWidth;
         quizSpeechBubble.classList.add('bubble-pop');
     }
 
-    // Mascote clicável com reação divertida
     if (opiQuizImg) {
         opiQuizImg.addEventListener('click', function() {
             playAudio('playClick');
             opiQuizImg.classList.remove('opi-bounce-animation', 'opi-shake-animation', 'opi-celebrate-animation');
             void opiQuizImg.offsetWidth;
             opiQuizImg.classList.add('opi-bounce-animation');
-
-            const frasesInterativas = [
+            const frases = [
                 "Você consegue! Vamos aprender Java juntos! 🚀",
                 "Mantenha o foco! Errar faz parte do aprendizado! 💡",
                 "Estou aqui torcendo por você! Bora codar! 💻",
-                "Analise cada opção com atenção! Você é capaz! ✨",
                 "Java é poder puro! Vamos conquistar essa lição! ☕"
             ];
-            setMascotSpeech(frasesInterativas[Math.floor(Math.random() * frasesInterativas.length)]);
+            setMascotSpeech(frases[Math.floor(Math.random() * frases.length)]);
         });
     }
 
-    // Imagens do mascote do capítulo atual (definidas pelo PHP via data-attributes
-    // em .quiz-grid-body, de acordo com a cor/capítulo da lição)
-    const quizGridBody = document.querySelector('.quiz-grid-body');
-    const MASCOTE_EXPLICANDO = quizGridBody.dataset.mascoteExplicando;
-    const MASCOTE_FELIZ = quizGridBody.dataset.mascoteFeliz;
-    const MASCOTE_TRISTE = quizGridBody.dataset.mascoteTriste;
-
-    // Atualiza a barra de progresso do quiz
     function updateProgress(answeredCount) {
         const fill = document.getElementById('progressFill');
         const text = document.getElementById('progressText');
         const pct = totalQuestions > 0 ? (answeredCount / totalQuestions) * 100 : 0;
-        fill.style.width = pct + '%';
-        text.textContent = answeredCount + '/' + totalQuestions;
+        if (fill) fill.style.width = pct + '%';
+        if (text) text.textContent = answeredCount + '/' + totalQuestions;
     }
 
-    // Selecionar alternativa
-    function selectOption(el) {
+    // Selecionar alternativa (múltipla escolha)
+    window.selectOption = function(el) {
         if (state === 'checked') return;
 
         playAudio('playClick');
 
         const slide = el.closest('.question-slide');
         const options = slide.querySelectorAll('.duo-option');
-
-        // Remove seleção anterior
         options.forEach(opt => opt.classList.remove('selected'));
 
-        // Seleciona a nova
         el.classList.add('selected');
         selectedValue = el.getAttribute('data-value');
 
-        // Habilita o botão
         const btn = document.getElementById('btnAction');
-        btn.disabled = false;
-    }
-
-    // Ação do botão (VERIFICAR ou CONTINUAR)
-    function handleAction() {
-        if (state === 'selecting') {
-            verificar();
-        } else {
-            continuar();
-        }
-    }
+        if (btn) btn.disabled = false;
+    };
 
     // Handlers para o tipo interativo completar_codigo (Word Chips)
     window.selectWordChip = function(btnChip) {
@@ -221,74 +203,54 @@
 
         const slide = btnChip.closest('.question-slide');
         const slot = slide.querySelector('.code-blank-slot');
+        if (!slot) return;
         const filledText = slot.querySelector('.blank-filled-text');
         
-        // Se já havia um chip selecionado, devolve o anterior
         const prevSelected = slide.querySelector('.word-chip.used');
         if (prevSelected) {
             prevSelected.classList.remove('used');
         }
 
-        // Marca o novo como used
         btnChip.classList.add('used');
 
-        // Preenche a lacuna
         const word = btnChip.getAttribute('data-word');
         const letterVal = btnChip.getAttribute('data-value');
-        filledText.textContent = word;
+        if (filledText) filledText.textContent = word;
         slot.classList.add('filled');
 
-        // Define a resposta selecionada
         selectedValue = letterVal;
 
-        // Habilita o botão VERIFICAR
         const btn = document.getElementById('btnAction');
-        btn.disabled = false;
+        if (btn) btn.disabled = false;
     };
 
     window.removeBlankWord = function(slot) {
         if (state === 'checked') return;
-        if (!slot.classList.contains('filled')) return;
+        if (!slot || !slot.classList.contains('filled')) return;
 
         playAudio('playClick');
         const slide = slot.closest('.question-slide');
         const filledText = slot.querySelector('.blank-filled-text');
-        filledText.textContent = '';
+        if (filledText) filledText.textContent = '';
         slot.classList.remove('filled');
 
-        // Libera o chip selecionado
-        const usedChip = slide.querySelector('.word-chip.used');
+        const usedChip = slide ? slide.querySelector('.word-chip.used') : null;
         if (usedChip) {
             usedChip.classList.remove('used');
         }
 
         selectedValue = null;
         const btn = document.getElementById('btnAction');
-        btn.disabled = true;
+        if (btn) btn.disabled = true;
     };
 
-    // Handlers para novos tipos
-    window.checkTypingInput = function(el) {
-        if (state === 'checked') return;
-        const val = el.value.trim();
-        selectedValue = val ? val : null;
-        const btn = document.getElementById('btnAction');
-        btn.disabled = !selectedValue;
-    };
-
-    window.checkSelectInput = function(el) {
-        if (state === 'checked') return;
-        selectedValue = el.value;
-        const btn = document.getElementById('btnAction');
-        btn.disabled = !selectedValue;
-    };
-
-    window.checkInlineInput = function(el) {
-        if (state === 'checked') return;
-        const val = el.value.trim();
-        selectedValue = val ? val : null;
-        const btn = document.getElementById('btnAction');
-        btn.disabled = !selectedValue;
+    // Ação do botão principal (VERIFICAR ou CONTINUAR)
+    window.handleAction = function() {
+        if (state === 'selecting') {
+            verificar();
+        } else {
+            continuar();
+        }
     };
 
     // Verificar resposta
@@ -296,52 +258,29 @@
         if (!selectedValue) return;
 
         const slide = slidesQuiz[currentIndex];
-        const correct = slide.getAttribute('data-correct').trim().toUpperCase();
+        if (!slide) return;
+
+        const correct = (slide.getAttribute('data-correct') || '').trim().toUpperCase();
         const tipo = slide.getAttribute('data-tipo') || 'multipla_escolha';
         const perguntaId = slide.getAttribute('data-pergunta-id');
         const footer = document.getElementById('quizFooter');
         const feedbackMsg = document.getElementById('feedbackMsg');
         const btn = document.getElementById('btnAction');
 
-        let isCorrect = false;
+        let isCorrect = (selectedValue.trim().toUpperCase() === correct);
 
-        if (tipo === 'digitar_codigo' || tipo === 'completar_codigo_escrito') {
-            const rawCorrect = slide.getAttribute('data-correct') ? slide.getAttribute('data-correct').trim() : '';
-            const rawCorrectText = slide.getAttribute('data-correct-text') ? slide.getAttribute('data-correct-text').trim() : '';
-            const expectedCode = rawCorrectText || rawCorrect;
-            const userVal = selectedValue.trim();
-            
-            const normalize = s => {
-                let str = s.replace(/\s+/g, ' ').trim();
-                str = str.replace(/println\s*\(/g, 'println(');
-                str = str.replace(/\(\s+/g, '(').replace(/\s+\)/g, ')');
-                return str;
-            };
-            const stripSemi = s => s.replace(/;\s*$/, '').trim();
-
-            const normUser = normalize(userVal);
-            const normExpected = normalize(expectedCode);
-
-            // Validação estrita de maiúsculas/minúsculas para Java (ex: System vs system)
-            isCorrect = (normUser === normExpected ||
-                         stripSemi(normUser) === stripSemi(normExpected));
-        } else {
-            isCorrect = selectedValue === correct;
-        }
-
-        // Salvar resposta no form hidden
-        document.getElementById('resp_' + perguntaId).value = selectedValue;
+        // Salva resposta no form hidden se o input existir
+        const inputResp = document.getElementById('resp_' + perguntaId);
+        if (inputResp) inputResp.value = selectedValue;
 
         if (tipo === 'multipla_escolha') {
             const options = slide.querySelectorAll('.duo-option');
-            // Desabilitar todas as opções
             options.forEach(opt => {
                 opt.classList.add('disabled');
                 if (opt.getAttribute('data-value') === correct && !isCorrect) {
                     opt.classList.add('reveal-correct');
                 }
             });
-            // Marcar a selecionada
             const selectedEl = slide.querySelector('.duo-option.selected');
             if (selectedEl) {
                 if (isCorrect) selectedEl.classList.add('correct');
@@ -361,203 +300,180 @@
                     slot.style.color = '#ff4b4b';
                 }
             }
-        } else if (tipo === 'digitar_codigo') {
-            const input = slide.querySelector('.typing-input');
-            input.disabled = true;
-            if (isCorrect) input.style.borderColor = '#58cc02';
-            else input.style.borderColor = '#ff4b4b';
-        } else if (tipo === 'completar_codigo_escrito') {
-            const inputInline = slide.querySelector('.code-input-inline');
-            inputInline.disabled = true;
-            if (isCorrect) inputInline.style.borderColor = '#58cc02';
-            else inputInline.style.borderColor = '#ff4b4b';
         }
 
         if (isCorrect) {
             totalAcertos++;
-
-            // Efeito sonoro alegre/ascendente de sucesso estilo Duolingo
             playAudio('playSuccess');
 
-            // Mascote reativo (se existir)
-            if (opiQuizImg) {
+            if (opiQuizImg && MASCOTE_FELIZ) {
                 opiQuizImg.src = MASCOTE_FELIZ;
                 opiQuizImg.className = "opi-quiz-mascote opi-celebrate-animation";
             }
 
-            const acertoFrases = [
-                "Excelente! Você acertou em cheio! 🚀",
-                "Sensacional! Resposta correta! 💎",
-                "Perfeito! Seu conhecimento em Java está afiado! 🎉",
-                "Mandou bem demais! Continue assim! ⭐",
-                "Brilhante! Essa lógica foi impecável! 💡"
-            ];
-            setMascotSpeech(acertoFrases[Math.floor(Math.random() * acertoFrases.length)], "bubble-correct");
+            setMascotSpeech("Excelente! Resposta correta! 🚀", "bubble-correct");
 
-            // Footer verde
-            footer.className = 'quiz-footer feedback-correct';
-            feedbackMsg.className = 'feedback-message msg-correct visible';
-            feedbackMsg.innerHTML = '<div class="feedback-icon"><i class="fa-solid fa-check"></i></div><div><strong>Excelente!</strong><br><span style="font-weight:400;font-size:13px;opacity:0.85">Resposta correta!</span></div>';
+            if (footer) footer.className = 'quiz-footer feedback-correct';
+            if (feedbackMsg) {
+                feedbackMsg.className = 'feedback-message msg-correct visible';
+                feedbackMsg.innerHTML = '<div class="feedback-icon"><i class="fa-solid fa-check"></i></div><div><strong>Excelente!</strong><br><span style="font-weight:400;font-size:13px;opacity:0.85">Resposta correta!</span></div>';
+            }
 
-            // Botão continuar verde
-            btn.className = 'btn-quiz-action btn-continue-correct';
-            btn.textContent = 'CONTINUAR';
+            if (btn) {
+                btn.className = 'btn-quiz-action btn-continue-correct';
+                btn.textContent = 'CONTINUAR';
+                btn.disabled = false;
+            }
 
-            // Mini confete
             launchConfetti();
         } else {
-            // Efeito sonoro grave/buzz sutil amigável estilo Duolingo
             playAudio('playError');
 
-            // Mascote reativo (se existir)
-            if (opiQuizImg) {
+            if (opiQuizImg && MASCOTE_TRISTE) {
                 opiQuizImg.src = MASCOTE_TRISTE;
                 opiQuizImg.className = "opi-quiz-mascote opi-shake-animation";
             }
 
-            const erroFrases = [
-                "Oops! Não foi dessa vez... Mas errar faz parte! 💡",
-                "Quase lá! Veja a resposta correta para aprender! 🔍",
-                "Sem problemas! A prática leva à perfeição! 💪",
-                "Respira fundo, na próxima você acerta com certeza! ✨"
-            ];
-            setMascotSpeech(erroFrases[Math.floor(Math.random() * erroFrases.length)], "bubble-wrong");
+            setMascotSpeech("Quase lá! Veja a resposta correta para aprender! 💡", "bubble-wrong");
 
-            // Footer vermelho
-            footer.className = 'quiz-footer feedback-wrong';
-            feedbackMsg.className = 'feedback-message msg-wrong visible';
+            if (footer) footer.className = 'quiz-footer feedback-wrong';
             
-            // Encontrar texto da alternativa correta
             let correctText = correct;
             if (tipo === 'multipla_escolha') {
                 const options = slide.querySelectorAll('.duo-option');
                 options.forEach(opt => {
                     if (opt.getAttribute('data-value') === correct) {
-                        correctText = opt.querySelector('.option-text').textContent;
+                        const t = opt.querySelector('.option-text');
+                        if (t) correctText = t.textContent;
                     }
                 });
             } else if (tipo === 'completar_codigo') {
                 const chips = slide.querySelectorAll('.word-chip');
                 chips.forEach(chip => {
                     if (chip.getAttribute('data-value') === correct) {
-                        correctText = chip.getAttribute('data-word');
+                        correctText = chip.getAttribute('data-word') || correct;
                     }
                 });
-            } else {
-                const expectedCode = slide.getAttribute('data-correct-text');
-                if (expectedCode && expectedCode.trim() !== '') {
-                    correctText = expectedCode;
-                }
             }
-            feedbackMsg.innerHTML = '<div class="feedback-icon"><i class="fa-solid fa-xmark"></i></div><div><strong>Resposta incorreta</strong><br><span style="font-weight:400;font-size:13px;opacity:0.85">Correta: ' + correctText + '</span></div>';
 
-            // Botão continuar vermelho
-            btn.className = 'btn-quiz-action btn-continue-wrong';
-            btn.textContent = 'CONTINUAR';
+            if (feedbackMsg) {
+                feedbackMsg.className = 'feedback-message msg-wrong visible';
+                feedbackMsg.innerHTML = '<div class="feedback-icon"><i class="fa-solid fa-xmark"></i></div><div><strong>Resposta incorreta</strong><br><span style="font-weight:400;font-size:13px;opacity:0.85">Correta: ' + correctText + '</span></div>';
+            }
+
+            if (btn) {
+                btn.className = 'btn-quiz-action btn-continue-wrong';
+                btn.textContent = 'CONTINUAR';
+                btn.disabled = false;
+            }
         }
 
         state = 'checked';
     }
 
-    // Continuar para próxima pergunta
+    // Continuar para próxima pergunta ou submeter resultado
     function continuar() {
         const footer = document.getElementById('quizFooter');
         const feedbackMsg = document.getElementById('feedbackMsg');
         const btn = document.getElementById('btnAction');
 
-        // Atualizar progresso
         updateProgress(currentIndex + 1);
 
-        // Se era a última pergunta, decide o desfecho
+        // SE ERA A ÚLTIMA PERGUNTA -> FINALIZA A LIÇÃO
         if (currentIndex >= totalQuestions - 1) {
-            const gabaritou = totalAcertos === totalQuestions;
-            const passou = totalAcertos > 0;
+            const gabaritou = (totalAcertos === totalQuestions);
+            const passou = (totalAcertos > 0);
 
-            // Reset footer (mesmo antes de enviar, evita "flash" do feedback anterior)
-            footer.className = 'quiz-footer';
-            feedbackMsg.className = 'feedback-message';
-            feedbackMsg.innerHTML = '';
+            if (footer) footer.className = 'quiz-footer';
+            if (feedbackMsg) {
+                feedbackMsg.className = 'feedback-message';
+                feedbackMsg.innerHTML = '';
+            }
+
+            const submeterResultado = () => {
+                const elAcertos = document.getElementById('input_acertos');
+                if (elAcertos) elAcertos.value = totalAcertos;
+                const elTotal = document.getElementById('input_total_questoes');
+                if (elTotal) elTotal.value = totalQuestions;
+                const form = document.getElementById('quiz-form-hidden');
+                if (form) form.submit();
+            };
 
             if (gabaritou) {
-                // Comemoração épica: fanfarra triunfante + mascote em vitória contínua + confete
                 playAudio('playLessonComplete');
-                opiQuizImg.src = MASCOTE_FELIZ;
-                opiQuizImg.className = "opi-quiz-mascote opi-victory-animation";
+                if (opiQuizImg && MASCOTE_FELIZ) {
+                    opiQuizImg.src = MASCOTE_FELIZ;
+                    opiQuizImg.className = "opi-quiz-mascote opi-victory-animation";
+                }
                 setMascotSpeech("Mandou muito bem! Você gabaritou a lição! 🏆", "bubble-correct");
                 launchConfetti();
-
-                setTimeout(() => {
-                    document.getElementById('input_acertos').value = totalAcertos;
-                    document.getElementById('quiz-form-hidden').submit();
-                }, 1600);
+                setTimeout(submeterResultado, 1200);
             } else if (passou) {
-                // Passou na lição: fanfarra de conclusão + mascote alegre pulando
                 playAudio('playLessonComplete');
-                opiQuizImg.src = MASCOTE_FELIZ;
-                opiQuizImg.className = "opi-quiz-mascote opi-bounce-animation";
+                if (opiQuizImg && MASCOTE_FELIZ) {
+                    opiQuizImg.src = MASCOTE_FELIZ;
+                    opiQuizImg.className = "opi-quiz-mascote opi-bounce-animation";
+                }
                 setMascotSpeech("Muito bem! Lição concluída com sucesso! 📊", "bubble-correct");
-
-                setTimeout(() => {
-                    document.getElementById('input_acertos').value = totalAcertos;
-                    document.getElementById('quiz-form-hidden').submit();
-                }, 1200);
+                setTimeout(submeterResultado, 1000);
             } else {
-                // 0 acertos: som reconfortante de derrota suave + mascote solidário com shake
                 playAudio('playLessonDefeat');
-                opiQuizImg.src = MASCOTE_TRISTE;
-                opiQuizImg.className = "opi-quiz-mascote opi-shake-animation";
-                setMascotSpeech("Não foi dessa vez... Mas errar faz parte da jornada de programação! 💪", "bubble-wrong");
-
-                setTimeout(() => {
-                    document.getElementById('input_acertos').value = totalAcertos;
-                    document.getElementById('quiz-form-hidden').submit();
-                }, 1300);
+                if (opiQuizImg && MASCOTE_TRISTE) {
+                    opiQuizImg.src = MASCOTE_TRISTE;
+                    opiQuizImg.className = "opi-quiz-mascote opi-shake-animation";
+                }
+                setMascotSpeech("Não foi dessa vez... Mas errar faz parte! 💪", "bubble-wrong");
+                setTimeout(submeterResultado, 1000);
             }
             return;
         }
 
+        // SE HOUVER PRÓXIMA PERGUNTA -> AVANÇA O SLIDE
         playAudio('playClick');
 
-        // Reset do Mascote para aguardando/pensando
-        opiQuizImg.src = MASCOTE_EXPLICANDO;
-        opiQuizImg.className = "opi-quiz-mascote opi-float-animation";
-        
-        const pensandoFrases = [
-            "Estou preparando o próximo desafio... 🤔",
-            "Vamos para a próxima! Mantenha o foco! 💪",
-            "Pronto para a próxima pergunta? Vamos lá! 🔍",
-            "Mais um desafio para testar sua lógica Java! ☕"
-        ];
-        setMascotSpeech(pensandoFrases[Math.floor(Math.random() * pensandoFrases.length)]);
+        if (opiQuizImg && MASCOTE_EXPLICANDO) {
+            opiQuizImg.src = MASCOTE_EXPLICANDO;
+            opiQuizImg.className = "opi-quiz-mascote opi-float-animation";
+        }
+        setMascotSpeech("Vamos para o próximo desafio! Mantenha o foco! ☕");
 
-        // Reset footer
-        footer.className = 'quiz-footer';
-        feedbackMsg.className = 'feedback-message';
-        feedbackMsg.innerHTML = '';
+        if (footer) footer.className = 'quiz-footer';
+        if (feedbackMsg) {
+            feedbackMsg.className = 'feedback-message';
+            feedbackMsg.innerHTML = '';
+        }
 
-        // Animar saída do slide atual
+        // Esconde a pergunta atual
         const currentSlideEl = slidesQuiz[currentIndex];
-        currentSlideEl.style.display = 'none';
+        if (currentSlideEl) {
+            currentSlideEl.style.display = 'none';
+        }
 
+        // Avança o índice
         currentIndex++;
         selectedValue = null;
         state = 'selecting';
 
-        // Mostrar próxima
-        slidesQuiz[currentIndex].style.display = 'flex';
+        // Mostra a próxima pergunta
+        if (slidesQuiz[currentIndex]) {
+            slidesQuiz[currentIndex].style.display = 'flex';
+        }
 
-        // Reset botão
-        btn.className = 'btn-quiz-action btn-check';
-        btn.textContent = 'VERIFICAR';
-        btn.disabled = true;
+        // Reseta o botão para "VERIFICAR"
+        if (btn) {
+            btn.className = 'btn-quiz-action btn-check';
+            btn.textContent = 'VERIFICAR';
+            btn.disabled = true;
+        }
     }
 
-    // Confete animado (cobre a tela inteira)
+    // Confetes
     function launchConfetti() {
         const container = document.getElementById('confettiContainer');
+        if (!container) return;
         const colors = ['#58cc02', '#4baf00', '#ffd900', '#ff9600', '#4b8df8', '#ce82ff'];
 
-        for (let i = 0; i < 80; i++) {
+        for (let i = 0; i < 60; i++) {
             const piece = document.createElement('div');
             piece.className = 'confetti-piece';
             piece.style.left = (Math.random() * 100) + '%';
@@ -569,29 +485,16 @@
             piece.style.animation = `confettiFall ${Math.random() * 2 + 1.5}s ease-out ${Math.random() * 0.5}s forwards`;
             container.appendChild(piece);
 
-            // Limpar após animação
             setTimeout(() => piece.remove(), 3500);
         }
     }
 
-    // Atalhos de teclado: Enter para verificar/continuar, 1-3 para selecionar alternativas
+    // Atalhos de teclado (Enter para Verificar/Continuar, 1-3 para alternativas)
     document.addEventListener('keydown', function(e) {
-        // Se o foco estiver em um campo de texto ou textarea, não intercepta números 1, 2, 3
         if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
-            if (e.key === 'Enter') {
-                if (e.target.tagName === 'TEXTAREA' && e.shiftKey) {
-                    return; // Permite quebra de linha com Shift+Enter
-                }
-                const btn = document.getElementById('btnAction');
-                if (!btn.disabled) {
-                    e.preventDefault();
-                    handleAction();
-                }
-            }
             return;
         }
 
-        // Se estiver na fase de explicação, permite navegar com Enter ou Setas
         const explPhase = document.getElementById('explanationPhase');
         if (explPhase && explPhase.style.display !== 'none') {
             if (e.key === 'ArrowRight' || e.key === 'Enter') {
@@ -604,66 +507,56 @@
 
         if (e.key === 'Enter') {
             const btn = document.getElementById('btnAction');
-            if (!btn.disabled) {
-                handleAction();
+            if (btn && !btn.disabled) {
+                window.handleAction();
             }
         }
-        // Atalhos 1, 2, 3 para selecionar alternativas
+
         if (state === 'selecting' && ['1', '2', '3'].includes(e.key)) {
             const slide = slidesQuiz[currentIndex];
-            const options = slide.querySelectorAll('.duo-option');
-            const idx = parseInt(e.key) - 1;
-            if (options[idx]) {
-                selectOption(options[idx]);
+            if (slide) {
+                const options = slide.querySelectorAll('.duo-option');
+                const idx = parseInt(e.key) - 1;
+                if (options[idx]) {
+                    window.selectOption(options[idx]);
+                }
             }
         }
     });
 
-    // Inicializar progresso
+    // Inicia progresso
     updateProgress(0);
 
-// ====================================
-// AVISO DE SAÍDA (sair no meio das perguntas)
-// ====================================
-function abrirAvisoSaida() {
-    try {
-        if (typeof playAudio === 'function') playAudio('playClick');
-    } catch(e){}
-    const modal = document.getElementById('exitWarningModal');
-    if (modal) modal.classList.add('active');
-}
+    // Aviso de saída
+    window.abrirAvisoSaida = function() {
+        playAudio('playClick');
+        const modal = document.getElementById('exitWarningModal');
+        if (modal) modal.classList.add('active');
+    };
 
-function fecharAvisoSaida() {
-    try {
-        if (typeof playAudio === 'function') playAudio('playClick');
-    } catch(e){}
-    const modal = document.getElementById('exitWarningModal');
-    if (modal) modal.classList.remove('active');
-}
+    window.fecharAvisoSaida = function() {
+        playAudio('playClick');
+        const modal = document.getElementById('exitWarningModal');
+        if (modal) modal.classList.remove('active');
+    };
 
-async function confirmarSaida() {
-    const btnConfirm = document.querySelector('.btn-exit-confirm');
-    if (btnConfirm) {
-        btnConfirm.disabled = true;
-        btnConfirm.textContent = 'Saindo...';
-    }
-    try {
-        if (typeof playAudio === 'function') playAudio('playClick');
-    } catch(e){}
+    window.confirmarSaida = async function() {
+        const btnConfirm = document.querySelector('.btn-exit-confirm');
+        if (btnConfirm) {
+            btnConfirm.disabled = true;
+            btnConfirm.textContent = 'Saindo...';
+        }
+        playAudio('playClick');
 
-    try {
-        await fetch('../../back/penalizar_saida.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            keepalive: true
-        });
-    } catch (e) {
-        console.error('Erro ao penalizar saída:', e);
-    }
+        try {
+            await fetch('../../back/penalizar_saida.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                keepalive: true
+            });
+        } catch (e) {}
 
-    window.location.href = 'dashboard.php';
-}
+        window.location.href = 'dashboard.php';
+    };
 
-window.abrirAvisoSaida = abrirAvisoSaida;
-window.fecharAvisoSaida = fecharAvisoSaida;
-window.confirmarSaida = confirmarSaida;
+})();
