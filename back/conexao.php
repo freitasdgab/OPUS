@@ -1,4 +1,6 @@
 <?php
+date_default_timezone_set('America/Sao_Paulo');
+
 $host       = "localhost";
 $usuario_db = "root";
 $senha_db   = "";          // Padrão XAMPP — ajuste se necessário
@@ -10,6 +12,7 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 try {
     $conn = new mysqli($host, $usuario_db, $senha_db, $nome_db);
     $conn->set_charset("utf8mb4");
+    $conn->query("SET time_zone = '-03:00'");
 } catch (mysqli_sql_exception $e) {
     // Mensagem amigável + dica de diagnóstico
     $codigo  = $e->getCode();

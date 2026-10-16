@@ -83,12 +83,7 @@ if (!empty($minha_liga['grupo_id'])) {
 $missoes_hoje = missoes_obter_hoje($conn, $user_id);
 
 // 3. DADOS DE ATIVIDADE DE HOJE (OFENSIVA)
-$hoje_data = date('Y-m-d');
-$stmt_ult = $conn->prepare("SELECT ultima_atividade FROM usuarios WHERE id = ?");
-$stmt_ult->bind_param("i", $user_id);
-$stmt_ult->execute();
-$row_ult = $stmt_ult->get_result()->fetch_assoc();
-$praticou_hoje = (!empty($row_ult['ultima_atividade']) && $row_ult['ultima_atividade'] === $hoje_data);
+$praticou_hoje = !empty($status_jogador['fogo_hoje']);
 
 // 4. PROGRESSO GERAL DO CURSO
 $total_licoes_feitas = 0;
@@ -560,12 +555,20 @@ $nomes_unidades = [
                             $status_cap_banco = $unidades[$num_cap]['status'] ?? 'trancado';
                             $licoes_feitas = $unidades[$num_cap]['licoes_concluidas'] ?? 0;
                             $cor_unidade = $info['cor'];
-                            $cor_sombra = "rgba(0, 0, 0, 0.25)"; 
+                            $sombras_por_cor = [
+                                '#1cb0f6' => '#1899d6', // Azul
+                                '#ff4b4b' => '#d33131', // Rosa / Coral
+                                '#ff527b' => '#d1365c', // Rosa alternativo
+                                '#ce82ff' => '#a559d9', // Roxo
+                                '#58cc02' => '#46a302', // Verde
+                                '#ffc800' => '#cc9b00', // Laranja / Amarelo
+                            ];
+                            $cor_sombra = $sombras_por_cor[strtolower($cor_unidade)] ?? "rgba(0, 0, 0, 0.25)"; 
                             
                             $posicao_mascote = ($num_cap % 2 != 0) ? 'mascote-esquerda' : 'mascote-direita';
                             $imagem_mascote = $info['mascote'] ?? 'vistodecimaazul.png';
                         ?>
-                            <div class="capitulo-container <?php echo ($status_cap_banco === 'corrente' ? 'current-chapter' : ''); ?>" id="capitulo_<?php echo $num_cap; ?>" data-capitulo="<?php echo $num_cap; ?>">
+                            <div class="capitulo-container <?php echo ($status_cap_banco === 'current' || $status_cap_banco === 'corrente' ? 'current-chapter' : ''); ?>" id="capitulo_<?php echo $num_cap; ?>" data-capitulo="<?php echo $num_cap; ?>">
                                 <div class="capitulo-header" style="background-color: <?php echo $cor_unidade; ?>;">
                                     <div class="capitulo-header-text">
                                         <h2><?php echo $info['titulo']; ?></h2>
@@ -616,19 +619,19 @@ $nomes_unidades = [
                                     ?>
                                         
                                         <?php if ($is_current): ?>
-                                            <a href="<?php echo $url_destino; ?>" class="modulo-node current <?php echo $pos_class; ?>" id="currentLessonNode" data-capitulo="<?php echo $num_cap; ?>" data-licao="<?php echo $mod; ?>">
+                                            <a href="<?php echo $url_destino; ?>" class="modulo-node current <?php echo $pos_class; ?>" id="currentLessonNode" data-capitulo="<?php echo $num_cap; ?>" data-licao="<?php echo $mod; ?>" style="--balloon-color: <?php echo $cor_unidade; ?>; --node-shadow: <?php echo $cor_sombra; ?>;">
                                                 <div class="start-balloon" style="background-color: <?php echo $cor_unidade; ?>; --balloon-color: <?php echo $cor_unidade; ?>;">
                                                     <?php echo $vidas_atual <= 0 ? 'SEM VIDAS' : 'COMEÇAR'; ?>
                                                 </div>
                                                 <div class="active-ring">
-                                                    <div class="circle-button" style="background-color: <?php echo $cor_unidade; ?>; box-shadow: 0 6px 0 <?php echo $cor_sombra; ?>;">
+                                                    <div class="circle-button" style="background-color: <?php echo $cor_unidade; ?>; --node-shadow: <?php echo $cor_sombra; ?>; box-shadow: 0 6px 0 <?php echo $cor_sombra; ?>;">
                                                         <i class="fa-solid <?php echo $icone_modulo; ?>"></i>
                                                     </div>
                                                 </div>
                                             </a>
                                         <?php elseif ($is_clicavel): ?>
-                                            <a href="<?php echo $url_destino; ?>" class="modulo-node completed <?php echo $pos_class; ?>">
-                                                <div class="circle-button" style="background-color: <?php echo $cor_unidade; ?>; box-shadow: 0 6px 0 <?php echo $cor_sombra; ?>;">
+                                            <a href="<?php echo $url_destino; ?>" class="modulo-node completed <?php echo $pos_class; ?>" style="--balloon-color: <?php echo $cor_unidade; ?>; --node-shadow: <?php echo $cor_sombra; ?>;">
+                                                <div class="circle-button" style="background-color: <?php echo $cor_unidade; ?>; --node-shadow: <?php echo $cor_sombra; ?>; box-shadow: 0 6px 0 <?php echo $cor_sombra; ?>;">
                                                     <i class="fa-solid fa-check"></i>
                                                 </div>
                                             </a>
@@ -706,14 +709,14 @@ $nomes_unidades = [
                     <?php endif; ?>
 
                     <!-- WIDGET DE OFENSIVA / SEQUÊNCIA DIÁRIA -->
-                    <div class="widget-box widget-ofensiva">
+                    <div class="widget-box widget-ofensiva <?php echo $praticou_hoje ? 'fogo-ativo' : 'fogo-inativo'; ?>">
                         <div class="widget-header">
-                            <h3><i class="fa-solid fa-fire-flame-curved" <?php if(!$praticou_hoje) echo 'style="color: #999;"'; else echo 'style="color: #ff9600;"'; ?>></i> Ofensiva</h3>
-                            <span style="font-size: 0.85rem; color: <?php echo $praticou_hoje ? '#ff9600' : '#999'; ?>; font-weight: 800;">
+                            <h3><i class="fa-solid fa-fire-flame-curved ofensiva-header-icon"></i> Ofensiva</h3>
+                            <span class="ofensiva-header-badge">
                                 <?php echo $dias_fogo; ?> <?= $dias_fogo === 1 ? 'dia' : 'dias'; ?>
                             </span>
                         </div>
-                        <div class="ofensiva-body <?php echo $praticou_hoje ? '' : 'fogo-inativo'; ?>">
+                        <div class="ofensiva-body <?php echo $praticou_hoje ? 'fogo-ativo' : 'fogo-inativo'; ?>">
                             <div class="ofensiva-icon-box">
                                 <i class="fa-solid fa-fire"></i>
                             </div>

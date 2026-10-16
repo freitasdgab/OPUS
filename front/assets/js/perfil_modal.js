@@ -256,7 +256,7 @@
                         <div class="pmodal-stat-lbl">Divisão</div>
                     </div>
                     <div class="pmodal-stat-card">
-                        <div class="pmodal-stat-icon" style="color: #ff9600;"><i class="fa-solid fa-fire"></i></div>
+                        <div class="pmodal-stat-icon" style="color: ${u.fogo_hoje ? '#ff9600' : '#8b949e'};"><i class="fa-solid fa-fire"></i></div>
                         <div class="pmodal-stat-val">${u.dias_fogo} dias</div>
                         <div class="pmodal-stat-lbl">Ofensiva</div>
                     </div>

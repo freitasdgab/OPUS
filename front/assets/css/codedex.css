@@ -528,7 +528,7 @@ body.licao-page .opi-chat-window,
 }
 
 /* =========================================================================
-   MODO CLARO (LIGHT-MODE) - CONTRASTE ELEGANTE COM IDE PRETA SÓLIDA
+   MODO CLARO (LIGHT-MODE) - TEMA CLARO CONTÍNUO NA IDE, DICA E TERMINAL
    ========================================================================= */
 body.light-mode.licao-page .codedex-container {
     background: #f8fafc;
@@ -584,36 +584,52 @@ body.light-mode.licao-page .codedex-card-box li strong {
     color: #0f172a;
 }
 
+body.light-mode.licao-page .codedex-btn-hint {
+    background: #fffbeb;
+    border: 1.5px solid #fcd34d;
+    border-bottom: 3px solid #f59e0b;
+    color: #d97706;
+}
+body.light-mode.licao-page .codedex-btn-hint:hover {
+    background: #fef3c7;
+    border-color: #f59e0b;
+}
 body.light-mode.licao-page .codedex-hint-card {
-    background: #f8fafc;
-    border-color: #e2e8f0;
-    border-left-color: #ffc800;
+    background: #fffbeb;
+    border-color: #fde68a;
+    border-left: 4px solid #f59e0b;
+}
+body.light-mode.licao-page .codedex-hint-header {
+    color: #d97706;
 }
 body.light-mode.licao-page .codedex-hint-card p {
     color: #475569;
 }
 body.light-mode.licao-page .codedex-hint-code {
-    background: #0d0d12;
-    border-color: #1e2230;
-    color: #50fa7b;
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #0284c7;
 }
 
 body.light-mode.licao-page .codedex-editor-top {
-    background: #ffffff;
-    border-bottom: 2px solid #e2e8f0;
+    background: #f1f5f9;
+    border-bottom: 1px solid #cbd5e1;
 }
 body.light-mode.licao-page .codedex-tab-file {
-    background: #0d0d12;
-    color: #ffffff;
+    background: #ffffff;
+    color: #0f172a;
+    border: 1px solid #cbd5e1;
+    border-bottom: none;
+    border-top: 3px solid #1cb0f6;
 }
 
 body.light-mode.licao-page .codedex-ide-actions {
-    background: #ffffff;
-    border-top: 2px solid #e2e8f0;
-    border-bottom: 2px solid #e2e8f0;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
 }
 body.light-mode.licao-page .codedex-btn-reset {
-    background: #f8fafc;
+    background: #ffffff;
     border: 1px solid #cbd5e1;
     color: #475569;
 }
@@ -621,13 +637,81 @@ body.light-mode.licao-page .codedex-btn-reset:hover {
     background: #f1f5f9;
     color: #0f172a;
 }
+body.light-mode.licao-page .codedex-btn-run {
+    background: #e0f2fe;
+    color: #0284c7;
+    border: 1.5px solid #7dd3fc !important;
+    border-bottom: 4px solid #38bdf8 !important;
+}
+body.light-mode.licao-page .codedex-btn-run:hover:not(:disabled) {
+    background: #bae6fd;
+    color: #0369a1;
+    border: 1.5px solid #38bdf8 !important;
+    border-bottom: 4px solid #0284c7 !important;
+    filter: none;
+}
 
 body.light-mode.licao-page .codedex-terminal-header {
-    background: #0d0d12;
-    border-bottom: 1px solid #1e2230;
+    background: #f1f5f9;
+    border-bottom: 1px solid #cbd5e1;
+}
+body.light-mode.licao-page .codedex-term-title {
+    color: #475569;
+}
+body.light-mode.licao-page .codedex-term-status {
+    background: #e2e8f0;
+    color: #475569;
 }
 body.light-mode.licao-page .codedex-terminal-panel,
-body.light-mode.licao-page .codedex-terminal-output,
 body.light-mode.licao-page .codedex-editor-area {
-    background: #08090c;
+    background: #ffffff;
 }
+body.light-mode.licao-page .codedex-terminal-output {
+    background: #ffffff;
+    color: #0f172a;
+    font-family: 'Consolas', 'Fira Code', 'Courier New', monospace;
+    font-weight: 600;
+}
+body.light-mode.licao-page .codedex-output-prompt {
+    color: #334155;
+    font-weight: 600;
+}
+body.light-mode #codedexAceEditor .ace_keyword,
+body.light-mode #codedexAceEditor .ace_storage {
+    color: #d926a9 !important;
+    font-weight: 700 !important;
+}
+body.light-mode #codedexAceEditor .ace_entity.ace_name.ace_function {
+    color: #0284c7 !important;
+    font-weight: 800 !important;
+}
+body.light-mode #codedexAceEditor .ace_support.ace_function,
+body.light-mode #codedexAceEditor .ace_support.ace_class,
+body.light-mode #codedexAceEditor .ace_support.ace_type {
+    color: #7c3aed !important;
+    font-weight: 700 !important;
+}
+body.light-mode #codedexAceEditor .ace_identifier {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+}
+body.light-mode #codedexAceEditor .ace_comment {
+    color: #059669 !important;
+    font-style: italic !important;
+    font-weight: 600 !important;
+}
+body.light-mode #codedexAceEditor .ace_string {
+    color: #ea580c !important;
+    font-weight: 700 !important;
+}
+body.light-mode #codedexAceEditor .ace_constant.ace_numeric,
+body.light-mode #codedexAceEditor .ace_constant.ace_language {
+    color: #9333ea !important;
+    font-weight: 700 !important;
+}
+body.light-mode #codedexAceEditor .ace_keyword.ace_operator {
+    color: #0284c7 !important;
+    font-weight: 700 !important;
+}
+
+

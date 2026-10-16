@@ -25,10 +25,10 @@ $email = !empty($dados_user['email']) ?$dados_user['email'] : 'usuario@email.com
 
 // Estatísticas
 $xp_total = isset($dados_user['xp']) ?$dados_user['xp'] : 0; 
-$dias_ofensiva = isset($dados_user['dias_fogo']) ?$dados_user['dias_fogo'] : 0;
-$ultima_atividade = !empty($dados_user['ultima_atividade']) ? strtotime($dados_user['ultima_atividade']) : 0;
-$fogo_hoje = ($ultima_atividade && date('Y-m-d', $ultima_atividade) === date('Y-m-d'));
-$fogo_cor = $fogo_hoje ? '#ff9600' : '#4a4a5a';
+$dias_ofensiva = isset($dados_user['dias_fogo']) ? (int)$dados_user['dias_fogo'] : 0;
+$ultima_atividade = !empty($dados_user['ultima_atividade']) ? $dados_user['ultima_atividade'] : '';
+$fogo_hoje = ($ultima_atividade === date('Y-m-d') && $dias_ofensiva > 0);
+$fogo_cor = $fogo_hoje ? '#ff9600' : '#8b949e';
 $ligas_validas = ['Bronze', 'Prata', 'Ouro', 'Diamante'];$divisao = isset($dados_user['divisao']) && in_array($dados_user['divisao'], $ligas_validas) ?$dados_user['divisao'] : 'Bronze';
 
 // Data formatada

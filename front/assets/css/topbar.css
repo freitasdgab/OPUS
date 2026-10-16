@@ -254,24 +254,36 @@
     margin-bottom: 8px;
 }
 
-.stat-fogo.fogo-inativo i {
-    color: #999 !important;
-}
-.stat-fogo.fogo-inativo span {
-    color: #999 !important;
+.stat-fogo i,
+.stat-fogo span {
+    transition: color 0.35s ease, filter 0.35s ease, transform 0.35s ease;
 }
 
-/* Chama da topbar "viva" quando o fogo de hoje já está aceso */
+.stat-fogo.fogo-inativo,
+.stat-fogo.fogo-inativo i,
+.stat-fogo.fogo-inativo span {
+    color: #8b949e !important;
+    filter: none !important;
+    animation: none !important;
+}
+
+/* Chama da topbar "viva" (laranja) quando o fogo de hoje já está aceso */
+.stat-fogo.fogo-ativo,
+.stat-fogo.fogo-ativo i,
+.stat-fogo.fogo-ativo span {
+    color: #ff9600 !important;
+}
+
 .stat-fogo.fogo-ativo i {
     display: inline-block;
     transform-origin: 50% 100%;
     animation: topbarFlameFlicker 1.8s ease-in-out infinite;
-    filter: drop-shadow(0 0 4px rgba(255, 150, 0, 0.55));
+    filter: drop-shadow(0 0 6px rgba(255, 150, 0, 0.65));
 }
 @keyframes topbarFlameFlicker {
     0%, 100% { transform: scale(1) rotate(0deg); }
-    30%      { transform: scale(1.06, 0.95) rotate(-3deg); }
-    60%      { transform: scale(0.96, 1.07) rotate(2deg); }
+    30%      { transform: scale(1.08, 0.95) rotate(-3deg); }
+    60%      { transform: scale(0.96, 1.08) rotate(2deg); }
 }
 @media (prefers-reduced-motion: reduce) {
     .stat-fogo.fogo-ativo i { animation: none; }

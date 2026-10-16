@@ -18,10 +18,10 @@ if ($target_id <= 0) {
 }
 
 // Sincroniza status para valores atualizados de vidas/fogo
-opus_sincronizar_jogador($conn, $target_id);
+$status_target = opus_sincronizar_jogador($conn, $target_id);
 
 $stmt = $conn->prepare("
-    SELECT u.id, u.nome, u.email, u.foto_perfil, u.cor_fundo, u.xp, u.trofeus, u.dias_fogo,
+    SELECT u.id, u.nome, u.email, u.foto_perfil, u.cor_fundo, u.xp, u.trofeus, u.dias_fogo, u.ultima_atividade,
            u.pais, u.pais_codigo, u.criado_em,
            u.link_github, u.link_instagram, u.link_facebook, u.link_youtube, u.link_linkedin, u.link_email,
            u.projeto_titulo_1, u.projeto_url_1, u.projeto_titulo_2, u.projeto_url_2, u.projeto_titulo_3, u.projeto_url_3,
@@ -154,6 +154,7 @@ echo json_encode([
         'xp_semana'     => (int)$user['xp_semana'],
         'trofeus'       => count($conquistas_desbloqueadas),
         'dias_fogo'     => (int)$user['dias_fogo'],
+        'fogo_hoje'     => !empty($status_target['fogo_hoje']),
         'is_me'         => ($target_id === $meu_id),
         'is_seguindo'   => $eu_sigo,
         'ele_me_segue'  => $ele_me_segue,

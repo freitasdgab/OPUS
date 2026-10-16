@@ -193,6 +193,237 @@ $desafio_atual = $desafios_por_unidade[$unidade_atual] ?? $desafios_por_unidade[
                 border: none !important;
                 border-bottom: 2px solid #1480b3 !important;
             }
+            /* ================================================================
+               TEMA CLARO (LIGHT MODE) INTEGRAL PARA IDE, DICA, BOTÃO E TERMINAL
+               ================================================================ */
+            html.light-mode body.licao-page .codedex-container,
+            body.light-mode.licao-page .codedex-container {
+                background: #f8fafc !important;
+                color: #1e293b !important;
+            }
+            html.light-mode body.licao-page .codedex-topbar,
+            body.light-mode.licao-page .codedex-topbar {
+                background: #ffffff !important;
+                border-bottom: 2px solid #e2e8f0 !important;
+            }
+            html.light-mode body.licao-page .codedex-workspace,
+            body.light-mode.licao-page .codedex-workspace {
+                background: #f8fafc !important;
+            }
+            html.light-mode body.licao-page .codedex-instructions-panel,
+            body.light-mode.licao-page .codedex-instructions-panel {
+                background: #ffffff !important;
+                border-right: 2px solid #e2e8f0 !important;
+            }
+            html.light-mode body.licao-page .codedex-ide-panel,
+            body.light-mode.licao-page .codedex-ide-panel {
+                background: #f8fafc !important;
+            }
+            html.light-mode body.licao-page .codedex-editor-top,
+            body.light-mode.licao-page .codedex-editor-top {
+                background: #f1f5f9 !important;
+                border-bottom: 1px solid #cbd5e1 !important;
+            }
+            html.light-mode body.licao-page .codedex-tab-file,
+            body.light-mode.licao-page .codedex-tab-file {
+                background: #ffffff !important;
+                color: #0f172a !important;
+                border: 1px solid #cbd5e1 !important;
+                border-bottom: none !important;
+                border-top: 3px solid #1cb0f6 !important;
+                box-shadow: 0 -2px 6px rgba(15, 23, 42, 0.04) !important;
+            }
+            html.light-mode body.licao-page .codedex-editor-area,
+            body.light-mode.licao-page .codedex-editor-area {
+                background: #ffffff !important;
+            }
+            /* Personalização e Syntax Highlighting Vibrante do Ace Editor no Modo Claro */
+            html.light-mode #codedexAceEditor,
+            body.light-mode #codedexAceEditor {
+                font-family: 'Consolas', 'Fira Code', 'JetBrains Mono', 'Courier New', monospace !important;
+                font-weight: 600 !important;
+                color: #1e293b !important;
+            }
+            html.light-mode #codedexAceEditor .ace_gutter,
+            body.light-mode #codedexAceEditor .ace_gutter {
+                background: #f8fafc !important;
+                color: #64748b !important;
+                font-weight: 700 !important;
+                border-right: 1px solid #e2e8f0 !important;
+            }
+            html.light-mode #codedexAceEditor .ace_gutter-active-line,
+            body.light-mode #codedexAceEditor .ace_gutter-active-line {
+                background: #e0f2fe !important;
+                color: #0284c7 !important;
+            }
+            html.light-mode #codedexAceEditor .ace_marker-layer .ace_active-line,
+            body.light-mode #codedexAceEditor .ace_marker-layer .ace_active-line {
+                background: rgba(224, 242, 254, 0.45) !important;
+            }
+            /* Palavras-chave (public, class, static, void, int, boolean) - Magenta/Rosa vivo */
+            html.light-mode #codedexAceEditor .ace_keyword,
+            body.light-mode #codedexAceEditor .ace_keyword,
+            html.light-mode #codedexAceEditor .ace_storage,
+            body.light-mode #codedexAceEditor .ace_storage {
+                color: #d926a9 !important;
+                font-weight: 700 !important;
+            }
+            /* Funções e Métodos (main, println) - Azul Royal elétrico bem destacado */
+            html.light-mode #codedexAceEditor .ace_entity.ace_name.ace_function,
+            body.light-mode #codedexAceEditor .ace_entity.ace_name.ace_function {
+                color: #0284c7 !important;
+                font-weight: 800 !important;
+            }
+            /* Classes nativas de suporte (String, System) - Roxo/Violeta vibrante */
+            html.light-mode #codedexAceEditor .ace_support.ace_function,
+            body.light-mode #codedexAceEditor .ace_support.ace_function,
+            html.light-mode #codedexAceEditor .ace_support.ace_class,
+            body.light-mode #codedexAceEditor .ace_support.ace_class,
+            html.light-mode #codedexAceEditor .ace_support.ace_type,
+            body.light-mode #codedexAceEditor .ace_support.ace_type {
+                color: #7c3aed !important;
+                font-weight: 700 !important;
+            }
+            /* Identificadores e Variáveis (HelloWorld, args, out) - Azul-marinho nítido */
+            html.light-mode #codedexAceEditor .ace_identifier,
+            body.light-mode #codedexAceEditor .ace_identifier {
+                color: #0f172a !important;
+                font-weight: 700 !important;
+            }
+            /* Comentários (// Escreva seu código aqui embaixo:) - Verde Esmeralda vivo e legível */
+            html.light-mode #codedexAceEditor .ace_comment,
+            body.light-mode #codedexAceEditor .ace_comment {
+                color: #059669 !important;
+                font-style: italic !important;
+                font-weight: 600 !important;
+            }
+            /* Strings ("Ola Mundo") - Laranja/Âmbar forte */
+            html.light-mode #codedexAceEditor .ace_string,
+            body.light-mode #codedexAceEditor .ace_string {
+                color: #ea580c !important;
+                font-weight: 700 !important;
+            }
+            /* Números e Constantes Booleanas - Roxo/Rosa intenso */
+            html.light-mode #codedexAceEditor .ace_constant.ace_numeric,
+            body.light-mode #codedexAceEditor .ace_constant.ace_numeric,
+            html.light-mode #codedexAceEditor .ace_constant.ace_language,
+            body.light-mode #codedexAceEditor .ace_constant.ace_language {
+                color: #9333ea !important;
+                font-weight: 700 !important;
+            }
+            /* Operadores (=, +, -) */
+            html.light-mode #codedexAceEditor .ace_keyword.ace_operator,
+            body.light-mode #codedexAceEditor .ace_keyword.ace_operator {
+                color: #0284c7 !important;
+                font-weight: 700 !important;
+            }
+            /* Dica de Sintaxe no Modo Claro */
+            html.light-mode body.licao-page .codedex-btn-hint,
+            body.light-mode.licao-page .codedex-btn-hint {
+                background: #fffbeb !important;
+                border: 1.5px solid #fcd34d !important;
+                border-bottom: 3px solid #f59e0b !important;
+                color: #d97706 !important;
+            }
+            html.light-mode body.licao-page .codedex-btn-hint:hover,
+            body.light-mode.licao-page .codedex-btn-hint:hover {
+                background: #fef3c7 !important;
+                border-color: #f59e0b !important;
+            }
+            html.light-mode body.licao-page .codedex-hint-card,
+            body.light-mode.licao-page .codedex-hint-card {
+                background: #fffbeb !important;
+                border: 1.5px solid #fde68a !important;
+                border-left: 4px solid #f59e0b !important;
+            }
+            html.light-mode body.licao-page .codedex-hint-header,
+            body.light-mode.licao-page .codedex-hint-header {
+                color: #d97706 !important;
+            }
+            html.light-mode body.licao-page .codedex-hint-card p,
+            body.light-mode.licao-page .codedex-hint-card p {
+                color: #475569 !important;
+            }
+            html.light-mode body.licao-page .codedex-hint-code,
+            body.light-mode.licao-page .codedex-hint-code {
+                background: #ffffff !important;
+                border: 1.5px solid #cbd5e1 !important;
+                color: #0284c7 !important;
+                box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+            }
+            /* Barra de ações e Botão Executar no Modo Claro */
+            html.light-mode body.licao-page .codedex-ide-actions,
+            body.light-mode.licao-page .codedex-ide-actions {
+                background: #f8fafc !important;
+                border-top: 1px solid #e2e8f0 !important;
+                border-bottom: 1px solid #e2e8f0 !important;
+            }
+            html.light-mode body.licao-page .codedex-btn-run,
+            body.light-mode.licao-page .codedex-btn-run {
+                background: #e0f2fe !important;
+                color: #0284c7 !important;
+                border: 1.5px solid #7dd3fc !important;
+                border-bottom: 4px solid #38bdf8 !important;
+            }
+            html.light-mode body.licao-page .codedex-btn-run:hover:not(:disabled),
+            body.light-mode.licao-page .codedex-btn-run:hover:not(:disabled) {
+                background: #bae6fd !important;
+                color: #0369a1 !important;
+                border: 1.5px solid #38bdf8 !important;
+                border-bottom: 4px solid #0284c7 !important;
+                filter: none !important;
+            }
+            html.light-mode body.licao-page .codedex-btn-run:active:not(:disabled),
+            body.light-mode.licao-page .codedex-btn-run:active:not(:disabled) {
+                border: 1.5px solid #38bdf8 !important;
+                border-bottom: 2px solid #0284c7 !important;
+            }
+            /* Terminal no Modo Claro */
+            html.light-mode body.licao-page .codedex-terminal-panel,
+            body.light-mode.licao-page .codedex-terminal-panel {
+                background: #f8fafc !important;
+            }
+            html.light-mode body.licao-page .codedex-terminal-header,
+            body.light-mode.licao-page .codedex-terminal-header {
+                background: #f1f5f9 !important;
+                border-bottom: 1px solid #cbd5e1 !important;
+            }
+            html.light-mode body.licao-page .codedex-term-title,
+            body.light-mode.licao-page .codedex-term-title {
+                color: #475569 !important;
+            }
+            html.light-mode body.licao-page .codedex-term-status,
+            body.light-mode.licao-page .codedex-term-status {
+                background: #e2e8f0 !important;
+                color: #475569 !important;
+            }
+            html.light-mode body.licao-page .codedex-term-status.running,
+            body.light-mode.licao-page .codedex-term-status.running {
+                background: #fef3c7 !important;
+                color: #d97706 !important;
+            }
+            html.light-mode body.licao-page .codedex-term-status.success,
+            body.light-mode.licao-page .codedex-term-status.success {
+                background: #dcfce7 !important;
+                color: #16a34a !important;
+            }
+            html.light-mode body.licao-page .codedex-term-status.error,
+            body.light-mode.licao-page .codedex-term-status.error {
+                background: #fee2e2 !important;
+                color: #dc2626 !important;
+            }
+            html.light-mode body.licao-page .codedex-terminal-output,
+            body.light-mode.licao-page .codedex-terminal-output {
+                background: #ffffff !important;
+                color: #0f172a !important;
+                font-family: 'Consolas', 'Fira Code', 'Courier New', monospace !important;
+                font-weight: 600 !important;
+            }
+            html.light-mode body.licao-page .codedex-output-prompt,
+            body.light-mode.licao-page .codedex-output-prompt {
+                color: #334155 !important;
+                font-weight: 600 !important;
+            }
             @media (max-width: 900px) {
                 .codedex-workspace {
                     grid-template-columns: 1fr !important;
@@ -202,6 +433,10 @@ $desafio_atual = $desafios_por_unidade[$unidade_atual] ?? $desafios_por_unidade[
                 .codedex-instructions-panel {
                     border-right: none !important;
                     border-bottom: 2px solid #232738 !important;
+                }
+                html.light-mode body.licao-page .codedex-instructions-panel,
+                body.light-mode.licao-page .codedex-instructions-panel {
+                    border-bottom: 2px solid #e2e8f0 !important;
                 }
                 .codedex-editor-area {
                     height: 320px !important;
@@ -324,7 +559,7 @@ $desafio_atual = $desafios_por_unidade[$unidade_atual] ?? $desafios_por_unidade[
                     </div>
 
                     <div class="codedex-terminal-output" id="codedexTermOutput">
-                        <div style="color: #6272a4;">Clique no botão "EXECUTAR" ou pressione Ctrl + Enter para testar seu código.</div>
+                        <div class="codedex-output-prompt">Clique no botão "EXECUTAR" ou pressione Ctrl + Enter para testar seu código.</div>
                     </div>
                 </div>
 
@@ -563,10 +798,11 @@ $desafio_atual = $desafios_por_unidade[$unidade_atual] ?? $desafios_por_unidade[
             let userXpAtual = <?php echo (int)($status_jogador['xp'] ?? 0); ?>;
 
             document.addEventListener('DOMContentLoaded', function() {
-                // Inicializa Ace Editor
+                // Inicializa Ace Editor com tema adaptável (Claro: chrome | Escuro: dracula)
                 if (window.ace) {
+                    const isLightMode = document.documentElement.classList.contains('light-mode') || document.body.classList.contains('light-mode');
                     codedexEditor = ace.edit("codedexAceEditor");
-                    codedexEditor.setTheme("ace/theme/dracula");
+                    codedexEditor.setTheme(isLightMode ? "ace/theme/chrome" : "ace/theme/dracula");
                     codedexEditor.session.setMode("ace/mode/java");
                     codedexEditor.setOptions({
                         fontSize: "15px",
@@ -588,6 +824,16 @@ $desafio_atual = $desafios_por_unidade[$unidade_atual] ?? $desafios_por_unidade[
                         } 
                     }, 100);
                     setTimeout(() => { if (codedexEditor) codedexEditor.resize(); }, 300);
+
+                    // Observa mudanças na classe light-mode do body/html para trocar o tema do Ace Editor em tempo real
+                    const themeObserver = new MutationObserver(() => {
+                        const nowLight = document.documentElement.classList.contains('light-mode') || document.body.classList.contains('light-mode');
+                        if (codedexEditor) {
+                            codedexEditor.setTheme(nowLight ? "ace/theme/chrome" : "ace/theme/dracula");
+                        }
+                    });
+                    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+                    themeObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
                 }
             });
 
@@ -679,6 +925,7 @@ $desafio_atual = $desafios_por_unidade[$unidade_atual] ?? $desafios_por_unidade[
                 const btnContinue = document.getElementById('btnCodedexContinue');
                 const statusBadge = document.getElementById('codedexTermStatus');
                 const termOutput = document.getElementById('codedexTermOutput');
+                const isLightMode = document.documentElement.classList.contains('light-mode') || document.body.classList.contains('light-mode');
 
                 // Garante que o botão continuar esteja oculto durante nova execução
                 if (btnContinue) btnContinue.style.display = 'none';
@@ -689,7 +936,7 @@ $desafio_atual = $desafios_por_unidade[$unidade_atual] ?? $desafios_por_unidade[
                 statusBadge.innerText = 'Compilando...';
 
                 termOutput.innerHTML = `
-                    <div style="color: #38bdf8; font-family: monospace; display: flex; align-items: center; gap: 8px;">
+                    <div style="color: ${isLightMode ? '#0284c7' : '#38bdf8'}; font-family: monospace; display: flex; align-items: center; gap: 8px; font-weight: 600;">
                         <i class="fa-solid fa-spinner fa-spin"></i> Compilando e executando código Java...
                     </div>
                 `;
@@ -714,8 +961,8 @@ $desafio_atual = $desafios_por_unidade[$unidade_atual] ?? $desafios_por_unidade[
                         statusBadge.innerText = 'Sucesso';
                         
                         termOutput.innerHTML = `
-                            <div class="codedex-output-result" style="color: #38bdf8; font-size: 1.15rem; font-weight: 700; margin-bottom: 8px;">${escapeHtml(stdout)}</div>
-                            <div style="color: #1cb0f6; font-weight: 700; margin-top: 10px; display: flex; align-items: center; gap: 8px;">
+                            <div class="codedex-output-result" style="color: ${isLightMode ? '#0369a1' : '#38bdf8'}; font-size: 1.15rem; font-weight: 700; margin-bottom: 8px;">${escapeHtml(stdout)}</div>
+                            <div style="color: ${isLightMode ? '#16a34a' : '#1cb0f6'}; font-weight: 700; margin-top: 10px; display: flex; align-items: center; gap: 8px;">
                                 <i class="fa-solid fa-circle-check"></i> Parabéns! Desafio concluído com sucesso!
                             </div>
                         `;
@@ -746,8 +993,8 @@ $desafio_atual = $desafios_por_unidade[$unidade_atual] ?? $desafios_por_unidade[
                         statusBadge.innerText = 'Ajuste';
 
                         termOutput.innerHTML = `
-                            <div class="codedex-output-result" style="color: #cbd5e1; margin-bottom: 8px;">${escapeHtml(stdout)}</div>
-                            <div style="color: #ffc800; font-weight: 600; margin-top: 8px;">
+                            <div class="codedex-output-result" style="color: ${isLightMode ? '#334155' : '#cbd5e1'}; margin-bottom: 8px;">${escapeHtml(stdout)}</div>
+                            <div style="color: ${isLightMode ? '#d97706' : '#ffc800'}; font-weight: 600; margin-top: 8px;">
                                 <?php echo htmlspecialchars($desafio_atual['mensagem_ajuste']); ?>
                             </div>
                         `;
@@ -761,8 +1008,8 @@ $desafio_atual = $desafios_por_unidade[$unidade_atual] ?? $desafios_por_unidade[
 
                         const erroMsg = data.erro || data.compiler_error || data.program_error || 'Erro na compilação do código.';
                         termOutput.innerHTML = `
-                            <div style="color: #ff5f56; font-weight: bold; margin-bottom: 6px;">[ERRO DE COMPILAÇÃO]:</div>
-                            <div style="color: #ff8585; font-family: monospace; white-space: pre-wrap;">${escapeHtml(erroMsg)}</div>
+                            <div style="color: ${isLightMode ? '#dc2626' : '#ff5f56'}; font-weight: bold; margin-bottom: 6px;">[ERRO DE COMPILAÇÃO]:</div>
+                            <div style="color: ${isLightMode ? '#b91c1c' : '#ff8585'}; font-family: monospace; white-space: pre-wrap;">${escapeHtml(erroMsg)}</div>
                         `;
                         try {
                             if (window.OpusAudio && window.OpusAudio.playError) window.OpusAudio.playError();
@@ -775,7 +1022,7 @@ $desafio_atual = $desafios_por_unidade[$unidade_atual] ?? $desafios_por_unidade[
                     statusBadge.className = 'codedex-term-status error';
                     statusBadge.innerText = 'Falha';
                     termOutput.innerHTML = `
-                        <div style="color: #ff5f56; font-family: monospace;">Erro ao executar código: ${escapeHtml(err.message)}</div>
+                        <div style="color: ${isLightMode ? '#dc2626' : '#ff5f56'}; font-family: monospace;">Erro ao executar código: ${escapeHtml(err.message)}</div>
                     `;
                     try {
                         if (window.OpusAudio && window.OpusAudio.playError) window.OpusAudio.playError();

@@ -160,10 +160,12 @@ body {
 }
 .ofensiva-body.fogo-inativo .ofensiva-icon-box {
     background: #2e2e3e;
-    border: 1px solid #444;
-    box-shadow: none;
-    color: #999;
+    border: 2px solid #444;
+    box-shadow: none !important;
+    color: #8b949e;
 }
-.ofensiva-body.fogo-inativo i {
-    color: #999 !important;
+.ofensiva-body.fogo-inativo .ofensiva-icon-box i {
+    color: #8b949e !important;
+    filter: none !important;
+    animation: none !important;
 }

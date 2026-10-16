@@ -97,25 +97,50 @@
         .vidas-info p { margin: 0; font-size: 0.9rem; color: #a5a5ac; font-weight: 600; }
         .vidas-info span { color: #ef4444; font-weight: 800; }
 
-        /* WIDGET DE OFENSIVA / SEQUÃNCIA */
+        /* WIDGET DE OFENSIVA / SEQUÊNCIA */
         .widget-ofensiva {
             background: linear-gradient(145deg, #221d28 0%, #1a1722 100%);
             border-color: #523528;
             box-shadow: 0 6px 0 #3a2218;
+            transition: all 0.35s ease;
+        }
+        .widget-ofensiva .ofensiva-header-icon {
+            color: #ff9600;
+            transition: color 0.35s ease, filter 0.35s ease;
+        }
+        .widget-ofensiva .ofensiva-header-badge {
+            font-size: 0.85rem;
+            color: #ff9600;
+            font-weight: 800;
+            transition: color 0.35s ease;
+        }
+        .widget-ofensiva.fogo-inativo .ofensiva-header-icon,
+        .widget-ofensiva.fogo-inativo .ofensiva-header-badge {
+            color: #8b949e !important;
+        }
+        .widget-ofensiva.fogo-ativo .ofensiva-header-icon,
+        .widget-ofensiva.fogo-ativo .ofensiva-header-badge {
+            color: #ff9600 !important;
         }
         .ofensiva-body { display: flex; align-items: center; gap: 16px; }
         .ofensiva-icon-box {
             width: 54px; height: 54px; border-radius: 14px;
             display: flex; justify-content: center; align-items: center;
-            font-size: 26px; background: rgba(255, 150, 0, 0.15);
-            color: #ff9600; border: 1px solid rgba(255, 150, 0, 0.3);
-            flex-shrink: 0; box-shadow: 0 0 15px rgba(255, 150, 0, 0.15);
+            font-size: 26px; background: rgba(255, 150, 0, 0.18);
+            color: #ff9600; border: 2px solid #ff9600;
+            flex-shrink: 0; box-shadow: 0 0 16px rgba(255, 150, 0, 0.28);
+            transition: all 0.35s ease;
+        }
+        .ofensiva-body.fogo-ativo .ofensiva-icon-box i {
+            color: #ff9600 !important;
+            filter: drop-shadow(0 0 6px rgba(255, 150, 0, 0.6));
+            animation: topbarFlameFlicker 1.8s ease-in-out infinite;
         }
         .ofensiva-info { flex: 1; min-width: 0; }
         .ofensiva-info h4 { margin: 0 0 4px 0; font-size: 1.15rem; font-weight: 800; color: #fff; }
-        .ofensiva-status { margin: 0; font-size: 0.85rem; font-weight: 700; line-height: 1.3; }
-        .ofensiva-ativo { color: #1cb0f6; }
-        .ofensiva-pendente { color: #ffc800; }
+        .ofensiva-status { margin: 0; font-size: 0.85rem; font-weight: 700; line-height: 1.3; transition: color 0.35s ease; }
+        .ofensiva-ativo { color: #ff9600 !important; }
+        .ofensiva-pendente { color: #8b949e !important; }
 
         /* WIDGET DE LIGAS DINÃMICO */
         .ranking-body { display: flex; align-items: center; gap: 16px; }
@@ -307,7 +332,7 @@
             justify-content: center; font-size: 28px; position: relative; transition: 0.1s; color: #fff;
         }
         .modulo-node.locked .circle-button { background: #3a3a45; color: #6a6a75; box-shadow: 0 6px 0 #2a2a35; }
-        .modulo-node.completed:active .circle-button, .modulo-node.current:active .circle-button { transform: translateY(4px); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25) !important; }
+        .modulo-node.completed:active .circle-button, .modulo-node.current:active .circle-button { transform: translateY(4px); box-shadow: 0 2px 0 var(--node-shadow, rgba(0, 0, 0, 0.25)) !important; }
         
         .active-ring {
             width: 105px; height: 105px; border-radius: 50%; background: #2a2a35;
@@ -462,7 +487,7 @@
         .modal-body { padding: 30px; color: #d0d0d5; font-size: 1.1rem; line-height: 1.6; }
         .code-box { background: #111115; border-left: 4px solid #1cb0f6; padding: 15px; border-radius: 8px; font-family: monospace; margin-top: 15px; color: #a5d6a7; }
 
-        /* MODAL DO BAÃ DE RECOMPENSAS â DESIGN GAME EXCLUSIVO OPUS */
+        /* MODAL DO BAÃš DE RECOMPENSAS â€” DESIGN GAME EXCLUSIVO OPUS */
         .modal-bau-box {
             background: #191924; width: 92%; max-width: 440px; border-radius: 28px;
             overflow: hidden; box-shadow: 0 12px 0 #101018, 0 20px 50px rgba(0,0,0,0.7);
@@ -511,7 +536,7 @@
         .code-box { background: #111115; border-left: 4px solid #1cb0f6; padding: 15px; border-radius: 8px; font-family: monospace; margin-top: 15px; color: #a5d6a7; }
 
         /* ==========================================================
-           BOTÃO FLUTUANTE DE ROLAGEM RÃPIDA ATÃ A LIÃÃO ATUAL
+           BOTÃƒO FLUTUANTE DE ROLAGEM RÃ PIDA ATÃ‰ A LIÃ‡ÃƒO ATUAL
            ========================================================== */
         .btn-scroll-to-lesson {
             position: fixed;
@@ -554,7 +579,7 @@
 
         @keyframes pulseHighlight {
             0% { transform: scale(1); filter: brightness(1); }
-            40% { transform: scale(1.22); filter: brightness(1.35) drop-shadow(0 0 20px #1cb0f6); }
+            40% { transform: scale(1.22); filter: brightness(1.35) drop-shadow(0 0 20px var(--balloon-color, #1cb0f6)); }
             70% { transform: scale(0.96); }
             100% { transform: scale(1); filter: brightness(1); }
         }

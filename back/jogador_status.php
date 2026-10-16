@@ -24,6 +24,7 @@ function opus_sincronizar_jogador(mysqli $conn, int $user_id): array {
             'foto_perfil' => '',
             'nivel_acesso' => 'comum',
             'is_admin' => false,
+            'fogo_hoje' => false,
         ];
     }
 
@@ -39,7 +40,7 @@ function opus_sincronizar_jogador(mysqli $conn, int $user_id): array {
     $vidas = (int) ($u['vidas'] ?? 3);
     $proxima = $u['vidas_proxima_em'] ?? null;
 
-    $stmt = $conn->prepare("SELECT ultima_atividade FROM usuarios WHERE id = ?");
+    $stmt = $conn->prepare("SELECT ultima_atividade, dias_fogo FROM usuarios WHERE id = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $res = $stmt->get_result()->fetch_assoc();
@@ -48,15 +49,18 @@ function opus_sincronizar_jogador(mysqli $conn, int $user_id): array {
 
     $hoje = date('Y-m-d');
     $ontem = date('Y-m-d', strtotime('-1 day'));
-    $dias_fogo_val = (int) ($u['dias_fogo'] ?? 0);
+    $dias_fogo_val = (int) ($res['dias_fogo'] ?? $u['dias_fogo'] ?? 0);
 
-    // Zera o fogo se nǜo jogou ontem nem hoje
+    // Zera o fogo se não jogou ontem nem hoje
     if ($ultima !== null && $ultima < $ontem) {
         $conn->query("UPDATE usuarios SET dias_fogo = 0 WHERE id = $user_id");
         $dias_fogo_val = 0;
+    } elseif ($ultima === $hoje && $dias_fogo_val <= 0) {
+        $conn->query("UPDATE usuarios SET dias_fogo = 1 WHERE id = $user_id");
+        $dias_fogo_val = 1;
     }
-    
-    $fogo_hoje = ($ultima === $hoje);
+
+    $fogo_hoje = ($ultima === $hoje && $dias_fogo_val > 0);
 
     $proxima_texto = '';
     if ($vidas < 3 && !empty($proxima)) {
@@ -99,4 +103,3 @@ function opus_atualizar_fogo(mysqli $conn, int $user_id): int {
     $row = opus_call($conn, "CALL sp_atualizar_fogo(?)", "i", [$user_id]);
     return (int) ($row['dias_fogo'] ?? 0);
 }
-

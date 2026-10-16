@@ -71,8 +71,10 @@ body.light-mode .topbar-stat span {
 
 /* Cores dos Ícones do Topo (Baseado na imagem) */
 body.light-mode .topbar-stat.stat-xp i { color: #1cb0f6 !important; } /* Cristal azul */
-body.light-mode .topbar-stat.stat-fogo i { color: #e5e5e5 !important; } /* Fogo inativo cinza */
-body.light-mode .topbar-stat.fogo-ativo i { color: #ff9600 !important; } /* Fogo ativo laranja */
+body.light-mode .topbar-stat.stat-fogo.fogo-inativo i,
+body.light-mode .topbar-stat.stat-fogo.fogo-inativo span { color: #afafaf !important; } /* Fogo inativo cinza */
+body.light-mode .topbar-stat.stat-fogo.fogo-ativo i,
+body.light-mode .topbar-stat.stat-fogo.fogo-ativo span { color: #ff9600 !important; } /* Fogo ativo laranja */
 body.light-mode .topbar-stat.stat-notificacao i,
 body.light-mode .topbar-stat.stat-chat i { color: #4b4b4b !important; }
 body.light-mode .topbar-stat.stat-vida i { color: #ff4b4b !important; }
@@ -140,9 +142,9 @@ body.light-mode .start-balloon {
     z-index: 100 !important;
 }
 
-/* Nodes ativos ou completados (Sombra azul em vez de verde) */
+/* Nodes ativos ou completados (Sombra acompanha a cor da seção) */
 body.light-mode .modulo-node .circle-button {
-    box-shadow: 0 6px 0 #1899d6 !important; /* Azul escuro */
+    box-shadow: 0 6px 0 var(--node-shadow, #1899d6) !important;
 }
 /* Nodes bloqueados (Cinza) */
 body.light-mode .modulo-node.locked .circle-button {
@@ -168,7 +170,7 @@ body.light-mode .chest-node.claimed {
 /* Tooltip "COMEÇAR" em cima do botão */
 body.light-mode .start-balloon {
     background: #ffffff !important;
-    color: #1cb0f6 !important;
+    color: var(--balloon-color, #1cb0f6) !important;
     border: 2px solid #e5e5e5 !important;
     border-bottom: 4px solid #e5e5e5 !important;
     box-shadow: none !important;
@@ -768,14 +770,24 @@ body.light-mode .notif-empty-state p {
     color: #777777 !important;
 }
 
-/* Conserto do Widget de Ofensiva (Zero Dias/Inativo) */
+/* Conserto do Widget de Ofensiva (Inativo = Cinza / Ativo = Laranja) */
 body.light-mode .ofensiva-body.fogo-inativo .ofensiva-icon-box {
     background: #f3f4f6 !important;
     border: 2px solid #e5e5e5 !important;
+    box-shadow: none !important;
     color: #afafaf !important;
 }
 body.light-mode .ofensiva-body.fogo-inativo i {
     color: #afafaf !important;
+}
+body.light-mode .ofensiva-body.fogo-ativo .ofensiva-icon-box {
+    background: rgba(255, 150, 0, 0.14) !important;
+    border: 2px solid #ff9600 !important;
+    box-shadow: 0 0 14px rgba(255, 150, 0, 0.25) !important;
+    color: #ff9600 !important;
+}
+body.light-mode .ofensiva-body.fogo-ativo .ofensiva-icon-box i {
+    color: #ff9600 !important;
 }
 
 /* =======================================================================
@@ -834,8 +846,10 @@ body:not(.light-mode) .user-info span {
 }
 body:not(.light-mode) .topbar-stat i { color: #ffffff !important; }
 body:not(.light-mode) .topbar-stat.stat-xp i { color: #1cb0f6 !important; }
-body:not(.light-mode) .topbar-stat.stat-fogo i { color: #37464f !important; }
-body:not(.light-mode) .topbar-stat.fogo-ativo i { color: #ff9600 !important; }
+body:not(.light-mode) .topbar-stat.stat-fogo.fogo-inativo i,
+body:not(.light-mode) .topbar-stat.stat-fogo.fogo-inativo span { color: #8b949e !important; }
+body:not(.light-mode) .topbar-stat.stat-fogo.fogo-ativo i,
+body:not(.light-mode) .topbar-stat.stat-fogo.fogo-ativo span { color: #ff9600 !important; }
 body:not(.light-mode) .topbar-stat.stat-vida i { color: #ff4b4b !important; }
 
 /* WIDGETS E CARDS (Bordas 3D escuras) */
@@ -877,7 +891,7 @@ body:not(.light-mode) .widget-footer-info {
 
 /* TRILHA / BOTÕES */
 body:not(.light-mode) .modulo-node .circle-button {
-    box-shadow: 0 6px 0 #1899d6 !important; /* Azul escuro igual da foto */
+    box-shadow: 0 6px 0 var(--node-shadow, #1899d6) !important;
 }
 body:not(.light-mode) .modulo-node.locked .circle-button {
     background: #37464f !important;
@@ -901,7 +915,7 @@ body:not(.light-mode) .chest-node.claimed {
 /* Balão Começar no Escuro */
 body:not(.light-mode) .start-balloon {
     background: #131f24 !important;
-    color: #1cb0f6 !important;
+    color: var(--balloon-color, #1cb0f6) !important;
     border: 2px solid #37464f !important;
     border-bottom: 4px solid #37464f !important;
     box-shadow: none !important;
@@ -1001,6 +1015,20 @@ body:not(.light-mode) .notif-card {
 body:not(.light-mode) .ofensiva-body.fogo-inativo .ofensiva-icon-box {
     background: #1f3039 !important;
     border: 2px solid #37464f !important;
+    box-shadow: none !important;
+    color: #8b949e !important;
+}
+body:not(.light-mode) .ofensiva-body.fogo-inativo .ofensiva-icon-box i {
+    color: #8b949e !important;
+}
+body:not(.light-mode) .ofensiva-body.fogo-ativo .ofensiva-icon-box {
+    background: rgba(255, 150, 0, 0.18) !important;
+    border: 2px solid #ff9600 !important;
+    box-shadow: 0 0 16px rgba(255, 150, 0, 0.28) !important;
+    color: #ff9600 !important;
+}
+body:not(.light-mode) .ofensiva-body.fogo-ativo .ofensiva-icon-box i {
+    color: #ff9600 !important;
 }
 body:not(.light-mode) input[type="text"],
 body:not(.light-mode) input[type="url"],
@@ -1451,10 +1479,10 @@ body.light-mode.licao-page .code-input-inline {
 }
 
 /* =========================================================================
-   ESTILOS CODÉDEX NO MODO CLARO (BRANCO PURO + PRETO SÓLIDO NA IDE SEM BLUR)
+   ESTILOS CODÉDEX NO MODO CLARO (TEMA CLARO INTEGRAL NA IDE, DICA E TERMINAL)
    ========================================================================= */
 body.light-mode.licao-page .codedex-container {
-    background: #ffffff !important;
+    background: #f8fafc !important;
     color: #4b4b4b !important;
 }
 body.light-mode.licao-page .codedex-topbar {
@@ -1497,33 +1525,87 @@ body.light-mode.licao-page .codedex-card-box h4 {
 body.light-mode.licao-page .codedex-card-box p {
     color: #475569 !important;
 }
+body.light-mode.licao-page .codedex-btn-hint {
+    background: #fffbeb !important;
+    border: 1.5px solid #fcd34d !important;
+    border-bottom: 3px solid #f59e0b !important;
+    color: #d97706 !important;
+}
+body.light-mode.licao-page .codedex-btn-hint:hover {
+    background: #fef3c7 !important;
+    border-color: #f59e0b !important;
+}
+body.light-mode.licao-page .codedex-hint-card {
+    background: #fffbeb !important;
+    border: 1.5px solid #fde68a !important;
+    border-left: 4px solid #f59e0b !important;
+}
+body.light-mode.licao-page .codedex-hint-header {
+    color: #d97706 !important;
+}
+body.light-mode.licao-page .codedex-hint-card p {
+    color: #475569 !important;
+}
+body.light-mode.licao-page .codedex-hint-code {
+    background: #ffffff !important;
+    border: 1.5px solid #cbd5e1 !important;
+    color: #0284c7 !important;
+}
 body.light-mode.licao-page .codedex-sample-code-box {
-    background: #0d0d0f !important;
-    border: 2px solid #1e222d !important;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.12) !important;
+    background: #ffffff !important;
+    border: 2px solid #cbd5e1 !important;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.05) !important;
 }
 body.light-mode.licao-page .codedex-editor-top {
     background: #f1f5f9 !important;
-    border-bottom: 2px solid #e2e8f0 !important;
+    border-bottom: 1px solid #cbd5e1 !important;
 }
 body.light-mode.licao-page .codedex-tab-file {
-    background: #0d0d0f !important;
-    color: #ffffff !important;
-    border-top: 2px solid #e76f51 !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1 !important;
+    border-bottom: none !important;
+    border-top: 3px solid #1cb0f6 !important;
 }
 body.light-mode.licao-page .codedex-ide-actions {
     background: #f8fafc !important;
-    border-top: 2px solid #e2e8f0 !important;
-    border-bottom: 2px solid #e2e8f0 !important;
+    border-top: 1px solid #e2e8f0 !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+body.light-mode.licao-page .codedex-btn-run {
+    background: #e0f2fe !important;
+    color: #0284c7 !important;
+    border: 1.5px solid #7dd3fc !important;
+    border-bottom: 4px solid #38bdf8 !important;
+}
+body.light-mode.licao-page .codedex-btn-run:hover:not(:disabled) {
+    background: #bae6fd !important;
+    color: #0369a1 !important;
+    border: 1.5px solid #38bdf8 !important;
+    border-bottom: 4px solid #0284c7 !important;
+    filter: none !important;
 }
 body.light-mode.licao-page .codedex-terminal-header {
-    background: #111318 !important;
-    border-bottom: 1px solid #1f232e !important;
+    background: #f1f5f9 !important;
+    border-bottom: 1px solid #cbd5e1 !important;
+}
+body.light-mode.licao-page .codedex-term-title {
+    color: #475569 !important;
+}
+body.light-mode.licao-page .codedex-term-status {
+    background: #e2e8f0 !important;
+    color: #475569 !important;
 }
 body.light-mode.licao-page .codedex-terminal-panel,
-body.light-mode.licao-page .codedex-terminal-output,
 body.light-mode.licao-page .codedex-editor-area {
-    background: #0d0d0f !important;
+    background: #ffffff !important;
+}
+body.light-mode.licao-page .codedex-terminal-output {
+    background: #ffffff !important;
+    color: #1e293b !important;
+}
+body.light-mode.licao-page .codedex-output-prompt {
+    color: #64748b !important;
 }
 body.light-mode.licao-page .codedex-btn-reset {
     background: #ffffff !important;
@@ -1534,6 +1616,7 @@ body.light-mode.licao-page .codedex-btn-reset:hover {
     color: #1f2937 !important;
     border-color: #d0d0d0 !important;
 }
+
 
 
 

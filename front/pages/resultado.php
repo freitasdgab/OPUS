@@ -290,7 +290,7 @@ if ($fogo_acendeu_agora) {
                 </svg>
             </div>
 
-            <div class="streak-count" id="streakCount" data-target="<?php echo $dias_fogo_atual; ?>">0</div>
+            <div class="streak-count" id="streakCount" data-target="<?php echo $dias_fogo_atual; ?>"><?php echo max(0, $dias_fogo_atual - 1); ?></div>
             <h2 class="streak-title" id="streakTitle">
                 <?php echo $dias_fogo_atual === 1 ? 'dia de ofensiva!' : 'dias de ofensiva!'; ?>
             </h2>
@@ -427,34 +427,52 @@ if ($fogo_acendeu_agora) {
                 }, 950);
             }
 
-            // ── Ofensiva de fogo: chama acendendo + semana ──────────────
+            // ── Ofensiva de fogo: chama saindo do cinza para o laranja + semana ──
             const streakOverlay = document.getElementById('streakOverlay');
             if (streakOverlay) {
                 const countEl = document.getElementById('streakCount');
                 const alvo = parseInt(countEl.dataset.target, 10) || 1;
+                const inicial = Math.max(0, alvo - 1);
+                countEl.textContent = inicial;
 
-                requestAnimationFrame(() => streakOverlay.classList.add('is-open'));
+                // Deixa a topbar inicialmente cinza para acender junto com a chama
+                const topbarFogo = document.getElementById('topbarStatFogo');
+                const topbarFogoCount = document.getElementById('topbarFogoCount');
+                if (topbarFogo) {
+                    topbarFogo.classList.remove('fogo-ativo');
+                    topbarFogo.classList.add('fogo-inativo');
+                }
+                if (topbarFogoCount) {
+                    topbarFogoCount.textContent = inicial;
+                }
 
-                // Chama acende após o card entrar
+                requestAnimationFrame(() => {
+                    streakOverlay.classList.add('is-open');
+                    streakOverlay.classList.add('show-week');
+                });
+
+                // Chama sai do cinza para o laranja após o card abrir
                 setTimeout(() => {
                     streakOverlay.classList.add('is-lit');
+                    if (topbarFogo) {
+                        topbarFogo.classList.remove('fogo-inativo');
+                        topbarFogo.classList.add('fogo-ativo');
+                    }
+                    if (topbarFogoCount) {
+                        topbarFogoCount.textContent = alvo;
+                    }
                     if (window.OpusAudio && window.OpusAudio.playSuccess) window.OpusAudio.playSuccess();
-                }, 450);
 
-                // Contador sobe até o total de dias
-                setTimeout(() => {
-                    const dur = Math.min(900, 120 * alvo);
+                    // Contador sobe do valor anterior até o novo total de dias
+                    const dur = Math.min(700, Math.max(350, 120 * alvo));
                     const ini = performance.now();
                     (function tick(t) {
                         const p = Math.min(1, (t - ini) / dur);
-                        countEl.textContent = Math.max(1, Math.round(alvo * p));
+                        countEl.textContent = Math.round(inicial + (alvo - inicial) * p);
                         if (p < 1) requestAnimationFrame(tick);
                         else countEl.classList.add('pop');
                     })(ini);
-                }, 1100);
-
-                // Semana aparece dia a dia
-                setTimeout(() => streakOverlay.classList.add('show-week'), 1500);
+                }, 650);
 
                 const fechar = () => {
                     if (window.OpusAudio) window.OpusAudio.playClick();

@@ -65,10 +65,11 @@ $titulo_vidas = $proxima_vida_texto !== '' ? $proxima_vida_texto : ($vidas_top .
         </div>
 
         <!-- FOGO (OFENSIVA / DIAS) -->
-        <?php $fogo_class = ($dados_top["fogo_hoje"] ?? false) ? "fogo-ativo" : "fogo-inativo"; ?>
-        <div class="topbar-stat stat-fogo <?php echo $fogo_class; ?>" title="Sequência Diária" <?php if(!($dados_top["fogo_hoje"] ?? false)) echo "style='color: #999;'"; ?>>
-            <i class="fa-solid fa-fire" <?php if(!($dados_top["fogo_hoje"] ?? false)) echo "style='color: #999;'"; ?>></i>
-            <span <?php if(!($dados_top["fogo_hoje"] ?? false)) echo "style='color: #999;'"; ?>><?php echo (int) $dias_fogo_top; ?></span>
+        <?php $fogo_ativo_top = !empty($dados_top["fogo_hoje"]); ?>
+        <?php $fogo_class = $fogo_ativo_top ? "fogo-ativo" : "fogo-inativo"; ?>
+        <div class="topbar-stat stat-fogo <?php echo $fogo_class; ?>" id="topbarStatFogo" title="<?php echo $fogo_ativo_top ? 'Ofensiva acesa hoje!' : 'Faça uma lição hoje para acender a ofensiva!'; ?>">
+            <i class="fa-solid fa-fire"></i>
+            <span id="topbarFogoCount"><?php echo (int) $dias_fogo_top; ?></span>
         </div>
 
         <!-- XP TOTAL -->
@@ -85,4 +86,38 @@ $titulo_vidas = $proxima_vida_texto !== '' ? $proxima_vida_texto : ($vidas_top .
     </div>
 </header>
 
+<script>
+(function() {
+    function apagarFogoMeiaNoite() {
+        var topFogo = document.getElementById('topbarStatFogo');
+        if (topFogo) {
+            topFogo.classList.remove('fogo-ativo');
+            topFogo.classList.add('fogo-inativo');
+            topFogo.setAttribute('title', 'Faça uma lição hoje para acender a ofensiva!');
+        }
+        var wCard = document.querySelector('.widget-ofensiva');
+        if (wCard) {
+            wCard.classList.remove('fogo-ativo');
+            wCard.classList.add('fogo-inativo');
+        }
+        var wBody = document.querySelector('.ofensiva-body');
+        if (wBody) {
+            wBody.classList.remove('fogo-ativo');
+            wBody.classList.add('fogo-inativo');
+        }
+        var wStatus = document.querySelector('.ofensiva-status');
+        if (wStatus) {
+            wStatus.className = 'ofensiva-status ofensiva-pendente';
+            wStatus.innerHTML = '<i class="fa-solid fa-hourglass-half"></i> Pratique hoje para manter sua sequência!';
+        }
+    }
+
+    var agora = new Date();
+    var meiaNoite = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate() + 1, 0, 0, 0, 500);
+    var msAteMeiaNoite = meiaNoite.getTime() - agora.getTime();
+    if (msAteMeiaNoite > 0 && msAteMeiaNoite <= 86400000) {
+        setTimeout(apagarFogoMeiaNoite, msAteMeiaNoite);
+    }
+})();
+</script>
 <script src="../assets/js/notificacoes.js?v=<?= time() ?>"></script>
