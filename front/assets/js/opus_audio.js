@@ -334,6 +334,17 @@
             } catch (e) {
                 console.warn('[OpusAudio] Falha ao tocar som de derrota:', e);
             }
+        },
+
+        // Aliases para máxima compatibilidade entre lições e desafios
+        playCorrect: function() {
+            return this.playSuccess();
+        },
+        playVictory: function() {
+            return this.playLessonComplete();
+        },
+        playLessonVictory: function() {
+            return this.playLessonComplete();
         }
     };
 

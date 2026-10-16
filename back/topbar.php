@@ -52,9 +52,15 @@ $titulo_vidas = $proxima_vida_texto !== '' ? $proxima_vida_texto : ($vidas_top .
     </div>
 
     <div class="topbar-stats">
-        <!-- CHAT & NOTIFICAÇÕES -->
-        <div class="topbar-stat stat-chat" id="btn-chat" title="Chat e Notificações" onclick="handleChatClick(event)">
+        <!-- CHAT -->
+        <a href="chat.php" class="topbar-stat stat-chat" id="btn-chat" title="Chat">
             <i class="fa-solid fa-comments"></i>
+            <span class="badge-notif badge-chat-msg" id="badge-chat-msg" style="display: none;">0</span>
+        </a>
+
+        <!-- NOTIFICAÇÕES -->
+        <div class="topbar-stat stat-notificacao" id="btn-notificacoes" title="Notificações" onclick="handleNotifClick(event)">
+            <i class="fa-solid fa-bell"></i>
             <span class="badge-notif" id="badge-notif" style="display: none;">0</span>
         </div>
 
@@ -79,4 +85,4 @@ $titulo_vidas = $proxima_vida_texto !== '' ? $proxima_vida_texto : ($vidas_top .
     </div>
 </header>
 
-<script src="../assets/js/notificacoes.js"></script>
+<script src="../assets/js/notificacoes.js?v=<?= time() ?>"></script>

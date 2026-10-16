@@ -146,49 +146,6 @@
             100% { transform: scale(1) translateY(0) rotate(0deg); }
         }
 
-        .result-speech-bubble {
-            position: relative;
-            background: #1a1c24;
-            border: 2px solid #2a2d38;
-            border-bottom: 4px solid #1c1e26;
-            border-radius: 18px;
-            padding: 10px 18px;
-            margin-bottom: 12px;
-            color: #fff;
-            font-size: 0.95rem;
-            font-weight: 700;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.35);
-            animation: bubblePop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .result-speech-bubble::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 8px 8px 0;
-            border-style: solid;
-            border-color: #1a1c24 transparent;
-            display: block;
-            width: 0;
-        }
-        .result-speech-bubble::before {
-            content: '';
-            position: absolute;
-            bottom: -11px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 10px 10px 0;
-            border-style: solid;
-            border-color: #1c1e26 transparent;
-            display: block;
-            width: 0;
-        }
-        @keyframes bubblePop {
-            0% { transform: scale(0.85); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
         /* ==========================================================================
            MODO CLARO (LIGHT MODE) - RESULTADO NO ESTILO DUOLINGO
            ========================================================================== */
@@ -209,19 +166,6 @@
             border: 2px solid #84d8ff !important;
             border-bottom: 4px solid #1899d6 !important;
             color: #1cb0f6 !important;
-        }
-        body.light-mode .result-speech-bubble {
-            background: #ffffff !important;
-            border: 2px solid #e5e5e5 !important;
-            border-bottom: 4px solid #d5d5d5 !important;
-            color: #4b4b4b !important;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.06) !important;
-        }
-        body.light-mode .result-speech-bubble::after {
-            border-color: #ffffff transparent !important;
-        }
-        body.light-mode .result-speech-bubble::before {
-            border-color: #d5d5d5 transparent !important;
         }
         body.light-mode .bau-unlocked-banner {
             background: #fffbeb !important;
@@ -524,3 +468,407 @@ body.light-mode .streak-sub { color: #777777; }
 body.light-mode .streak-week { background: #f7f7f7; border-color: #e5e5e5; }
 body.light-mode .streak-day-dot { background: #e5e5e5; border-color: #d6d6d6; color: #afafaf; }
 body.light-mode .streak-day-name { color: #afafaf; }
+
+/* =======================================================================
+   ANIMAÇÃO DE DESBLOQUEIO DE SEÇÃO — TRANSIÇÃO DO AZUL PARA O ROSA
+   ======================================================================= */
+.chapter-unlock-overlay {
+    --cor-origem: #1cb0f6;
+    --cor-destino: #ff527b;
+    position: fixed;
+    inset: 0;
+    z-index: 5100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: radial-gradient(circle at center, rgba(28, 176, 246, 0.18) 0%, rgba(8, 10, 14, 0.92) 70%);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease, background 0.9s ease;
+}
+.chapter-unlock-overlay.is-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+.chapter-unlock-overlay.is-morphed {
+    background: radial-gradient(circle at center, rgba(255, 82, 123, 0.22) 0%, rgba(8, 10, 14, 0.92) 70%);
+}
+
+.chapter-unlock-card {
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+    padding: 32px 26px 26px;
+    background: #1a1b26;
+    border: 2px solid var(--cor-origem);
+    border-bottom: 6px solid #0e6b96;
+    border-radius: 28px;
+    box-shadow: 0 24px 65px rgba(0, 0, 0, 0.65), 0 0 35px rgba(28, 176, 246, 0.25);
+    transform: translateY(34px) scale(0.92);
+    transition: transform 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                border-color 0.75s ease,
+                box-shadow 0.75s ease;
+}
+.chapter-unlock-overlay.is-open .chapter-unlock-card {
+    transform: translateY(0) scale(1);
+}
+.chapter-unlock-overlay.is-morphed .chapter-unlock-card {
+    border-color: var(--cor-destino);
+    border-bottom-color: #b82b4f;
+    box-shadow: 0 24px 65px rgba(0, 0, 0, 0.65), 0 0 42px rgba(255, 82, 123, 0.32);
+}
+
+/* ---------- Palco do Mascote e Transição de Cor ---------- */
+.chapter-unlock-stage {
+    position: relative;
+    width: 170px;
+    height: 170px;
+    margin: 0 auto 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chapter-unlock-glow {
+    position: absolute;
+    inset: -12px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--cor-origem) 0%, transparent 68%);
+    opacity: 0.45;
+    transform: scale(0.85);
+    transition: background 0.8s ease, transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.8s ease;
+}
+.chapter-unlock-overlay.is-morphed .chapter-unlock-glow {
+    background: radial-gradient(circle, var(--cor-destino) 0%, transparent 68%);
+    opacity: 0.65;
+    transform: scale(1.15);
+    animation: chapterGlowPulse 2.2s ease-in-out infinite;
+}
+
+@keyframes chapterGlowPulse {
+    0%, 100% { transform: scale(1.08); opacity: 0.55; }
+    50%      { transform: scale(1.2);  opacity: 0.75; }
+}
+
+.chapter-unlock-ring {
+    position: absolute;
+    inset: 6px;
+    border-radius: 50%;
+    border: 3px dashed var(--cor-origem);
+    opacity: 0.6;
+    animation: ringSpin 12s linear infinite;
+    transition: border-color 0.75s ease, transform 0.75s ease;
+}
+.chapter-unlock-overlay.is-morphed .chapter-unlock-ring {
+    border-color: var(--cor-destino);
+    border-style: solid;
+    box-shadow: 0 0 20px rgba(255, 82, 123, 0.45);
+}
+
+@keyframes ringSpin {
+    to { transform: rotate(360deg); }
+}
+
+/* Faíscas na explosão de transição Azul -> Rosa */
+.chapter-unlock-spark-burst {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+.chapter-unlock-spark-burst span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    margin: -5px 0 0 -5px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--cor-origem), var(--cor-destino));
+    opacity: 0;
+    transform: rotate(var(--angle)) translateY(0) scale(0.3);
+}
+.chapter-unlock-overlay.is-morphed .chapter-unlock-spark-burst span {
+    animation: chapterSparkShoot 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes chapterSparkShoot {
+    0%   { opacity: 1; transform: rotate(var(--angle)) translateY(15px) scale(1.2); }
+    70%  { opacity: 0.9; }
+    100% { opacity: 0; transform: rotate(var(--angle)) translateY(96px) scale(0.2); }
+}
+
+/* Troca de Mascote (Azul -> Rosa) */
+.chapter-mascot-morph {
+    position: relative;
+    width: 135px;
+    height: 135px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+.chapter-mascot-img {
+    position: absolute;
+    width: 130px;
+    height: 130px;
+    object-fit: contain;
+    filter: drop-shadow(0 12px 16px rgba(0, 0, 0, 0.55));
+    transition: transform 0.65s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.45s ease;
+}
+.chapter-mascot-img.mascot-from {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+}
+.chapter-mascot-img.mascot-to {
+    opacity: 0;
+    transform: scale(0.35) rotate(-18deg);
+}
+.chapter-unlock-overlay.is-morphed .chapter-mascot-img.mascot-from {
+    opacity: 0;
+    transform: scale(0.4) rotate(18deg);
+}
+.chapter-unlock-overlay.is-morphed .chapter-mascot-img.mascot-to {
+    opacity: 1;
+    transform: scale(1.06) rotate(0deg);
+    animation: opiFloat 3.5s ease-in-out 0.65s infinite;
+}
+
+/* Badge do cadeado abrindo */
+.chapter-lock-badge {
+    position: absolute;
+    bottom: 2px;
+    right: 6px;
+    z-index: 4;
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    background: var(--cor-origem);
+    border-bottom: 4px solid rgba(0, 0, 0, 0.35);
+    color: #ffffff;
+    font-size: 1.15rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    transition: background 0.6s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.chapter-unlock-overlay.is-morphed .chapter-lock-badge {
+    background: var(--cor-destino);
+    transform: scale(1.16) rotate(-8deg);
+}
+
+/* ---------- Trilha Visual de Transição: Seção 1 (Azul) -> Seção 2 (Rosa) ---------- */
+.chapter-transition-track {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 18px;
+    margin: 6px auto 16px;
+    background: #13141d;
+    border: 2px solid #26293a;
+    border-radius: 18px;
+    max-width: 340px;
+}
+.chapter-node {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.85rem;
+    font-weight: 800;
+}
+.chapter-node .node-dot {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    color: #ffffff;
+    transition: all 0.5s ease;
+}
+.chapter-node.node-origin .node-dot {
+    background: var(--cor-origem);
+    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35), 0 0 12px rgba(28, 176, 246, 0.45);
+}
+.chapter-node.node-origin .node-label {
+    color: var(--cor-origem);
+}
+.chapter-node.node-dest .node-dot {
+    background: #2a2d3d;
+    color: #6b7280;
+}
+.chapter-node.node-dest .node-label {
+    color: #6b7280;
+    transition: color 0.5s ease;
+}
+.chapter-unlock-overlay.is-morphed .chapter-node.node-dest .node-dot {
+    background: var(--cor-destino);
+    color: #ffffff;
+    transform: scale(1.14);
+    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35), 0 0 16px rgba(255, 82, 123, 0.65);
+}
+.chapter-unlock-overlay.is-morphed .chapter-node.node-dest .node-label {
+    color: var(--cor-destino);
+}
+
+.chapter-bridge {
+    flex: 1;
+    height: 8px;
+    background: #252838;
+    border-radius: 99px;
+    overflow: hidden;
+    position: relative;
+}
+.chapter-bridge-fill {
+    width: 0%;
+    height: 100%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, var(--cor-origem) 0%, var(--cor-destino) 100%);
+    transition: width 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.chapter-unlock-overlay.is-bridging .chapter-bridge-fill {
+    width: 100%;
+}
+
+/* ---------- Pílula de XP, Título e Subtítulo ---------- */
+.chapter-xp-pill {
+    display: inline-block;
+    padding: 5px 14px;
+    margin-bottom: 10px;
+    border-radius: 99px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 800;
+    background: rgba(28, 176, 246, 0.14);
+    border: 1.5px solid var(--cor-origem);
+    color: var(--cor-origem);
+    transition: all 0.6s ease;
+}
+.chapter-unlock-overlay.is-morphed .chapter-xp-pill {
+    background: rgba(255, 82, 123, 0.15);
+    border-color: var(--cor-destino);
+    color: var(--cor-destino);
+}
+
+.chapter-unlock-title {
+    margin: 0 0 10px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.55rem;
+    font-weight: 900;
+    color: #ffffff;
+    line-height: 1.25;
+    transition: color 0.6s ease, text-shadow 0.6s ease;
+}
+.chapter-unlock-overlay.is-morphed .chapter-unlock-title {
+    color: var(--cor-destino);
+    text-shadow: 0 0 24px rgba(255, 82, 123, 0.35);
+}
+
+.chapter-unlock-sub {
+    margin: 0 auto 22px;
+    max-width: 350px;
+    font-size: 0.94rem;
+    font-weight: 500;
+    line-height: 1.5;
+    color: #b4bcd0;
+}
+
+/* ---------- Botões de Ação (Ir para a lição / Voltar ao dashboard) ---------- */
+.chapter-unlock-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.chapter-btn-primary {
+    width: 100%;
+    padding: 14px 20px;
+    border: none !important;
+    border-bottom: 4px solid #0e6b96 !important;
+    border-radius: 14px;
+    background: var(--cor-origem);
+    color: #ffffff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: background 0.6s ease, border-color 0.6s ease, transform 0.12s ease, filter 0.15s ease, box-shadow 0.6s ease;
+}
+.chapter-unlock-overlay.is-morphed .chapter-btn-primary {
+    background: var(--cor-destino);
+    border-bottom-color: #b82b4f !important;
+    box-shadow: 0 6px 22px rgba(255, 82, 123, 0.4);
+}
+.chapter-btn-primary:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+}
+.chapter-btn-primary:active {
+    transform: translateY(2px);
+    border-bottom-width: 2px !important;
+}
+
+.chapter-btn-secondary {
+    width: 100%;
+    padding: 13px 20px;
+    border: none !important;
+    border-bottom: 4px solid #12141d !important;
+    border-radius: 14px;
+    background: #26293a;
+    color: #cbd5e1;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.94rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.12s ease;
+}
+.chapter-btn-secondary:hover {
+    background: #30344a;
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+.chapter-btn-secondary:active {
+    transform: translateY(2px);
+    border-bottom-width: 2px !important;
+}
+
+/* Modo Claro para Desbloqueio de Seção */
+body.light-mode .chapter-unlock-card {
+    background: #ffffff;
+    box-shadow: 0 20px 55px rgba(0, 0, 0, 0.14);
+}
+body.light-mode .chapter-transition-track {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+}
+body.light-mode .chapter-unlock-sub {
+    color: #64748b;
+}
+body.light-mode .chapter-btn-secondary {
+    background: #f1f5f9;
+    color: #475569;
+    border-bottom-color: #cbd5e1 !important;
+}
+body.light-mode .chapter-btn-secondary:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+

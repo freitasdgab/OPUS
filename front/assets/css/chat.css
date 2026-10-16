@@ -21,7 +21,7 @@
 }
 
 .chat-sidebar-header {
-    padding: 20px;
+    padding: 16px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -34,18 +34,94 @@
     margin: 0;
 }
 
-.btn-invite {
-    background: #1cb0f6;
-    color: #fff;
-    border: none;
-    border-bottom: 3px solid #1899d6;
-    padding: 8px 12px;
+.btn-chat-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #252535;
+    color: #cbd5e1;
+    border: 2px solid #333348;
+    border-bottom: 3px solid #1a1a26;
+    padding: 8px 14px;
     border-radius: 12px;
     font-family: 'Nunito', sans-serif;
     font-weight: 800;
     font-size: 0.85rem;
     cursor: pointer;
     text-transform: uppercase;
+    transition: all 0.2s ease;
+}
+.btn-chat-back i {
+    font-size: 0.95rem;
+    transition: transform 0.2s ease;
+}
+.btn-chat-back:hover {
+    background: #2e2e42;
+    border-color: #1cb0f6;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(28, 176, 246, 0.2);
+}
+.btn-chat-back:hover i {
+    transform: translateX(-3px);
+    color: #1cb0f6;
+}
+.btn-chat-back:active {
+    transform: translateY(2px);
+    border-bottom-width: 0;
+}
+
+/* Modo Claro: Botão Voltar branco com texto escuro */
+body.light-mode .btn-chat-back,
+html.light-mode .btn-chat-back {
+    background: #ffffff !important;
+    color: #4b4b4b !important;
+    border: 2px solid #e5e5e5 !important;
+    border-bottom: 3px solid #cecece !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04) !important;
+}
+body.light-mode .btn-chat-back i,
+html.light-mode .btn-chat-back i {
+    color: #4b4b4b !important;
+}
+body.light-mode .btn-chat-back:hover,
+html.light-mode .btn-chat-back:hover {
+    background: #f8fafc !important;
+    border-color: #1cb0f6 !important;
+    color: #1cb0f6 !important;
+    box-shadow: 0 4px 10px rgba(28, 176, 246, 0.15) !important;
+}
+body.light-mode .btn-chat-back:hover i,
+html.light-mode .btn-chat-back:hover i {
+    color: #1cb0f6 !important;
+}
+body.light-mode .btn-chat-back:active,
+html.light-mode .btn-chat-back:active {
+    background: #f1f5f9 !important;
+    border-bottom-width: 0 !important;
+}
+
+.btn-invite {
+    background: #1cb0f6;
+    color: #fff;
+    border: none;
+    border-bottom: 3px solid #1899d6;
+    padding: 8px 14px;
+    border-radius: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+.btn-invite:hover {
+    background: #38bdf8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(28, 176, 246, 0.3);
 }
 .btn-invite:active { transform: translateY(3px); border-bottom-width: 0; }
 

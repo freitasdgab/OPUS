@@ -590,7 +590,7 @@ $nomes_unidades = [
                                         $is_clicavel = false;
                                         $is_current = false;
 
-                                        if ($num_cap == 1 && $mod == 5) {
+                                        if ($mod == 5) {
                                             $icone_modulo = "fa-terminal";
                                         }
 

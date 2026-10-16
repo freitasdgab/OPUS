@@ -631,6 +631,36 @@ body.light-mode .chat-sidebar-header {
     border-bottom: 2px solid #e5e5e5 !important;
 }
 
+/* Botão Voltar do Chat em Modo Claro */
+body.light-mode .btn-chat-back,
+html.light-mode .btn-chat-back {
+    background: #ffffff !important;
+    color: #4b4b4b !important;
+    border: 2px solid #e5e5e5 !important;
+    border-bottom: 3px solid #cecece !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04) !important;
+}
+body.light-mode .btn-chat-back i,
+html.light-mode .btn-chat-back i {
+    color: #4b4b4b !important;
+}
+body.light-mode .btn-chat-back:hover,
+html.light-mode .btn-chat-back:hover {
+    background: #f8fafc !important;
+    border-color: #1cb0f6 !important;
+    color: #1cb0f6 !important;
+    box-shadow: 0 4px 10px rgba(28, 176, 246, 0.15) !important;
+}
+body.light-mode .btn-chat-back:hover i,
+html.light-mode .btn-chat-back:hover i {
+    color: #1cb0f6 !important;
+}
+body.light-mode .btn-chat-back:active,
+html.light-mode .btn-chat-back:active {
+    background: #f1f5f9 !important;
+    border-bottom-width: 0 !important;
+}
+
 /* 5. Área onde digita a mensagem e bolhas de chat */
 body.light-mode .chat-input-area {
     background: #ffffff !important;

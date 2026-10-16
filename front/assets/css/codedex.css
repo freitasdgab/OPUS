@@ -101,7 +101,7 @@
 .codedex-lesson-badge {
     font-size: 0.82rem;
     font-weight: 800;
-    color: #e76f51;
+    color: #1cb0f6;
     letter-spacing: 1px;
     text-transform: uppercase;
     display: inline-flex;
@@ -277,11 +277,11 @@
     font-size: 0.85rem;
     font-weight: 700;
     color: #ffffff;
-    border-top: 2px solid #e76f51;
+    border-top: 2px solid #1cb0f6;
     margin-top: 5px;
 }
 .codedex-tab-file i {
-    color: #e76f51;
+    color: #1cb0f6;
 }
 
 /* Área do Editor Ace */
@@ -336,6 +336,45 @@
 }
 
 .codedex-btn-run {
+    background: #142132;
+    color: #38bdf8;
+    border: none !important;
+    border-bottom: 4px solid #0c1724 !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 800;
+    padding: 9px 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    transition: all 0.15s ease;
+    outline: none;
+}
+.codedex-btn-run:hover:not(:disabled) {
+    background: #1c2e46;
+    color: #7dd3fc;
+    border: none !important;
+    border-bottom: 4px solid #0c1724 !important;
+    transform: translateY(-2px);
+    filter: brightness(1.08);
+}
+.codedex-btn-run:active:not(:disabled) {
+    transform: translateY(2px);
+    border: none !important;
+    border-bottom: 2px solid #0c1724 !important;
+}
+.codedex-btn-run:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Botão CONTINUAR (Surge em azul principal ao acertar o desafio) */
+.codedex-btn-continue {
     background: #1cb0f6;
     color: #ffffff;
     border: none;
@@ -352,41 +391,8 @@
     text-transform: uppercase;
     letter-spacing: 0.6px;
     transition: all 0.15s ease;
-}
-.codedex-btn-run:hover:not(:disabled) {
-    filter: brightness(1.12);
-    transform: translateY(-2px);
-}
-.codedex-btn-run:active:not(:disabled) {
-    transform: translateY(2px);
-    border-bottom-width: 2px;
-}
-.codedex-btn-run:disabled {
-    opacity: 0.65;
-    cursor: not-allowed;
-    transform: none;
-}
-
-/* Botão CONTINUAR (Surge ao lado de EXECUTAR quando acertar) */
-.codedex-btn-continue {
-    background: #58cc02;
-    color: #ffffff;
-    border: none;
-    border-bottom: 4px solid #46a302;
-    font-family: 'Poppins', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 800;
-    padding: 9px 24px;
-    border-radius: 10px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    transition: all 0.15s ease;
     animation: popInBtn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 4px 15px rgba(88, 204, 2, 0.4);
+    box-shadow: 0 4px 18px rgba(28, 176, 246, 0.45);
 }
 .codedex-btn-continue:hover {
     filter: brightness(1.12);
@@ -491,13 +497,34 @@
 }
 
 /* =========================================================================
-   INTEGRAÇÃO VISUAL DO CHATBOT OPI IA NO CODÉDEX
+   INTEGRAÇÃO VISUAL DO CHATBOT OPI IA E CONFETES NO CODÉDEX
    ========================================================================= */
-.opi-chat-trigger {
+body.licao-page .opi-chat-trigger,
+.licao-page .opi-chat-trigger {
+    top: 50% !important;
+    bottom: auto !important;
+    right: 18px !important;
+    transform: translateY(-50%) !important;
     z-index: 100000 !important;
 }
-.opi-chat-window {
+body.licao-page .opi-chat-trigger:hover,
+.licao-page .opi-chat-trigger:hover {
+    transform: translateY(-50%) scale(1.08) !important;
+}
+body.licao-page .opi-chat-window,
+.licao-page .opi-chat-window {
+    top: 50% !important;
+    bottom: auto !important;
+    right: 76px !important;
+    transform: translateY(-50%) !important;
+    max-height: 85vh !important;
     z-index: 100001 !important;
+}
+
+#confettiContainer,
+.confetti-container {
+    z-index: 100002 !important;
+    pointer-events: none !important;
 }
 
 /* =========================================================================

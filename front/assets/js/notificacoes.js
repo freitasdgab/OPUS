@@ -9,13 +9,29 @@ function fetchNotificacoesBadge() {
             if (data.error) return;
             ultimasNotificacoes = data.notificacoes || [];
             
-            const badge = document.getElementById('badge-notif');
-            if (badge) {
-                if (data.count > 0) {
-                    badge.innerText = data.count > 99 ? '99+' : data.count;
-                    badge.style.display = 'inline-flex';
+            // 1. Notificações de solicitações/amizades (Avisos/Sininho)
+            const pendingNotifs = ultimasNotificacoes.filter(n => n.type !== 'unread_messages').length;
+            const badgeNotif = document.getElementById('badge-notif');
+            if (badgeNotif) {
+                if (pendingNotifs > 0) {
+                    badgeNotif.innerText = pendingNotifs > 99 ? '99+' : pendingNotifs;
+                    badgeNotif.style.display = 'inline-flex';
                 } else {
-                    badge.style.display = 'none';
+                    badgeNotif.style.display = 'none';
+                }
+            }
+
+            // 2. Mensagens não lidas do Chat
+            const unreadMsgs = ultimasNotificacoes
+                .filter(n => n.type === 'unread_messages')
+                .reduce((acc, curr) => acc + (parseInt(curr.qtd) || 1), 0);
+            const badgeChat = document.getElementById('badge-chat-msg');
+            if (badgeChat) {
+                if (unreadMsgs > 0) {
+                    badgeChat.innerText = unreadMsgs > 99 ? '99+' : unreadMsgs;
+                    badgeChat.style.display = 'inline-flex';
+                } else {
+                    badgeChat.style.display = 'none';
                 }
             }
 
@@ -28,8 +44,19 @@ function fetchNotificacoesBadge() {
 function handleChatClick(e) {
     if (e) e.stopPropagation();
     const isChatPage = window.location.pathname.endsWith('chat.php');
+    if (!isChatPage) {
+        window.location.href = 'chat.php';
+    }
+}
+
+function handleNotifClick(e) {
+    if (e) e.stopPropagation();
+    const isChatPage = window.location.pathname.endsWith('chat.php');
     if (isChatPage) {
-        return;
+        if (typeof alternarAbaChat === 'function') {
+            alternarAbaChat('notificacoes');
+            return;
+        }
     }
 
     const dropdown = document.getElementById('notifDropdownTopbar');
@@ -42,18 +69,18 @@ function handleChatClick(e) {
 
 function abrirNotifDropdown() {
     let dropdown = document.getElementById('notifDropdownTopbar');
-    const btnChat = document.getElementById('btn-chat');
-    if (!btnChat) return;
+    const btnNotif = document.getElementById('btn-notificacoes') || document.getElementById('btn-chat');
+    if (!btnNotif) return;
 
     if (!dropdown) {
         dropdown = document.createElement('div');
         dropdown.id = 'notifDropdownTopbar';
         dropdown.className = 'notif-dropdown';
-        btnChat.parentElement.appendChild(dropdown);
+        btnNotif.parentElement.appendChild(dropdown);
 
         // Fecha ao clicar fora
         document.addEventListener('click', (e) => {
-            if (!dropdown.contains(e.target) && e.target !== btnChat && !btnChat.contains(e.target)) {
+            if (!dropdown.contains(e.target) && e.target !== btnNotif && !btnNotif.contains(e.target)) {
                 dropdown.style.display = 'none';
             }
         });
@@ -217,6 +244,7 @@ function dismissAcceptedTopbar(id) {
 
 window.fetchNotificacoesBadge = fetchNotificacoesBadge;
 window.handleChatClick = handleChatClick;
+window.handleNotifClick = handleNotifClick;
 window.abrirOpcaoAmigoTopbar = abrirOpcaoAmigoTopbar;
 window.responderNotifTopbar = responderNotifTopbar;
 window.dismissAcceptedTopbar = dismissAcceptedTopbar;

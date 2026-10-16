@@ -124,6 +124,21 @@ if ($licao_atual == 5) {
 }
 $is_curso_finalizado = ($cap_atual == 5 && $licao_atual == 5);
 $liberou_bau = ($licao_atual == 3 && $acertos > 0);
+$desbloqueou_secao = ($licao_atual == 5 && $acertos > 0 && !$is_curso_finalizado);
+
+// Dados da transição de seção (ex: Seção 1 Azul #1cb0f6 -> Seção 2 Rosa #ff527b)
+$mascote_prox_capitulo = opus_mascote_do_capitulo($prox_cap_link);
+$cor_origem = $mascote_capitulo['cor'];
+$cor_destino = $mascote_prox_capitulo['cor'];
+$img_mascote_origem = "../assets/img/" . $mascote_capitulo['feliz'];
+$img_mascote_destino = "../assets/img/" . $mascote_prox_capitulo['feliz'];
+
+if ($licao_atual == 5 && $acertos > 0) {
+    $mensagem = "Parabéns! Você concluiu o desafio prático no terminal e finalizou a Seção {$cap_atual}!";
+    if ($res_proc && (int) ($res_proc['eh_repeticao'] ?? 0) === 1) {
+        $mensagem .= " (Desafio já concluído antes — XP reduzido.)";
+    }
+}
 
 $status_atual = opus_sincronizar_jogador($conn, $user_id);
 $vidas_restantes = (int) $status_atual['vidas'];
@@ -160,11 +175,11 @@ if ($fogo_acendeu_agora) {
 <head>
     <meta charset="UTF-8">
     <title>Resultado - Opus</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/dashboard.css">
     <link rel="stylesheet" href="../assets/css/topbar.css">
-    <link rel="stylesheet" href="../assets/css/resultado.css">
+    <link rel="stylesheet" href="../assets/css/resultado.css?v=<?= time() ?>">
     <link rel="stylesheet" href="../assets/css/light-mode.css">
     <script src="../assets/js/theme.js"></script>
 </head>
@@ -174,25 +189,18 @@ if ($fogo_acendeu_agora) {
         <main class="main-content" style="width: 100%; margin-left: 0;">
             <?php include '../../back/topbar.php'; ?>
             <div class="result-container">
-                <div class="result-card">
+                <div class="result-card" id="mainResultCard">
                     <div class="result-mascote-wrapper">
-                        <div class="result-speech-bubble" id="resultSpeechBubble">
-                            <?php 
-                            if ($acertos >= $total_questoes) {
-                                echo "Incrível! Você dominou todo o conteúdo desta lição! 🏆";
-                            } elseif ($taxa_acertos >= 0.6) {
-                                echo "Mandou muito bem! Quase gabaritou! 🚀";
-                            } elseif ($acertos > 0) {
-                                echo "Bom esforço! Pratique mais para dominar de vez! 💡";
-                            } else {
-                                echo "Não desanime! Programação é prática e persistência! 💪";
-                            }
-                            ?>
-                        </div>
-                        <img src="<?php echo $imagem_mascote; ?>" alt="Mascote Opus" class="mascote-img" id="resultMascoteImg" title="Clique no mascote para incentivo!">
+                        <img src="<?php echo $imagem_mascote; ?>" alt="Mascote Opus" class="mascote-img" id="resultMascoteImg">
                     </div>
                     
-                    <h1 class="result-title"><?php echo $acertos; ?> / <?php echo $total_questoes; ?> Acertos</h1>
+                    <?php if ($licao_atual == 5 && !$is_curso_finalizado): ?>
+                        <h1 class="result-title" id="mainResultTitle">Você desbloqueou a Seção <?php echo $prox_cap_link; ?></h1>
+                    <?php elseif ($licao_atual == 5 && $is_curso_finalizado): ?>
+                        <h1 class="result-title" id="mainResultTitle">Curso Concluído!</h1>
+                    <?php else: ?>
+                        <h1 class="result-title" id="mainResultTitle"><?php echo $acertos; ?> / <?php echo $total_questoes; ?> Acertos</h1>
+                    <?php endif; ?>
                     <p class="result-message"><?php echo $mensagem; ?></p>
                     
                     <div class="xp-box">
@@ -225,6 +233,8 @@ if ($fogo_acendeu_agora) {
                             <a href="dashboard.php" class="btn-action btn-dash" style="background: linear-gradient(135deg, #ffd700, #ff9600); color: #1a1a24; border: none; font-weight: 900; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);">
                                 <i class="fa-solid fa-gift"></i> Abrir Baú na Dashboard
                             </a>
+                        <?php elseif ($licao_atual == 5): ?>
+                            <a href="dashboard.php" class="btn-action btn-dash"><i class="fa-solid fa-house"></i> Voltar ao dashboard</a>
                         <?php else: ?>
                             <a href="dashboard.php" class="btn-action btn-dash"><i class="fa-solid fa-house"></i> Dashboard</a>
                         <?php endif; ?>
@@ -232,7 +242,7 @@ if ($fogo_acendeu_agora) {
                         <?php if ($acertos > 0): ?>
                             <?php if (!$is_curso_finalizado): ?>
                                 <a href="licao.php?cap=<?php echo $prox_cap_link; ?>&licao=<?php echo $prox_licao; ?>" class="btn-action btn-next">
-                                    <?php echo ($licao_atual == 5) ? 'Próximo Capítulo' : 'Próxima Lição'; ?> <i class="fa-solid fa-arrow-right"></i>
+                                    <?php echo ($licao_atual == 5) ? 'Ir para a lição' : 'Próxima Lição'; ?> <i class="fa-solid fa-arrow-right"></i>
                                 </a>
                             <?php else: ?>
                                 <a href="conquistas.php" class="btn-action btn-next">Ver Troféu! <i class="fa-solid fa-trophy"></i></a>
@@ -286,7 +296,7 @@ if ($fogo_acendeu_agora) {
             </h2>
             <p class="streak-sub">
                 <?php if ($dias_fogo_atual <= 1): ?>
-                    Você acendeu sua primeira chama! Volte amanhã para manter o fogo aceso. 🔥
+                    Você acendeu sua primeira chama! Volte amanhã para manter o fogo aceso.
                 <?php else: ?>
                     Seu fogo continua aceso! Pratique todos os dias para não perder a sequência.
                 <?php endif; ?>
@@ -308,11 +318,115 @@ if ($fogo_acendeu_agora) {
         </div>
     </div>
     <?php endif; ?>
-    <script src="../assets/js/opus_audio.js"></script>
+
+    <?php if ($desbloqueou_secao): ?>
+    <!-- ANIMAÇÃO DE DESBLOQUEIO DE SEÇÃO (TRANSIÇÃO DO AZUL PARA O ROSA) -->
+    <div class="chapter-unlock-overlay" id="chapterUnlockOverlay" role="dialog" aria-modal="true" aria-labelledby="chapterUnlockTitle"
+         style="--cor-origem: <?php echo htmlspecialchars($cor_origem); ?>; --cor-destino: <?php echo htmlspecialchars($cor_destino); ?>;">
+        <div class="chapter-unlock-card">
+            <div class="chapter-unlock-stage">
+                <div class="chapter-unlock-glow"></div>
+                <div class="chapter-unlock-ring"></div>
+                <div class="chapter-unlock-spark-burst">
+                    <span style="--angle: 0deg;"></span>
+                    <span style="--angle: 45deg;"></span>
+                    <span style="--angle: 90deg;"></span>
+                    <span style="--angle: 135deg;"></span>
+                    <span style="--angle: 180deg;"></span>
+                    <span style="--angle: 225deg;"></span>
+                    <span style="--angle: 270deg;"></span>
+                    <span style="--angle: 315deg;"></span>
+                </div>
+                <div class="chapter-mascot-morph">
+                    <img src="<?php echo htmlspecialchars($img_mascote_origem); ?>" alt="Seção <?php echo $cap_atual; ?>" class="chapter-mascot-img mascot-from">
+                    <img src="<?php echo htmlspecialchars($img_mascote_destino); ?>" alt="Seção <?php echo $prox_cap_link; ?>" class="chapter-mascot-img mascot-to">
+                </div>
+                <div class="chapter-lock-badge" id="chapterLockBadge">
+                    <i class="fa-solid fa-lock" id="chapterLockIcon"></i>
+                </div>
+            </div>
+
+            <div class="chapter-transition-track">
+                <div class="chapter-node node-origin">
+                    <span class="node-dot"><i class="fa-solid fa-check"></i></span>
+                    <span class="node-label">Seção <?php echo $cap_atual; ?></span>
+                </div>
+                <div class="chapter-bridge">
+                    <div class="chapter-bridge-fill"></div>
+                </div>
+                <div class="chapter-node node-dest">
+                    <span class="node-dot"><i class="fa-solid fa-lock" id="nodeDestIcon"></i></span>
+                    <span class="node-label">Seção <?php echo $prox_cap_link; ?></span>
+                </div>
+            </div>
+
+            <div class="chapter-xp-pill">+<?php echo $xp_ganho; ?> XP GANHOS</div>
+
+            <h2 class="chapter-unlock-title" id="chapterUnlockTitle">
+                Você desbloqueou a Seção <?php echo $prox_cap_link; ?>
+            </h2>
+            <p class="chapter-unlock-sub">
+                Parabéns! Você concluiu o desafio prático no terminal e liberou uma nova seção da sua jornada em Java!
+            </p>
+
+            <div class="chapter-unlock-actions">
+                <a href="licao.php?cap=<?php echo $prox_cap_link; ?>&licao=1" class="chapter-btn-primary">
+                    Ir para a lição <i class="fa-solid fa-arrow-right"></i>
+                </a>
+                <a href="dashboard.php" class="chapter-btn-secondary">
+                    <i class="fa-solid fa-house"></i> Voltar ao dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+
+    <script src="../assets/js/opus_audio.js?v=<?= time() ?>"></script>
     <script src="../assets/js/script.js"></script>
     <script>
         // Interações sonoras e reativas na tela de Resultado
         document.addEventListener('DOMContentLoaded', function() {
+            const chapterOverlay = document.getElementById('chapterUnlockOverlay');
+            const corDestino = <?php echo json_encode($cor_destino); ?>;
+            const imgMascoteDestino = <?php echo json_encode($img_mascote_destino); ?>;
+
+            function iniciarAnimacaoCapitulo() {
+                if (!chapterOverlay) return;
+                requestAnimationFrame(() => chapterOverlay.classList.add('is-open'));
+
+                // Inicia preenchimento da ponte Azul -> Rosa
+                setTimeout(() => {
+                    chapterOverlay.classList.add('is-bridging');
+                }, 350);
+
+                // Momento da transição do Azul para o Rosa + abertura do cadeado
+                setTimeout(() => {
+                    chapterOverlay.classList.add('is-morphed');
+                    const lockIcon = document.getElementById('chapterLockIcon');
+                    if (lockIcon) lockIcon.className = 'fa-solid fa-lock-open';
+                    const nodeDestIcon = document.getElementById('nodeDestIcon');
+                    if (nodeDestIcon) nodeDestIcon.className = 'fa-solid fa-unlock-keyhole';
+
+                    // Também transiciona o card principal ao fundo do Azul para o Rosa
+                    document.body.style.transition = '--cor-tema 0.8s ease';
+                    document.body.style.setProperty('--cor-tema', corDestino);
+                    const mainMascote = document.getElementById('resultMascoteImg');
+                    if (mainMascote && imgMascoteDestino) {
+                        mainMascote.src = imgMascoteDestino;
+                    }
+
+                    try {
+                        if (window.OpusAudio) {
+                            if (typeof window.OpusAudio.playLessonComplete === 'function') {
+                                window.OpusAudio.playLessonComplete();
+                            } else if (typeof window.OpusAudio.playSuccess === 'function') {
+                                window.OpusAudio.playSuccess();
+                            }
+                        }
+                    } catch (e) {}
+                }, 950);
+            }
+
             // ── Ofensiva de fogo: chama acendendo + semana ──────────────
             const streakOverlay = document.getElementById('streakOverlay');
             if (streakOverlay) {
@@ -346,7 +460,10 @@ if ($fogo_acendeu_agora) {
                     if (window.OpusAudio) window.OpusAudio.playClick();
                     streakOverlay.classList.remove('is-open');
                     streakOverlay.classList.add('is-closing');
-                    setTimeout(() => streakOverlay.remove(), 350);
+                    setTimeout(() => {
+                        streakOverlay.remove();
+                        if (chapterOverlay) iniciarAnimacaoCapitulo();
+                    }, 350);
                 };
                 document.getElementById('streakContinueBtn').addEventListener('click', fechar);
                 document.addEventListener('keydown', function onEsc(e) {
@@ -355,24 +472,20 @@ if ($fogo_acendeu_agora) {
                         document.removeEventListener('keydown', onEsc);
                     }
                 });
+            } else if (chapterOverlay) {
+                // Se não houve abertura da ofensiva de fogo agora, inicia direto a transição de seção
+                iniciarAnimacaoCapitulo();
             }
+
             // Feedback tátil em todos os botões de ação
-            document.querySelectorAll('.btn-action').forEach(function(btn) {
+            document.querySelectorAll('.btn-action, .chapter-btn-primary, .chapter-btn-secondary').forEach(function(btn) {
                 btn.addEventListener('click', function() {
                     if (window.OpusAudio) window.OpusAudio.playClick();
                 });
             });
 
-            // Mascote reativo com salto e falas motivacionais
+            // Mascote reativo com salto
             const mascote = document.getElementById('resultMascoteImg');
-            const balao = document.getElementById('resultSpeechBubble');
-            const falas = [
-                "Bora codar mais um pouco! ☕",
-                "Você está evoluindo a cada lição! 🚀",
-                "A prática constante é o segredo do Java! 💡",
-                "Rumo à maestria em programação! ⭐",
-                "Vamos conquistar a próxima lição juntos! 🔥"
-            ];
 
             if (mascote) {
                 mascote.addEventListener('click', function() {
@@ -380,13 +493,6 @@ if ($fogo_acendeu_agora) {
                     mascote.classList.remove('mascote-jump');
                     void mascote.offsetWidth;
                     mascote.classList.add('mascote-jump');
-
-                    if (balao) {
-                        balao.textContent = falas[Math.floor(Math.random() * falas.length)];
-                        balao.style.animation = 'none';
-                        void balao.offsetWidth;
-                        balao.style.animation = 'bubblePop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                    }
                 });
             }
         });

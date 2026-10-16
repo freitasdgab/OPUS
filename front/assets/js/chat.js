@@ -6,7 +6,8 @@ function carregarConversas() {
         .then(r => r.json())
         .then(data => {
             const list = document.getElementById('chat-list');
-            if (data.length === 0) {
+            if (!list) return;
+            if (!Array.isArray(data) || data.length === 0) {
                 list.innerHTML = '<div style="padding:20px; text-align:center; color:#94a3b8;">Nenhum amigo ainda. Use a busca acima para adicionar conexões!</div>';
                 return;
             }
@@ -312,13 +313,28 @@ function carregarNotificacoesChat() {
                 }
             }
 
-            // Atualiza badge da topbar
+            // Atualiza badge de notificações na topbar
+            const pendingNotifs = (data.notificacoes || []).filter(n => n.type !== 'unread_messages').length;
             if (topbarBadge) {
-                if (data.count > 0) {
-                    topbarBadge.innerText = data.count > 99 ? '99+' : data.count;
-                    topbarBadge.style.display = 'block';
+                if (pendingNotifs > 0) {
+                    topbarBadge.innerText = pendingNotifs > 99 ? '99+' : pendingNotifs;
+                    topbarBadge.style.display = 'inline-flex';
                 } else {
                     topbarBadge.style.display = 'none';
+                }
+            }
+
+            // Atualiza badge de chat na topbar
+            const badgeChatMsg = document.getElementById('badge-chat-msg');
+            if (badgeChatMsg) {
+                const unreadMsgs = (data.notificacoes || [])
+                    .filter(n => n.type === 'unread_messages')
+                    .reduce((acc, curr) => acc + (parseInt(curr.qtd) || 1), 0);
+                if (unreadMsgs > 0) {
+                    badgeChatMsg.innerText = unreadMsgs > 99 ? '99+' : unreadMsgs;
+                    badgeChatMsg.style.display = 'inline-flex';
+                } else {
+                    badgeChatMsg.style.display = 'none';
                 }
             }
 

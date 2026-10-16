@@ -21,9 +21,20 @@ $convite_url = "http://" . $_SERVER['HTTP_HOST'] . "/OPUS/front/pages/auth.html?
     <title>Chat e Amigos - Opus</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/dashboard.css">
-    <link rel="stylesheet" href="../assets/css/topbar.css">
-    <link rel="stylesheet" href="../assets/css/chat.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/topbar.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/chat.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/light-mode.css?v=<?= time() ?>">
+    <script>
+        function voltarPaginaAnterior() {
+            if (document.referrer && document.referrer.indexOf(window.location.host) !== -1 && document.referrer.indexOf('chat.php') === -1) {
+                window.location.href = document.referrer;
+            } else {
+                window.location.href = 'dashboard.php';
+            }
+        }
+        window.voltarPaginaAnterior = voltarPaginaAnterior;
+    </script>
 </head>
 <body>
     <div class="app-container">
@@ -36,11 +47,13 @@ $convite_url = "http://" . $_SERVER['HTTP_HOST'] . "/OPUS/front/pages/auth.html?
                 <!-- COLUNA ESQUERDA: AMIGOS E CONVERSAS -->
                 <div class="chat-sidebar">
                     <div class="chat-sidebar-header">
-                        <h2>Conexões</h2>
-                        <div class="chat-actions" style="display:flex; gap:8px;">
-                            <button class="btn-invite" style="background:#2e2e42; color:#fff;" onclick="window.history.back()"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
-                            <button class="btn-invite" onclick="copiarConvite('<?php echo $convite_url; ?>')"><i class="fa-solid fa-link"></i> Convidar</button>
-                        </div>
+                        <button type="button" class="btn-chat-back" id="btnChatVoltar" onclick="voltarPaginaAnterior()" title="Voltar">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            <span>Voltar</span>
+                        </button>
+                        <button type="button" class="btn-invite" onclick="copiarConvite('<?php echo $convite_url; ?>')">
+                            <i class="fa-solid fa-link"></i> Convidar
+                        </button>
                     </div>
                     
                     <div class="chat-search">
@@ -104,8 +117,29 @@ $convite_url = "http://" . $_SERVER['HTTP_HOST'] . "/OPUS/front/pages/auth.html?
     </div>
 
     <script src="../assets/js/script.js"></script>
-    <script src="../assets/js/chat.js?v=1791479069,11463"></script>
+    <script src="../assets/js/chat.js?v=<?= time() ?>"></script>
     <script>
+        function voltarPaginaAnterior() {
+            if (document.referrer && document.referrer.indexOf(window.location.host) !== -1 && document.referrer.indexOf('chat.php') === -1) {
+                window.location.href = document.referrer;
+            } else if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = 'dashboard.php';
+            }
+        }
+        window.voltarPaginaAnterior = voltarPaginaAnterior;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('btnChatVoltar');
+            if (btn) {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    voltarPaginaAnterior();
+                });
+            }
+        });
+
         function copiarConvite(url) {
             navigator.clipboard.writeText(url).then(() => {
                 alert("Link de convite copiado para a área de transferência!");

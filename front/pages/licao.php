@@ -2,6 +2,36 @@
 // Toda a lógica de sessão, proteção de acesso e busca de dados no banco
 // mora em back/licao_logic.php.
 require_once '../../back/licao_logic.php';
+
+$desafios_por_unidade = [
+    1 => [
+        'badge' => 'Java / Ola Mundo',
+        'heading' => 'O Seu Primeiro Programa Java',
+        'intro' => 'Agora que você já aprendeu os conceitos fundamentais nas lições anteriores, chegou a hora de colocar o conhecimento em prática!',
+        'missao' => 'Escreva um código em Java para exibir exatamente no terminal a seguinte mensagem:',
+        'alvo_visual' => 'Ola Mundo',
+        'dica_texto' => 'Para imprimir uma mensagem no console em Java, utilizamos a instrução:',
+        'dica_codigo' => 'System.out.println("Ola Mundo");',
+        'arquivo' => 'HelloWorld.java',
+        'codigo_inicial' => "public class HelloWorld {\n    public static void main(String[] args) {\n        // Escreva seu código aqui embaixo:\n        \n    }\n}",
+        'validador_js' => "(normStdout.includes('ola mundo') || normStdout.includes('olá mundo') || normStdout.includes('hello world'))",
+        'mensagem_ajuste' => 'Seu programa executou, mas a saída esperada é exatamente "Ola Mundo". Ajuste o texto no editor e tente novamente!'
+    ],
+    2 => [
+        'badge' => 'Java / Variáveis',
+        'heading' => 'Armazenando e Exibindo Variáveis',
+        'intro' => 'Agora que você já conheceu como funcionam as variáveis e o tipo inteiro, chegou a hora de declarar sua primeira variável na prática!',
+        'missao' => 'Declare uma variável inteira chamada <strong>pontos</strong> com o valor <strong>100</strong> e exiba o seu valor no terminal:',
+        'alvo_visual' => '100',
+        'dica_texto' => 'Para declarar uma variável inteira e imprimir seu valor, utilize:',
+        'dica_codigo' => "int pontos = 100;\nSystem.out.println(pontos);",
+        'arquivo' => 'Pontuacao.java',
+        'codigo_inicial' => "public class Pontuacao {\n    public static void main(String[] args) {\n        // Escreva seu código aqui embaixo:\n        \n    }\n}",
+        'validador_js' => "(normStdout.includes('100'))",
+        'mensagem_ajuste' => 'Seu programa executou, mas a saída esperada é o valor 100 da variável pontos. Verifique a declaração e tente novamente!'
+    ],
+];
+$desafio_atual = $desafios_por_unidade[$unidade_atual] ?? $desafios_por_unidade[1];
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -110,11 +140,58 @@ require_once '../../back/licao_logic.php';
             .codedex-success-card.active {
                 display: flex !important;
             }
-            .opi-chat-trigger {
+            /* Reposiciona Chatbot Opi IA na lateral para não cobrir o XP no topo direito */
+            body.licao-page .opi-chat-trigger,
+            .licao-page .opi-chat-trigger {
+                top: 50% !important;
+                bottom: auto !important;
+                right: 18px !important;
+                transform: translateY(-50%) !important;
                 z-index: 100000 !important;
             }
-            .opi-chat-window {
+            body.licao-page .opi-chat-trigger:hover,
+            .licao-page .opi-chat-trigger:hover {
+                transform: translateY(-50%) scale(1.08) !important;
+            }
+            body.licao-page .opi-chat-window,
+            .licao-page .opi-chat-window {
+                top: 50% !important;
+                bottom: auto !important;
+                right: 76px !important;
+                transform: translateY(-50%) !important;
+                max-height: 85vh !important;
                 z-index: 100001 !important;
+            }
+            #confettiContainer,
+            .confetti-container {
+                z-index: 100002 !important;
+                pointer-events: none !important;
+            }
+            .codedex-btn-run {
+                border: none !important;
+                border-bottom: 4px solid #0c1724 !important;
+                outline: none !important;
+            }
+            .codedex-btn-run:hover:not(:disabled) {
+                border: none !important;
+                border-bottom: 4px solid #0c1724 !important;
+            }
+            .codedex-btn-run:active:not(:disabled) {
+                border: none !important;
+                border-bottom: 2px solid #0c1724 !important;
+            }
+            .codedex-btn-continue {
+                border: none !important;
+                border-bottom: 4px solid #1480b3 !important;
+                outline: none !important;
+            }
+            .codedex-btn-continue:hover {
+                border: none !important;
+                border-bottom: 4px solid #1480b3 !important;
+            }
+            .codedex-btn-continue:active {
+                border: none !important;
+                border-bottom: 2px solid #1480b3 !important;
             }
             @media (max-width: 900px) {
                 .codedex-workspace {
@@ -146,8 +223,13 @@ require_once '../../back/licao_logic.php';
             <div class="codedex-topbar-left">
                 <a href="dashboard.php" class="codedex-btn-back"><i class="fa-solid fa-arrow-left"></i> Voltar</a>
                 <div class="codedex-topbar-title">
-                    <i class="fa-brands fa-java" style="color: #e76f51;"></i>
+                    <i class="fa-brands fa-java" style="color: #1cb0f6;"></i>
                     <span>Seção <?php echo $unidade_atual; ?> &bull; Desafio Prático</span>
+                </div>
+            </div>
+            <div class="codedex-topbar-right" style="display: flex; align-items: center; gap: 10px;">
+                <div style="background: rgba(255, 200, 0, 0.12); border: 1px solid rgba(255, 200, 0, 0.3); padding: 5px 14px; border-radius: 20px; display: flex; align-items: center; gap: 7px; font-weight: 700; color: #ffc800; font-size: 0.9rem;">
+                    <i class="fa-solid fa-bolt"></i> <span id="codedexUserXp"><?php echo number_format((int)($status_jogador['xp'] ?? 0), 0, ',', '.'); ?> XP</span>
                 </div>
             </div>
         </div>
@@ -157,37 +239,36 @@ require_once '../../back/licao_logic.php';
             
             <!-- Painel Esquerdo: Instruções e Teoria -->
             <div class="codedex-instructions-panel">
-                <span class="codedex-lesson-badge"><i class="fa-brands fa-java"></i> Java / Olá Mundo</span>
-                <h1 class="codedex-lesson-heading">O Seu Primeiro Programa Java</h1>
+                <span class="codedex-lesson-badge"><i class="fa-brands fa-java"></i> <?php echo htmlspecialchars($desafio_atual['badge']); ?></span>
+                <h1 class="codedex-lesson-heading"><?php echo htmlspecialchars($desafio_atual['heading']); ?></h1>
                 
                 <div class="codedex-text-content">
-                    <p>Os arquivos Java possuem a extensão <code>.java</code>. Agora que você já conhece os conceitos fundamentais da linguagem, chegou o momento de escrever e testar o seu primeiro programa em Java! ☕</p>
+                    <p><?php echo $desafio_atual['intro']; ?></p>
                 </div>
 
                 <!-- Card de Instruções da Missão -->
                 <div class="codedex-card-box">
                     <h4><i class="fa-solid fa-bullseye" style="color: #1cb0f6;"></i> Missão do Desafio</h4>
-                    <p>Complete o método <code>main</code> no editor ao lado para exibir no terminal a mensagem exata <strong>Olá, Mundo!</strong>.</p>
-                    <ul>
-                        <li>Lembre-se do <strong>S</strong> maiúsculo em <code>System</code>;</li>
-                        <li>O método de exibição de texto na saída padrão é o <code>println(...)</code>;</li>
-                        <li>O texto deve estar entre <strong>aspas duplas</strong> <code>"Olá, Mundo!"</code>;</li>
-                        <li>Toda instrução deve terminar com ponto e vírgula <code>;</code>.</li>
-                    </ul>
+                    <p style="font-size: 1.05rem; line-height: 1.6; margin: 0 0 10px 0;">
+                        <?php echo $desafio_atual['missao']; ?>
+                    </p>
+                    <div style="font-size: 1.25rem; font-weight: 800; color: #1cb0f6; font-family: monospace; background: rgba(28, 176, 246, 0.12); padding: 8px 16px; border-radius: 8px; border: 1.5px dashed rgba(28, 176, 246, 0.45); display: inline-block;">
+                        <?php echo htmlspecialchars($desafio_atual['alvo_visual']); ?>
+                    </div>
                 </div>
 
-                <!-- Seção de Dica Interativa Expansível (Não entrega o código pronto) -->
+                <!-- Seção de Dica Interativa Expansível (Gasta 10 XP) -->
                 <div class="codedex-hint-section">
-                    <button type="button" class="codedex-btn-hint" id="btnToggleHint" onclick="toggleDicaCodedex()">
-                        <i class="fa-regular fa-lightbulb"></i> <span id="hintBtnText">Ver Dica</span>
+                    <button type="button" class="codedex-btn-hint" id="btnToggleHint" onclick="solicitarDicaCodedex()">
+                        <i class="fa-solid fa-lightbulb"></i> <span id="hintBtnText">Ver Dica (-10 XP)</span>
                     </button>
                     <div class="codedex-hint-card" id="codedexHintCard" style="display: none;">
                         <div class="codedex-hint-header">
                             <i class="fa-solid fa-lightbulb" style="color: #ffc800;"></i>
                             <strong>Dica de Sintaxe:</strong>
                         </div>
-                        <p>Para imprimir uma mensagem no console em Java, utilizamos a instrução:</p>
-                        <div class="codedex-hint-code">System.out.println("Olá, Mundo!");</div>
+                        <p><?php echo htmlspecialchars($desafio_atual['dica_texto']); ?></p>
+                        <div class="codedex-hint-code"><?php echo nl2br(htmlspecialchars($desafio_atual['dica_codigo'])); ?></div>
                     </div>
                 </div>
 
@@ -204,18 +285,13 @@ require_once '../../back/licao_logic.php';
                 <!-- Aba do Arquivo -->
                 <div class="codedex-editor-top">
                     <div class="codedex-tab-file">
-                        <i class="fa-brands fa-java"></i> HelloWorld.java
+                        <i class="fa-brands fa-java"></i> <?php echo htmlspecialchars($desafio_atual['arquivo']); ?>
                     </div>
                 </div>
 
-                <!-- Container do Ace Editor com Código Esqueleto Inicial -->
+                <!-- Container do Ace Editor com esqueleto inicial -->
                 <div class="codedex-editor-area">
-                    <div id="codedexAceEditor">public class HelloWorld {
-    public static void main(String[] args) {
-        // Digite seu código aqui:
-        
-    }
-}</div>
+                    <div id="codedexAceEditor"><?php echo htmlspecialchars($desafio_atual['codigo_inicial']); ?></div>
                 </div>
 
                 <!-- Barra de Ações do Editor -->
@@ -248,7 +324,6 @@ require_once '../../back/licao_logic.php';
                     </div>
 
                     <div class="codedex-terminal-output" id="codedexTermOutput">
-                        <div class="codedex-output-prompt">opus@terminal:~$ javac HelloWorld.java &amp;&amp; java HelloWorld</div>
                         <div style="color: #6272a4;">Clique no botão "EXECUTAR" ou pressione Ctrl + Enter para testar seu código.</div>
                     </div>
                 </div>
@@ -483,12 +558,9 @@ require_once '../../back/licao_logic.php';
         <!-- Script Específico da Lição 5 (Codédex) -->
         <script>
             let codedexEditor = null;
-            const DEFAULT_CODEDEX_CODE = `public class HelloWorld {
-    public static void main(String[] args) {
-        // Digite seu código aqui:
-        
-    }
-}`;
+            const DEFAULT_CODEDEX_CODE = <?php echo json_encode($desafio_atual['codigo_inicial']); ?>;
+            let dicaDesbloqueada = false;
+            let userXpAtual = <?php echo (int)($status_jogador['xp'] ?? 0); ?>;
 
             document.addEventListener('DOMContentLoaded', function() {
                 // Inicializa Ace Editor
@@ -506,8 +578,15 @@ require_once '../../back/licao_logic.php';
                         enableBasicAutocompletion: true,
                         enableLiveAutocompletion: true
                     });
+                    codedexEditor.setValue(DEFAULT_CODEDEX_CODE, -1);
+                    codedexEditor.gotoLine(4, 9, true);
                     codedexEditor.resize();
-                    setTimeout(() => { if (codedexEditor) codedexEditor.resize(); }, 100);
+                    setTimeout(() => { 
+                        if (codedexEditor) {
+                            codedexEditor.resize();
+                            codedexEditor.gotoLine(4, 9, true);
+                        } 
+                    }, 100);
                     setTimeout(() => { if (codedexEditor) codedexEditor.resize(); }, 300);
                 }
             });
@@ -515,24 +594,82 @@ require_once '../../back/licao_logic.php';
             function resetarCodigoCodedex() {
                 if (codedexEditor) {
                     codedexEditor.setValue(DEFAULT_CODEDEX_CODE, -1);
+                    codedexEditor.gotoLine(4, 9, true);
+                    codedexEditor.focus();
                 }
                 const btnContinue = document.getElementById('btnCodedexContinue');
                 if (btnContinue) btnContinue.style.display = 'none';
                 if (window.OpusAudio) window.OpusAudio.playClick();
             }
 
-            function toggleDicaCodedex() {
+            async function solicitarDicaCodedex() {
                 const card = document.getElementById('codedexHintCard');
                 const txt = document.getElementById('hintBtnText');
                 if (!card) return;
-                if (card.style.display === 'none' || !card.style.display) {
-                    card.style.display = 'block';
-                    if (txt) txt.textContent = 'Ocultar Dica';
-                } else {
-                    card.style.display = 'none';
-                    if (txt) txt.textContent = 'Ver Dica';
+
+                // Se já desbloqueou nesta sessão, apenas alterna a visualização sem cobrar novamente
+                if (dicaDesbloqueada) {
+                    if (card.style.display === 'none' || !card.style.display) {
+                        card.style.display = 'block';
+                        if (txt) txt.textContent = 'Ocultar Dica';
+                    } else {
+                        card.style.display = 'none';
+                        if (txt) txt.textContent = 'Ver Dica';
+                    }
+                    if (window.OpusAudio) window.OpusAudio.playClick();
+                    return;
                 }
-                if (window.OpusAudio) window.OpusAudio.playClick();
+
+                // Desbloqueia direto deduzindo 10 XP sem confirmação intermediária
+                await executarDesbloqueioDica();
+            }
+
+            async function executarDesbloqueioDica() {
+                const card = document.getElementById('codedexHintCard');
+                const txt = document.getElementById('hintBtnText');
+                const xpSpan = document.getElementById('codedexUserXp');
+
+                try {
+                    const response = await fetch('../../back/api/usar_dica.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const data = await response.json();
+
+                    if (data.sucesso) {
+                        dicaDesbloqueada = true;
+                        userXpAtual = data.novo_xp;
+                        if (xpSpan) xpSpan.textContent = userXpAtual.toLocaleString('pt-BR') + ' XP';
+                        if (card) card.style.display = 'block';
+                        if (txt) txt.textContent = 'Ocultar Dica';
+
+                        try {
+                            if (window.OpusAudio && window.OpusAudio.playCorrect) window.OpusAudio.playCorrect();
+                        } catch (e) {}
+                        if (window.opusToast) {
+                            window.opusToast(data.mensagem || 'Dica desbloqueada! (-10 XP)', 'success', 3000);
+                        }
+                    } else {
+                        // Se falhou por saldo de XP insuficiente
+                        try {
+                            if (window.OpusAudio && window.OpusAudio.playError) window.OpusAudio.playError();
+                        } catch (e) {}
+                        if (window.opusAlerta) {
+                            window.opusAlerta({
+                                titulo: 'Atenção',
+                                mensagem: data.erro || 'XP insuficiente para ver a dica.',
+                                tipo: 'warning'
+                            });
+                        } else {
+                            alert(data.erro || 'XP insuficiente para ver a dica.');
+                        }
+                    }
+                } catch (err) {
+                    // Em caso de falha de conexão, libera a dica silenciosamente para o usuário continuar estudando
+                    dicaDesbloqueada = true;
+                    if (card) card.style.display = 'block';
+                    if (txt) txt.textContent = 'Ocultar Dica';
+                }
             }
 
             async function executarCodigoCodedex() {
@@ -543,14 +680,18 @@ require_once '../../back/licao_logic.php';
                 const statusBadge = document.getElementById('codedexTermStatus');
                 const termOutput = document.getElementById('codedexTermOutput');
 
+                // Garante que o botão continuar esteja oculto durante nova execução
+                if (btnContinue) btnContinue.style.display = 'none';
+
                 btnRun.disabled = true;
                 btnRun.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> EXECUTANDO...';
                 statusBadge.className = 'codedex-term-status running';
                 statusBadge.innerText = 'Compilando...';
 
                 termOutput.innerHTML = `
-                    <div class="codedex-output-prompt">opus@terminal:~$ javac HelloWorld.java &amp;&amp; java HelloWorld</div>
-                    <div style="color: #94a3b8; font-family: monospace;">Compilando código Java via OpenJDK...</div>
+                    <div style="color: #38bdf8; font-family: monospace; display: flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-spinner fa-spin"></i> Compilando e executando código Java...
+                    </div>
                 `;
 
                 try {
@@ -566,16 +707,15 @@ require_once '../../back/licao_logic.php';
 
                     const stdout = (data.saida || data.program_output || '').trim();
                     const normStdout = stdout.toLowerCase().replace(/[,!.]/g, '').trim();
-                    const acertou = data.sucesso && (normStdout.includes('olá mundo') || normStdout.includes('ola mundo') || normStdout.includes('hello world'));
+                    const acertou = data.sucesso && <?php echo $desafio_atual['validador_js']; ?>;
 
                     if (acertou) {
                         statusBadge.className = 'codedex-term-status success';
                         statusBadge.innerText = 'Sucesso';
                         
                         termOutput.innerHTML = `
-                            <div class="codedex-output-prompt">opus@terminal:~$ javac HelloWorld.java &amp;&amp; java HelloWorld</div>
-                            <div class="codedex-output-result">${escapeHtml(stdout)}</div>
-                            <div style="color: #58cc02; font-weight: 700; margin-top: 10px; display: flex; align-items: center; gap: 8px;">
+                            <div class="codedex-output-result" style="color: #38bdf8; font-size: 1.15rem; font-weight: 700; margin-bottom: 8px;">${escapeHtml(stdout)}</div>
+                            <div style="color: #1cb0f6; font-weight: 700; margin-top: 10px; display: flex; align-items: center; gap: 8px;">
                                 <i class="fa-solid fa-circle-check"></i> Parabéns! Desafio concluído com sucesso!
                             </div>
                         `;
@@ -585,49 +725,70 @@ require_once '../../back/licao_logic.php';
                             btnContinue.style.display = 'inline-flex';
                         }
 
-                        // Celebração sonoro e confetes como nas outras lições
-                        if (window.OpusAudio) window.OpusAudio.playLessonVictory();
+                        // Feedback comemorativo: som de vitória e confetes
+                        try {
+                            if (window.OpusAudio) {
+                                if (typeof window.OpusAudio.playLessonVictory === 'function') {
+                                    window.OpusAudio.playLessonVictory();
+                                } else if (typeof window.OpusAudio.playSuccess === 'function') {
+                                    window.OpusAudio.playSuccess();
+                                }
+                            }
+                        } catch (audioErr) {
+                            console.warn('OpusAudio notice:', audioErr);
+                        }
+
                         launchConfetti();
 
                     } else if (data.sucesso) {
+                        if (btnContinue) btnContinue.style.display = 'none';
                         statusBadge.className = 'codedex-term-status running';
                         statusBadge.innerText = 'Ajuste';
 
                         termOutput.innerHTML = `
-                            <div class="codedex-output-prompt">opus@terminal:~$ javac HelloWorld.java &amp;&amp; java HelloWorld</div>
-                            <div class="codedex-output-result">${escapeHtml(stdout)}</div>
-                            <div style="color: #ffc800; font-weight: 600; margin-top: 10px;">
-                                💡 Seu programa executou, mas a saída esperada é exatamente "Olá, Mundo!". Ajuste o texto no editor e tente novamente!
+                            <div class="codedex-output-result" style="color: #cbd5e1; margin-bottom: 8px;">${escapeHtml(stdout)}</div>
+                            <div style="color: #ffc800; font-weight: 600; margin-top: 8px;">
+                                <?php echo htmlspecialchars($desafio_atual['mensagem_ajuste']); ?>
                             </div>
                         `;
-                        if (window.OpusAudio) window.OpusAudio.playError();
+                        try {
+                            if (window.OpusAudio && window.OpusAudio.playError) window.OpusAudio.playError();
+                        } catch (e) {}
                     } else {
+                        if (btnContinue) btnContinue.style.display = 'none';
                         statusBadge.className = 'codedex-term-status error';
                         statusBadge.innerText = 'Erro';
 
                         const erroMsg = data.erro || data.compiler_error || data.program_error || 'Erro na compilação do código.';
                         termOutput.innerHTML = `
-                            <div class="codedex-output-prompt">opus@terminal:~$ javac HelloWorld.java &amp;&amp; java HelloWorld</div>
-                            <div style="color: #ff5f56; font-weight: bold;">[ERRO DE COMPILAÇÃO]:</div>
-                            <div style="color: #ff8585;">${escapeHtml(erroMsg)}</div>
+                            <div style="color: #ff5f56; font-weight: bold; margin-bottom: 6px;">[ERRO DE COMPILAÇÃO]:</div>
+                            <div style="color: #ff8585; font-family: monospace; white-space: pre-wrap;">${escapeHtml(erroMsg)}</div>
                         `;
-                        if (window.OpusAudio) window.OpusAudio.playError();
+                        try {
+                            if (window.OpusAudio && window.OpusAudio.playError) window.OpusAudio.playError();
+                        } catch (e) {}
                     }
                 } catch (err) {
+                    if (btnContinue) btnContinue.style.display = 'none';
                     btnRun.disabled = false;
                     btnRun.innerHTML = '<i class="fa-solid fa-play"></i> EXECUTAR';
                     statusBadge.className = 'codedex-term-status error';
                     statusBadge.innerText = 'Falha';
                     termOutput.innerHTML = `
-                        <div class="codedex-output-prompt">opus@terminal:~$ javac HelloWorld.java &amp;&amp; java HelloWorld</div>
-                        <div style="color: #ff5f56;">Erro ao conectar com o compilador: ${escapeHtml(err.message)}</div>
+                        <div style="color: #ff5f56; font-family: monospace;">Erro ao executar código: ${escapeHtml(err.message)}</div>
                     `;
-                    if (window.OpusAudio) window.OpusAudio.playError();
+                    try {
+                        if (window.OpusAudio && window.OpusAudio.playError) window.OpusAudio.playError();
+                    } catch (e) {}
                 }
             }
 
             function concluirCodedex() {
-                if (window.OpusAudio) window.OpusAudio.playLessonVictory();
+                try {
+                    if (window.OpusAudio && window.OpusAudio.playLessonVictory) {
+                        window.OpusAudio.playLessonVictory();
+                    }
+                } catch (e) {}
                 document.getElementById('input_acertos').value = 6;
                 document.getElementById('input_total_questoes').value = 6;
                 setTimeout(() => {

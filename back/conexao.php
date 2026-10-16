@@ -53,25 +53,27 @@ try {
  * isso, o PHP pegaria a resposta de uma chamada interna em vez da final.
  * Uso: opus_call($conn, "CALL sp_algo(?, ?)", "ii", [$a, $b]);
  */
-function opus_call(mysqli $conn, string $sql, string $types = '', array $params = []): ?array {
-    $stmt = $conn->prepare($sql);
-    if ($types !== '' && !empty($params)) {
-        $stmt->bind_param($types, ...$params);
-    }
-    $stmt->execute();
-
-    $ultima_linha = null;
-    do {
-        $result = $stmt->get_result();
-        if ($result) {
-            $linha = $result->fetch_assoc();
-            if ($linha !== null) {
-                $ultima_linha = $linha;
-            }
+if (!function_exists('opus_call')) {
+    function opus_call(mysqli $conn, string $sql, string $types = '', array $params = []): ?array {
+        $stmt = $conn->prepare($sql);
+        if ($types !== '' && !empty($params)) {
+            $stmt->bind_param($types, ...$params);
         }
-    } while ($stmt->more_results() && $stmt->next_result());
+        $stmt->execute();
 
-    $stmt->close();
-    return $ultima_linha;
+        $ultima_linha = null;
+        do {
+            $result = $stmt->get_result();
+            if ($result) {
+                $linha = $result->fetch_assoc();
+                if ($linha !== null) {
+                    $ultima_linha = $linha;
+                }
+            }
+        } while ($stmt->more_results() && $stmt->next_result());
+
+        $stmt->close();
+        return $ultima_linha;
+    }
 }
 ?>

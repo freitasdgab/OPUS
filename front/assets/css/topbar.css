@@ -77,11 +77,17 @@
     color: #1cb0f6;
     cursor: pointer;
     position: relative;
+    padding: 6px 10px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: transform 0.15s ease, background 0.2s ease, color 0.2s ease;
 }
-.stat-chat, .stat-notificacao:hover {
+.stat-chat:hover, .stat-notificacao:hover {
     background: rgba(28, 176, 246, 0.15);
+    color: #38bdf8;
+    transform: scale(1.08);
 }
-.badge-notif {
+.badge-notif, .badge-chat-msg {
     position: absolute;
     top: -5px;
     right: -8px;
