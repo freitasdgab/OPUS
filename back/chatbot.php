@@ -1,10 +1,9 @@
 <?php
 // chatbot.php - Componente flutuante do Opi IA
 ?>
-<!-- BOTÃO FLUTUANTE DO CHATBOT OPI IA (COM FOTINHA DA AMARELA E IDENTIFICAÇÃO IA) -->
+<!-- BOTÃO FLUTUANTE DO CHATBOT OPI IA (SOMENTE TEXTO IA, AZUL, SEM NEON) -->
 <button class="opi-chat-trigger opi-btn-mascot" id="opiChatTrigger" onclick="toggleOpiChat()" title="Tirar dúvidas com o Opi IA">
-    <img src="../assets/img/amarela.png" alt="Opi IA" class="opi-trigger-avatar">
-    <span class="opi-trigger-badge">IA</span>
+    <span class="opi-trigger-text">IA</span>
 </button>
 
 <!-- JANELA DO CHATBOT -->
@@ -13,11 +12,11 @@
     <div class="opi-chat-header">
         <div class="opi-chat-user-info">
             <div class="opi-chat-avatar-wrapper">
-                <img src="../assets/img/amarela.png" alt="Opi Assistant" class="opi-chat-header-img">
+                <span class="opi-chat-header-ia">IA</span>
                 <span class="opi-online-status"></span>
             </div>
             <div class="opi-chat-title-box">
-                <span class="opi-chat-name">Opi IA <i class="fa-solid fa-sparkles" style="color: #ffc800; font-size: 0.8rem;"></i></span>
+                <span class="opi-chat-name">Opi IA</span>
                 <span class="opi-chat-sub">Assistente do Opus & Java</span>
             </div>
         </div>
@@ -32,7 +31,7 @@
     <div class="opi-chat-messages" id="opiChatMessages">
         <div class="opi-msg opi-msg-bot">
             <div class="opi-msg-avatar">
-                <img src="../assets/img/amarela.png" alt="Opi">
+                <span class="opi-msg-ia-badge">IA</span>
             </div>
             <div class="opi-msg-bubble">
                 Olá! Eu sou o <strong>Opi IA</strong> 🤖<br>

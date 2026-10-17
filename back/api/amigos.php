@@ -75,17 +75,13 @@ if ($action === 'buscar_usuarios') {
     $q = trim($_GET['q'] ?? '');
     $q_esc = $conn->real_escape_string($q);
 
-    // Busca exata por email ou ID (se for numérico)
-    if (is_numeric($q_esc)) {
-        $sql = "SELECT id, nome, email, xp, dias_fogo, foto_perfil FROM usuarios WHERE (id = $q_esc OR email = '$q_esc') AND id != $user_id LIMIT 1";
-    } else {
-        $sql = "SELECT id, nome, email, xp, dias_fogo, foto_perfil FROM usuarios WHERE email = '$q_esc' AND id != $user_id LIMIT 1";
-    }
+    // Busca exclusiva por Nome ou Email (sem opção de buscar por ID)
+    $sql = "SELECT id, nome, email, xp, dias_fogo, foto_perfil FROM usuarios WHERE (nome LIKE '%$q_esc%' OR email LIKE '%$q_esc%') AND id != $user_id LIMIT 10";
     
     $res = $conn->query($sql);
     $usuarios = [];
 
-    if ($res && $r = $res->fetch_assoc()) {
+    while ($res && $r = $res->fetch_assoc()) {
         $uid = (int) $r['id'];
         
         // Verifica status da conexão

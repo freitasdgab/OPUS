@@ -1,6 +1,6 @@
 /* chatbot.css - Estilos do Chatbot Opi IA do Opus */
 
-/* BOTÃO FLUTUANTE DO OPI IA (COMPACTO COM FOTINHA DA AMARELA E IDENTIFICAÇÃO IA) */
+/* BOTÃO FLUTUANTE DO OPI IA (DESIGN LIMPO, AZUL, SEM NEON, SOMENTE IA) */
 .opi-chat-trigger {
     position: fixed;
     bottom: 25px;
@@ -17,47 +17,29 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 5px 14px rgba(28, 176, 246, 0.4);
-    transition: all 0.15s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.15s ease, background-color 0.15s ease;
     user-select: none;
     outline: none;
     padding: 0;
 }
 
-.opi-trigger-avatar {
-    width: 34px;
-    height: 34px;
-    object-fit: contain;
-    transition: transform 0.15s ease;
-    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
-}
-
-.opi-trigger-badge {
-    position: absolute;
-    bottom: -3px;
-    right: -3px;
-    background: #ffc800;
-    color: #1e1e2d;
-    font-family: 'Nunito', 'Poppins', sans-serif;
-    font-weight: 900;
-    font-size: 0.65rem;
-    padding: 1px 4px;
-    border-radius: 6px;
-    border: 1.5px solid #181824;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    letter-spacing: 0.4px;
+.opi-trigger-text {
+    font-family: 'Poppins', 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #ffffff;
+    letter-spacing: 0.8px;
     line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .opi-chat-trigger:hover {
-    filter: brightness(1.08);
+    background-color: #1899d6;
     transform: translateY(-2px);
-    box-shadow: 0 8px 18px rgba(28, 176, 246, 0.55);
-    background-color: #1cb0f6;
-}
-
-.opi-chat-trigger:hover .opi-trigger-avatar {
-    transform: scale(1.08);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
 }
 
 .opi-chat-trigger:active {
@@ -137,24 +119,34 @@
 
 .opi-chat-avatar-wrapper {
     position: relative;
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
 }
 
-.opi-chat-header-img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+.opi-chat-header-ia {
+    width: 36px;
+    height: 36px;
+    background: #1cb0f6;
+    border-radius: 10px;
+    border-bottom: 2px solid #1482b8;
+    color: #ffffff;
+    font-family: 'Poppins', 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.5px;
 }
 
 .opi-online-status {
     position: absolute;
-    bottom: 0;
-    right: 0;
+    bottom: -2px;
+    right: -2px;
     width: 10px;
     height: 10px;
     background: #58cc02;
@@ -246,11 +238,21 @@
     align-self: flex-end;
 }
 
-.opi-msg-avatar img {
-    width: 34px;
-    height: 34px;
-    object-fit: contain;
-    display: block;
+.opi-msg-ia-badge {
+    width: 30px;
+    height: 30px;
+    background: #1cb0f6;
+    border-radius: 8px;
+    border-bottom: 2px solid #1482b8;
+    color: #ffffff;
+    font-family: 'Poppins', 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.5px;
+    user-select: none;
 }
 
 .opi-msg-bubble {
@@ -469,9 +471,9 @@
 }
 
 #opiChatSendBtn:hover {
-    filter: brightness(1.1);
+    filter: brightness(1.08);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(28, 176, 246, 0.35);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 #opiChatSendBtn:active {

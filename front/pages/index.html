@@ -5,22 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bem-vindo ao Opus</title>
 
-    <script>
-        // Inteligência para reconhecer usuário já cadastrado e pular apresentação
-        (function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const skipRedirect = urlParams.get('redirect') === 'false';
-
-            if (!skipRedirect) {
-                const foiCadastrado = localStorage.getItem('opus_cadastrado') === 'true' || 
-                                      document.cookie.split(';').some(item => item.trim().startsWith('opus_cadastrado='));
-                if (foiCadastrado) {
-                    window.location.href = 'auth.html?mode=login';
-                }
-            }
-        })();
-    </script>
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
@@ -32,7 +16,7 @@
 
     <!-- TOP BAR DE NAVEGAÇÃO -->
     <header class="topbar">
-        <a href="index.html?redirect=false" class="topbar-brand">
+        <a href="index.html" class="topbar-brand">
             <img src="../assets/img/logo.png" alt="Logo Opus" class="topbar-logo">
             <span class="topbar-title">OPUS</span>
         </a>

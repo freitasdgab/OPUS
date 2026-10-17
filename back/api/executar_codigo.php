@@ -74,34 +74,107 @@ if ($response === false || $http_code !== 200) {
     if (preg_match('/\bsystem\.out\b/i', $codigo) && !preg_match('/\bSystem\.out\b/', $codigo)) {
         echo json_encode([
             'sucesso' => false,
-            'erro' => "HelloWorld.java: error: package system does not exist (Dica: 'System' deve começar com 'S' maiúsculo)",
+            'erro' => "Main.java: error: package system does not exist (Dica: 'System' deve começar com 'S' maiúsculo)",
             'erro_compilacao' => "error: package system does not exist\nsystem.out.println(...);\n^"
         ]);
         exit();
     }
 
     // 2. Verifica ausência de ponto e vírgula
-    if (preg_match('/System\.out\.println\s*\([^;)]*$/m', $codigo)) {
+    if (preg_match('/System\.out\.print(?:ln)?\s*\([^;)]*$/m', $codigo)) {
         echo json_encode([
             'sucesso' => false,
-            'erro' => "HelloWorld.java: error: ';' expected no final da instrução",
+            'erro' => "Main.java: error: ';' expected no final da instrução",
             'erro_compilacao' => "error: ';' expected\nSystem.out.println(...)\n                      ^"
         ]);
         exit();
     }
 
-    // 3. Captura impressões System.out.println(...)
-    if (preg_match_all('/System\.out\.println\s*\(\s*([^;]+?)\s*\)\s*;/s', $codigo, $matches)) {
+    // 3. Mapeia variáveis declaradas e reatribuídas no código (int, double, float, long, boolean, String, char)
+    $vars = [];
+    if (preg_match_all('/(?:final\s+)?(?:(?:int|double|float|long|boolean|String|char|var)\s+)?([a-zA-Z_]\w*)\s*=\s*([^;]+);/', $codigo, $varMatches, PREG_SET_ORDER)) {
+        foreach ($varMatches as $vm) {
+            $vName = $vm[1];
+            if ($vName === 'args') continue;
+            $vExpr = trim($vm[2]);
+            if (preg_match('/^"(.*)"$/s', $vExpr, $sm)) {
+                $vars[$vName] = ['type' => 'string', 'val' => $sm[1]];
+            } elseif (preg_match("/^'(.)'$/s", $vExpr, $cm)) {
+                $vars[$vName] = ['type' => 'string', 'val' => $cm[1]];
+            } elseif (strtolower($vExpr) === 'true' || strtolower($vExpr) === 'false') {
+                $vars[$vName] = ['type' => 'bool', 'val' => (strtolower($vExpr) === 'true' ? 'true' : 'false')];
+            } elseif (is_numeric($vExpr)) {
+                $vars[$vName] = ['type' => 'num', 'val' => $vExpr + 0];
+            } elseif (preg_match('/^(\d+(?:\.\d+)?)\s*([+\-*\/])\s*(\d+(?:\.\d+)?)$/', $vExpr, $am)) {
+                $a = $am[1] + 0;
+                $b = $am[3] + 0;
+                $op = $am[2];
+                $res = ($op === '+') ? ($a + $b) : (($op === '-') ? ($a - $b) : (($op === '*') ? ($a * $b) : ($b != 0 ? $a / $b : 0)));
+                $vars[$vName] = ['type' => 'num', 'val' => $res];
+            } elseif (preg_match('/^(\d+(?:\.\d+)?)\s*(>|>=|<|<=|==|!=)\s*(\d+(?:\.\d+)?)$/', $vExpr, $bm)) {
+                $a = $bm[1] + 0;
+                $b = $bm[3] + 0;
+                $op = $bm[2];
+                $bRes = ($op === '>') ? ($a > $b) : (($op === '>=') ? ($a >= $b) : (($op === '<') ? ($a < $b) : (($op === '<=') ? ($a <= $b) : (($op === '==') ? ($a == $b) : ($a != $b)))));
+                $vars[$vName] = ['type' => 'bool', 'val' => $bRes ? 'true' : 'false'];
+            }
+        }
+    }
+
+    // 4. Captura impressões System.out.println(...) ou System.out.print(...)
+    if (preg_match_all('/System\.out\.(println|print)\s*\(\s*([^;]*?)\s*\)\s*;/s', $codigo, $matches, PREG_SET_ORDER)) {
         $saida_local = "";
         $erro_local = null;
-        foreach ($matches[1] as $conteudo) {
-            $conteudo = trim($conteudo);
+
+        foreach ($matches as $m) {
+            $metodo = $m[1];
+            $conteudo = trim($m[2]);
+
+            if ($conteudo === '') {
+                if ($metodo === 'println') $saida_local .= "\n";
+                continue;
+            }
+
             if (preg_match('/^"(.*)"$/s', $conteudo, $strMatch)) {
-                $saida_local .= $strMatch[1] . "\n";
+                $saida_local .= $strMatch[1] . ($metodo === 'println' ? "\n" : "");
             } elseif (is_numeric($conteudo)) {
-                $saida_local .= $conteudo . "\n";
+                $saida_local .= $conteudo . ($metodo === 'println' ? "\n" : "");
+            } elseif (strtolower($conteudo) === 'true' || strtolower($conteudo) === 'false') {
+                $saida_local .= strtolower($conteudo) . ($metodo === 'println' ? "\n" : "");
+            } elseif (isset($vars[$conteudo])) {
+                $saida_local .= $vars[$conteudo]['val'] . ($metodo === 'println' ? "\n" : "");
+            } elseif (preg_match('/^(\d+(?:\.\d+)?)\s*([+\-*\/])\s*(\d+(?:\.\d+)?)$/', $conteudo, $am)) {
+                $a = $am[1] + 0;
+                $b = $am[3] + 0;
+                $op = $am[2];
+                $res = ($op === '+') ? ($a + $b) : (($op === '-') ? ($a - $b) : (($op === '*') ? ($a * $b) : ($b != 0 ? $a / $b : 0)));
+                $saida_local .= $res . ($metodo === 'println' ? "\n" : "");
+            } elseif (preg_match('/^(\d+(?:\.\d+)?)\s*(>|>=|<|<=|==|!=)\s*(\d+(?:\.\d+)?)$/', $conteudo, $bm)) {
+                $a = $bm[1] + 0;
+                $b = $bm[3] + 0;
+                $op = $bm[2];
+                $bRes = ($op === '>') ? ($a > $b) : (($op === '>=') ? ($a >= $b) : (($op === '<') ? ($a < $b) : (($op === '<=') ? ($a <= $b) : (($op === '==') ? ($a == $b) : ($a != $b)))));
+                $saida_local .= ($bRes ? 'true' : 'false') . ($metodo === 'println' ? "\n" : "");
+            } elseif (strpos($conteudo, '+') !== false) {
+                // Concatenação com +
+                $partes = preg_split('/\s*\+\s*/', $conteudo);
+                $linha_concat = '';
+                foreach ($partes as $pt) {
+                    $pt = trim($pt);
+                    if (preg_match('/^"(.*)"$/s', $pt, $psm)) {
+                        $linha_concat .= $psm[1];
+                    } elseif (isset($vars[$pt])) {
+                        $linha_concat .= $vars[$pt]['val'];
+                    } elseif (is_numeric($pt)) {
+                        $linha_concat .= $pt;
+                    } else {
+                        $erro_local = "Main.java: error: cannot find symbol '$pt'";
+                        break 2;
+                    }
+                }
+                $saida_local .= $linha_concat . ($metodo === 'println' ? "\n" : "");
             } else {
-                $erro_local = "HelloWorld.java: error: cannot find symbol '$conteudo' (Dica: textos literais devem estar entre aspas duplas \"...\")";
+                $erro_local = "Main.java: error: cannot find symbol '$conteudo' (Dica: textos literais devem estar entre aspas duplas \"...\" ou verifique o nome da variável)";
                 break;
             }
         }
@@ -118,8 +191,8 @@ if ($response === false || $http_code !== 200) {
         echo json_encode([
             'sucesso' => true,
             'status' => '0',
-            'saida' => rtrim($saida_local),
-            'program_output' => rtrim($saida_local),
+            'saida' => rtrim($saida_local, "\r\n"),
+            'program_output' => rtrim($saida_local, "\r\n"),
             'erro_compilacao' => '',
             'erro_execucao' => ''
         ]);
@@ -128,7 +201,7 @@ if ($response === false || $http_code !== 200) {
 
     echo json_encode([
         'sucesso' => false,
-        'erro' => 'Não foi possível compilar o código. Verifique se a instrução System.out.println("..."); está correta.',
+        'erro' => 'Não foi possível compilar o código. Verifique se a instrução System.out.println(...); está correta.',
         'detalhes' => $curl_error
     ]);
     exit();

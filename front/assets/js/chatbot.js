@@ -157,7 +157,7 @@ function adicionarBolhaOpi(textoMarkdown) {
 
     div.innerHTML = `
         <div class="opi-msg-avatar">
-            <img src="../assets/img/amarela.png" alt="Opi">
+            <span class="opi-msg-ia-badge">IA</span>
         </div>
         <div class="opi-msg-bubble">
             ${textoFormatado}
@@ -175,7 +175,7 @@ function exibirDigitando() {
     div.id = 'opiTypingElem';
     div.innerHTML = `
         <div class="opi-msg-avatar">
-            <img src="../assets/img/amarela.png" alt="Opi">
+            <span class="opi-msg-ia-badge">IA</span>
         </div>
         <div class="opi-typing-indicator">
             <div class="opi-typing-dot"></div>
@@ -207,7 +207,7 @@ function limparChatOpi() {
     msgContainer.innerHTML = `
         <div class="opi-msg opi-msg-bot">
             <div class="opi-msg-avatar">
-                <img src="../assets/img/amarela.png" alt="Opi">
+                <span class="opi-msg-ia-badge">IA</span>
             </div>
             <div class="opi-msg-bubble">
                 Histórico limpo! 🧹<br>

@@ -55,6 +55,9 @@ if ($acertos == $total_perguntas && $total_perguntas > 0) {
     // pegamos o result set final, não o de uma chamada interna.
     $resultado = opus_call($conn, "CALL sp_corrigir_licao(?, ?, ?, ?)", "iiii", [$user_id, $capitulo, $licao, $acertos]);
 
+    require_once __DIR__ . '/sequencia_amigos_helper.php';
+    registrar_conclusao_licao_sequencia_amigos($conn, $user_id);
+
     $msg_bonus = "";
     if ($resultado && (int) $resultado['avancou'] === 1) {
         if ((int) $resultado['capitulo_concluido'] === 1) {

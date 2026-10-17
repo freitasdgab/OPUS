@@ -1,6 +1,8 @@
 let currentChatUser = 0;
 let chatRefreshInterval;
+let activeChatData = null;
 
+// ── 1. CARREGAR CONVERSAS DO DIRECT ──
 function carregarConversas() {
     fetch('../../back/api/chat.php?action=get_conversations')
         .then(r => r.json())
@@ -8,70 +10,100 @@ function carregarConversas() {
             const list = document.getElementById('chat-list');
             if (!list) return;
             if (!Array.isArray(data) || data.length === 0) {
-                list.innerHTML = '<div style="padding:20px; text-align:center; color:#94a3b8;">Nenhum amigo ainda. Use a busca acima para adicionar conexões!</div>';
+                list.innerHTML = `
+                    <div style="padding: 40px 20px; text-align: center; color: #94a3b8; font-size: 0.9rem;">
+                        <i class="fa-regular fa-paper-plane" style="font-size: 2.2rem; color: #3b3b4f; margin-bottom: 12px; display: block;"></i>
+                        Nenhuma conversa iniciada.<br>Busque por <strong>Nome</strong> ou <strong>E-mail</strong> para conversar!
+                    </div>`;
                 return;
             }
             
             let html = '';
-                            data.forEach(c => {
-                    let unreadHtml = c.unread > 0 ? `<div class="cli-unread">${c.unread}</div>` : '';
-                    let activeClass = c.id === currentChatUser ? 'active' : '';
-                    
-                    let ultima = c.ultima_msg;
-                    if (ultima && ultima.includes('[DUEL_INVITE]')) ultima = '🔥 Convite para Batalha de Fogo';
-                    
-                    let battleIcon = c.is_battling ? `<div title="Batalha Ativa!" style="color:#ff0055; margin-left:5px;"><i class="fa-solid fa-fire-flame-curved"></i></div>` : '';
-                    
-                    html += `
-                    <div class="chat-list-item ${activeClass}" onclick="abrirChat(${c.id})">
-                        <img src="${c.foto}">
-                        <div class="cli-info">
-                            <div class="cli-name" style="display:flex; align-items:center;">${c.nome} ${battleIcon}</div>
-                            <div class="cli-last">${ultima}</div>
-                        </div>
-                        ${unreadHtml}
+            data.forEach(c => {
+                const unreadHtml = c.unread > 0 ? `<div class="cli-unread">${c.unread}</div>` : '';
+                const activeClass = c.id === currentChatUser ? 'active' : '';
+                
+                let ultima = c.ultima_msg || 'Nova conversa iniciada. Diga olá!';
+
+                let timeStr = '';
+                if (c.ultima_data) {
+                    const d = new Date(c.ultima_data);
+                    timeStr = formatarHoraDirect(d);
+                }
+                
+                html += `
+                <div class="chat-list-item ${activeClass}" onclick="abrirChat(${c.id})">
+                    <div class="cli-avatar-wrap">
+                        <img src="${c.foto}" alt="${c.nome}">
                     </div>
-                    `;
-                });
+                    <div class="cli-info">
+                        <div class="cli-top-row">
+                            <span class="cli-name">${c.nome}</span>
+                            <span class="cli-time">${timeStr}</span>
+                        </div>
+                        <div class="cli-bottom-row">
+                            <span class="cli-last">${escapeHtml(ultima)}</span>
+                            ${unreadHtml}
+                        </div>
+                    </div>
+                </div>
+                `;
+            });
             list.innerHTML = html;
+        })
+        .catch(err => {
+            console.error("Erro ao carregar conversas:", err);
         });
 }
 
+// ── 2. BUSCA DE AMIGOS POR NOME OU E-MAIL ──
 function buscarAmigos() {
     const q = document.getElementById('search-input').value.trim();
+    const resBox = document.getElementById('search-results');
+    
     if (q === '') {
-        document.getElementById('search-results').style.display = 'none';
+        resBox.style.display = 'none';
         return;
     }
+    
+    resBox.style.display = 'block';
+    resBox.innerHTML = '<div style="text-align:center; color:#94a3b8; font-size:0.85rem;"><i class="fa-solid fa-spinner fa-spin"></i> Buscando...</div>';
     
     fetch('../../back/api/chat.php?action=search_users&q=' + encodeURIComponent(q))
         .then(r => r.json())
         .then(data => {
-            const resBox = document.getElementById('search-results');
-            resBox.style.display = 'block';
-            
-            if (data.length === 0) {
-                resBox.innerHTML = '<div style="text-align:center; color:#94a3b8;">Nenhum usuário encontrado.</div>';
+            if (!Array.isArray(data) || data.length === 0) {
+                resBox.innerHTML = '<div style="text-align:center; color:#94a3b8; font-size:0.85rem; padding: 6px;">Nenhum usuário encontrado por esse nome ou e-mail.</div>';
                 return;
             }
             
             let html = '';
             data.forEach(u => {
                 let btnHtml = '';
-                if (u.status === 'pendente') btnHtml = '<button class="btn-add-friend" disabled style="background:#4a5568;">Pendente</button>';
-                else if (u.status === 'aceito') btnHtml = '<button class="btn-add-friend" onclick="abrirChat(' + u.id + ')">Abrir Chat</button>';
-                else btnHtml = `<button class="btn-add-friend" onclick="enviarPedido(${u.id})"><i class="fa-solid fa-user-plus"></i> Adicionar</button>`;
+                if (u.status === 'pendente') {
+                    btnHtml = '<button class="btn-add-friend" disabled style="background:#4a5568; border-color:#333;">Pendente</button>';
+                } else if (u.status === 'aceito') {
+                    btnHtml = `<button class="btn-add-friend" onclick="abrirChat(${u.id}); document.getElementById('search-results').style.display='none';"><i class="fa-solid fa-comments"></i> Conversar</button>`;
+                } else {
+                    btnHtml = `<button class="btn-add-friend" onclick="enviarPedido(${u.id})"><i class="fa-solid fa-user-plus"></i> Conectar</button>`;
+                }
                 
                 html += `
                 <div class="search-result-item">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <img src="${u.foto}" style="width:30px; height:30px; border-radius:50%;">
-                        <span style="font-weight:700; font-size:0.9rem;">${u.nome}</span>
+                    <div class="sri-info">
+                        <img src="${u.foto}" alt="${u.nome}">
+                        <div class="sri-details">
+                            <span class="sri-name">${u.nome}</span>
+                            <span class="sri-email">${u.email}</span>
+                        </div>
                     </div>
                     ${btnHtml}
                 </div>`;
             });
             resBox.innerHTML = html;
+        })
+        .catch(() => {
+            resBox.innerHTML = '<div style="text-align:center; color:#ff4b4b; font-size:0.85rem;">Erro na busca.</div>';
         });
 }
 
@@ -83,133 +115,161 @@ function enviarPedido(id) {
         .then(r => r.json())
         .then(d => {
             if (d.success) {
-                alert("Pedido de amizade enviado!");
+                if (typeof window.opusToast === 'function') {
+                    window.opusToast("Solicitação de amizade enviada!", "success");
+                } else {
+                    alert("Solicitação de amizade enviada!");
+                }
                 buscarAmigos();
             }
         });
 }
 
+// ── 3. ABRIR E ATUALIZAR JANELA DO DIRECT ──
 function abrirChat(userId) {
     currentChatUser = userId;
-    carregarConversas(); // Atualiza active state
-    atualizarChatWindow();
+    carregarConversas(); // Atualiza o item ativo na lista
+    atualizarChatWindow(true);
     
     if (chatRefreshInterval) clearInterval(chatRefreshInterval);
-    chatRefreshInterval = setInterval(atualizarChatWindow, 5000);
+    chatRefreshInterval = setInterval(() => atualizarChatWindow(false), 3000);
 }
 
-function atualizarChatWindow() {
+function atualizarChatWindow(isFirstOpen = false) {
     if (currentChatUser === 0) return;
     
     fetch('../../back/api/chat.php?action=get_messages&target_id=' + currentChatUser)
         .then(r => r.json())
         .then(data => {
+            if (data.error) return;
+            activeChatData = data;
+            
             const f = data.friend;
-            const msgs = data.messages;
-            
-            let duelFloatingIcon = data.has_active_duel && data.duel_info ? `
-                <div class="floating-duel-icon" onclick="alert('${data.duel_info.msg}')" title="Placar da Batalha de Fogo" style="background:#ff0055; box-shadow:0 0 10px #ff0055;">
-                    <i class="fa-solid fa-fire"></i>
-                </div>
-            ` : '';
-            
+            const msgs = data.messages || [];
             const main = document.getElementById('chat-main');
             
-            // Build the skeleton ONLY if we just opened this chat
-            if (!document.getElementById('chat-header-' + f.id)) {
+            // Renderiza o cabeçalho e esqueleto se for a primeira vez ou trocou de conversa
+            const currentHeader = document.getElementById('chat-header-' + f.id);
+            if (!currentHeader) {
                 main.innerHTML = `
+                <!-- CABEÇALHO DO DIRECT -->
                 <div class="chat-header" id="chat-header-${f.id}">
                     <div class="ch-user">
-                        <img src="${f.foto}">
+                        <div class="ch-avatar-wrap">
+                            <img src="${f.foto}" alt="${escapeHtml(f.nome)}">
+                        </div>
                         <div class="ch-user-info">
-                            <h3>${f.nome}</h3>
+                            <h3>${escapeHtml(f.nome)}</h3>
+                            <div class="ch-user-subtitle">
+                                <span class="ch-status-online"><i class="fa-solid fa-circle"></i> Direto no Opus</span>
+                            </div>
                         </div>
                     </div>
-                    <button class="btn-duel" onclick="enviarConviteDuelo(${f.id})"><i class="fa-solid fa-fire"></i> Convidar p/ Batalha</button>
                 </div>
+
+                <!-- MENSAGENS -->
                 <div class="chat-messages" id="chat-messages"></div>
+
+                <!-- BARRA DE ENVIO DE MENSAGEM (DIRECT) -->
                 <div class="chat-input-area">
-                    <textarea id="chat-input" placeholder="Digite uma mensagem..." onkeypress="handleEnter(event)" style="resize:none; padding:12px; border-radius:8px; border:2px solid #2e2e42; background:#161a24; color:#fff; font-family:'Nunito',sans-serif; flex:1; height:20px; outline:none; overflow:hidden;"></textarea>
-                    <button class="btn-send" onclick="enviarMensagem()"><i class="fa-solid fa-paper-plane"></i></button>
+                    <div class="chat-textarea-wrap">
+                        <input type="text" id="chat-input" placeholder="Mensagem..." autocomplete="off" onkeydown="handleKeyDown(event)">
+                    </div>
+                    <button type="button" class="btn-send" onclick="enviarMensagem()" title="Enviar mensagem">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
                 </div>
                 `;
+                
                 setTimeout(() => {
-                    if(document.getElementById('chat-input')) {
-                        document.getElementById('chat-input').focus();
-                    }
+                    const inp = document.getElementById('chat-input');
+                    if (inp) inp.focus();
                 }, 100);
             }
 
+            // Renderiza mensagens estilo Direct
             let msgHtml = '';
             msgs.forEach(m => {
-                let isMe = (m.remetente_id !== f.id);
-                let rowClass = isMe ? 'me' : 'them';
+                const isMe = (m.remetente_id !== f.id);
+                const rowClass = isMe ? 'me' : 'them';
                 
-                if (m.mensagem === '[DUEL_INVITE]') {
-                    let txt = isMe ? "Você convidou para uma batalha de fogo!" : "Te convidou para uma batalha de fogo!";
-                    msgHtml += `
-                    <div class="msg-row ${rowClass}">
-                        <div class="msg-duel" onclick="aceitarBatalha(${f.id})">
-                            <i class="fa-solid fa-fire msg-duel-icon"></i>
-                            <div class="msg-duel-text">
-                                <span>Batalha de Fogo</span>
-                                <span>${txt}</span>
-                            </div>
+                let timeStr = '';
+                if (m.data) {
+                    const d = new Date(m.data);
+                    timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                }
+
+                // Status de visualização na hora que enviou a mensagem (Direct)
+                let statusIcon = '';
+                if (isMe) {
+                    if (m.status === 'lido') {
+                        statusIcon = '<span class="msg-status read" title="Visualizado"><i class="fa-solid fa-check-double"></i></span>';
+                    } else if (m.status === 'entregue') {
+                        statusIcon = '<span class="msg-status delivered" title="Entregue"><i class="fa-solid fa-check-double"></i></span>';
+                    } else {
+                        statusIcon = '<span class="msg-status sent" title="Enviado"><i class="fa-solid fa-check"></i></span>';
+                    }
+                }
+                
+                let text = escapeHtml(m.mensagem || '');
+
+                msgHtml += `
+                <div class="msg-row ${rowClass}">
+                    <div class="msg-bubble">
+                        <span class="msg-text">${text}</span>
+                        <div class="msg-meta">
+                            <span class="msg-time">${timeStr}</span>
+                            ${statusIcon}
                         </div>
-                    </div>`;
-                } else {
-                    let text = m.mensagem.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                    msgHtml += `
-                    <div class="msg-row ${rowClass}">
-                        <div class="msg-bubble">${text}</div>
-                    </div>`;
-                }
+                    </div>
+                </div>`;
             });
-            
-            // Atualizar ícone de duelo se existir
-            const headerActions = document.querySelector('#chat-header-' + f.id);
-            if (headerActions) {
-                let existingDuel = document.getElementById('duel-badge');
-                if (existingDuel) existingDuel.remove();
-                
-                if (data.has_active_duel && data.duel_info) {
-                    // Ocultar botão convidar se já tiver batalha
-                    let btnConvidar = headerActions.querySelector('.btn-duel');
-                    if(btnConvidar) btnConvidar.style.display = 'none';
-                    
-                    let badge = document.createElement('div');
-                    badge.id = 'duel-badge';
-                    badge.style.cssText = 'background:#ff0055; color:white; padding:8px 15px; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow:0 0 10px #ff0055; margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 0.9rem;';
-                    badge.innerHTML = `<i class="fa-solid fa-fire"></i> Placar Batalha`;
-                    badge.onclick = () => alert(data.duel_info.msg);
-                    headerActions.appendChild(badge);
-                }
-            }
 
             const msgContainer = document.getElementById('chat-messages');
             if (msgContainer) {
-                // Only autoscroll if user was already at the bottom
-                const wasScrolledToBottom = (msgContainer.scrollHeight - msgContainer.scrollTop <= msgContainer.clientHeight + 50);
-                
+                const wasScrolledToBottom = (msgContainer.scrollHeight - msgContainer.scrollTop <= msgContainer.clientHeight + 80);
                 msgContainer.innerHTML = msgHtml;
-                
-                if (wasScrolledToBottom) {
+                if (isFirstOpen || wasScrolledToBottom) {
                     msgContainer.scrollTop = msgContainer.scrollHeight;
                 }
             }
-        });
+        })
+        .catch(err => console.error("Erro ao atualizar direct window:", err));
 }
 
-function handleEnter(e) {
-    if (e.key === 'Enter') enviarMensagem();
+function handleKeyDown(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        enviarMensagem();
+    }
 }
 
 function enviarMensagem() {
     const input = document.getElementById('chat-input');
+    if (!input) return;
     const msg = input.value.trim();
     if (msg === '' || currentChatUser === 0) return;
     
+    // Limpa o input imediatamente
     input.value = '';
+
+    // Renderização otimista imediata no balão
+    const msgContainer = document.getElementById('chat-messages');
+    if (msgContainer) {
+        const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const optimHtml = `
+            <div class="msg-row me sending-optimistic">
+                <div class="msg-bubble">
+                    <span class="msg-text">${escapeHtml(msg)}</span>
+                    <div class="msg-meta">
+                        <span class="msg-time">${timeNow}</span>
+                        <span class="msg-status sent" title="Enviado"><i class="fa-solid fa-check"></i></span>
+                    </div>
+                </div>
+            </div>`;
+        msgContainer.insertAdjacentHTML('beforeend', optimHtml);
+        msgContainer.scrollTop = msgContainer.scrollHeight;
+    }
     
     const fd = new FormData();
     fd.append('action', 'send_message');
@@ -220,51 +280,29 @@ function enviarMensagem() {
         .then(r => r.json())
         .then(d => {
             if (d.success) {
-                atualizarChatWindow();
+                atualizarChatWindow(false);
                 carregarConversas();
             }
-        });
+        })
+        .catch(err => console.error("Erro ao enviar mensagem:", err));
 }
 
-function enviarConviteDuelo(id) {
-    const fd = new FormData();
-    fd.append('action', 'send_message');
-    fd.append('target_id', id);
-    fd.append('mensagem', '[DUEL_INVITE]');
-    
-    fetch('../../back/api/chat.php', { method: 'POST', body: fd })
-        .then(r => r.json())
-        .then(d => {
-            if (d.success) {
-                atualizarChatWindow();
-                carregarConversas();
-            }
-        });
+// ── 4. FORMATADORES & HELPERS ──
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
-
-
-
-function aceitarBatalha(amigoId) {
-    const fd = new FormData();
-    fd.append('action', 'desafiar');
-    fd.append('amigo_id', amigoId);
-    fetch('../../back/api/batalha.php', { method: 'POST', body: fd })
-    .then(r => r.json())
-    .then(d => {
-        if(d.success) {
-            alert('Batalha iniciada! O XP já começou a contar!');
-            atualizarChatWindow();
-        } else {
-            alert(d.msg || 'Erro');
-        }
-    });
+function formatarHoraDirect(date) {
+    const hoje = new Date();
+    const isSameDay = hoje.toDateString() === date.toDateString();
+    if (isSameDay) {
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    return date.toLocaleDateString([], { day: '2-digit', month: '2-digit' });
 }
 
-
-// ==========================================
-// INTEGRAÇÃO DE NOTIFICAÇÕES & ABAS NO CHAT
-// ==========================================
+// ── 5. ABAS DE CONVERSAS & NOTIFICAÇÕES ──
 let currentChatTab = 'conversas';
 
 function alternarAbaChat(aba) {
@@ -303,7 +341,6 @@ function carregarNotificacoesChat() {
             const friendRequests = (data.notificacoes || []).filter(n => n.type === 'friend_request');
             const totalPendentes = friendRequests.length;
 
-            // Atualiza badge da aba de Notificações
             if (tabBadge) {
                 if (totalPendentes > 0) {
                     tabBadge.innerText = totalPendentes;
@@ -313,9 +350,8 @@ function carregarNotificacoesChat() {
                 }
             }
 
-            // Atualiza badge de notificações na topbar
-            const pendingNotifs = (data.notificacoes || []).filter(n => n.type !== 'unread_messages').length;
             if (topbarBadge) {
+                const pendingNotifs = (data.notificacoes || []).filter(n => n.type !== 'unread_messages').length;
                 if (pendingNotifs > 0) {
                     topbarBadge.innerText = pendingNotifs > 99 ? '99+' : pendingNotifs;
                     topbarBadge.style.display = 'inline-flex';
@@ -324,21 +360,6 @@ function carregarNotificacoesChat() {
                 }
             }
 
-            // Atualiza badge de chat na topbar
-            const badgeChatMsg = document.getElementById('badge-chat-msg');
-            if (badgeChatMsg) {
-                const unreadMsgs = (data.notificacoes || [])
-                    .filter(n => n.type === 'unread_messages')
-                    .reduce((acc, curr) => acc + (parseInt(curr.qtd) || 1), 0);
-                if (unreadMsgs > 0) {
-                    badgeChatMsg.innerText = unreadMsgs > 99 ? '99+' : unreadMsgs;
-                    badgeChatMsg.style.display = 'inline-flex';
-                } else {
-                    badgeChatMsg.style.display = 'none';
-                }
-            }
-
-            // Atualiza banner na aba Conversas
             if (banner && bannerCount) {
                 if (totalPendentes > 0) {
                     bannerCount.innerText = totalPendentes === 1 ? '1 pedido' : `${totalPendentes} pedidos`;
@@ -371,11 +392,11 @@ function carregarNotificacoesChat() {
                             <img src="${foto}" class="notif-card-avatar" alt="${n.nome}">
                             <div class="notif-card-info">
                                 <div class="notif-card-name">${n.nome}</div>
-                                <div class="notif-card-desc"><i class="fa-solid fa-user-plus" style="color:#1cb0f6;"></i> Enviou uma solicitação para te seguir</div>
+                                <div class="notif-card-desc"><i class="fa-solid fa-user-plus" style="color:#1cb0f6;"></i> Enviou um pedido de amizade</div>
                             </div>
                         </div>
                         <div class="notif-card-actions" id="actions-chat-req-${n.id}">
-                            <button class="btn-notif-action btn-notif-accept" onclick="abrirOpcaoAmigoChat(${n.id}, '${nomeEsc}', ${n.remetente_id})">
+                            <button class="btn-notif-action btn-notif-accept" onclick="responderPedidoChat(${n.id}, 'aceito', '${nomeEsc}', ${n.remetente_id}, 1)">
                                 <i class="fa-solid fa-check"></i> Aceitar
                             </button>
                             <button class="btn-notif-action btn-notif-decline" onclick="responderPedidoChat(${n.id}, 'recusado', '${nomeEsc}', ${n.remetente_id}, 0)">
@@ -391,31 +412,13 @@ function carregarNotificacoesChat() {
                             <div class="notif-card-info">
                                 <div class="notif-card-name">${n.nome}</div>
                                 <div class="notif-card-desc" style="color: #58cc02; font-weight: 700;">
-                                    <i class="fa-solid fa-circle-check"></i> Aceitou seu pedido e seguiu de volta! Vocês agora são amigos.
+                                    <i class="fa-solid fa-circle-check"></i> Aceitou seu pedido! Vocês agora são amigos.
                                 </div>
                             </div>
                         </div>
                         <div class="notif-card-actions">
                             <button class="btn-notif-action btn-notif-accept" onclick="abrirChatEFecharNotif(${n.amigo_id}, ${n.id})">
-                                <i class="fa-solid fa-comments"></i> Mandar Mensagem
-                            </button>
-                        </div>
-                    </div>`;
-                } else if (n.type === 'follow_accepted') {
-                    html += `
-                    <div class="notif-card" style="border-left: 4px solid #1cb0f6;">
-                        <div class="notif-card-header">
-                            <img src="${foto}" class="notif-card-avatar" alt="${n.nome}">
-                            <div class="notif-card-info">
-                                <div class="notif-card-name">${n.nome}</div>
-                                <div class="notif-card-desc" style="color: #1cb0f6; font-weight: 700;">
-                                    <i class="fa-solid fa-check"></i> Aceitou sua solicitação para seguir.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="notif-card-actions">
-                            <button class="btn-notif-action" style="background:#3c3c52; color:#fff;" onclick="dismissAcceptedTopbar(${n.id}); carregarNotificacoesChat();">
-                                <i class="fa-solid fa-check"></i> Ciente
+                                <i class="fa-solid fa-comments"></i> Conversar
                             </button>
                         </div>
                     </div>`;
@@ -436,26 +439,6 @@ function carregarNotificacoesChat() {
             listaElem.innerHTML = html;
         })
         .catch(() => {});
-}
-
-function abrirOpcaoAmigoChat(id, nome, remetenteId) {
-    const actBox = document.getElementById(`actions-chat-req-${id}`);
-    if (!actBox) return;
-    const nomeEsc = nome.replace(/'/g, "\\'");
-    actBox.innerHTML = `
-        <div class="notif-ask-box" style="width: 100%;">
-            <div class="notif-ask-title"><i class="fa-solid fa-user-group"></i> Quer ser amigo?</div>
-            <div class="notif-ask-sub">Siga <strong>${nome}</strong> de volta para se tornarem amigos e liberarem mensagens!</div>
-            <div class="notif-card-actions" style="margin-top: 8px;">
-                <button class="btn-notif-action btn-notif-accept" onclick="responderPedidoChat(${id}, 'aceito', '${nomeEsc}', ${remetenteId}, 1)">
-                    <i class="fa-solid fa-check"></i> Sim, ser amigos
-                </button>
-                <button class="btn-notif-action" style="background: #3c3c52; color: #fff;" onclick="responderPedidoChat(${id}, 'aceito', '${nomeEsc}', ${remetenteId}, 0)">
-                    Apenas aceitar
-                </button>
-            </div>
-        </div>
-    `;
 }
 
 function abrirChatEFecharNotif(amigoId, notifId) {
@@ -485,13 +468,9 @@ function responderPedidoChat(id, response, nome = '', remetenteId = null, seguir
             if (data.success) {
                 if (typeof window.opusToast === 'function') {
                     if (response === 'aceito') {
-                        if (seguirDeVolta === 1) {
-                            window.opusToast(`Você e ${nome} agora são amigos!`, 'success');
-                        } else {
-                            window.opusToast(`${nome} agora está te seguindo.`, 'info');
-                        }
+                        window.opusToast(`Você e ${nome} agora são amigos!`, 'success');
                     } else {
-                        window.opusToast(`Solicitação de ${nome} recusada.`, 'info');
+                        window.opusToast(`Pedido recusado.`, 'info');
                     }
                 }
                 carregarNotificacoesChat();
@@ -500,24 +479,15 @@ function responderPedidoChat(id, response, nome = '', remetenteId = null, seguir
                     window.fetchNotificacoesBadge();
                 }
 
-                if (response === 'aceito' && seguirDeVolta === 1 && remetenteId) {
+                if (response === 'aceito' && remetenteId) {
                     abrirChat(remetenteId);
                     alternarAbaChat('conversas');
                 }
-            } else {
-                if (typeof window.opusToast === 'function') {
-                    window.opusToast('Não foi possível responder ao pedido.', 'error');
-                }
-            }
-        })
-        .catch(() => {
-            if (typeof window.opusToast === 'function') {
-                window.opusToast('Erro ao processar resposta.', 'error');
             }
         });
 }
 
-// Inicialização e URL params
+// ── 6. INICIALIZAÇÃO ──
 document.addEventListener('DOMContentLoaded', () => {
     carregarConversas();
     carregarNotificacoesChat();
@@ -531,9 +501,9 @@ document.addEventListener('DOMContentLoaded', () => {
         alternarAbaChat('notificacoes');
     }
 
-    // Atualiza conversas e notificações periodicamente a cada 15s
+    // Polling regular das conversas e notificações
     setInterval(() => {
         carregarConversas();
         carregarNotificacoesChat();
-    }, 15000);
+    }, 10000);
 });

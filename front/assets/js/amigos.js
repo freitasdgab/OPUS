@@ -581,9 +581,8 @@ function abrirTelaAmigos(tela) {
         document.getElementById('tabContentEncontrar').classList.add('active');
         carregarRecomendacoesLiga();
     } else if (tela === 'chat') {
-        document.getElementById('tabContentChat').classList.add('active');
-        carregarPedidosPendentes();
-        carregarAmigosChat();
+        window.location.href = 'chat.php';
+        return;
     }
 }
 
@@ -603,7 +602,7 @@ function buscarAmigosExato() {
     .then(data => {
         const container = document.getElementById('containerResultadoBusca');
         if (!data.success || !data.usuarios || data.usuarios.length === 0) {
-            container.innerHTML = '<div style="color:#ff4b4b; margin-top: 10px;">Nenhum usuário encontrado com este E-mail ou ID.</div>';
+            container.innerHTML = '<div style="color:#ff4b4b; margin-top: 10px;">Nenhum usuário encontrado com este Nome ou E-mail.</div>';
             return;
         }
         renderizarCardsAmigos(data.usuarios, container);
@@ -626,7 +625,7 @@ function renderizarCardsAmigos(usuarios, container) {
     usuarios.forEach(u => {
         let btnHtml = '';
         if (u.status_conexao === 'aceito') {
-            btnHtml = `<button class="btn-follow following" disabled>Amigos</button>`;
+            btnHtml = `<button class="btn-follow following" onclick="window.location.href='chat.php?user_id=${u.id}'" style="background:var(--duo-blue); border-color:#1899d6; color:#fff; cursor:pointer;"><i class="fa-solid fa-comments"></i> Conversar</button>`;
         } else if (u.status_conexao === 'pendente') {
             btnHtml = `<button class="btn-follow following" disabled>Pendente</button>`;
         } else {

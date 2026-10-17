@@ -11,13 +11,7 @@ if (isset($_SESSION['user_id'])) {
     exit();
 }
 
-// 2. Se o usuário já foi cadastrado anteriormente (cookie), vai direto para a tela de login
-if (isset($_COOKIE['opus_cadastrado']) && $_COOKIE['opus_cadastrado'] === '1') {
-    header("Location: front/pages/auth.html?mode=login");
-    exit();
-}
-
-// 3. Caso contrário, envia para a página inicial
+// 2. Caso não esteja com sessão ativa, envia sempre para a página de apresentação inicial
 header("Location: front/pages/index.html");
 exit();
 ?>

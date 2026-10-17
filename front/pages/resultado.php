@@ -18,9 +18,21 @@ if (!empty($_SESSION['is_admin']) || (isset($_SESSION['user_nivel_acesso']) && $
 }
 
 $user_id = (int) $_SESSION['user_id'];
-$acertos = (int)$_POST['acertos'];
-$cap_atual = (int)$_POST['cap'];
-$licao_atual = (int)$_POST['licao'];
+$acertos = (int) ($_POST['acertos'] ?? 0);
+$cap_atual = (int) ($_POST['cap'] ?? 0);
+$licao_atual = (int) ($_POST['licao'] ?? 0);
+
+if (($cap_atual <= 0 || $licao_atual <= 0) && !empty($_POST['licao_id'])) {
+    $lid_lookup = (int) $_POST['licao_id'];
+    $res_lk = $conn->query("SELECT unidade_numero, licao_numero FROM licoes WHERE id = $lid_lookup LIMIT 1");
+    if ($res_lk && ($row_lk = $res_lk->fetch_assoc())) {
+        $cap_atual = (int) $row_lk['unidade_numero'];
+        $licao_atual = (int) $row_lk['licao_numero'];
+    }
+}
+if ($cap_atual <= 0) $cap_atual = 1;
+if ($licao_atual <= 0) $licao_atual = 1;
+
 $attempt_token = preg_replace('/[^a-f0-9]/', '', (string) ($_POST['attempt_token'] ?? ''));
 
 $used = $_SESSION['used_attempts'] ?? [];
@@ -100,6 +112,10 @@ if (!$ja_processado) {
 
         $conn->query("INSERT INTO acertos_diarios (usuario_id, data_dia, acertos) VALUES ($user_id, '$data_hoje', $acertos) ON DUPLICATE KEY UPDATE acertos = acertos + $acertos");
     }
+
+    // Atualiza a Sequência de Amigos (Fogo em Dupla e Pontos)
+    require_once __DIR__ . '/../../back/sequencia_amigos_helper.php';
+    registrar_conclusao_licao_sequencia_amigos($conn, $user_id);
 
     if ($acertos === 0) {
         $vidas_restantes = opus_perder_vida($conn, $user_id);
