@@ -113,10 +113,6 @@ if (!$ja_processado) {
         $conn->query("INSERT INTO acertos_diarios (usuario_id, data_dia, acertos) VALUES ($user_id, '$data_hoje', $acertos) ON DUPLICATE KEY UPDATE acertos = acertos + $acertos");
     }
 
-    // Atualiza a Sequência de Amigos (Fogo em Dupla e Pontos)
-    require_once __DIR__ . '/../../back/sequencia_amigos_helper.php';
-    registrar_conclusao_licao_sequencia_amigos($conn, $user_id);
-
     if ($acertos === 0) {
         $vidas_restantes = opus_perder_vida($conn, $user_id);
         $perdeu_vida = true;
@@ -138,7 +134,7 @@ if ($licao_atual == 5) {
     $prox_licao = 1;
     $prox_cap_link = $cap_atual + 1;
 }
-$is_curso_finalizado = ($cap_atual == 5 && $licao_atual == 5);
+$is_curso_finalizado = ($cap_atual >= 40 && $licao_atual == 5);
 $liberou_bau = ($licao_atual == 3 && $acertos > 0);
 $desbloqueou_secao = ($licao_atual == 5 && $acertos > 0 && !$is_curso_finalizado);
 

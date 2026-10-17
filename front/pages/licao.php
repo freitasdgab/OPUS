@@ -77,8 +77,7 @@ $desafios_por_unidade = [
         'missao' => 'Verifique se a nota <strong>85</strong> é maior ou igual a 70. Se for, imprima exatamente: <strong>Aprovado</strong>',
         'alvo_visual' => 'Aprovado',
         'dica_texto' => 'Utilize a estrutura if com System.out.println:',
-        'dica_codigo' => "int nota = 85;
-if (nota >= 70) {
+        'dica_codigo' => "if (nota >= 70) {
     System.out.println(\"Aprovado\");
 }",
         'arquivo' => 'Aprovacao.java',
@@ -90,13 +89,13 @@ if (nota >= 70) {
     }
 }",
         'validador_js' => "normStdout.includes('aprovado')",
-        'mensagem_ajuste' => 'A saída esperada no terminal é exatamente \"Aprovado\". Verifique sua condição e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no terminal é exatamente "Aprovado". Verifique sua condição e tente novamente!'
     ],
     7 => [
         'badge' => 'Java / I/O Básico',
         'heading' => 'Formatando Saída com printf',
         'intro' => 'Apresentar dados com clareza é vital. Vamos formatar uma mensagem contendo texto e número decimal com printf!',
-        'missao' => 'Exiba uma mensagem formatada usando System.out.printf com o produto \"Mouse\" e preço 50.00. Saída esperada:',
+        'missao' => 'Exiba uma mensagem formatada usando System.out.printf com o produto "Mouse" e preço 50.00. Saída esperada:',
         'alvo_visual' => 'Mouse: R$ 50.00',
         'dica_texto' => 'Utilize especificadores de formato %s para texto e %.2f para decimal:',
         'dica_codigo' => "String prod = \"Mouse\";
@@ -110,7 +109,7 @@ System.out.printf(\"%s: R$ %.2f\", prod, valor);",
     }
 }",
         'validador_js' => "normStdout.includes('mouse') && normStdout.includes('50')",
-        'mensagem_ajuste' => 'Certifique-se de que a saída contenha exatamente \"Mouse: R$ 50.00\"!'
+        'mensagem_ajuste' => 'Certifique-se de que a saída contenha exatamente "Mouse: R$ 50.00"!'
     ],
     8 => [
         'badge' => 'Java / Calculadora',
@@ -147,7 +146,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('1') && normStdout.includes('2') && normStdout.includes('3')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"1 2 3\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "1 2 3". Verifique o código e tente novamente!'
     ],
     10 => [
         'badge' => 'Java / Métodos e Funções',
@@ -165,7 +164,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('50')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"50\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "50". Verifique o código e tente novamente!'
     ],
     11 => [
         'badge' => 'Java / Funcionamento de Arrays',
@@ -183,7 +182,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('java')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"Java\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "Java". Verifique o código e tente novamente!'
     ],
     12 => [
         'badge' => 'Java / Iterando sobre Arrays',
@@ -201,13 +200,13 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('60')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"60\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "60". Verifique o código e tente novamente!'
     ],
     13 => [
         'badge' => 'Java / Operações com String',
         'heading' => 'Desafio Prático: Operações com String',
         'intro' => 'Chegou a hora de comprovar seu domínio em Operações com String! Escreva o código Java necessário para solucionar o desafio.',
-        'missao' => 'Converta o texto \"java\" para maiúsculas e exiba JAVA. Saída esperada no terminal:',
+        'missao' => 'Converta o texto "java" para maiúsculas e exiba JAVA. Saída esperada no terminal:',
         'alvo_visual' => 'JAVA',
         'dica_texto' => 'Utilize System.out.println para imprimir exatamente a saída exigida:',
         'dica_codigo' => "System.out.println(\"JAVA\");",
@@ -219,7 +218,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('java')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"JAVA\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "JAVA". Verifique o código e tente novamente!'
     ],
     14 => [
         'badge' => 'Java / Desafios Finais',
@@ -237,7 +236,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('sucesso total') || normStdout.includes('sucesso')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"Sucesso Total\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "Sucesso Total". Verifique o código e tente novamente!'
     ],
     15 => [
         'badge' => 'Java / Certificado',
@@ -255,7 +254,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('certificado')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"Certificado Conquistado\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "Certificado Conquistado". Verifique o código e tente novamente!'
     ],
     16 => [
         'badge' => 'Java / Arrays Multidimensionais',
@@ -273,13 +272,13 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('99')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"99\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "99". Verifique o código e tente novamente!'
     ],
     17 => [
         'badge' => 'Java / HashMap Parte 1',
         'heading' => 'Desafio Prático: HashMap Parte 1',
         'intro' => 'Chegou a hora de comprovar seu domínio em HashMap Parte 1! Escreva o código Java necessário para solucionar o desafio.',
-        'missao' => 'Armazene a chave \"Brasil\" com valor \"Brasilia\" em um HashMap e exiba o valor. Saída esperada no terminal:',
+        'missao' => 'Armazene a chave "Brasil" com valor "Brasilia" em um HashMap e exiba o valor. Saída esperada no terminal:',
         'alvo_visual' => 'Brasilia',
         'dica_texto' => 'Utilize System.out.println para imprimir exatamente a saída exigida:',
         'dica_codigo' => "System.out.println(\"Brasilia\");",
@@ -291,7 +290,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('brasilia')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"Brasilia\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "Brasilia". Verifique o código e tente novamente!'
     ],
     18 => [
         'badge' => 'Java / HashMap Parte 2',
@@ -309,7 +308,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('true')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"true\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "true". Verifique o código e tente novamente!'
     ],
     19 => [
         'badge' => 'Java / HashSet Parte 1',
@@ -327,7 +326,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('2')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"2\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "2". Verifique o código e tente novamente!'
     ],
     20 => [
         'badge' => 'Java / HashSet Parte 2',
@@ -345,7 +344,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('true')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"true\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "true". Verifique o código e tente novamente!'
     ],
     21 => [
         'badge' => 'Java / Fluxo de Controle Avançado',
@@ -363,7 +362,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('1') && normStdout.includes('3')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"1 3\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "1 3". Verifique o código e tente novamente!'
     ],
     22 => [
         'badge' => 'Java / Tratamento Básico de Erros',
@@ -381,13 +380,13 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('erro')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"Erro Capturado\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "Erro Capturado". Verifique o código e tente novamente!'
     ],
     23 => [
         'badge' => 'Java / Operações Avançadas com Strings',
         'heading' => 'Desafio Prático: Operações Avançadas com Strings',
         'intro' => 'Chegou a hora de comprovar seu domínio em Operações Avançadas com Strings! Escreva o código Java necessário para solucionar o desafio.',
-        'missao' => 'Crie um StringBuilder, adicione \"Opus\" e exiba. Saída esperada no terminal:',
+        'missao' => 'Crie um StringBuilder, adicione "Opus" e exiba. Saída esperada no terminal:',
         'alvo_visual' => 'Opus',
         'dica_texto' => 'Utilize System.out.println para imprimir exatamente a saída exigida:',
         'dica_codigo' => "System.out.println(\"Opus\");",
@@ -399,7 +398,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('opus')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"Opus\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "Opus". Verifique o código e tente novamente!'
     ],
     24 => [
         'badge' => 'Java / Projeto Contador de Palavras Únicas',
@@ -417,7 +416,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('3')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"3\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "3". Verifique o código e tente novamente!'
     ],
     25 => [
         'badge' => 'Java / Data e Hora',
@@ -435,7 +434,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('2026')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"2026\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "2026". Verifique o código e tente novamente!'
     ],
     26 => [
         'badge' => 'Java / Certificado da Seção 1 e 2',
@@ -453,13 +452,13 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('etapa con') || normStdout.includes('concluida')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"Etapa Concluida\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "Etapa Concluida". Verifique o código e tente novamente!'
     ],
     27 => [
         'badge' => 'Java / Fundamentos de POO',
         'heading' => 'Desafio Prático: Fundamentos de POO',
         'intro' => 'Chegou a hora de comprovar seu domínio em Fundamentos de POO! Escreva o código Java necessário para solucionar o desafio.',
-        'missao' => 'Instancie uma classe Aluno com nome \"Ana\" e exiba o nome. Saída esperada no terminal:',
+        'missao' => 'Instancie uma classe Aluno com nome "Ana" e exiba o nome. Saída esperada no terminal:',
         'alvo_visual' => 'Ana',
         'dica_texto' => 'Utilize System.out.println para imprimir exatamente a saída exigida:',
         'dica_codigo' => "System.out.println(\"Ana\");",
@@ -471,7 +470,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('ana')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"Ana\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "Ana". Verifique o código e tente novamente!'
     ],
     28 => [
         'badge' => 'Java / Modificadores de Acesso e Encapsulamento',
@@ -489,7 +488,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('100')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"100\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "100". Verifique o código e tente novamente!'
     ],
     29 => [
         'badge' => 'Java / Prioridades de Classe e Membros Estáticos',
@@ -507,7 +506,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('1')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"1\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "1". Verifique o código e tente novamente!'
     ],
     30 => [
         'badge' => 'Java / Herança',
@@ -525,7 +524,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('au')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"Au\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "Au". Verifique o código e tente novamente!'
     ],
     31 => [
         'badge' => 'Java / Polimorfismo',
@@ -543,7 +542,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('polimorfismo')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"Polimorfismo\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "Polimorfismo". Verifique o código e tente novamente!'
     ],
     32 => [
         'badge' => 'Java / Interfaces e Classes Abstratas',
@@ -561,13 +560,13 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('autenticado')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"Autenticado\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "Autenticado". Verifique o código e tente novamente!'
     ],
     33 => [
         'badge' => 'Java / Métodos Especiais e Classe Object',
         'heading' => 'Desafio Prático: Métodos Especiais e Classe Object',
         'intro' => 'Chegou a hora de comprovar seu domínio em Métodos Especiais e Classe Object! Escreva o código Java necessário para solucionar o desafio.',
-        'missao' => 'Sobrescreva toString() para retornar \"Objeto Ativo\" e exiba. Saída esperada no terminal:',
+        'missao' => 'Sobrescreva toString() para retornar "Objeto Ativo" e exiba. Saída esperada no terminal:',
         'alvo_visual' => 'Objeto Ativo',
         'dica_texto' => 'Utilize System.out.println para imprimir exatamente a saída exigida:',
         'dica_codigo' => "System.out.println(\"Objeto Ativo\");",
@@ -579,13 +578,13 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('objeto')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"Objeto Ativo\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "Objeto Ativo". Verifique o código e tente novamente!'
     ],
     34 => [
         'badge' => 'Java / Conceitos Avançados de OOP (Generics)',
         'heading' => 'Desafio Prático: Conceitos Avançados de OOP (Generics)',
         'intro' => 'Chegou a hora de comprovar seu domínio em Conceitos Avançados de OOP (Generics)! Escreva o código Java necessário para solucionar o desafio.',
-        'missao' => 'Crie uma classe Caixa<String> guardando \"Tesouro\" e exiba o item. Saída esperada no terminal:',
+        'missao' => 'Crie uma classe Caixa<String> guardando "Tesouro" e exiba o item. Saída esperada no terminal:',
         'alvo_visual' => 'Tesouro',
         'dica_texto' => 'Utilize System.out.println para imprimir exatamente a saída exigida:',
         'dica_codigo' => "System.out.println(\"Tesouro\");",
@@ -597,7 +596,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('tesouro')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"Tesouro\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "Tesouro". Verifique o código e tente novamente!'
     ],
     35 => [
         'badge' => 'Java / Tratamento de Exceção em POO',
@@ -615,7 +614,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('saldoinvalido') || normStdout.includes('saldo')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"SaldoInvalido\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "SaldoInvalido". Verifique o código e tente novamente!'
     ],
     36 => [
         'badge' => 'Java / Padrões de Projeto Parte 1',
@@ -633,7 +632,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('conexao')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"Conexao Unica\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "Conexao Unica". Verifique o código e tente novamente!'
     ],
     37 => [
         'badge' => 'Java / Padrões de Projeto Parte 2',
@@ -651,7 +650,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('estrategia')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"Estrategia A\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "Estrategia A". Verifique o código e tente novamente!'
     ],
     38 => [
         'badge' => 'Java / Projeto Gerenciamento de Biblioteca',
@@ -669,7 +668,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('livro')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"Livro Cadastrado\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "Livro Cadastrado". Verifique o código e tente novamente!'
     ],
     39 => [
         'badge' => 'Java / Desafio Final',
@@ -687,7 +686,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('sistema') || normStdout.includes('concluido')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"Sistema Concluido\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "Sistema Concluido". Verifique o código e tente novamente!'
     ],
     40 => [
         'badge' => 'Java / Certificado de tudo',
@@ -705,7 +704,7 @@ System.out.println((int) res);",
     }
 }",
         'validador_js' => "normStdout.includes('mestre') || normStdout.includes('java')",
-        'mensagem_ajuste' => 'A saída esperada no console é \"Mestre em Java\". Verifique o código e tente novamente!'
+        'mensagem_ajuste' => 'A saída esperada no console é "Mestre em Java". Verifique o código e tente novamente!'
     ],
 ];
 $desafio_atual = $desafios_por_unidade[$unidade_atual] ?? $desafios_por_unidade[1];

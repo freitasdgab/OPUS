@@ -648,6 +648,97 @@ LOCK TABLES `usuarios` WRITE;
 INSERT INTO `usuarios` VALUES (1,'Gabriel Freitas','gabriel@opus.com','$2y$10$lVrGfzYnlnujVWEKgR/2DO6fFtn366jvniNucqwE6YzoGehTnrVPO',3790,15,'Avançado',NULL,'2026-09-27 02:22:37',0,3,NULL,'2026-09-26','admin','#1cb0f6','gabriel_dev',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'Brasil','br'),(2,'Administrador OPUS','admin@opus.com','$2y$10$lVrGfzYnlnujVWEKgR/2DO6fFtn366jvniNucqwE6YzoGehTnrVPO',2500,12,'Avançado',NULL,'2026-09-27 02:22:37',14,3,NULL,NULL,'admin','#58cc02','admin_opus',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'Brasil','br'),(3,'Ana Silva','ana.silva@email.com','$2y$10$F1m2ZUHViXcRlz2IVrJrFeyd1kmHLvtiEBEQB1Fi30emCVbf0w2ZC',180,2,'Iniciante',NULL,'2026-09-27 02:22:37',2,3,NULL,NULL,'comum','#ff4b4b','ana_silva',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'Brasil','br'),(4,'Lucas Mendes','lucas@email.com','$2y$10$F1m2ZUHViXcRlz2IVrJrFeyd1kmHLvtiEBEQB1Fi30emCVbf0w2ZC',450,4,'Iniciante',NULL,'2026-09-27 02:22:37',4,2,NULL,NULL,'comum','#ce82ff','lucas_mendes',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'Brasil','br'),(5,'Mariana Costa','mariana@email.com','$2y$10$F1m2ZUHViXcRlz2IVrJrFeyd1kmHLvtiEBEQB1Fi30emCVbf0w2ZC',950,7,'Intermediário',NULL,'2026-09-27 02:22:37',8,3,NULL,NULL,'comum','#ff9600','mari_costa',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'Brasil','br'),(7,'Pedro Rocha','pedro.rocha@email.com','$2y$10$F1m2ZUHViXcRlz2IVrJrFeyd1kmHLvtiEBEQB1Fi30emCVbf0w2ZC',90,1,'Iniciante',NULL,'2026-10-05 00:01:36',1,1,NULL,NULL,'comum','#1cb0f6','pedro_dev',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'Brasil','br'),(8,'Júlia Santos','julia.santos@email.com','$2y$10$F1m2ZUHViXcRlz2IVrJrFeyd1kmHLvtiEBEQB1Fi30emCVbf0w2ZC',50,0,'Iniciante',NULL,'2026-10-05 00:01:36',0,0,NULL,NULL,'comum','#ff9600','ju_santos',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'Brasil','br'),(9,'Felipe Oliveira','felipe.oliveira@email.com','$2y$10$F1m2ZUHViXcRlz2IVrJrFeyd1kmHLvtiEBEQB1Fi30emCVbf0w2ZC',530,5,'Intermediário',NULL,'2026-10-05 00:01:36',6,3,NULL,NULL,'comum','#00cd9c','felipe_oli',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'Brasil','br'),(10,'Camila Ribeiro','camila.ribeiro@email.com','$2y$10$F1m2ZUHViXcRlz2IVrJrFeyd1kmHLvtiEBEQB1Fi30emCVbf0w2ZC',390,3,'Iniciante',NULL,'2026-10-05 00:01:36',3,3,NULL,NULL,'comum','#e11d48','cami_rib',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'Brasil','br'),(11,'Bruno Carvalho','bruno.carvalho@email.com','$2y$10$F1m2ZUHViXcRlz2IVrJrFeyd1kmHLvtiEBEQB1Fi30emCVbf0w2ZC',1100,8,'Intermediário',NULL,'2026-10-05 00:01:36',12,2,NULL,NULL,'comum','#d97706','bruno_code',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'Brasil','br'),(12,'Larissa Souza','larissa.souza@email.com','$2y$10$F1m2ZUHViXcRlz2IVrJrFeyd1kmHLvtiEBEQB1Fi30emCVbf0w2ZC',880,6,'Intermediário',NULL,'2026-10-05 00:01:36',7,3,NULL,NULL,'comum','#9333ea','lari_souza',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'Brasil','br'),(13,'Rodrigo Lima','rodrigo.lima@email.com','$2y$10$F1m2ZUHViXcRlz2IVrJrFeyd1kmHLvtiEBEQB1Fi30emCVbf0w2ZC',820,6,'Intermediário',NULL,'2026-10-05 00:01:36',5,1,NULL,NULL,'comum','#2563eb','rodrigo_l',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'Brasil','br'),(14,'Rafael Duarte','rafael.duarte@email.com','$2y$10$F1m2ZUHViXcRlz2IVrJrFeyd1kmHLvtiEBEQB1Fi30emCVbf0w2ZC',2100,10,'Avançado',NULL,'2026-10-05 00:01:36',18,3,NULL,NULL,'comum','#06b6d4','rafa_duarte',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'Canadá','ca'),(15,'Beatriz Almeida','beatriz.almeida@email.com','$2y$10$F1m2ZUHViXcRlz2IVrJrFeyd1kmHLvtiEBEQB1Fi30emCVbf0w2ZC',2450,11,'Avançado',NULL,'2026-10-05 00:01:36',21,3,NULL,NULL,'comum','#3b82f6','bea_almeida',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'Japão','jp'),(16,'Thiago Ferreira','thiago.ferreira@email.com','$2y$10$F1m2ZUHViXcRlz2IVrJrFeyd1kmHLvtiEBEQB1Fi30emCVbf0w2ZC',1950,9,'Intermediário',NULL,'2026-10-05 00:01:36',15,2,NULL,NULL,'comum','#84cc16','thiago_f',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'Reino Unido','gb'),(17,'Helena Martins','helena.martins@email.com','$2y$10$F1m2ZUHViXcRlz2IVrJrFeyd1kmHLvtiEBEQB1Fi30emCVbf0w2ZC',4800,18,'Avançado',NULL,'2026-10-05 00:01:36',45,3,NULL,NULL,'comum','#a855f7','helena_m',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'Brasil','br'),(18,'Vinicius Prado','vinicius.prado@email.com','$2y$10$F1m2ZUHViXcRlz2IVrJrFeyd1kmHLvtiEBEQB1Fi30emCVbf0w2ZC',3900,14,'Avançado',NULL,'2026-10-05 00:01:36',28,3,NULL,NULL,'comum','#ec4899','vini_prado',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'Alemanha','de'),(19,'Sophia Castro','sophia.castro@email.com','$2y$10$F1m2ZUHViXcRlz2IVrJrFeyd1kmHLvtiEBEQB1Fi30emCVbf0w2ZC',4350,16,'Avançado',NULL,'2026-10-05 00:01:36',35,3,NULL,NULL,'comum','#6366f1','sophia_c',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'Estados Unidos','us'),(20,'Gab Santos','gabsantosbag@gmail.com','',50,2,'Iniciante',NULL,'2026-10-05 00:02:59',0,3,NULL,'2026-10-08','comum','#1cb0f6',NULL,'106201833585413825315','https://lh3.googleusercontent.com/a/ACg8ocLdaUy7rcG2C8yeI1163uwixoCqwFzMxpfd_sM6epC2w34oUmA=s96-c','https://github.com/freitasdgab','https://www.instagram.com/freitasdgabi/','','','gabsantosbag@gmail.com',NULL,'opus ','https://github.com/freitasdgab/OPUS','','','','','Brasil','br'),(21,'lucas','lucas@opus.com','Admin123@',0,0,'Iniciante',NULL,'2026-10-05 00:03:58',0,3,NULL,NULL,'comum','#1cb0f6',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'Brasil','br'),(22,'Gabi Freitas','gabrielefr3itas@gmail.com','',1340,7,'Iniciante','../assets/img/roxo.png','2026-10-08 19:23:23',2,2,'2026-10-16 11:23:16','2026-10-16','comum','#e56565',NULL,'104488639218720630991','https://lh3.googleusercontent.com/a/ACg8ocLFS12oG26YBx4b8bzF8ApUR4YsFynj20RfggXc6xKwADx9IxY1=s96-c','https://github.com/freitasdgab','https://www.instagram.com/freitasdgabi/','','','','','opus ','https://github.com/freitasdgab/OPUS','','','','','Portugal','pt'),(23,'Teste Ofensiva','teste.ofensiva@opus.com','Teste123',0,0,'Iniciante',NULL,'2026-10-12 16:13:50',0,3,NULL,NULL,'comum','#1cb0f6',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'Brasil','br'),(24,'Aluno Teste (Cap 1 - Lição 5)','teste@opus.com','$2y$10$vBEpqsDtQ/ZwJpwlbKE/zOMOVMRV/J.zjR8BTerqQp421JJqTKPf.',600,4,'Iniciante',NULL,'2026-10-13 20:27:25',1,3,NULL,'2026-10-15','comum','#1cb0f6',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'Brasil','br');
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Dumping routines for database 'opus'
+--
+/*!50003 DROP PROCEDURE IF EXISTS `sp_processar_resultado_licao` */;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_processar_resultado_licao`(
+    IN p_user_id INT,
+    IN p_unidade INT,
+    IN p_licao INT,
+    IN p_acertos INT,
+    IN p_total INT
+)
+BEGIN
+    DECLARE v_avancou INT DEFAULT 0;
+    DECLARE v_capitulo_concluido INT DEFAULT 0;
+    DECLARE v_bau_liberado INT DEFAULT 0;
+    DECLARE v_xp_ganho INT DEFAULT 10;
+    DECLARE v_licoes_feitas INT DEFAULT NULL;
+    DECLARE v_eh_repeticao INT DEFAULT 0;
+
+    IF p_acertos > 0 THEN
+        IF p_acertos >= p_total AND p_total > 0 THEN
+            SET v_xp_ganho = 50;
+            INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'perfeicao');
+            INSERT IGNORE INTO conquistas_usuario (usuario_id, conquista_slug) VALUES (p_user_id, 'perfeicao');
+        ELSEIF p_acertos = 2 THEN
+            SET v_xp_ganho = 25;
+        ELSE
+            SET v_xp_ganho = 10;
+        END IF;
+
+        SET v_licoes_feitas = (
+            SELECT licoes_concluidas 
+            FROM progresso_usuario 
+            WHERE usuario_id = p_user_id AND unidade_numero = p_unidade
+            LIMIT 1
+        );
+        
+        IF v_licoes_feitas IS NULL THEN
+            INSERT INTO progresso_usuario (usuario_id, unidade_numero, status, licoes_concluidas) 
+            VALUES (p_user_id, p_unidade, IF(p_licao >= 5, 'completo', 'corrente'), p_licao);
+            SET v_licoes_feitas = p_licao;
+            SET v_avancou = 1;
+        ELSEIF p_licao > v_licoes_feitas THEN
+            SET v_licoes_feitas = p_licao;
+            UPDATE progresso_usuario 
+            SET licoes_concluidas = v_licoes_feitas,
+                status = IF(v_licoes_feitas >= 5, 'completo', IF(status = 'trancado', 'corrente', status))
+            WHERE usuario_id = p_user_id AND unidade_numero = p_unidade;
+            SET v_avancou = 1;
+        ELSE
+            SET v_eh_repeticao = 1;
+            SET v_xp_ganho = 10;
+        END IF;
+
+        UPDATE usuarios SET xp = xp + v_xp_ganho WHERE id = p_user_id;
+
+        IF v_licoes_feitas >= 3 THEN
+            SET v_bau_liberado = 1;
+        END IF;
+
+        IF v_licoes_feitas >= 5 OR p_licao >= 5 THEN
+            SET v_capitulo_concluido = 1;
+            UPDATE progresso_usuario 
+            SET status = 'completo', licoes_concluidas = GREATEST(licoes_concluidas, 5)
+            WHERE usuario_id = p_user_id AND unidade_numero = p_unidade;
+            
+            IF p_unidade < 40 THEN
+                INSERT INTO progresso_usuario (usuario_id, unidade_numero, status, licoes_concluidas)
+                VALUES (p_user_id, p_unidade + 1, 'corrente', 0)
+                ON DUPLICATE KEY UPDATE status = IF(status = 'trancado', 'corrente', status);
+            END IF;
+
+            IF p_unidade = 1 THEN INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'capitulo_1'); END IF;
+            IF p_unidade = 2 THEN INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'capitulo_2'); END IF;
+            IF p_unidade = 3 THEN INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'capitulo_3'); END IF;
+            IF p_unidade = 4 THEN INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'capitulo_4'); END IF;
+            IF p_unidade = 5 THEN INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'capitulo_5'); END IF;
+        END IF;
+
+        CALL sp_liga_registrar_xp(p_user_id, v_xp_ganho);
+        CALL sp_registrar_missao_progresso(p_user_id, v_xp_ganho, 1);
+        CALL sp_atualizar_fogo(p_user_id);
+        CALL sp_verificar_conquistas(p_user_id);
+    END IF;
+
+    SELECT v_avancou AS avancou, v_capitulo_concluido AS capitulo_concluido, v_bau_liberado AS bau_liberado, v_xp_ganho AS xp_ganho, v_eh_repeticao AS eh_repeticao;
+END ;;
+DELIMITER ;
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

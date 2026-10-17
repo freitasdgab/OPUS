@@ -81,7 +81,7 @@ if ($response === false || $http_code !== 200) {
     }
 
     // 2. Verifica ausência de ponto e vírgula
-    if (preg_match('/System\.out\.print(?:ln)?\s*\([^;)]*$/m', $codigo)) {
+    if (preg_match('/System\.out\.print(?:ln|f)?\s*\([^;)]*$/m', $codigo)) {
         echo json_encode([
             'sucesso' => false,
             'erro' => "Main.java: error: ';' expected no final da instrução",
@@ -105,11 +105,15 @@ if ($response === false || $http_code !== 200) {
                 $vars[$vName] = ['type' => 'bool', 'val' => (strtolower($vExpr) === 'true' ? 'true' : 'false')];
             } elseif (is_numeric($vExpr)) {
                 $vars[$vName] = ['type' => 'num', 'val' => $vExpr + 0];
-            } elseif (preg_match('/^(\d+(?:\.\d+)?)\s*([+\-*\/])\s*(\d+(?:\.\d+)?)$/', $vExpr, $am)) {
+            } elseif (preg_match('/^Math\.pow\s*\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*\)$/', $vExpr, $pm)) {
+                $vars[$vName] = ['type' => 'num', 'val' => pow($pm[1] + 0, $pm[2] + 0)];
+            } elseif (preg_match('/^Math\.sqrt\s*\(\s*(\d+(?:\.\d+)?)\s*\)$/', $vExpr, $sqm)) {
+                $vars[$vName] = ['type' => 'num', 'val' => sqrt($sqm[1] + 0)];
+            } elseif (preg_match('/^(\d+(?:\.\d+)?)\s*([+\-*\/%])\s*(\d+(?:\.\d+)?)$/', $vExpr, $am)) {
                 $a = $am[1] + 0;
                 $b = $am[3] + 0;
                 $op = $am[2];
-                $res = ($op === '+') ? ($a + $b) : (($op === '-') ? ($a - $b) : (($op === '*') ? ($a * $b) : ($b != 0 ? $a / $b : 0)));
+                $res = ($op === '+') ? ($a + $b) : (($op === '-') ? ($a - $b) : (($op === '*') ? ($a * $b) : (($op === '%') ? ($b != 0 ? (int)$a % (int)$b : 0) : ($b != 0 ? $a / $b : 0))));
                 $vars[$vName] = ['type' => 'num', 'val' => $res];
             } elseif (preg_match('/^(\d+(?:\.\d+)?)\s*(>|>=|<|<=|==|!=)\s*(\d+(?:\.\d+)?)$/', $vExpr, $bm)) {
                 $a = $bm[1] + 0;
@@ -121,8 +125,8 @@ if ($response === false || $http_code !== 200) {
         }
     }
 
-    // 4. Captura impressões System.out.println(...) ou System.out.print(...)
-    if (preg_match_all('/System\.out\.(println|print)\s*\(\s*([^;]*?)\s*\)\s*;/s', $codigo, $matches, PREG_SET_ORDER)) {
+    // 4. Captura impressões System.out.println(...), System.out.print(...) ou System.out.printf(...)
+    if (preg_match_all('/System\.out\.(println|printf|print)\s*\(\s*([^;]*?)\s*\)\s*;/s', $codigo, $matches, PREG_SET_ORDER)) {
         $saida_local = "";
         $erro_local = null;
 
@@ -135,7 +139,45 @@ if ($response === false || $http_code !== 200) {
                 continue;
             }
 
-            if (preg_match('/^"(.*)"$/s', $conteudo, $strMatch)) {
+            if ($metodo === 'printf') {
+                if (preg_match('/^"([^"]*)"\s*(?:,\s*(.+))?$/s', $conteudo, $pfm)) {
+                    $fmt = str_replace(['\\n', '%n'], "\n", $pfm[1]);
+                    $argsRaw = isset($pfm[2]) ? preg_split('/\s*,\s*/', trim($pfm[2])) : [];
+                    $argsVals = [];
+                    foreach ($argsRaw as $arg) {
+                        $arg = trim($arg);
+                        if (preg_match('/^"(.*)"$/s', $arg, $asm)) {
+                            $argsVals[] = $asm[1];
+                        } elseif (isset($vars[$arg])) {
+                            $argsVals[] = $vars[$arg]['val'];
+                        } elseif (is_numeric($arg)) {
+                            $argsVals[] = $arg + 0;
+                        } else {
+                            $argsVals[] = $arg;
+                        }
+                    }
+                    $saida_local .= @vsprintf($fmt, $argsVals);
+                    continue;
+                }
+            }
+
+            // Trata cast explícito como (int) res ou (double) res
+            if (preg_match('/^\(\s*(int|long|double|float)\s*\)\s*([a-zA-Z_]\w*)$/', $conteudo, $castVar) && isset($vars[$castVar[2]])) {
+                $valCast = $vars[$castVar[2]]['val'];
+                if ($castVar[1] === 'int' || $castVar[1] === 'long') {
+                    $valCast = (int) $valCast;
+                }
+                $saida_local .= $valCast . ($metodo === 'println' ? "\n" : "");
+                continue;
+            }
+
+            if (preg_match('/^(?:\(\s*int\s*\)\s*)?Math\.pow\s*\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\s*\)$/', $conteudo, $pm)) {
+                $valPow = pow($pm[1] + 0, $pm[2] + 0);
+                if (strpos($conteudo, 'int') !== false) {
+                    $valPow = (int) $valPow;
+                }
+                $saida_local .= $valPow . ($metodo === 'println' ? "\n" : "");
+            } elseif (preg_match('/^"(.*)"$/s', $conteudo, $strMatch)) {
                 $saida_local .= $strMatch[1] . ($metodo === 'println' ? "\n" : "");
             } elseif (is_numeric($conteudo)) {
                 $saida_local .= $conteudo . ($metodo === 'println' ? "\n" : "");
@@ -143,11 +185,11 @@ if ($response === false || $http_code !== 200) {
                 $saida_local .= strtolower($conteudo) . ($metodo === 'println' ? "\n" : "");
             } elseif (isset($vars[$conteudo])) {
                 $saida_local .= $vars[$conteudo]['val'] . ($metodo === 'println' ? "\n" : "");
-            } elseif (preg_match('/^(\d+(?:\.\d+)?)\s*([+\-*\/])\s*(\d+(?:\.\d+)?)$/', $conteudo, $am)) {
+            } elseif (preg_match('/^(\d+(?:\.\d+)?)\s*([+\-*\/%])\s*(\d+(?:\.\d+)?)$/', $conteudo, $am)) {
                 $a = $am[1] + 0;
                 $b = $am[3] + 0;
                 $op = $am[2];
-                $res = ($op === '+') ? ($a + $b) : (($op === '-') ? ($a - $b) : (($op === '*') ? ($a * $b) : ($b != 0 ? $a / $b : 0)));
+                $res = ($op === '+') ? ($a + $b) : (($op === '-') ? ($a - $b) : (($op === '*') ? ($a * $b) : (($op === '%') ? ($b != 0 ? (int)$a % (int)$b : 0) : ($b != 0 ? $a / $b : 0))));
                 $saida_local .= $res . ($metodo === 'println' ? "\n" : "");
             } elseif (preg_match('/^(\d+(?:\.\d+)?)\s*(>|>=|<|<=|==|!=)\s*(\d+(?:\.\d+)?)$/', $conteudo, $bm)) {
                 $a = $bm[1] + 0;
