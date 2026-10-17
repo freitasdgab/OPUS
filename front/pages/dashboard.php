@@ -535,7 +535,8 @@ $nomes_unidades = [
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/dashboard.css?v=2">
     <link rel="stylesheet" href="../assets/css/topbar.css">
-    <link rel="shortcut icon" href="../assets/img/logo.png">
+    <link rel="icon" type="image/png" href="../assets/img/LOGO.png">
+    <link rel="shortcut icon" type="image/png" href="../assets/img/LOGO.png">
     
     <link rel="stylesheet" href="../assets/css/dashboard-page.css?v=<?= time() ?>">
 </head>

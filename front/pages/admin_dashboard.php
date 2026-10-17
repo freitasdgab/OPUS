@@ -26,6 +26,8 @@ if (!$current_user || ($current_user['nivel_acesso'] ?? '') !== 'admin') {
     <head>
         <meta charset='UTF-8'>
         <title>Acesso Negado - OPUS</title>
+        <link rel='icon' type='image/png' href='../assets/img/LOGO.png'>
+        <link rel='shortcut icon' type='image/png' href='../assets/img/LOGO.png'>
         <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css'>
         <style>
             body { background: #0d0d0f; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
@@ -57,7 +59,8 @@ $email_admin = htmlspecialchars($current_user['email'] ?? '');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel do Administrador - OPUS</title>
-    <link rel="shortcut icon" href="../assets/img/logo.png">
+    <link rel="icon" type="image/png" href="../assets/img/LOGO.png">
+    <link rel="shortcut icon" type="image/png" href="../assets/img/LOGO.png">
 
     <!-- Google Fonts: Nunito (Estilo Cartoon Duolingo) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -715,6 +715,8 @@ $desafio_atual = $desafios_por_unidade[$unidade_atual] ?? $desafios_por_unidade[
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($dados_licao['titulo']); ?> - Opus</title>
+    <link rel="icon" type="image/png" href="../assets/img/LOGO.png">
+    <link rel="shortcut icon" type="image/png" href="../assets/img/LOGO.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Poppins:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
