@@ -991,6 +991,12 @@ body:not(.light-mode) .msg-bubble.other {
     border: 2px solid #37464f !important;
     border-bottom: 4px solid #37464f !important;
 }
+body:not(.light-mode) .comando-btn:hover {
+    background-color: rgba(28, 176, 246, 0.15) !important;
+    color: #1cb0f6 !important;
+    border-color: #1cb0f6 !important;
+    border-bottom-color: #1899d6 !important;
+}
 body:not(.light-mode) .chat-item:hover { background: #1f3039 !important; }
 body:not(.light-mode) .chat-input-area input,
 body:not(.light-mode) .chat-input-area textarea {

@@ -105,14 +105,21 @@ body, html {
     position: relative;
     transition: all 0.2s ease;
     user-select: none;
+    box-sizing: border-box;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
-.comando-btn:hover {
+.comando-btn:hover,
+.comando-btn:focus-visible,
+.comando-btn:active {
     border-color: var(--duo-blue);
     background-color: rgba(28, 176, 246, 0.15);
     color: var(--duo-blue);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(28, 176, 246, 0.25);
+    z-index: 50;
 }
 
 /* TOOLTIP / BALÃO DE EXPLICAÇÃO */
@@ -160,7 +167,11 @@ body, html {
 }
 
 .comando-btn:hover::after,
-.comando-btn:hover::before {
+.comando-btn:hover::before,
+.comando-btn:focus-visible::after,
+.comando-btn:focus-visible::before,
+.comando-btn:active::after,
+.comando-btn:active::before {
     opacity: 1;
     visibility: visible;
 }
@@ -170,5 +181,5 @@ body, html {
     .main-content { padding: 20px; }
     .codex-header h1 { font-size: 1.5rem; }
     .comando-btn { width: 100%; text-align: center; }
-    .comando-btn::after { max-width: 200px; }
+    .comando-btn::after { max-width: min(240px, 80vw); }
 }

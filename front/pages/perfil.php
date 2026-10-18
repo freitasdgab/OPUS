@@ -47,8 +47,8 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
     
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="icon" type="image/png" href="../assets/img/LOGO.png">
-    <link rel="shortcut icon" type="image/png" href="../assets/img/LOGO.png">
+    <link rel="icon" type="image/png" href="../assets/img/LOGO.png?v=2">
+    <link rel="shortcut icon" type="image/png" href="../assets/img/LOGO.png?v=2">
     <link rel="stylesheet" href="../assets/css/dashboard.css">
     <link rel="stylesheet" href="../assets/css/topbar.css">
     
