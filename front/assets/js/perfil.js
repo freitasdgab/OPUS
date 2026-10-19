@@ -80,7 +80,7 @@ function copiarConvitePerfil(userId) {
 }
 
 // Consumo da API de Conquistas e Criação dos Cards no Perfil
-fetch('../../back/api/conquistas.php')
+fetch('../../back/api/conquistas.php?v=' + Date.now())
 .then(r => r.json())
 .then(data => {
     const container = document.getElementById('trophy-container');
@@ -127,9 +127,12 @@ fetch('../../back/api/amigos.php?action=listar_pedidos')
         const container = document.getElementById('listaPedidosPerfil');
         container.innerHTML = '';
         data.pedidos.forEach(p => {
+            const avatarHtml = p.foto_perfil
+                ? `<img src="${p.foto_perfil}" style="width:30px; height:30px; border-radius:50%; object-fit:contain; background:#191924;">`
+                : `<div style="width:30px; height:30px; border-radius:50%; background:#191924; border:1px solid #2e2e42; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:0.8rem;"><i class="fa-solid fa-user"></i></div>`;
             container.innerHTML += `
                 <div style="display:flex; align-items:center; gap:10px; background:#12121a; padding:8px 12px; border-radius:10px;" id="pedidoBox_${p.pedido_id}">
-                    <img src="${p.foto_perfil}" style="width:30px; height:30px; border-radius:50%;">
+                    ${avatarHtml}
                     <div style="flex:1;">
                         <span style="color:#fff; font-size:0.85rem; font-weight:700;">${p.nome}</span>
                         <span style="display:block; color:var(--text-muted); font-size:0.75rem;">Quer conectar</span>
@@ -179,9 +182,12 @@ function carregarAmigosPerfil() {
         
         container.innerHTML = '';
         data.amigos.forEach(a => {
+            const avatarHtml = a.foto_perfil
+                ? `<img src="${a.foto_perfil}" class="friend-avatar" style="object-fit:contain; background:#191924;">`
+                : `<div class="friend-avatar" style="background:#191924; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:1rem;"><i class="fa-solid fa-user"></i></div>`;
             container.innerHTML += `
                 <div class="friend-item" onclick="window.location.href='chat.php?user_id=${a.id}'">
-                    <img src="${a.foto_perfil}" class="friend-avatar">
+                    ${avatarHtml}
                     <div class="friend-name">
                         ${a.nome}
                     </div>
@@ -216,9 +222,12 @@ function openSocialModal(type) {
         
         container.innerHTML = '';
         data.amigos.forEach(a => {
+            const avatarHtml = a.foto_perfil
+                ? `<img src="${a.foto_perfil}" style="width:40px; height:40px; border-radius:50%; object-fit:contain; background:#191924;">`
+                : `<div style="width:40px; height:40px; border-radius:50%; background:#191924; border:1px solid #2e2e42; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:1rem;"><i class="fa-solid fa-user"></i></div>`;
             container.innerHTML += `
                 <div style="display:flex; align-items:center; gap:10px; background:#12121a; padding:12px; border-radius:12px; border: 1px solid #2e2e42;">
-                    <img src="${a.foto_perfil}" style="width:40px; height:40px; border-radius:50%; object-fit:contain; background:#191924;">
+                    ${avatarHtml}
                     <div style="flex:1;">
                         <span style="color:#fff; font-size:0.95rem; font-weight:800; display:block;">${a.nome}</span>
                         <span style="color:#ffc800; font-size:0.8rem; font-weight:700;"><i class="fa-solid fa-bolt"></i> ${a.xp} XP</span>

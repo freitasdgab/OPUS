@@ -22,9 +22,11 @@
         return div.innerHTML;
     }
 
-    function resolverFoto(fotoBase64) {
-        if (fotoBase64 && fotoBase64.startsWith('data:image')) return fotoBase64;
-        return '../assets/img/opi pulando feliz.png';
+    function renderizarAvatarModal(foto, nome) {
+        if (foto && String(foto).trim() !== '') {
+            return `<img src="${foto}" alt="${escapeHtml(nome)}">`;
+        }
+        return `<div class="pmodal-avatar-empty"><i class="fa-solid fa-user"></i></div>`;
     }
 
     function garantirModalNoDom() {
@@ -91,7 +93,7 @@
             const u = json.dados;
             const divSlug = (u.divisao || 'bronze').toLowerCase();
             const ligaCfg = LIGAS_CORES[divSlug] || LIGAS_CORES.bronze;
-            const foto = resolverFoto(u.foto_perfil);
+            const avatarBoxContent = renderizarAvatarModal(u.foto_perfil, u.nome);
             const paisCode = (u.pais_codigo || 'br').toLowerCase();
             const paisNome = u.pais || 'Brasil';
             const corFundo = u.cor_fundo || '#1cb0f6';
@@ -214,7 +216,7 @@
                 <div class="pmodal-header">
                     <div class="pmodal-avatar-row">
                         <div class="pmodal-avatar-box" style="border-color: ${ligaCfg.corClara};">
-                            <img src="${foto}" alt="${escapeHtml(u.nome)}">
+                            ${avatarBoxContent}
                             <div class="pmodal-league-badge" style="background: ${ligaCfg.cor};" title="Divisão: ${escapeHtml(u.divisao)}">
                                 <i class="fa-solid fa-shield-halved"></i>
                             </div>

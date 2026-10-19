@@ -16,8 +16,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt_user->execute();
     $dados = $stmt_user->get_result()->fetch_assoc();
 
-    $avatar = !empty($_POST['avatar_selecionado']) ? $_POST['avatar_selecionado'] : $dados['foto_perfil'];
-    $cor = !empty($_POST['cor_selecionada']) ? $_POST['cor_selecionada'] : $dados['cor_fundo'];
+    $action = $_POST['action'] ?? '';
+
+    if ($action === 'atualizar_aparencia') {
+        $avatar = isset($_POST['avatar_selecionado']) ? trim($_POST['avatar_selecionado']) : ($dados['foto_perfil'] ?? '');
+        $cor = !empty($_POST['cor_selecionada']) ? $_POST['cor_selecionada'] : ($dados['cor_fundo'] ?? '#1cb0f6');
+    } else {
+        $avatar = !empty($_POST['avatar_selecionado']) ? trim($_POST['avatar_selecionado']) : ($dados['foto_perfil'] ?? '');
+        $cor = !empty($_POST['cor_selecionada']) ? $_POST['cor_selecionada'] : ($dados['cor_fundo'] ?? '#1cb0f6');
+    }
     
     $paises_map = [
         'br' => 'Brasil',

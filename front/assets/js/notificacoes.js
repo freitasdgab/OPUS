@@ -107,12 +107,14 @@ function renderizarNotifDropdown() {
         `;
     } else {
         ultimasNotificacoes.forEach(n => {
-            const foto = n.foto || '../assets/img/opi pulando feliz.png';
+            const avatarHtml = (n.foto && String(n.foto).trim() !== '')
+                ? `<img src="${n.foto}" class="notif-avatar" style="object-fit:contain;" alt="${n.nome}">`
+                : `<div class="notif-avatar" style="display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:0.95rem;"><i class="fa-solid fa-user"></i></div>`;
             if (n.type === 'friend_request') {
                 const nomeEsc = n.nome.replace(/'/g, "\\'");
                 itemsHtml += `
                     <div class="notif-item" id="topbar-req-${n.id}">
-                        <img src="${foto}" class="notif-avatar" alt="${n.nome}">
+                        ${avatarHtml}
                         <div class="notif-content">
                             <div class="notif-text"><strong>${n.nome}</strong> enviou uma solicitação para te seguir.</div>
                             <div class="notif-actions" id="actions-topbar-req-${n.id}">
@@ -129,7 +131,7 @@ function renderizarNotifDropdown() {
             } else if (n.type === 'friend_accepted') {
                 itemsHtml += `
                     <div class="notif-item" style="border-left: 3px solid #58cc02;" id="topbar-acc-${n.id}">
-                        <img src="${foto}" class="notif-avatar" alt="${n.nome}">
+                        ${avatarHtml}
                         <div class="notif-content">
                             <div class="notif-text" style="color:#58cc02;"><strong>${n.nome}</strong> aceitou seu pedido e seguiu de volta! Vocês agora são amigos.</div>
                             <div class="notif-actions">
@@ -143,7 +145,7 @@ function renderizarNotifDropdown() {
             } else if (n.type === 'follow_accepted') {
                 itemsHtml += `
                     <div class="notif-item" style="border-left: 3px solid #1cb0f6;" id="topbar-acc-${n.id}">
-                        <img src="${foto}" class="notif-avatar" alt="${n.nome}">
+                        ${avatarHtml}
                         <div class="notif-content">
                             <div class="notif-text" style="color:#1cb0f6;"><strong>${n.nome}</strong> aceitou sua solicitação para seguir.</div>
                             <div class="notif-actions">
@@ -157,7 +159,7 @@ function renderizarNotifDropdown() {
             } else if (n.type === 'unread_messages') {
                 itemsHtml += `
                     <div class="notif-item" style="border-left: 3px solid #1cb0f6;">
-                        <img src="${foto}" class="notif-avatar" alt="${n.nome}">
+                        ${avatarHtml}
                         <div class="notif-content">
                             <div class="notif-text"><strong>${n.nome}</strong> enviou ${n.qtd} nova(s) mensagem(ns).</div>
                             <div class="notif-actions">

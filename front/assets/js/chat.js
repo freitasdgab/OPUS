@@ -2,6 +2,13 @@ let currentChatUser = 0;
 let chatRefreshInterval;
 let activeChatData = null;
 
+function renderAvatarChat(foto, nome, extraClass = '') {
+    if (foto && String(foto).trim() !== '') {
+        return `<img src="${foto}" class="${extraClass}" alt="${escapeHtml(nome)}">`;
+    }
+    return `<div class="chat-avatar-empty ${extraClass}"><i class="fa-solid fa-user"></i></div>`;
+}
+
 // ── 1. CARREGAR CONVERSAS DO DIRECT ──
 function carregarConversas() {
     fetch('../../back/api/chat.php?action=get_conversations')
@@ -34,7 +41,7 @@ function carregarConversas() {
                 html += `
                 <div class="chat-list-item ${activeClass}" onclick="abrirChat(${c.id})">
                     <div class="cli-avatar-wrap">
-                        <img src="${c.foto}" alt="${c.nome}">
+                        ${renderAvatarChat(c.foto, c.nome)}
                     </div>
                     <div class="cli-info">
                         <div class="cli-top-row">
@@ -91,7 +98,7 @@ function buscarAmigos() {
                 html += `
                 <div class="search-result-item">
                     <div class="sri-info">
-                        <img src="${u.foto}" alt="${u.nome}">
+                        ${renderAvatarChat(u.foto, u.nome)}
                         <div class="sri-details">
                             <span class="sri-name">${u.nome}</span>
                             <span class="sri-email">${u.email}</span>
@@ -155,8 +162,8 @@ function atualizarChatWindow(isFirstOpen = false) {
                 <!-- CABEÇALHO DO DIRECT -->
                 <div class="chat-header" id="chat-header-${f.id}">
                     <div class="ch-user">
-                        <div class="ch-avatar-wrap">
-                            <img src="${f.foto}" alt="${escapeHtml(f.nome)}">
+                        <div class="ch-avatar-wrap" id="ch-avatar-wrap-${f.id}">
+                            ${renderAvatarChat(f.foto, f.nome)}
                         </div>
                         <div class="ch-user-info">
                             <h3>${escapeHtml(f.nome)}</h3>
@@ -185,6 +192,9 @@ function atualizarChatWindow(isFirstOpen = false) {
                     const inp = document.getElementById('chat-input');
                     if (inp) inp.focus();
                 }, 100);
+            } else {
+                const avWrap = document.getElementById('ch-avatar-wrap-' + f.id);
+                if (avWrap) avWrap.innerHTML = renderAvatarChat(f.foto, f.nome);
             }
 
             // Renderiza mensagens estilo Direct
@@ -383,13 +393,13 @@ function carregarNotificacoesChat() {
 
             let html = '';
             data.notificacoes.forEach(n => {
-                const foto = n.foto || '../assets/img/opi pulando feliz.png';
+                const avatarHtml = renderAvatarChat(n.foto, n.nome, 'notif-card-avatar');
                 if (n.type === 'friend_request') {
                     const nomeEsc = n.nome.replace(/'/g, "\\'");
                     html += `
                     <div class="notif-card" id="notif-req-${n.id}">
                         <div class="notif-card-header">
-                            <img src="${foto}" class="notif-card-avatar" alt="${n.nome}">
+                            ${avatarHtml}
                             <div class="notif-card-info">
                                 <div class="notif-card-name">${n.nome}</div>
                                 <div class="notif-card-desc"><i class="fa-solid fa-user-plus" style="color:#1cb0f6;"></i> Enviou um pedido de amizade</div>
@@ -408,7 +418,7 @@ function carregarNotificacoesChat() {
                     html += `
                     <div class="notif-card" style="border-left: 4px solid #58cc02;">
                         <div class="notif-card-header">
-                            <img src="${foto}" class="notif-card-avatar" alt="${n.nome}">
+                            ${avatarHtml}
                             <div class="notif-card-info">
                                 <div class="notif-card-name">${n.nome}</div>
                                 <div class="notif-card-desc" style="color: #58cc02; font-weight: 700;">
@@ -426,7 +436,7 @@ function carregarNotificacoesChat() {
                     html += `
                     <div class="notif-card" style="cursor: pointer;" onclick="abrirChat(${n.remetente_id}); alternarAbaChat('conversas');">
                         <div class="notif-card-header">
-                            <img src="${foto}" class="notif-card-avatar" alt="${n.nome}">
+                            ${avatarHtml}
                             <div class="notif-card-info">
                                 <div class="notif-card-name">${n.nome}</div>
                                 <div class="notif-card-desc"><i class="fa-solid fa-message" style="color:#1cb0f6;"></i> Enviou <strong>${n.qtd}</strong> nova(s) mensagem(ns)</div>

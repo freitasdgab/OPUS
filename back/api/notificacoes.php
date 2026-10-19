@@ -26,7 +26,7 @@ if ($action === 'get_notificacoes') {
     
     $notificacoes = [];
     while ($row = $res->fetch_assoc()) {
-        $foto = $row['foto_perfil'] ?: '../assets/img/opi pulando feliz.png';
+        $foto = !empty($row['foto_perfil']) ? trim($row['foto_perfil']) : '';
         $notificacoes[] = [
             'type' => 'friend_request',
             'id' => $row['id'],
@@ -48,7 +48,7 @@ if ($action === 'get_notificacoes') {
     $stmt->execute();
     $res = $stmt->get_result();
     while ($row = $res->fetch_assoc()) {
-        $foto = $row['foto_perfil'] ?: '../assets/img/opi pulando feliz.png';
+        $foto = !empty($row['foto_perfil']) ? trim($row['foto_perfil']) : '';
         $isAmigos = ((int)$row['viraram_amigos'] === 1);
         $notificacoes[] = [
             'type' => $isAmigos ? 'friend_accepted' : 'follow_accepted',
@@ -75,7 +75,7 @@ if ($action === 'get_notificacoes') {
     $stmt->execute();
     $res = $stmt->get_result();
     while ($row = $res->fetch_assoc()) {
-        $foto = $row['foto_perfil'] ?: '../assets/img/opi pulando feliz.png';
+        $foto = !empty($row['foto_perfil']) ? trim($row['foto_perfil']) : '';
         $notificacoes[] = [
             'type' => 'unread_messages',
             'remetente_id' => $row['remetente_id'],

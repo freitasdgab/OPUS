@@ -543,8 +543,8 @@
             bottom: 25px;
             left: 280px;
             z-index: 95;
-            background-color: #58cc02;
-            border-bottom: 4px solid #46a302;
+            background-color: #1cb0f6;
+            border-bottom: 4px solid #1899d6;
             color: #ffffff;
             width: 44px;
             height: 44px;
@@ -564,7 +564,7 @@
         .btn-scroll-to-lesson:hover {
             filter: brightness(1.1);
             transform: translateY(-2px);
-            background-color: #58cc02;
+            background-color: #1cb0f6;
         }
 
         .btn-scroll-to-lesson:active {
@@ -608,4 +608,453 @@
 /* FIX Z-INDEX CAPITULO CONTAINERS */
 .capitulo-container { z-index: 1 !important; position: relative; }
 .capitulo-container.current-chapter { z-index: 50 !important; }
+
+/* BOTÃO DISCRETO PARA RETORNAR DE UMA DIVISÃO */
+.divisao-voltar-topo {
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 20px;
+}
+
+.btn-voltar-divisao {
+    background: #1e1e24;
+    border: 2px solid #3a3a45;
+    border-bottom: 4px solid #2a2a35;
+    color: #a5a5ac;
+    padding: 10px 18px;
+    border-radius: 14px;
+    font-size: 0.88rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.15s ease;
+    font-family: 'Nunito', sans-serif;
+}
+
+.btn-voltar-divisao:hover {
+    color: #fff;
+    border-color: #555566;
+    background: #25252e;
+    transform: translateY(-2px);
+}
+
+.btn-voltar-divisao:active {
+    transform: translateY(2px);
+    border-bottom-width: 1px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   NAVEGADOR DE DIVISÕES (DIVISÃO 1, 2 E 3) - ESTILO DUOLINGO PREMIUM
+   ══════════════════════════════════════════════════════════════════════ */
+.divisao-navigator-wrapper {
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 20;
+    position: relative;
+}
+
+/* Barra de Abas das Divisões */
+.divisao-tabs-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr) auto;
+    gap: 12px;
+    width: 100%;
+}
+
+.divisao-tab-btn {
+    background: #1e1e24;
+    border: 2px solid #3a3a45;
+    border-bottom: 5px solid #2a2a35;
+    border-radius: 16px;
+    padding: 12px 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    transition: transform 0.1s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    text-align: left;
+    color: #fff;
+    font-family: 'Nunito', sans-serif;
+    outline: none;
+}
+
+.divisao-tab-btn:hover {
+    border-color: #555566;
+    background: #25252e;
+    transform: translateY(-2px);
+}
+
+.divisao-tab-btn:active {
+    transform: translateY(3px);
+    border-bottom-width: 2px;
+}
+
+.divisao-tab-btn.active {
+    background: #232838;
+    border-color: #1cb0f6;
+    border-bottom-color: #148bc4;
+    box-shadow: 0 6px 18px rgba(28, 176, 246, 0.22);
+}
+
+.divisao-tab-btn#tabDivisao_2.active {
+    background: #292436;
+    border-color: #ce82ff;
+    border-bottom-color: #9f49d9;
+    box-shadow: 0 6px 18px rgba(206, 130, 255, 0.22);
+}
+
+.divisao-tab-btn#tabDivisao_3.active {
+    background: #2e2820;
+    border-color: #ffc800;
+    border-bottom-color: #cc9b00;
+    box-shadow: 0 6px 18px rgba(255, 200, 0, 0.22);
+}
+
+.divisao-tab-badge {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+}
+
+.divisao-tab-btn.tab-todas .divisao-tab-badge {
+    background: #3a3a48;
+}
+
+.divisao-tab-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+}
+
+.divisao-tab-num {
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.8px;
+    color: #8e95a1;
+    text-transform: uppercase;
+}
+
+.divisao-tab-btn.active .divisao-tab-num {
+    color: #1cb0f6;
+}
+.divisao-tab-btn#tabDivisao_2.active .divisao-tab-num {
+    color: #ce82ff;
+}
+.divisao-tab-btn#tabDivisao_3.active .divisao-tab-num {
+    color: #ffc800;
+}
+
+.divisao-tab-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 1px 0;
+}
+
+.divisao-tab-progress {
+    font-size: 0.75rem;
+    color: #a0a0b2;
+    font-weight: 600;
+}
+
+.divisao-pill-atual {
+    position: absolute;
+    top: -8px;
+    right: 10px;
+    background: #58cc02;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 8px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 6px rgba(88, 204, 2, 0.4);
+}
+
+/* Banner de Destaque da Divisão Selecionada */
+.divisao-hero-banner {
+    background: linear-gradient(135deg, #1e1e26 0%, #252532 100%);
+    border: 2px solid #3a3a48;
+    border-radius: 20px;
+    padding: 22px 26px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    position: relative;
+    overflow: hidden;
+}
+
+.divisao-hero-icon {
+    width: 68px;
+    height: 68px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+    transition: background 0.3s ease;
+}
+
+.divisao-hero-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.divisao-hero-tags {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+}
+
+.divisao-hero-pill {
+    background: rgba(28, 176, 246, 0.2);
+    color: #1cb0f6;
+    border: 1px solid rgba(28, 176, 246, 0.4);
+    font-size: 0.72rem;
+    font-weight: 900;
+    padding: 3px 9px;
+    border-radius: 8px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+.divisao-hero-nivel {
+    background: rgba(255, 200, 0, 0.15);
+    color: #ffc800;
+    border: 1px solid rgba(255, 200, 0, 0.3);
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 3px 9px;
+    border-radius: 8px;
+}
+
+.divisao-hero-range {
+    color: #8e95a1;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.divisao-hero-info h2 {
+    font-size: 1.45rem;
+    font-weight: 900;
+    color: #fff;
+    margin: 0 0 6px 0;
+    line-height: 1.25;
+}
+
+.divisao-hero-info p {
+    font-size: 0.92rem;
+    color: #b0b0c2;
+    margin: 0 0 14px 0;
+    line-height: 1.45;
+}
+
+.divisao-hero-progress-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.divisao-hero-progress-bar {
+    flex: 1;
+    background: #18181f;
+    height: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.divisao-hero-progress-fill {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 0.4s ease, background 0.3s ease;
+}
+
+.divisao-hero-progress-text {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: #e2e8f0;
+    white-space: nowrap;
+}
+
+/* Card de Marco / Fim de Divisão */
+.division-milestone-card {
+    width: 100%;
+    max-width: 600px;
+    background: linear-gradient(135deg, #1f1f2b 0%, #292938 100%);
+    border: 2px dashed #4b4b5e;
+    border-radius: 20px;
+    padding: 24px;
+    margin: 10px 0 40px 0;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+.milestone-badge-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
+}
+
+.milestone-content {
+    flex: 1;
+}
+
+.milestone-tag {
+    font-size: 0.72rem;
+    font-weight: 900;
+    color: #1cb0f6;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+.milestone-content h3 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 4px 0 6px 0;
+}
+
+.milestone-content p {
+    font-size: 0.88rem;
+    color: #b0b0c2;
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+}
+
+.btn-ir-proxima-divisao {
+    background: #1cb0f6;
+    border: none;
+    border-bottom: 4px solid #148bc4;
+    color: #fff;
+    font-weight: 800;
+    font-size: 0.88rem;
+    padding: 9px 18px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.1s ease, filter 0.15s ease;
+}
+
+.btn-ir-proxima-divisao:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+}
+
+.btn-ir-proxima-divisao:active {
+    transform: translateY(2px);
+    border-bottom-width: 1px;
+}
+
+/* Mini Card de Divisões no Widget Meu Progresso */
+.progresso-divisoes-mini {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.prog-div-item {
+    background: #25252e;
+    border: 1px solid #333340;
+    border-radius: 10px;
+    padding: 8px 10px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    transition: all 0.2s ease;
+}
+
+.prog-div-item:hover {
+    background: #2d2d38;
+    border-color: #4a4a5a;
+    transform: translateY(-2px);
+}
+
+.prog-div-item.atual {
+    border-color: #1cb0f6;
+    background: rgba(28, 176, 246, 0.08);
+}
+
+.pdiv-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.pdiv-nome {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #8e95a1;
+}
+
+.pdiv-val {
+    font-size: 0.82rem;
+    font-weight: 900;
+    color: #fff;
+    font-family: 'Orbitron', sans-serif;
+}
+
+/* Responsividade do Navegador de Divisões */
+@media (max-width: 900px) {
+    .divisao-tabs-bar {
+        grid-template-columns: 1fr 1fr;
+    }
+    .divisao-hero-banner {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px 16px;
+    }
+    .divisao-hero-tags {
+        justify-content: center;
+    }
+    .divisao-hero-progress-wrapper {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .division-milestone-card {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
 

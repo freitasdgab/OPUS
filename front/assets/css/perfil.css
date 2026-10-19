@@ -26,6 +26,10 @@ body, html {
     max-width: 1100px; margin: 0 auto;
 }
 .main-column { display: flex; flex-direction: column; }
+.profile-full-width {
+    grid-column: 1 / -1;
+    width: 100%;
+}
 
 /* Banner do Perfil */
 /* Banner do Perfil */
@@ -85,9 +89,10 @@ body, html {
 .stat-card-label { font-size: 0.75rem; color: #888; font-weight: 600; line-height: 1.2; }
 
 /* Grid de Troféus do Perfil */
-.stats-grid-trophies {
+.stats-grid-trophies,
+#trophy-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
 }
 
@@ -101,6 +106,8 @@ body, html {
     align-items: center;
     text-align: center;
     gap: 15px;
+    justify-content: space-between;
+    box-sizing: border-box;
 }
 .trophy-profile-card.locked {
     border-color: #444;
@@ -137,6 +144,7 @@ body, html {
     color: #fff;
     font-weight: 700;
     text-transform: uppercase;
+    word-break: break-word;
 }
 
 .trophy-progress {
@@ -239,7 +247,14 @@ body, html {
 .btn-danger { background: var(--duo-red); color: #fff; border-bottom: 4px solid #c92a2a; }
 
 @media (max-width: 900px) {
-    .profile-container { grid-template-columns: 1fr; }
+    .profile-container { grid-template-columns: 1fr; gap: 30px; }
+    .profile-full-width { grid-column: 1 / -1; }
     .stats-grid { grid-template-columns: 1fr; }
+    .stats-grid-trophies,
+    #trophy-container { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 550px) {
+    .stats-grid-trophies,
     #trophy-container { grid-template-columns: 1fr; }
 }

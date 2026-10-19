@@ -10,7 +10,7 @@ $liga_nome_top = 'Bronze';
 $dias_fogo_top = 0;
 $vidas_top = 3;
 $proxima_vida_texto = '';
-$avatar_top = '../assets/img/opi pulando feliz.png';
+$avatar_top = '';
 
 if (isset($_SESSION['user_id'])) {
     $user_id_topbar = (int) $_SESSION['user_id'];
@@ -29,7 +29,7 @@ if (isset($_SESSION['user_id'])) {
     if (!empty($foto_banco)) {
         $avatar_top = $foto_banco;
     } else {
-        $avatar_top = '../assets/img/opi pulando feliz.png';
+        $avatar_top = '';
     }
 }
 

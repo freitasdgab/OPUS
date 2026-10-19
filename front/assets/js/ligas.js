@@ -1,8 +1,10 @@
 // ligas.js - lógica da página de Ligas
 
-function obterFoto(fotoBase64) {
-    if (fotoBase64 && fotoBase64.startsWith('data:image')) return fotoBase64;
-    return '../assets/img/opi pulando feliz.png';
+function renderizarAvatarLiga(foto, nome) {
+    if (foto && String(foto).trim() !== '') {
+        return `<img src="${foto}" class="img-cover" alt="${nome || 'Avatar'}">`;
+    }
+    return `<div class="img-cover avatar-placeholder"><i class="fa-solid fa-user"></i></div>`;
 }
 
 function formatarTempo(segundos) {
@@ -128,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span class="pos-status-dot ${m.zona}" title="${tooltipZona}"></span>
                         </div>
                         <div class="row-avatar-wrapper" onclick="abrirPerfilPublico(${m.id})" style="cursor:pointer;" title="Ver Perfil">
-                            <img src="${obterFoto(m.foto_perfil)}" class="img-cover" alt="${m.nome}">
+                            ${renderizarAvatarLiga(m.foto_perfil, m.nome)}
                         </div>
                         <div class="row-name">
                             <span class="row-user-text">${m.nome}${m.is_me ? ' <span style="color:#1cb0f6;font-size:0.78rem">(Você)</span>' : ''}</span>

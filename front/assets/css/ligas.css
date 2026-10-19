@@ -309,9 +309,17 @@ body, html {
     width: 48px; 
     height: 48px; 
     border-radius: 50%; 
-    object-fit: cover; 
+    object-fit: contain; 
     background: var(--bg-dark); 
     border: 3px solid var(--border-color); 
+}
+
+.row-avatar-wrapper .avatar-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 1.15rem;
 }
 
 .liga-row.is-me .row-avatar-wrapper .img-cover {

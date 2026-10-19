@@ -180,7 +180,8 @@
 }
 .search-result-item:last-child { border-bottom: none; }
 .sri-info { display: flex; align-items: center; gap: 10px; }
-.sri-info img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid #2e2e42; }
+.sri-info img { width: 36px; height: 36px; border-radius: 50%; object-fit: contain; border: 2px solid #2e2e42; background: #1e1e2c; }
+.sri-info .chat-avatar-empty { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #2e2e42; background: #1e1e2c; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 0.9rem; flex-shrink: 0; }
 .sri-details { display: flex; flex-direction: column; }
 .sri-name { font-weight: 800; font-size: 0.9rem; color: #fff; }
 .sri-email { font-size: 0.75rem; color: #94a3b8; }
@@ -317,13 +318,21 @@
     height: 44px;
     flex-shrink: 0;
 }
-.cli-avatar-wrap img {
+.cli-avatar-wrap img,
+.cli-avatar-wrap .chat-avatar-empty {
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    object-fit: cover;
+    object-fit: contain;
     border: 2px solid var(--chat-border);
     background: #1e1e2c;
+}
+.cli-avatar-wrap .chat-avatar-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    font-size: 1.05rem;
 }
 
 .cli-info { flex: 1; min-width: 0; }
@@ -403,13 +412,21 @@
     height: 42px;
     flex-shrink: 0;
 }
-.ch-avatar-wrap img {
+.ch-avatar-wrap img,
+.ch-avatar-wrap .chat-avatar-empty {
     width: 42px;
     height: 42px;
     border-radius: 50%;
-    object-fit: cover;
+    object-fit: contain;
     border: 2px solid var(--chat-border);
     background: #1e1e2c;
+}
+.ch-avatar-wrap .chat-avatar-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    font-size: 1rem;
 }
 .ch-user-info h3 {
     margin: 0;
@@ -643,7 +660,15 @@
     width: 38px;
     height: 38px;
     border-radius: 50%;
-    object-fit: cover;
+    object-fit: contain;
+    background: #14141e;
+    border: 2px solid var(--chat-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    font-size: 0.95rem;
+    flex-shrink: 0;
 }
 .notif-card-info { flex: 1; }
 .notif-card-name {

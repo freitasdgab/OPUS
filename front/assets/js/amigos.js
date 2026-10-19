@@ -1,5 +1,12 @@
 // amigos.js - Lógica da Central de Amigos e Batalhas (VS)
 
+function renderAvatarAmigo(foto, nome, cls = '') {
+    if (foto && String(foto).trim() !== '') {
+        return `<img src="${foto}" class="${cls}" style="object-fit:contain;" alt="${nome || 'Avatar'}">`;
+    }
+    return `<div class="${cls}" style="display:inline-flex; align-items:center; justify-content:center; background:#191924; color:#94a3b8; border-radius:50%;"><i class="fa-solid fa-user"></i></div>`;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     carregarGrupos();
     carregarBatalha(0);
@@ -49,7 +56,7 @@ function carregarBatalhas1v1() {
                 <div class="batalha-1v1-card ${index === 0 ? 'selected' : ''}" onclick="selecionarRival1v1(${a.id}, this)">
                     <div class="batalha-1v1-header">
                         <div class="batalha-1v1-user">
-                            <img src="${a.foto_perfil}" class="batalha-1v1-avatar" alt="${a.nome}">
+                            ${renderAvatarAmigo(a.foto_perfil, a.nome, 'batalha-1v1-avatar')}
                             <div class="batalha-1v1-info">
                                 <h4>VS ${a.nome}</h4>
                                 <span>⚡ ${a.xp} XP acumulados</span>
@@ -110,13 +117,21 @@ function carregarBatalha(rivalId) {
 
         // Player 1 (Você)
         document.getElementById('p1Nome').innerText = p1.nome;
-        document.getElementById('p1Foto').src = p1.foto_perfil;
+        const p1FotoEl = document.getElementById('p1Foto');
+        if (p1FotoEl) {
+            if (p1.foto_perfil) { p1FotoEl.src = p1.foto_perfil; p1FotoEl.style.display = ''; }
+            else { p1FotoEl.style.display = 'none'; }
+        }
         document.getElementById('p1Fogo').innerHTML = `<i class="fa-solid fa-fire" style="color:#ff9600;"></i> ${p1.dias_fogo} Dias`;
         document.getElementById('p1Acertos').innerText = p1.acertos_hoje;
 
         // Player 2 (Rival)
         document.getElementById('p2Nome').innerText = p2.nome;
-        document.getElementById('p2Foto').src = p2.foto_perfil;
+        const p2FotoEl = document.getElementById('p2Foto');
+        if (p2FotoEl) {
+            if (p2.foto_perfil) { p2FotoEl.src = p2.foto_perfil; p2FotoEl.style.display = ''; }
+            else { p2FotoEl.style.display = 'none'; }
+        }
         document.getElementById('p2Fogo').innerHTML = `<i class="fa-solid fa-fire" style="color:#ff9600;"></i> ${p2.dias_fogo} Dias`;
         document.getElementById('p2Acertos').innerText = p2.acertos_hoje;
 
@@ -235,7 +250,7 @@ function carregarGrupos() {
             } else {
                 containerMeus.innerHTML = '';
                 data.meus_grupos.forEach(g => {
-                    const avs = (g.avatares || []).map(img => `<img src="${img}" alt="Membro">`).join('');
+                    const avs = (g.avatares || []).map(img => img ? `<img src="${img}" style="object-fit:contain;" alt="Membro">` : `<div style="width:28px;height:28px;border-radius:50%;background:#191924;border:2px solid #2e2e42;display:inline-flex;align-items:center;justify-content:center;color:#94a3b8;font-size:0.7rem;"><i class="fa-solid fa-user"></i></div>`).join('');
                     containerMeus.innerHTML += `
                         <div class="group-card">
                             <div class="group-card-header">
@@ -273,7 +288,7 @@ function carregarGrupos() {
             } else {
                 containerSug.innerHTML = '';
                 data.grupos_sugeridos.forEach(g => {
-                    const avs = (g.avatares || []).map(img => `<img src="${img}" alt="Membro">`).join('');
+                    const avs = (g.avatares || []).map(img => img ? `<img src="${img}" style="object-fit:contain;" alt="Membro">` : `<div style="width:28px;height:28px;border-radius:50%;background:#191924;border:2px solid #2e2e42;display:inline-flex;align-items:center;justify-content:center;color:#94a3b8;font-size:0.7rem;"><i class="fa-solid fa-user"></i></div>`).join('');
                     containerSug.innerHTML += `
                         <div class="group-card">
                             <div class="group-card-header">
@@ -363,7 +378,7 @@ function carregarAmigosParaModalCriarGrupo() {
             container.innerHTML += `
                 <label class="friend-checkbox-item">
                     <input type="checkbox" name="membros_grupo" value="${a.id}">
-                    <img src="${a.foto_perfil}" alt="${a.nome}">
+                    ${renderAvatarAmigo(a.foto_perfil, a.nome)}
                     <div class="friend-checkbox-info">
                         <strong>${a.nome}</strong>
                         <span>⚡ ${a.xp} XP · 🔥 ${a.dias_fogo}d</span>
@@ -536,7 +551,7 @@ function visualizarGrupo(grupoId) {
                     <div class="group-member-item ${isVoceClass}">
                         <div class="gm-rank ${rankClass}">#${m.posicao}</div>
                         <div class="gm-user-box">
-                            <img src="${m.foto_perfil}" class="gm-avatar" alt="${m.nome}">
+                            ${renderAvatarAmigo(m.foto_perfil, m.nome, 'gm-avatar')}
                             <div class="gm-info">
                                 <h5>${m.nome} ${m.is_voce ? '(Você)' : ''}</h5>
                                 <span>🎯 ${m.acertos_hoje} acertos hoje · ⚡ ${m.xp} XP · 🔥 ${m.dias_fogo}d</span>
@@ -635,7 +650,7 @@ function renderizarCardsAmigos(usuarios, container) {
         container.innerHTML += `
             <div class="friend-card">
                 <div class="friend-info-left">
-                    <img src="${u.foto_perfil}" class="friend-avatar">
+                    ${renderAvatarAmigo(u.foto_perfil, u.nome, 'friend-avatar')}
                     <div class="friend-details">
                         <h4>${u.nome}</h4>
                         <span>⚡ ${u.xp} XP</span>
@@ -681,7 +696,7 @@ function carregarPedidosPendentes() {
         data.pedidos.forEach(p => {
             container.innerHTML += `
                 <div class="pedido-card" id="pedidoCard_${p.pedido_id}">
-                    <img src="${p.foto_perfil}" class="pedido-avatar">
+                    ${renderAvatarAmigo(p.foto_perfil, p.nome, 'pedido-avatar')}
                     <div class="pedido-info">
                         <h5>${p.nome}</h5>
                         <span style="font-size:0.75rem; color:var(--text-muted)">Quer conectar!</span>
@@ -724,7 +739,7 @@ function carregarAmigosChat() {
         data.amigos.forEach(a => {
             container.innerHTML += `
                 <div class="amigo-chat-card" onclick="abrirChatComAmigo(${a.id}, '${a.nome}', '${a.foto_perfil}', this)">
-                    <img src="${a.foto_perfil}" class="amigo-chat-avatar">
+                    ${renderAvatarAmigo(a.foto_perfil, a.nome, 'amigo-chat-avatar')}
                     <div class="amigo-chat-info">
                         <h5>${a.nome}</h5>
                     </div>
@@ -742,9 +757,12 @@ function abrirChatComAmigo(id, nome, foto, cardElem) {
 
     amigoChatAtual = id;
     const chatArea = document.getElementById('chatMainArea');
+    const headerAv = (foto && String(foto).trim() !== '')
+        ? `<img src="${foto}" style="width:36px; height:36px; border-radius:50%; object-fit:contain; background:#12121a;">`
+        : `<div style="width:36px; height:36px; border-radius:50%; background:#12121a; display:flex; align-items:center; justify-content:center; color:#94a3b8;"><i class="fa-solid fa-user"></i></div>`;
     chatArea.innerHTML = `
         <div class="chat-header">
-            <img src="${foto}" style="width:36px; height:36px; border-radius:50%; object-fit:contain; background:#12121a;">
+            ${headerAv}
             <h4 style="margin:0; color:#fff; font-size:1rem;">${nome}</h4>
         </div>
         <div class="chat-messages" id="chatMessages">

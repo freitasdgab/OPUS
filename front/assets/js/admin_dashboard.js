@@ -289,7 +289,10 @@
         lista.forEach(u => {
             const tr = document.createElement('tr');
             
-            let fotoUrl = u.foto_perfil && u.foto_perfil.startsWith('data:image') ? u.foto_perfil : '../assets/img/opi pulando feliz.png';
+            const temFoto = u.foto_perfil && String(u.foto_perfil).trim() !== '';
+            const avatarHtml = temFoto
+                ? `<img src="${u.foto_perfil}" alt="Avatar" class="user-avatar-img" style="object-fit:contain;">`
+                : `<div class="user-avatar-img" style="display:flex; align-items:center; justify-content:center; background:#1e1e2c; color:#94a3b8; font-size:0.95rem;"><i class="fa-solid fa-user"></i></div>`;
             const divSlug = (u.divisao || 'bronze').toLowerCase();
             const divNome = LIGAS_INFO[divSlug] ? LIGAS_INFO[divSlug].nome : 'Bronze';
 
@@ -302,7 +305,7 @@
                 <td style="font-family: 'Orbitron', sans-serif; font-weight: bold; color: var(--accent-blue); font-size: 0.85rem;">#${u.id}</td>
                 <td>
                     <div class="user-avatar-cell" onclick="abrirDetalhesAluno(${u.id})" style="cursor: pointer;" title="Clique para ver o perfil completo">
-                        <img src="${fotoUrl}" alt="Avatar" class="user-avatar-img">
+                        ${avatarHtml}
                         <div class="user-meta">
                             <div class="name">${escapeHtml(u.nome)}</div>
                             <div class="email">${escapeHtml(u.email)}</div>
@@ -488,7 +491,10 @@
             const hist = data.data.historico_ligas || [];
             const conquistasTotal = data.data.conquistas_total || 0;
 
-            let foto = u.foto_perfil && u.foto_perfil.startsWith('data:image') ? u.foto_perfil : '../assets/img/opi pulando feliz.png';
+            const temFoto = u.foto_perfil && String(u.foto_perfil).trim() !== '';
+            const avatarBigHtml = temFoto
+                ? `<img src="${u.foto_perfil}" alt="Avatar de ${escapeHtml(u.nome)}" class="profile-avatar-big" style="object-fit:contain;">`
+                : `<div class="profile-avatar-big" style="display:flex; align-items:center; justify-content:center; background:#1e1e2c; color:#94a3b8; font-size:2.2rem;"><i class="fa-solid fa-user"></i></div>`;
             const divSlug = (u.divisao || 'bronze').toLowerCase();
             const divInfo = LIGAS_INFO[divSlug] || LIGAS_INFO.bronze;
 
@@ -596,7 +602,7 @@
                 <!-- 1. CABEÇALHO DO PERFIL -->
                 <div class="profile-header-card">
                     <div class="profile-avatar-wrapper" style="border-color: ${divInfo.corClara};">
-                        <img src="${foto}" alt="Avatar de ${escapeHtml(u.nome)}" class="profile-avatar-big">
+                        ${avatarBigHtml}
                         <div class="profile-league-badge-mini" style="background: ${divInfo.cor};" title="Divisão: ${divInfo.nome}">
                             <i class="fa-solid fa-shield-halved"></i>
                         </div>

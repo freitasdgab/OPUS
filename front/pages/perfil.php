@@ -13,8 +13,9 @@ $stmt_user =$conn->prepare("SELECT * FROM usuarios WHERE id = ?");
 $stmt_user->bind_param("i", $user_id);$stmt_user->execute();
 $dados_user =$stmt_user->get_result()->fetch_assoc();
 
-// Personalização de Avatar e Fundo (Corrigido para os nomes reais)
-$foto_perfil = !empty($dados_user['foto_perfil']) ? $dados_user['foto_perfil'] : '../assets/img/opi pulando feliz.png';$cor_fundo = !empty($dados_user['cor_fundo']) ?$dados_user['cor_fundo'] : '#1cb0f6';
+// Personalização de Avatar e Fundo (Sem foto padrão: ou tem ou não tem)
+$foto_perfil = !empty($dados_user['foto_perfil']) ? trim($dados_user['foto_perfil']) : '';
+$cor_fundo = !empty($dados_user['cor_fundo']) ? $dados_user['cor_fundo'] : '#1cb0f6';
 $pais_usuario = !empty($dados_user['pais']) ? $dados_user['pais'] : 'Brasil';
 $pais_codigo_usuario = !empty($dados_user['pais_codigo']) ? strtolower($dados_user['pais_codigo']) : 'br';
 
@@ -49,10 +50,10 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" type="image/png" href="../assets/img/LOGO.png?v=2">
     <link rel="shortcut icon" type="image/png" href="../assets/img/LOGO.png?v=2">
-    <link rel="stylesheet" href="../assets/css/dashboard.css">
-    <link rel="stylesheet" href="../assets/css/topbar.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/topbar.css?v=<?= time() ?>">
     
-    <link rel="stylesheet" href="../assets/css/perfil.css">
+    <link rel="stylesheet" href="../assets/css/perfil.css?v=<?= time() ?>">
 </head>
 <body>
 
@@ -69,7 +70,9 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                 <div class="main-column">
                     
                     <div class="banner-section" style="background-color: <?php echo htmlspecialchars($cor_fundo); ?>;">
-                        <img src="<?php echo htmlspecialchars($foto_perfil); ?>" alt="Avatar" class="avatar-img">
+                        <?php if (!empty($foto_perfil)): ?>
+                            <img src="<?php echo htmlspecialchars($foto_perfil); ?>" alt="Avatar" class="avatar-img">
+                        <?php endif; ?>
                         <button class="edit-banner-btn" onclick="openProfileModal()">
                             <i class="fa-solid fa-pen"></i>
                         </button>
@@ -117,7 +120,6 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                         </div>
 
                             <button style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 8px; font-weight: bold; font-family: 'Nunito', sans-serif; cursor: pointer; text-transform: uppercase; background-color: #1cb0f6; color: white; border: none;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'" onclick="document.getElementById('socialEditModal').style.display='flex'">Adicionar Redes Sociais</button>
-                            <button style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 8px; font-weight: bold; font-family: 'Nunito', sans-serif; cursor: pointer; text-transform: uppercase; background-color: transparent; color: #1cb0f6; border: 2px solid #1cb0f6;" onmouseover="this.style.backgroundColor='#1cb0f6'; this.style.color='white'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#1cb0f6'" onclick="document.getElementById('projetosEditModal').style.display='flex'">Adicionar Projetos Git</button>
 <div class="social-links">
                             <a href="#" onclick="openSocialModal('seguindo')">seguindo <span id="lblSeguindoCount">0</span></a>
                             <a href="#" onclick="openSocialModal('seguidores')">seguidores <span id="lblSeguidoresCount">0</span></a>
@@ -151,53 +153,6 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                             </div>
                         </div>
                     </div>
-
-                    <div class="stats-section" style="margin-top: 40px;">
-                        <h2>Conquistas</h2>
-                        <!-- Container onde a API insere os troféus via JS -->
-                        <div class="stats-grid-trophies" id="trophy-container">
-                        </div>
-                    </div>
-
-                
-                                        
-
-<div class="stats-section" style="margin-top: 40px;">
-                        <h2>Meus Projetos no Git</h2>
-                        <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
-                            <?php if(!empty($dados_user['projeto_titulo_1'])): ?>
-                                <a href="<?php echo htmlspecialchars($dados_user['projeto_url_1']); ?>" target="_blank" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #191924; border: 1px solid #2e2e42; border-radius: 12px; text-decoration: none; color: #fff; transition: 0.2s;" onmouseover="this.style.borderColor='#1cb0f6'" onmouseout="this.style.borderColor='#2e2e42'">
-                                    <i class="fa-brands fa-git-alt" style="font-size: 2rem; color: #f34f29;"></i>
-                                    <div style="display: flex; flex-direction: column;">
-                                        <span style="font-weight: bold; font-size: 1.1rem;"><?php echo htmlspecialchars($dados_user['projeto_titulo_1']); ?></span>
-                                        <span style="color: #7a7a9d; font-size: 0.9rem;">Ver repositório</span>
-                                    </div>
-                                </a>
-                            <?php endif; ?>
-                            <?php if(!empty($dados_user['projeto_titulo_2'])): ?>
-                                <a href="<?php echo htmlspecialchars($dados_user['projeto_url_2']); ?>" target="_blank" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #191924; border: 1px solid #2e2e42; border-radius: 12px; text-decoration: none; color: #fff; transition: 0.2s;" onmouseover="this.style.borderColor='#1cb0f6'" onmouseout="this.style.borderColor='#2e2e42'">
-                                    <i class="fa-brands fa-git-alt" style="font-size: 2rem; color: #f34f29;"></i>
-                                    <div style="display: flex; flex-direction: column;">
-                                        <span style="font-weight: bold; font-size: 1.1rem;"><?php echo htmlspecialchars($dados_user['projeto_titulo_2']); ?></span>
-                                        <span style="color: #7a7a9d; font-size: 0.9rem;">Ver repositório</span>
-                                    </div>
-                                </a>
-                            <?php endif; ?>
-                            <?php if(!empty($dados_user['projeto_titulo_3'])): ?>
-                                <a href="<?php echo htmlspecialchars($dados_user['projeto_url_3']); ?>" target="_blank" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #191924; border: 1px solid #2e2e42; border-radius: 12px; text-decoration: none; color: #fff; transition: 0.2s;" onmouseover="this.style.borderColor='#1cb0f6'" onmouseout="this.style.borderColor='#2e2e42'">
-                                    <i class="fa-brands fa-git-alt" style="font-size: 2rem; color: #f34f29;"></i>
-                                    <div style="display: flex; flex-direction: column;">
-                                        <span style="font-weight: bold; font-size: 1.1rem;"><?php echo htmlspecialchars($dados_user['projeto_titulo_3']); ?></span>
-                                        <span style="color: #7a7a9d; font-size: 0.9rem;">Ver repositório</span>
-                                    </div>
-                                </a>
-                            <?php endif; ?>
-                            <?php if(empty($dados_user['projeto_titulo_1']) && empty($dados_user['projeto_titulo_2']) && empty($dados_user['projeto_titulo_3'])): ?>
-                                <div style="color: #7a7a9d; font-style: italic; text-align: center; padding: 20px; background: #191924; border: 1px solid #2e2e42; border-radius: 12px;">Nenhum projeto adicionado ainda.</div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-
                 </div>
                 <!-- COLUNA DIREITA -->
                 <div class="side-column">
@@ -220,8 +175,14 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <a href="../../back/logout.php" class="btn-outline" style="margin-top: auto; text-align: center; text-decoration: none; display: block;">Sair da Conta</a>
+                <!-- SEÇÃO CONQUISTAS (LARGURA TOTAL) -->
+                <div class="stats-section profile-full-width">
+                    <h2>Conquistas</h2>
+                    <!-- Container onde a API insere os troféus via JS -->
+                    <div class="stats-grid-trophies" id="trophy-container">
+                    </div>
                 </div>
             </div>
         </main>
@@ -240,6 +201,10 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                 <div class="modal-subtitle">Escolha seu avatar</div>
                 <!-- Nomes dos arquivos corrigidos conforme a pasta de imagens -->
                 <div class="avatar-grid">
+                    <div class="avatar-option" data-src="" title="Sem foto" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:#94a3b8; font-weight:800; font-size:0.8rem; min-height:70px;">
+                        <i class="fa-solid fa-user-slash" style="font-size: 1.8rem;"></i>
+                        <span>Sem foto</span>
+                    </div>
                     <div class="avatar-option" data-src="../assets/img/rosa.png"><img src="../assets/img/rosa.png" alt="Rosa"></div>
                     <div class="avatar-option" data-src="../assets/img/roxo.png"><img src="../assets/img/roxo.png" alt="Roxo"></div>
                     <div class="avatar-option" data-src="../assets/img/laranja.png"><img src="../assets/img/laranja.png" alt="Laranja"></div>
@@ -299,36 +264,6 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
         </div>
     </div>
 
-            <!-- MODAL DE EDITAR PROJETOS -->
-    <div class="modal-overlay" id="projetosEditModal">
-        <div class="modal-content" style="max-width: 450px;">
-            <div class="modal-title">Meus Projetos Git</div>
-            <form method="POST" action="../../back/atualizar_perfil.php">
-                <input type="hidden" name="action" value="update_projetos">
-                <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; max-height: 400px; overflow-y: auto; padding-right: 10px;">
-                    <div>
-                        <label style="color: #1cb0f6; font-weight: bold; margin-bottom: 5px; display: block;">Projeto 1</label>
-                        <input type="text" name="projeto_titulo_1" placeholder="Nome do Projeto" value="<?php echo htmlspecialchars($dados_user['projeto_titulo_1'] ?? ''); ?>" style="width: 100%; padding: 10px; margin-bottom: 5px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif; box-sizing: border-box;">
-                        <input type="url" name="projeto_url_1" placeholder="URL do Repositório (https://github.com/...)" value="<?php echo htmlspecialchars($dados_user['projeto_url_1'] ?? ''); ?>" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif; box-sizing: border-box;">
-                    </div>
-                    <div>
-                        <label style="color: #1cb0f6; font-weight: bold; margin-bottom: 5px; display: block;">Projeto 2</label>
-                        <input type="text" name="projeto_titulo_2" placeholder="Nome do Projeto" value="<?php echo htmlspecialchars($dados_user['projeto_titulo_2'] ?? ''); ?>" style="width: 100%; padding: 10px; margin-bottom: 5px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif; box-sizing: border-box;">
-                        <input type="url" name="projeto_url_2" placeholder="URL do Repositório (https://github.com/...)" value="<?php echo htmlspecialchars($dados_user['projeto_url_2'] ?? ''); ?>" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif; box-sizing: border-box;">
-                    </div>
-                    <div>
-                        <label style="color: #1cb0f6; font-weight: bold; margin-bottom: 5px; display: block;">Projeto 3</label>
-                        <input type="text" name="projeto_titulo_3" placeholder="Nome do Projeto" value="<?php echo htmlspecialchars($dados_user['projeto_titulo_3'] ?? ''); ?>" style="width: 100%; padding: 10px; margin-bottom: 5px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif; box-sizing: border-box;">
-                        <input type="url" name="projeto_url_3" placeholder="URL do Repositório (https://github.com/...)" value="<?php echo htmlspecialchars($dados_user['projeto_url_3'] ?? ''); ?>" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif; box-sizing: border-box;">
-                    </div>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn-modal btn-cancel" onclick="document.getElementById('projetosEditModal').style.display='none'">Cancelar</button>
-                    <button type="submit" class="btn-modal btn-save">Salvar Projetos</button>
-                </div>
-            </form>
-        </div>
-    </div>
     <!-- MODAL DE EDITAR REDES SOCIAIS -->
     <div class="modal-overlay" id="socialEditModal">
         <div class="modal-content" style="max-width: 400px;">
@@ -362,7 +297,7 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
         </div>
     </div>
 
-    <script src="../assets/js/script.js"></script>
+    <script src="../assets/js/script.js?v=<?= time() ?>"></script>
     <script>
         // Config gerada pelo PHP: unico trecho dinamico da pagina, o resto da
         // logica mora em ../assets/js/perfil.js
@@ -371,6 +306,6 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
             cor: "<?php echo htmlspecialchars($cor_fundo); ?>"
         };
     </script>
-    <script src="../assets/js/perfil.js"></script>
+    <script src="../assets/js/perfil.js?v=<?= time() ?>"></script>
 </body>
 </html>

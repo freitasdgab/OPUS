@@ -94,7 +94,7 @@ if ($action === 'buscar_usuarios') {
             if ($check_amigo && $check_amigo->num_rows > 0) $status_conexao = 'aceito';
         }
 
-        $foto = !empty($r['foto_perfil']) ? $r['foto_perfil'] : '../assets/img/opi pulando feliz.png';
+        $foto = !empty($r['foto_perfil']) ? $r['foto_perfil'] : '';
 
         $usuarios[] = [
             'id' => $uid,
@@ -186,7 +186,7 @@ if ($action === 'listar_amigos') {
         $check = $conn->query("SELECT id FROM seguidores WHERE seguidor_id = $user_id AND seguido_id = $uid");
         $is_seguindo = ($check && $check->num_rows > 0);
 
-        $foto = !empty($r['foto_perfil']) ? $r['foto_perfil'] : '../assets/img/opi pulando feliz.png';
+        $foto = !empty($r['foto_perfil']) ? $r['foto_perfil'] : '';
 
         $amigos[] = [
             'id' => $uid,
@@ -302,7 +302,7 @@ if ($action === 'obter_batalha') {
         'nome' => 'Rival Opus',
         'xp' => 0,
         'dias_fogo' => 0,
-        'foto_perfil' => '../assets/img/opi pulando feliz.png'
+        'foto_perfil' => ''
     ];
     $p2_acertos_hoje = 0;
 
@@ -312,8 +312,8 @@ if ($action === 'obter_batalha') {
         $p2_acertos_hoje = (int) ($res_p2_acertos->fetch_assoc()['acertos'] ?? 0);
     }
 
-    $p1_foto = !empty($p1['foto_perfil']) ? $p1['foto_perfil'] : '../assets/img/opi pulando feliz.png';
-    $p2_foto = !empty($p2['foto_perfil']) ? $p2['foto_perfil'] : '../assets/img/opi pulando feliz.png';
+    $p1_foto = !empty($p1['foto_perfil']) ? $p1['foto_perfil'] : '';
+    $p2_foto = !empty($p2['foto_perfil']) ? $p2['foto_perfil'] : '';
 
     // Cálculo da diferença de XP
     $diferenca_xp = $p1['xp'] - $p2['xp'];
@@ -374,7 +374,7 @@ if ($action === 'listar_grupos') {
                                          WHERE gm.grupo_id = $gid LIMIT 4");
         $avatares = [];
         while ($av = $res_membros_av->fetch_assoc()) {
-            $avatares[] = !empty($av['foto_perfil']) ? $av['foto_perfil'] : '../assets/img/opi pulando feliz.png';
+            $avatares[] = !empty($av['foto_perfil']) ? $av['foto_perfil'] : '';
         }
 
         $meus_grupos[] = [
@@ -405,7 +405,7 @@ if ($action === 'listar_grupos') {
                                          WHERE gm.grupo_id = $gid LIMIT 4");
         $avatares = [];
         while ($av = $res_membros_av->fetch_assoc()) {
-            $avatares[] = !empty($av['foto_perfil']) ? $av['foto_perfil'] : '../assets/img/opi pulando feliz.png';
+            $avatares[] = !empty($av['foto_perfil']) ? $av['foto_perfil'] : '';
         }
 
         $grupos_sugeridos[] = [
@@ -458,7 +458,7 @@ if ($action === 'detalhes_grupo') {
     $pos = 1;
 
     while ($r = $res_m->fetch_assoc()) {
-        $foto = !empty($r['foto_perfil']) ? $r['foto_perfil'] : '../assets/img/opi pulando feliz.png';
+        $foto = !empty($r['foto_perfil']) ? $r['foto_perfil'] : '';
         $membros[] = [
             'posicao' => $pos++,
             'id' => (int) $r['id'],
@@ -514,7 +514,7 @@ if ($action === 'buscar_recomendacoes') {
                     if ($check_amigo && $check_amigo->num_rows > 0) $status = 'aceito';
                 }
 
-                $foto = !empty($r['foto_perfil']) ? $r['foto_perfil'] : '../assets/img/opi pulando feliz.png';
+                $foto = !empty($r['foto_perfil']) ? $r['foto_perfil'] : '';
                 $usuarios[] = [
                     'id' => $uid,
                     'nome' => $r['nome'],
@@ -594,7 +594,7 @@ if ($action === 'listar_pedidos') {
     $res = $conn->query($sql);
     $pedidos = [];
     while ($r = $res->fetch_assoc()) {
-        $foto = !empty($r['foto_perfil']) ? $r['foto_perfil'] : '../assets/img/opi pulando feliz.png';
+        $foto = !empty($r['foto_perfil']) ? $r['foto_perfil'] : '';
         $pedidos[] = [
             'pedido_id' => (int) $r['pedido_id'],
             'usuario_id' => (int) $r['usuario_id'],

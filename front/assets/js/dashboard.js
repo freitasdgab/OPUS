@@ -184,40 +184,213 @@
             }
         }
 
+        // ── GERENCIAMENTO DAS DIVISÕES (Divisão 1, 2 e 3) ──────────────────
+        let divisaoAtiva = (typeof window.OPUS_DIVISAO_INICIAL !== 'undefined') ? window.OPUS_DIVISAO_INICIAL : 1;
+
+        function irParaDivisao(divId) {
+            if (window.OpusAudio) window.OpusAudio.playClick();
+            selecionarDivisao(divId, false);
+
+            // Rola imediatamente para o topo do container e da janela
+            const container = document.querySelector('.main-content');
+            if (container) {
+                container.scrollTop = 0;
+            }
+            window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+
+            requestAnimationFrame(() => {
+                if (container) container.scrollTop = 0;
+                window.scrollTo(0, 0);
+
+                const primeiroCap = Array.from(document.querySelectorAll('.capitulo-container'))
+                    .find(c => c.style.display !== 'none');
+                if (primeiroCap) {
+                    primeiroCap.scrollIntoView({ behavior: 'auto', block: 'start' });
+                }
+            });
+        }
+        window.irParaDivisao = irParaDivisao;
+
+        function selecionarDivisao(divId, tocarSom = true) {
+            if (tocarSom && window.OpusAudio) window.OpusAudio.playClick();
+            divisaoAtiva = divId;
+
+            try {
+                localStorage.setItem('opus_divisao_ativa', String(divId));
+            } catch (e) {}
+
+            // Atualiza botões discretos de voltar no topo
+            const btnV2 = document.getElementById('btnVoltarDivisao2');
+            const btnV3 = document.getElementById('btnVoltarDivisao3');
+            if (btnV2) btnV2.style.display = (String(divId) === '2') ? 'block' : 'none';
+            if (btnV3) btnV3.style.display = (String(divId) === '3') ? 'block' : 'none';
+
+            // Atualiza classes ativas nas abas (se existirem)
+            document.querySelectorAll('.divisao-tab-btn').forEach(btn => {
+                const bId = btn.getAttribute('data-divisao-id');
+                const isActive = (String(bId) === String(divId));
+                btn.classList.toggle('active', isActive);
+                btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            });
+
+            // Atualiza o Banner da Divisão (se existir)
+            atualizarHeroBannerDivisao(divId);
+
+            // Filtra os capítulos da trilha
+            const caps = document.querySelectorAll('.capitulo-container');
+            caps.forEach(cap => {
+                const capDiv = cap.getAttribute('data-divisao');
+                if (divId === 'todas' || String(capDiv) === String(divId)) {
+                    cap.style.display = 'flex';
+                } else {
+                    cap.style.display = 'none';
+                }
+            });
+
+            // Filtra os cartões de marco da divisão
+            const milestones = document.querySelectorAll('.division-milestone-card');
+            milestones.forEach(m => {
+                const mDiv = m.getAttribute('data-divisao');
+                if (divId === 'todas' || String(mDiv) === String(divId)) {
+                    m.style.display = 'flex';
+                } else {
+                    m.style.display = 'none';
+                }
+            });
+
+            // Atualiza destaque no mini widget de progresso
+            document.querySelectorAll('.prog-div-item').forEach((item, idx) => {
+                item.classList.toggle('atual', (idx + 1) === Number(divId));
+            });
+
+            // Redesenha caminhos SVG de conexão entre módulos visíveis
+            requestAnimationFrame(() => {
+                if (typeof renderizarTrilhasConexao === 'function') {
+                    renderizarTrilhasConexao();
+                }
+            });
+        }
+
+        function atualizarHeroBannerDivisao(divId) {
+            const heroIcon = document.getElementById('divHeroIcon');
+            const heroIconTag = document.getElementById('divHeroIconTag');
+            const heroPill = document.getElementById('divHeroPill');
+            const heroNivel = document.getElementById('divHeroNivel');
+            const heroRange = document.getElementById('divHeroRange');
+            const heroTitulo = document.getElementById('divHeroTitulo');
+            const heroDesc = document.getElementById('divHeroDesc');
+            const heroProgressFill = document.getElementById('divHeroProgressFill');
+            const heroProgressTxt = document.getElementById('divHeroProgressTxt');
+
+            const dados = window.OPUS_DIVISOES_DADOS || {};
+
+            if (divId === 'todas') {
+                if (heroIcon) heroIcon.style.background = '#1cb0f6';
+                if (heroIconTag) heroIconTag.className = 'fa-solid fa-globe';
+                if (heroPill) heroPill.innerText = 'TRILHA COMPLETA';
+                if (heroNivel) heroNivel.innerText = 'Geral';
+                if (heroRange) heroRange.innerText = 'Seções 1 a 40';
+                if (heroTitulo) heroTitulo.innerText = 'Jornada Completa Java Master';
+                if (heroDesc) heroDesc.innerText = 'Visualizando todas as 40 seções integradas do curso (Fundamentos, Coleções e Orientação a Objetos).';
+
+                let totalConc = 0;
+                Object.values(dados).forEach(d => totalConc += (d.concluidas || 0));
+                let pct = Math.round((totalConc / 40) * 100);
+
+                if (heroProgressFill) {
+                    heroProgressFill.style.width = pct + '%';
+                    heroProgressFill.style.background = 'linear-gradient(90deg, #1cb0f6, #ce82ff, #ffc800)';
+                }
+                if (heroProgressTxt) {
+                    heroProgressTxt.innerText = `${totalConc} de 40 seções concluídas (${pct}%)`;
+                }
+                return;
+            }
+
+            const d = dados[divId];
+            if (!d) return;
+
+            if (heroIcon) heroIcon.style.background = d.cor;
+            if (heroIconTag) heroIconTag.className = 'fa-solid ' + d.icone;
+            if (heroPill) heroPill.innerText = 'DIVISÃO ' + d.id;
+            if (heroNivel) heroNivel.innerText = d.badge;
+            if (heroRange) heroRange.innerText = `Seções ${d.secao_inicio} a ${d.secao_fim}`;
+            if (heroTitulo) heroTitulo.innerText = d.tema;
+            if (heroDesc) heroDesc.innerText = d.descricao;
+
+            if (heroProgressFill) {
+                heroProgressFill.style.width = d.porcentagem + '%';
+                heroProgressFill.style.background = d.cor;
+            }
+            if (heroProgressTxt) {
+                heroProgressTxt.innerText = `${d.concluidas} de ${d.total_secoes} seções concluídas (${d.porcentagem}%)`;
+            }
+        }
+
+        window.selecionarDivisao = selecionarDivisao;
+
         // ── Scroll para a lição atual e Botão Flutuante de Seta ───────────
         function rolarAteLicaoAtual(tocarSom = false) {
             if (tocarSom && window.OpusAudio) window.OpusAudio.playClick();
-            const licaoAtual = document.getElementById('currentLessonNode') 
-                            || document.querySelector('.modulo-node.current')
-                            || document.querySelector('.capitulo-container.current-chapter')
-                            || document.querySelector('.modulo-node.completed');
             
-            if (licaoAtual) {
-                licaoAtual.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                
-                // Animação de pulso para evidenciar onde o jogador está
-                licaoAtual.classList.add('pulse-highlight');
-                setTimeout(() => licaoAtual.classList.remove('pulse-highlight'), 2200);
-            } else {
-                const primeiroCap = document.querySelector('.capitulo-container');
-                if (primeiroCap) {
-                    primeiroCap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Se a lição atual estiver em uma divisão oculta, muda automaticamente para a divisão dela
+            const licaoAlvo = document.getElementById('currentLessonNode');
+            if (licaoAlvo) {
+                const capPai = licaoAlvo.closest('.capitulo-container');
+                if (capPai && capPai.style.display === 'none') {
+                    const divAlvo = capPai.getAttribute('data-divisao');
+                    if (divAlvo) {
+                        selecionarDivisao(divAlvo, false);
+                    }
                 }
             }
+
+            setTimeout(() => {
+                const licaoAtual = document.getElementById('currentLessonNode') 
+                                || document.querySelector('.modulo-node.current')
+                                || document.querySelector('.capitulo-container.current-chapter')
+                                || document.querySelector('.modulo-node.completed');
+                
+                if (licaoAtual && licaoAtual.offsetParent !== null) {
+                    licaoAtual.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Animação de pulso para evidenciar onde o jogador está
+                    licaoAtual.classList.add('pulse-highlight');
+                    setTimeout(() => licaoAtual.classList.remove('pulse-highlight'), 2200);
+                } else {
+                    const primeiroCapVisivel = Array.from(document.querySelectorAll('.capitulo-container'))
+                        .find(c => c.style.display !== 'none');
+                    if (primeiroCapVisivel) {
+                        primeiroCapVisivel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            }, 120);
         }
 
         // Monitora o scroll para orientar a direção da seta (cima ou baixo) e ajustar a opacidade quando visível
         function monitorarVisibilidadeLicaoAtual() {
             const btn = document.getElementById('btnScrollToLesson');
-            const alvo = document.getElementById('currentLessonNode') 
-                      || document.querySelector('.modulo-node.current')
-                      || document.querySelector('.capitulo-container.current-chapter');
             const container = document.querySelector('.main-content');
-            if (!btn || !alvo) return;
+            if (!btn) return;
 
             const icone = btn.querySelector('i');
 
             const checar = () => {
+                const alvo = document.getElementById('currentLessonNode') 
+                          || document.querySelector('.modulo-node.current')
+                          || document.querySelector('.capitulo-container.current-chapter');
+                
+                if (!alvo || alvo.offsetParent === null) {
+                    // Alvo está em outra divisão: convida a ir até a lição atual
+                    btn.style.opacity = '1';
+                    btn.style.transform = 'scale(1)';
+                    if (icone && !icone.classList.contains('fa-crosshairs')) {
+                        icone.className = 'fa-solid fa-crosshairs';
+                    }
+                    btn.setAttribute('title', 'Ir para a sua lição atual na divisão ativa');
+                    return;
+                }
+
                 const rect = alvo.getBoundingClientRect();
                 const containerRect = container ? container.getBoundingClientRect() : { top: 0, bottom: window.innerHeight };
                 
@@ -230,13 +403,11 @@
 
                 if (icone) {
                     if (alvoCentro < containerCentro) {
-                        // O capítulo/lição recomendado está acima: seta aponta para CIMA
                         if (!icone.classList.contains('fa-arrow-up')) {
                             icone.className = 'fa-solid fa-arrow-up';
                         }
                         btn.setAttribute('title', 'Rolar para cima até a lição atual');
                     } else {
-                        // O capítulo/lição recomendado está abaixo: seta aponta para BAIXO
                         if (!icone.classList.contains('fa-arrow-down')) {
                             icone.className = 'fa-solid fa-arrow-down';
                         }
@@ -464,8 +635,15 @@
                 // Conexão 2: Do último módulo (Módulo 5) diretamente ao cabeçalho da PRÓXIMA seção
                 let lastToNextD = '';
                 if (capitulo && milestones.length > 0) {
-                    const nextCap = capitulo.nextElementSibling;
-                    if (nextCap && nextCap.classList.contains('capitulo-container')) {
+                    let nextCap = capitulo.nextElementSibling;
+                    while (nextCap && (nextCap.style.display === 'none' || !nextCap.classList.contains('capitulo-container'))) {
+                        if (nextCap.classList.contains('division-milestone-card')) {
+                            nextCap = null;
+                            break;
+                        }
+                        nextCap = nextCap.nextElementSibling;
+                    }
+                    if (nextCap && nextCap.classList.contains('capitulo-container') && nextCap.style.display !== 'none') {
                         const nextHeader = nextCap.querySelector('.capitulo-header');
                         if (nextHeader) {
                             const nhRect = nextHeader.getBoundingClientRect();
@@ -531,6 +709,13 @@
 
         // Aguarda o carregamento completo para calcular posições e desenhar trilhas
         window.addEventListener('load', function () {
+            try {
+                const divSalva = localStorage.getItem('opus_divisao_ativa');
+                if (divSalva && (divSalva === '1' || divSalva === '2' || divSalva === '3' || divSalva === 'todas')) {
+                    selecionarDivisao(divSalva, false);
+                }
+            } catch (e) {}
+
             setTimeout(rolarAteLicaoAtual, 150);
             setTimeout(monitorarVisibilidadeLicaoAtual, 300);
             inicializarMascotesDashboard();

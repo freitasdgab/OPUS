@@ -1623,7 +1623,98 @@ body.light-mode.licao-page .codedex-btn-reset:hover {
     border-color: #d0d0d0 !important;
 }
 
-
-
-
-
+/* ========================================================================
+   LIGHT MODE: NAVEGADOR DE DIVISÕES (DIVISÃO 1, 2 E 3)
+   ======================================================================== */
+body.light-mode .divisao-tab-btn {
+    background: #ffffff !important;
+    border: 2px solid #e5e5e5 !important;
+    border-bottom: 5px solid #d4d4d4 !important;
+    color: #4b4b4b !important;
+}
+body.light-mode .divisao-tab-btn:hover {
+    background: #f7f9fa !important;
+    border-color: #cbd5e1 !important;
+}
+body.light-mode .divisao-tab-btn.active {
+    background: #f0f9ff !important;
+    border-color: #1cb0f6 !important;
+    border-bottom-color: #148bc4 !important;
+    box-shadow: 0 4px 14px rgba(28, 176, 246, 0.18) !important;
+}
+body.light-mode .divisao-tab-btn#tabDivisao_2.active {
+    background: #faf4ff !important;
+    border-color: #ce82ff !important;
+    border-bottom-color: #9f49d9 !important;
+    box-shadow: 0 4px 14px rgba(206, 130, 255, 0.18) !important;
+}
+body.light-mode .divisao-tab-btn#tabDivisao_3.active {
+    background: #fffdf0 !important;
+    border-color: #ffc800 !important;
+    border-bottom-color: #cc9b00 !important;
+    box-shadow: 0 4px 14px rgba(255, 200, 0, 0.18) !important;
+}
+body.light-mode .divisao-tab-btn.tab-todas .divisao-tab-badge {
+    background: #e2e8f0 !important;
+    color: #475569 !important;
+}
+body.light-mode .divisao-tab-title {
+    color: #1e293b !important;
+}
+body.light-mode .divisao-tab-progress {
+    color: #64748b !important;
+}
+body.light-mode .divisao-hero-banner {
+    background: #ffffff !important;
+    border: 2px solid #e5e5e5 !important;
+    box-shadow: 0 6px 0 #e5e5e5 !important;
+}
+body.light-mode .divisao-hero-info h2 {
+    color: #1e293b !important;
+}
+body.light-mode .divisao-hero-info p {
+    color: #64748b !important;
+}
+body.light-mode .divisao-hero-progress-bar {
+    background: #f1f5f9 !important;
+    border-color: #e2e8f0 !important;
+}
+body.light-mode .divisao-hero-progress-text {
+    color: #334155 !important;
+}
+body.light-mode .division-milestone-card {
+    background: #ffffff !important;
+    border: 2px dashed #cbd5e1 !important;
+    box-shadow: 0 6px 0 #e5e5e5 !important;
+}
+body.light-mode .milestone-content h3 {
+    color: #1e293b !important;
+}
+body.light-mode .milestone-content p {
+    color: #64748b !important;
+}
+body.light-mode .prog-div-item {
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+}
+body.light-mode .prog-div-item:hover {
+    background: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+}
+body.light-mode .prog-div-item.atual {
+    border-color: #1cb0f6 !important;
+    background: #f0f9ff !important;
+}
+body.light-mode .pdiv-val {
+    color: #1e293b !important;
+}
+body.light-mode .btn-voltar-divisao {
+    background: #ffffff !important;
+    border: 2px solid #e5e5e5 !important;
+    border-bottom: 4px solid #d4d4d4 !important;
+    color: #4b4b4b !important;
+}
+body.light-mode .btn-voltar-divisao:hover {
+    background: #f7f9fa !important;
+    color: #1e293b !important;
+}

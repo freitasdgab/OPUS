@@ -28,7 +28,7 @@ if ($action === 'search_users') {
     
     $users = [];
     while ($row = $res->fetch_assoc()) {
-        $foto = $row['foto_perfil'] ?: '../assets/img/opi pulando feliz.png';
+        $foto = !empty($row['foto_perfil']) ? trim($row['foto_perfil']) : '';
         
         // Verifica status da amizade
         $s2 = $conn->prepare("SELECT status FROM pedidos_conexao WHERE (remetente_id = ? AND destinatario_id = ?) OR (remetente_id = ? AND destinatario_id = ?)");
@@ -89,7 +89,7 @@ if ($action === 'get_conversations') {
         $convs[] = [
             'id' => $amigo_id,
             'nome' => $row['nome'],
-            'foto' => $row['foto_perfil'] ?: '../assets/img/opi pulando feliz.png',
+            'foto' => !empty($row['foto_perfil']) ? trim($row['foto_perfil']) : '',
             'ultima_msg' => $row['ultima_msg'] ?: 'Nova conversa iniciada. Diga olá!',
             'ultima_data' => $row['ultima_data'],
             'unread' => (int)$row['unread']
@@ -138,7 +138,7 @@ if ($action === 'get_messages') {
     $s2->bind_param("i", $target_id);
     $s2->execute();
     $amigo = $s2->get_result()->fetch_assoc();
-    $foto = !empty($amigo['foto_perfil']) ? $amigo['foto_perfil'] : '../assets/img/opi pulando feliz.png';
+    $foto = !empty($amigo['foto_perfil']) ? trim($amigo['foto_perfil']) : '';
     
     echo json_encode([
         'messages' => $msgs, 

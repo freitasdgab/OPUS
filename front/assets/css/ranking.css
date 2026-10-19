@@ -103,7 +103,7 @@ body, html {
     box-shadow: 0 4px 0 rgba(0,0,0,0.2);
 }
 
-.podium-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.podium-avatar img { width: 100%; height: 100%; object-fit: contain; }
 
 .podium-name { 
     font-family: 'Nunito', sans-serif; 
@@ -178,7 +178,7 @@ body, html {
     display: flex; 
     flex-direction: column; 
     gap: 16px; 
-    padding-bottom: 20px;
+    padding-bottom: 40vh;
 }
 
 .ranking-row { 
@@ -233,6 +233,13 @@ body, html {
     color: var(--text-muted); 
     overflow: hidden; 
     border: 3px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.row-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .ranking-row.is-me .row-avatar { border-color: var(--duo-blue); }
@@ -287,3 +294,69 @@ body, html {
 }
         
 .img-cover { width: 100%; height: 100%; object-fit: cover; }
+
+/* ==========================================================
+   BOTÃO FLUTUANTE DE ROLAGEM RÁPIDA ATÉ O USUÁRIO ATUAL
+   ========================================================== */
+.btn-scroll-to-lesson {
+    position: fixed;
+    bottom: 25px;
+    left: 280px;
+    z-index: 95;
+    background-color: #1cb0f6;
+    border-bottom: 4px solid #1899d6;
+    color: #ffffff;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    transition: transform 0.08s ease, border-bottom 0.08s ease, opacity 0.2s ease, filter 0.15s ease;
+    user-select: none;
+}
+
+.btn-scroll-to-lesson:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+    background-color: #1cb0f6;
+}
+
+.btn-scroll-to-lesson:active {
+    transform: translateY(3px) !important;
+    border-bottom-width: 1px !important;
+}
+
+.btn-scroll-to-lesson i {
+    font-size: 1.15rem;
+    transition: transform 0.25s ease;
+}
+
+@keyframes pulseHighlightRanking {
+    0% { transform: scale(1); filter: brightness(1); }
+    40% { transform: scale(1.03); filter: brightness(1.25) drop-shadow(0 0 18px rgba(28, 176, 246, 0.65)); }
+    70% { transform: scale(0.99); }
+    100% { transform: scale(1); filter: brightness(1); }
+}
+
+.ranking-row.pulse-highlight,
+.podium-item.pulse-highlight {
+    animation: pulseHighlightRanking 1s ease 2 !important;
+    z-index: 50;
+    position: relative;
+}
+
+@media (max-width: 1023px) {
+    .btn-scroll-to-lesson {
+        left: 20px;
+        bottom: 25px;
+        padding: 9px 15px 9px 12px;
+        font-size: 0.85rem;
+    }
+}
+

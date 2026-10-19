@@ -41,8 +41,14 @@ if (!isset($_SESSION['user_id'])) {
             </div>
         </main>
     </div>
+
+    <!-- BOTÃO FLUTUANTE COM FORMATO DE SETA PARA ROLAGEM DIRETA AO USUÁRIO ATUAL -->
+    <button class="btn-scroll-to-lesson" id="btnScrollToLesson" onclick="rolarAteUsuarioAtual(true)" title="Ir direto para a sua posição no ranking">
+        <i class="fa-solid fa-arrow-right"></i>
+    </button>
     
     <script src="../assets/js/script.js?v=<?= time() ?>"></script>
+    <script src="../assets/js/opus_audio.js"></script>
     <script src="../assets/js/perfil_modal.js?v=<?= time() ?>"></script>
     <script src="../assets/js/ranking.js?v=<?= time() ?>"></script>
 </body>

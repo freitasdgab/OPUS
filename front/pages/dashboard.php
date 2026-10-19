@@ -524,6 +524,81 @@ $nomes_unidades = [
         'licoes' => [1, 2, 3, 4, 5]
     ],
 ];
+
+// Configuração das Divisões da Trilha (Divisão 1, 2 e 3)
+$divisoes = [
+    1 => [
+        'id' => 1,
+        'nome' => 'Divisão 1',
+        'tema' => 'Fundamentos de Java',
+        'descricao' => 'Aprenda os pilares essenciais: estrutura básica, variáveis, operadores, decisões, laços e métodos.',
+        'secao_inicio' => 1,
+        'secao_fim' => 15,
+        'icone' => 'fa-seedling',
+        'cor' => '#1cb0f6',
+        'badge' => 'Fundamentos',
+    ],
+    2 => [
+        'id' => 2,
+        'nome' => 'Divisão 2',
+        'tema' => 'Estruturas de Dados & Coleções',
+        'descricao' => 'Avance para matrizes, HashMap, HashSet, manipulação avançada de Strings com Regex e datas modernas.',
+        'secao_inicio' => 16,
+        'secao_fim' => 26,
+        'icone' => 'fa-layer-group',
+        'cor' => '#ce82ff',
+        'badge' => 'Intermediário',
+    ],
+    3 => [
+        'id' => 3,
+        'nome' => 'Divisão 3',
+        'tema' => 'Orientação a Objetos & Avançado',
+        'descricao' => 'Domine POO completo: classes, encapsulamento, herança, polimorfismo, generics, exceções e design patterns.',
+        'secao_inicio' => 27,
+        'secao_fim' => 40,
+        'icone' => 'fa-crown',
+        'cor' => '#ffc800',
+        'badge' => 'Avançado',
+    ],
+];
+
+// Identifica a seção corrente do aluno
+$capitulo_corrente_usuario = 1;
+foreach ($nomes_unidades as $num_cap => $info) {
+    $st = $unidades[$num_cap]['status'] ?? 'trancado';
+    if ($st === 'current' || $st === 'corrente') {
+        $capitulo_corrente_usuario = $num_cap;
+        break;
+    }
+}
+
+// Determina qual divisão o usuário está cursando atualmente
+$divisao_ativa_padrao = 1;
+if ($capitulo_corrente_usuario >= 27) {
+    $divisao_ativa_padrao = 3;
+} elseif ($capitulo_corrente_usuario >= 16) {
+    $divisao_ativa_padrao = 2;
+} else {
+    $divisao_ativa_padrao = 1;
+}
+
+// Estatísticas e progresso de cada divisão
+foreach ($divisoes as $d_id => &$d_info) {
+    $total_secoes_div = ($d_info['secao_fim'] - $d_info['secao_inicio'] + 1);
+    $concluidas_div = 0;
+    for ($c = $d_info['secao_inicio']; $c <= $d_info['secao_fim']; $c++) {
+        $st = $unidades[$c]['status'] ?? 'trancado';
+        if ($st === 'completo') {
+            $concluidas_div++;
+        }
+    }
+    $d_info['total_secoes'] = $total_secoes_div;
+    $d_info['concluidas'] = $concluidas_div;
+    $d_info['porcentagem'] = round(($concluidas_div / $total_secoes_div) * 100);
+    $d_info['is_completa'] = ($concluidas_div >= $total_secoes_div);
+    $d_info['is_atual'] = ($divisao_ativa_padrao === $d_id);
+}
+unset($d_info);
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -551,6 +626,19 @@ $nomes_unidades = [
                 
                 <!-- COLUNA DA TRILHA DE APRENDIZADO -->
                 <div class="curriculum-column">
+
+                    <!-- BOTÃO DISCRETO PARA RETORNAR DE UMA DIVISÃO QUANDO VISUALIZANDO DIVISÃO 2 OU 3 -->
+                    <div class="divisao-voltar-topo" id="btnVoltarDivisao2" data-divisao-topo="2" style="<?php echo ($divisao_ativa_padrao === 2) ? 'display: block;' : 'display: none;'; ?>">
+                        <button type="button" class="btn-voltar-divisao" onclick="irParaDivisao(1)">
+                            <i class="fa-solid fa-arrow-left"></i> Voltar para a Divisão 1 (Fundamentos)
+                        </button>
+                    </div>
+                    <div class="divisao-voltar-topo" id="btnVoltarDivisao3" data-divisao-topo="3" style="<?php echo ($divisao_ativa_padrao === 3) ? 'display: block;' : 'display: none;'; ?>">
+                        <button type="button" class="btn-voltar-divisao" onclick="irParaDivisao(2)">
+                            <i class="fa-solid fa-arrow-left"></i> Voltar para a Divisão 2 (Estruturas & Coleções)
+                        </button>
+                    </div>
+
                     <div class="unit-list">
                         <?php foreach ($nomes_unidades as $num_cap => $info): 
                             $status_cap_banco = $unidades[$num_cap]['status'] ?? 'trancado';
@@ -568,8 +656,15 @@ $nomes_unidades = [
                             
                             $posicao_mascote = ($num_cap % 2 != 0) ? 'mascote-esquerda' : 'mascote-direita';
                             $imagem_mascote = $info['mascote'] ?? 'vistodecimaazul.png';
+
+                            // Identifica a divisão a que este capítulo pertence (Divisão 1, 2 ou 3)
+                            $divisao_capitulo = ($num_cap <= 15) ? 1 : (($num_cap <= 26) ? 2 : 3);
                         ?>
-                            <div class="capitulo-container <?php echo ($status_cap_banco === 'current' || $status_cap_banco === 'corrente' ? 'current-chapter' : ''); ?>" id="capitulo_<?php echo $num_cap; ?>" data-capitulo="<?php echo $num_cap; ?>">
+                            <div class="capitulo-container <?php echo ($status_cap_banco === 'current' || $status_cap_banco === 'corrente' ? 'current-chapter' : ''); ?>" 
+                                 id="capitulo_<?php echo $num_cap; ?>" 
+                                 data-capitulo="<?php echo $num_cap; ?>"
+                                 data-divisao="<?php echo $divisao_capitulo; ?>"
+                                 style="<?php echo ($divisao_capitulo !== $divisao_ativa_padrao) ? 'display: none;' : ''; ?>">
                                 <div class="capitulo-header" style="background-color: <?php echo $cor_unidade; ?>;">
                                     <div class="capitulo-header-text">
                                         <h2><?php echo $info['titulo']; ?></h2>
@@ -682,6 +777,51 @@ $nomes_unidades = [
                                     <img src="../assets/img/<?php echo $imagem_mascote; ?>" alt="Mascote Opus" class="mascote-lateral <?php echo $posicao_mascote; ?>">
                                 </div>
                             </div>
+
+                            <?php if ($num_cap == 15): ?>
+                                <!-- MARCO VISUAL DO FIM DA DIVISÃO 1 -->
+                                <div class="division-milestone-card milestone-div-1" data-divisao="1" style="<?php echo ($divisao_ativa_padrao !== 1 && $divisao_ativa_padrao !== 'todas') ? 'display: none;' : ''; ?>">
+                                    <div class="milestone-badge-icon" style="background: linear-gradient(135deg, #1cb0f6, #0088cc);">
+                                        <i class="fa-solid fa-trophy"></i>
+                                    </div>
+                                    <div class="milestone-content">
+                                        <span class="milestone-tag">FIM DA DIVISÃO 1</span>
+                                        <h3>Fundamentos de Java Concluídos!</h3>
+                                        <p>Você dominou sintaxe, tipos, variáveis, condicionais, laços, vetores e métodos. Prepare-se para aprofundar em Estruturas de Dados e Coleções!</p>
+                                        <button type="button" class="btn-ir-proxima-divisao" onclick="irParaDivisao(2)">
+                                            Ir para a Divisão 2 <i class="fa-solid fa-arrow-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            <?php elseif ($num_cap == 26): ?>
+                                <!-- MARCO VISUAL DO FIM DA DIVISÃO 2 -->
+                                <div class="division-milestone-card milestone-div-2" data-divisao="2" style="<?php echo ($divisao_ativa_padrao !== 2 && $divisao_ativa_padrao !== 'todas') ? 'display: none;' : ''; ?>">
+                                    <div class="milestone-badge-icon" style="background: linear-gradient(135deg, #ce82ff, #9b39e6);">
+                                        <i class="fa-solid fa-medal"></i>
+                                    </div>
+                                    <div class="milestone-content">
+                                        <span class="milestone-tag">FIM DA DIVISÃO 2</span>
+                                        <h3>Estruturas & Coleções Dominadas!</h3>
+                                        <p>Nível intermediário alcançado com sucesso! Agora é o momento de entrar na Divisão 3 e dominar Orientação a Objetos profissional.</p>
+                                        <button type="button" class="btn-ir-proxima-divisao" onclick="irParaDivisao(3)">
+                                            Ir para a Divisão 3 <i class="fa-solid fa-arrow-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            <?php elseif ($num_cap == 40): ?>
+                                <!-- MARCO VISUAL DO FIM DA DIVISÃO 3 -->
+                                <div class="division-milestone-card milestone-div-3" data-divisao="3" style="<?php echo ($divisao_ativa_padrao !== 3 && $divisao_ativa_padrao !== 'todas') ? 'display: none;' : ''; ?>">
+                                    <div class="milestone-badge-icon" style="background: linear-gradient(135deg, #ffc800, #e67e00);">
+                                        <i class="fa-solid fa-crown"></i>
+                                    </div>
+                                    <div class="milestone-content">
+                                        <span class="milestone-tag" style="color: #ffc800;">MESTRE EM JAVA OPUS</span>
+                                        <h3>Todas as 3 Divisões Finalizadas!</h3>
+                                        <p>Parabéns, desenvolvedor! Você percorreu todas as 40 seções e 200 lições do curso, dominando POO, design patterns e arquitetura Java.</p>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+
                         <?php endforeach; ?>
                     </div>
                 </div>
@@ -824,6 +964,25 @@ $nomes_unidades = [
                                 <div class="lbl">Troféus</div>
                             </div>
                         </div>
+
+                        <!-- Mini Divisões no Widget de Progresso -->
+                        <div class="progresso-divisoes-mini">
+                            <div class="prog-div-item <?php echo $divisoes[1]['is_atual'] ? 'atual' : ''; ?>" onclick="irParaDivisao(1)" title="Ver Divisão 1">
+                                <span class="pdiv-dot" style="background: #1cb0f6;"></span>
+                                <span class="pdiv-nome">Divisão 1</span>
+                                <span class="pdiv-val"><?php echo $divisoes[1]['concluidas']; ?>/15</span>
+                            </div>
+                            <div class="prog-div-item <?php echo $divisoes[2]['is_atual'] ? 'atual' : ''; ?>" onclick="irParaDivisao(2)" title="Ver Divisão 2">
+                                <span class="pdiv-dot" style="background: #ce82ff;"></span>
+                                <span class="pdiv-nome">Divisão 2</span>
+                                <span class="pdiv-val"><?php echo $divisoes[2]['concluidas']; ?>/11</span>
+                            </div>
+                            <div class="prog-div-item <?php echo $divisoes[3]['is_atual'] ? 'atual' : ''; ?>" onclick="irParaDivisao(3)" title="Ver Divisão 3">
+                                <span class="pdiv-dot" style="background: #ffc800;"></span>
+                                <span class="pdiv-nome">Divisão 3</span>
+                                <span class="pdiv-val"><?php echo $divisoes[3]['concluidas']; ?>/14</span>
+                            </div>
+                        </div>
                     </div>
 
                 </div> <!-- Fim widgets-column -->
@@ -913,6 +1072,10 @@ $nomes_unidades = [
         <i class="fa-solid fa-arrow-right"></i>
     </button>
 
+    <script>
+        window.OPUS_DIVISOES_DADOS = <?= json_encode($divisoes, JSON_UNESCAPED_UNICODE) ?>;
+        window.OPUS_DIVISAO_INICIAL = <?= json_encode($divisao_ativa_padrao) ?>;
+    </script>
     <script src="../assets/js/script.js"></script> 
     <script src="../assets/js/opus_audio.js"></script>
     <script src="../assets/js/dashboard.js?v=<?= time() ?>"></script>
