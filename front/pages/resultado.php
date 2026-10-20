@@ -3,9 +3,9 @@ session_start();
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
-require_once '../../back/conexao.php';
-require_once '../../back/jogador_status.php';
-require_once '../../back/mascotes_capitulos.php';
+require_once '../../back/config/conexao.php';
+require_once '../../back/lib/jogador_status.php';
+require_once '../../back/lib/mascotes_capitulos.php';
 
 if (!isset($_SESSION['user_id']) || !isset($_POST['acertos'])) {
     header("Location: dashboard.php");
@@ -201,7 +201,7 @@ if ($fogo_acendeu_agora) {
         <div class="app-container">
         
         <main class="main-content" style="width: 100%; margin-left: 0;">
-            <?php include '../../back/topbar.php'; ?>
+            <?php include '../../back/includes/topbar.php'; ?>
             <div class="result-container">
                 <div class="result-card" id="mainResultCard">
                     <div class="result-mascote-wrapper">

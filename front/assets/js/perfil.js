@@ -11,21 +11,34 @@ const colorOptions = document.querySelectorAll('.color-option');
 const inputAvatar = document.getElementById('input-avatar');
 const inputCor = document.getElementById('input-cor');
 
-const currentAvatar = window.OPUS_PERFIL.avatar;
-const currentColor = window.OPUS_PERFIL.cor;
+const currentAvatar = window.OPUS_PERFIL ? window.OPUS_PERFIL.avatar : '';
+const currentColor = window.OPUS_PERFIL ? window.OPUS_PERFIL.cor : '#1cb0f6';
 
 function openProfileModal() {
+    if (!profileModal) return;
     profileModal.classList.add('active');
-    avatarOptions.forEach(opt => opt.classList.toggle('selected', opt.dataset.src === currentAvatar));
+    
+    avatarOptions.forEach(opt => {
+        opt.classList.toggle('selected', opt.dataset.src === currentAvatar);
+    });
     colorOptions.forEach(opt => opt.classList.toggle('selected', opt.dataset.color === currentColor));
 }
-function closeProfileModal() { profileModal.classList.remove('active'); }
+function closeProfileModal() { 
+    if (profileModal) profileModal.classList.remove('active'); 
+}
+
+// Fechar ao clicar fora do modal
+if (profileModal) {
+    profileModal.addEventListener('click', function(e) {
+        if (e.target === profileModal) closeProfileModal();
+    });
+}
 
 avatarOptions.forEach(opt => {
     opt.addEventListener('click', function() {
         avatarOptions.forEach(o => o.classList.remove('selected'));
         this.classList.add('selected');
-        inputAvatar.value = this.dataset.src;
+        if (inputAvatar) inputAvatar.value = this.dataset.src;
     });
 });
 
@@ -33,7 +46,7 @@ colorOptions.forEach(opt => {
     opt.addEventListener('click', function() {
         colorOptions.forEach(o => o.classList.remove('selected'));
         this.classList.add('selected');
-        inputCor.value = this.dataset.color;
+        if (inputCor) inputCor.value = this.dataset.color;
     });
 });
 

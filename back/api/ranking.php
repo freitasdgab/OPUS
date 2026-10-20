@@ -1,7 +1,7 @@
 <?php
 session_start();
 header('Content-Type: application/json');
-require_once __DIR__ . '/../conexao.php';
+require_once __DIR__ . '/../config/conexao.php';
 
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(["error" => "unauthorized"]);

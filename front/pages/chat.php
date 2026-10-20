@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once '../../back/conexao.php';
-require_once '../../back/jogador_status.php';
+require_once '../../back/config/conexao.php';
+require_once '../../back/lib/jogador_status.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: auth.html");
@@ -40,10 +40,10 @@ $convite_url = "http://" . $_SERVER['HTTP_HOST'] . "/OPUS/front/pages/auth.html?
 </head>
 <body>
     <div class="app-container">
-        <?php include '../../back/sidebar.php'; ?>
+        <?php include '../../back/includes/sidebar.php'; ?>
 
         <main class="main-content" style="padding-top: 0; padding-bottom: 0;">
-            <?php include '../../back/topbar.php'; ?>
+            <?php include '../../back/includes/topbar.php'; ?>
             
             <div class="chat-hub-container">
                 <!-- COLUNA ESQUERDA: LISTA DE CONVERSAS (DIRECT) -->

@@ -64,7 +64,7 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Abrindo Baú...';
 
-            fetch('../../back/resgatar_bau.php', {
+            fetch('../../back/api/resgatar_bau.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'unidade_numero=' + encodeURIComponent(capAtualBau)

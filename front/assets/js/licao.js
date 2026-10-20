@@ -549,7 +549,7 @@
         playAudio('playClick');
 
         try {
-            await fetch('../../back/penalizar_saida.php', {
+            await fetch('../../back/api/penalizar_saida.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 keepalive: true

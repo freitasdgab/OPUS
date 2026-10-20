@@ -1,8 +1,8 @@
 <?php
 session_start();
 header('Content-Type: application/json');
-require_once __DIR__ . '/../conexao.php';
-require_once __DIR__ . '/../ligas_logic.php';
+require_once __DIR__ . '/../config/conexao.php';
+require_once __DIR__ . '/../lib/ligas_logic.php';
 
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(["error" => "unauthorized"]);

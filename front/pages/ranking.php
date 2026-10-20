@@ -24,11 +24,11 @@ if (!isset($_SESSION['user_id'])) {
 </head>
 <body>
         <div class="app-container">
-        <?php include '../../back/sidebar.php'; ?>
+        <?php include '../../back/includes/sidebar.php'; ?>
 
         <main class="main-content">
             
-            <?php include '../../back/topbar.php'; ?>
+            <?php include '../../back/includes/topbar.php'; ?>
 
             <div class="ranking-container">
                 <div class="ranking-header">

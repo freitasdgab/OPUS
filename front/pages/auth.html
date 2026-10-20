@@ -34,7 +34,7 @@
                 FAÇA LOGIN OU ENTRE NA SUA CONTA PARA CONTINUAR APRENDENDO PROGRAMAÇÃO DE FORMA DIVERTIDA E INTERATIVA.
             </h2>
 
-            <form action="../../back/auth.php" method="POST" id="authForm">
+            <form action="../../back/auth/auth.php" method="POST" id="authForm">
                 <input type="hidden" name="action" id="authAction" value="cadastro">
                 <input type="hidden" name="grupo" id="authGrupo" value="">
                 <input type="hidden" name="convite" id="authConvite" value="">
@@ -158,7 +158,7 @@
         }
 
         function enviarAutenticacaoBackend(dados) {
-            fetch('../../back/google_callback.php', {
+            fetch('../../back/auth/google_callback.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dados),

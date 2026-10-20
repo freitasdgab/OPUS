@@ -2,8 +2,8 @@
 session_start();
 header('Content-Type: application/json; charset=utf-8');
 
-require_once __DIR__ . '/../conexao.php';
-require_once __DIR__ . '/../chatbot_logic.php';
+require_once __DIR__ . '/../config/conexao.php';
+require_once __DIR__ . '/../lib/chatbot_logic.php';
 
 $raw_input = file_get_contents('php://input');
 $input = json_decode($raw_input, true) ?? [];

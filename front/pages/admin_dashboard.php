@@ -1,8 +1,8 @@
 <?php
 session_start();
-require_once '../../back/conexao.php';
-require_once '../../back/jogador_status.php';
-require_once '../../back/ligas_logic.php';
+require_once '../../back/config/conexao.php';
+require_once '../../back/lib/jogador_status.php';
+require_once '../../back/lib/ligas_logic.php';
 
 // ----------------------------------------------------
 // VERIFICAÇÃO DE SEGURANÇA E ACESSO DE ADMINISTRADOR
@@ -96,7 +96,7 @@ $email_admin = htmlspecialchars($current_user['email'] ?? '');
                 <div class="admin-user-name"><?= $nome_admin ?></div>
                 <div class="admin-user-email"><?= $email_admin ?></div>
             </div>
-            <a href="../../back/logout.php" class="btn-logout" title="Encerrar Sessão">
+            <a href="../../back/auth/logout.php" class="btn-logout" title="Encerrar Sessão">
                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Sair
             </a>
         </div>

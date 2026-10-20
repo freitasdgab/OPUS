@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../back/conexao.php';
+require_once '../../back/config/conexao.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: auth.html");
@@ -25,10 +25,10 @@ if (!isset($_SESSION['user_id'])) {
 <body>
     
     <div class="app-container">
-        <?php include '../../back/sidebar.php'; ?>
+        <?php include '../../back/includes/sidebar.php'; ?>
 
         <main class="main-content">
-            <?php include '../../back/topbar.php'; ?>
+            <?php include '../../back/includes/topbar.php'; ?>
 
             <div class="page-container">
                 

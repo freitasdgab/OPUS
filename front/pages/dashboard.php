@@ -3,7 +3,7 @@ session_start();
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
-require_once '../../back/conexao.php';
+require_once '../../back/config/conexao.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: auth.html");
@@ -16,9 +16,10 @@ if (!empty($_SESSION['is_admin']) || (isset($_SESSION['user_nivel_acesso']) && $
     exit();
 }
 
-require_once '../../back/jogador_status.php';
-require_once '../../back/ligas_logic.php';
-require_once '../../back/missoes_logic.php';
+require_once '../../back/lib/jogador_status.php';
+require_once '../../back/lib/ligas_logic.php';
+require_once '../../back/lib/missoes_logic.php';
+require_once '../../back/lib/conteudo_logic.php';
 
 $user_id = (int) $_SESSION['user_id'];
 $status_jogador = opus_sincronizar_jogador($conn, $user_id);
@@ -99,19 +100,6 @@ $progresso_porcentagem = min(100, (int) round(($total_licoes_feitas / $total_lic
 
 // 5. BAÚS DE RECOMPENSA RESGATADOS PELO USUÁRIO
 $baus_resgatados = [];
-$conn->query("CREATE TABLE IF NOT EXISTS `bau_recompensas` (
-    `id` INT(11) NOT NULL AUTO_INCREMENT,
-    `usuario_id` INT(11) NOT NULL,
-    `unidade_numero` INT(11) NOT NULL,
-    `tipo_recompensa` VARCHAR(50) NOT NULL DEFAULT 'misto',
-    `xp_ganho` INT(11) NOT NULL DEFAULT 50,
-    `vidas_ganhas` INT(11) NOT NULL DEFAULT 0,
-    `resgatado_em` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `uq_user_unidade` (`usuario_id`, `unidade_numero`),
-    KEY `idx_usuario` (`usuario_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
-
 $res_baus = $conn->query("SELECT unidade_numero FROM bau_recompensas WHERE usuario_id = $user_id");
 if ($res_baus) {
     while ($rb = $res_baus->fetch_assoc()) {
@@ -119,448 +107,9 @@ if ($res_baus) {
     }
 }
 
-// Configuração dos Capítulos
-
-
-$nomes_unidades = [
-    1 => [
-        'titulo' => 'Seção 1',
-        'nome' => 'Introdução',
-        'descricao' => 'Módulo focado em Introdução.',
-        'cor' => '#1cb0f6',
-        'mascote' => 'vistodecimaazul.png',
-        'guia_texto' => 'Nesta seção, você dará seus primeiros passos na programação Java! Vamos conhecer a estrutura básica de um programa, como a classe principal e o método main funcionam, e como exibir mensagens na tela.',
-        'guia_codigo' => 'public class Main {<br>&nbsp;&nbsp;&nbsp;&nbsp;public static void main(String[] args) {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println("Olá, Mundo!");<br>&nbsp;&nbsp;&nbsp;&nbsp;}<br>}',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    2 => [
-        'titulo' => 'Seção 2',
-        'nome' => 'Variáveis Parte 1',
-        'descricao' => 'Módulo focado em Variáveis Parte 1.',
-        'cor' => '#ff4b4b',
-        'mascote' => 'vistodecimarosa.png',
-        'guia_texto' => 'As variáveis são como caixas onde guardamos informações. Aqui aprenderemos a declarar variáveis para armazenar números inteiros (int) e texto (String), além de ver como atribuir e ler esses valores.',
-        'guia_codigo' => 'int idade = 20;<br>String nome = "Opus";<br><br>System.out.println(nome + " tem " + idade + " anos.");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    3 => [
-        'titulo' => 'Seção 3',
-        'nome' => 'Variáveis Parte 2',
-        'descricao' => 'Módulo focado em Variáveis Parte 2.',
-        'cor' => '#ce82ff',
-        'mascote' => 'vistodecimaroxo.png',
-        'guia_texto' => 'Avançando no uso das variáveis! Agora você vai conhecer os tipos para armazenar números decimais (double) e valores lógicos de verdadeiro ou falso (boolean). Entender esses tipos é essencial para lidar com informações reais.',
-        'guia_codigo' => 'double altura = 1.75;<br>boolean aprovado = true;<br><br>if(aprovado) {<br>&nbsp;&nbsp;&nbsp;&nbsp;System.out.println("Altura: " + altura);<br>}',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    4 => [
-        'titulo' => 'Seção 4',
-        'nome' => 'Operadores Parte 1',
-        'descricao' => 'Módulo focado em Operadores Parte 1.',
-        'cor' => '#58cc02',
-        'mascote' => 'vistodecimaverde.png',
-        'guia_texto' => 'Chegou a hora da matemática! Vamos usar os operadores aritméticos básicos para fazer contas no código: adição (+), subtração (-), multiplicação (*) e divisão (/). Você verá como o Java processa essas expressões.',
-        'guia_codigo' => 'int a = 10;<br>int b = 3;<br>int soma = a + b;<br>int resto = a % b;<br>System.out.println("Soma: " + soma);',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    5 => [
-        'titulo' => 'Seção 5',
-        'nome' => 'Operadores Parte 2',
-        'descricao' => 'Módulo focado em Operadores Parte 2.',
-        'cor' => '#ffc800',
-        'mascote' => 'vistodecimalaranja.png',
-        'guia_texto' => 'Além de contas, precisamos tomar decisões. Vamos explorar os operadores relacionais (==, !=, &gt;, &lt;) e lógicos (&amp;&amp;, ||) que permitem comparar variáveis e criar regras complexas para o nosso programa.',
-        'guia_codigo' => 'int nota = 8;<br>boolean passou = (nota &gt;= 7) &amp;&amp; (nota != 0);<br><br>System.out.println("Passou? " + passou);',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    6 => [
-        'titulo' => 'Seção 6',
-        'nome' => 'Tomada de Decisão',
-        'descricao' => 'Módulo focado em Tomada de Decisão.',
-        'cor' => '#1cb0f6',
-        'mascote' => 'vistodecimaazul.png',
-        'guia_texto' => 'Aprenda a controlar o fluxo de execução dos seus programas Java com if, else-if e switch, permitindo que seu código tome decisões lógicas com base nas condições fornecidas.',
-        'guia_codigo' => 'int idade = 18;<br>if (idade &gt;= 18) {<br>&nbsp;&nbsp;&nbsp;&nbsp;System.out.println("Maior de idade");<br>} else {<br>&nbsp;&nbsp;&nbsp;&nbsp;System.out.println("Menor de idade");<br>}',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    7 => [
-        'titulo' => 'Seção 7',
-        'nome' => 'I/O Básico',
-        'descricao' => 'Módulo focado em I/O Básico.',
-        'cor' => '#ff4b4b',
-        'mascote' => 'vistodecimarosa.png',
-        'guia_texto' => 'Explore os recursos fundamentais de entrada e saída em Java, desde a leitura de dados do teclado com a classe Scanner até a formatação elegante de mensagens com printf.',
-        'guia_codigo' => 'Scanner sc = new Scanner(System.in);<br>System.out.print("Digite o nome: ");<br>String nome = sc.nextLine();<br>System.out.printf("Olá, %s!\\n", nome);',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    8 => [
-        'titulo' => 'Seção 8',
-        'nome' => 'Aplicativo de Calculadora',
-        'descricao' => 'Módulo focado em Aplicativo de Calculadora.',
-        'cor' => '#ce82ff',
-        'mascote' => 'vistodecimaroxo.png',
-        'guia_texto' => 'Construa lógica computacional e modular com operações matemáticas completas, explorando a classe java.lang.Math para arredondamentos, potências e raízes.',
-        'guia_codigo' => 'double raiz = Math.sqrt(64);<br>double potencia = Math.pow(2, 3);<br>System.out.println("Raiz: " + raiz + ", Potência: " + potencia);',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    9 => [
-        'titulo' => 'Seção 9',
-        'nome' => 'Laços',
-        'descricao' => 'Módulo focado em Laços.',
-        'cor' => '#58cc02',
-        'mascote' => 'vistodecimaverde.png',
-        'guia_texto' => 'Nesta seção você dominará Laços de Repetição for e while. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Laços<br>System.out.println("1 2 3");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    10 => [
-        'titulo' => 'Seção 10',
-        'nome' => 'Métodos e Funções',
-        'descricao' => 'Módulo focado em Métodos e Funções.',
-        'cor' => '#ffc800',
-        'mascote' => 'vistodecimalaranja.png',
-        'guia_texto' => 'Nesta seção você dominará Declaração e Sobrecarga de Métodos. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Métodos e Funções<br>System.out.println("50");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    11 => [
-        'titulo' => 'Seção 11',
-        'nome' => 'Funcionamento de Arrays',
-        'descricao' => 'Módulo focado em Funcionamento de Arrays.',
-        'cor' => '#1cb0f6',
-        'mascote' => 'vistodecimaazul.png',
-        'guia_texto' => 'Nesta seção você dominará Alocação e Índices de Vetores. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Funcionamento de Arrays<br>System.out.println("Java");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    12 => [
-        'titulo' => 'Seção 12',
-        'nome' => 'Inteirando sobre Arrays',
-        'descricao' => 'Módulo focado em Inteirando sobre Arrays.',
-        'cor' => '#ff4b4b',
-        'mascote' => 'vistodecimarosa.png',
-        'guia_texto' => 'Nesta seção você dominará Percorrendo Vetores com for e for-each. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Iterando sobre Arrays<br>System.out.println("60");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    13 => [
-        'titulo' => 'Seção 13',
-        'nome' => 'Operações com String',
-        'descricao' => 'Módulo focado em Operações com String.',
-        'cor' => '#ce82ff',
-        'mascote' => 'vistodecimaroxo.png',
-        'guia_texto' => 'Nesta seção você dominará Métodos toUpperCase, length e substring. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Operações com String<br>System.out.println("JAVA");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    14 => [
-        'titulo' => 'Seção 14',
-        'nome' => 'Desafios Finais',
-        'descricao' => 'Módulo focado em Desafios Finais.',
-        'cor' => '#58cc02',
-        'mascote' => 'vistodecimaverde.png',
-        'guia_texto' => 'Nesta seção você dominará Revisão e Prática Integrada dos Módulos Anteriores. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => 'System.out.println("Sucesso Total");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    15 => [
-        'titulo' => 'Seção 15',
-        'nome' => 'Certificado',
-        'descricao' => 'Módulo focado em Certificado.',
-        'cor' => '#ffc800',
-        'mascote' => 'vistodecimalaranja.png',
-        'guia_texto' => 'Nesta seção você dominará Consolidação da Primeira Etapa de Java. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => 'System.out.println("Certificado Conquistado");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    16 => [
-        'titulo' => 'Seção 16',
-        'nome' => 'Arrays Multidimensionais',
-        'descricao' => 'Módulo focado em Arrays Multidimensionais.',
-        'cor' => '#1cb0f6',
-        'mascote' => 'vistodecimaazul.png',
-        'guia_texto' => 'Nesta seção você dominará Matrizes e Linhas/Colunas. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Arrays Multidimensionais<br>System.out.println("99");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    17 => [
-        'titulo' => 'Seção 17',
-        'nome' => 'HashMap Parte 1',
-        'descricao' => 'Módulo focado em HashMap Parte 1.',
-        'cor' => '#ff4b4b',
-        'mascote' => 'vistodecimarosa.png',
-        'guia_texto' => 'Nesta seção você dominará Mapeamento de Chave e Valor com HashMap. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de HashMap Parte 1<br>System.out.println("Brasilia");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    18 => [
-        'titulo' => 'Seção 18',
-        'nome' => 'HashMap Parte 2',
-        'descricao' => 'Módulo focado em HashMap Parte 2.',
-        'cor' => '#ce82ff',
-        'mascote' => 'vistodecimaroxo.png',
-        'guia_texto' => 'Nesta seção você dominará Iteração e Métodos containsKey e remove. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de HashMap Parte 2<br>System.out.println("true");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    19 => [
-        'titulo' => 'Seção 19',
-        'nome' => 'HashSet Parte 1',
-        'descricao' => 'Módulo focado em HashSet Parte 1.',
-        'cor' => '#58cc02',
-        'mascote' => 'vistodecimaverde.png',
-        'guia_texto' => 'Nesta seção você dominará Conjuntos de Elementos Únicos sem Repetição. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de HashSet Parte 1<br>System.out.println("2");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    20 => [
-        'titulo' => 'Seção 20',
-        'nome' => 'HashSet Parte 2',
-        'descricao' => 'Módulo focado em HashSet Parte 2.',
-        'cor' => '#ffc800',
-        'mascote' => 'vistodecimalaranja.png',
-        'guia_texto' => 'Nesta seção você dominará Operações de União e Interseção com Sets. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de HashSet Parte 2<br>System.out.println("true");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    21 => [
-        'titulo' => 'Seção 21',
-        'nome' => 'Fluxo de Controle Avançado',
-        'descricao' => 'Módulo focado em Fluxo de Controle Avançado.',
-        'cor' => '#1cb0f6',
-        'mascote' => 'vistodecimaazul.png',
-        'guia_texto' => 'Nesta seção você dominará Controle com Break Rotulado e Continue. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Fluxo de Controle Avançado<br>System.out.println("1 3");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    22 => [
-        'titulo' => 'Seção 22',
-        'nome' => 'Tratamento Básico de Erros',
-        'descricao' => 'Módulo focado em Tratamento Básico de Erros.',
-        'cor' => '#ff4b4b',
-        'mascote' => 'vistodecimarosa.png',
-        'guia_texto' => 'Nesta seção você dominará Blocos try, catch e finally. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Tratamento Básico de Erros<br>System.out.println("Erro Capturado");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    23 => [
-        'titulo' => 'Seção 23',
-        'nome' => 'Operações Avançadas com Strings',
-        'descricao' => 'Módulo focado em Operações Avançadas com Strings.',
-        'cor' => '#ce82ff',
-        'mascote' => 'vistodecimaroxo.png',
-        'guia_texto' => 'Nesta seção você dominará StringBuilder e Regex em Strings. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Operações Avançadas com Strings<br>System.out.println("Opus");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    24 => [
-        'titulo' => 'Seção 24',
-        'nome' => 'Projeto Contador de Palavras Únicas',
-        'descricao' => 'Módulo focado em Projeto Contador de Palavras Únicas.',
-        'cor' => '#58cc02',
-        'mascote' => 'vistodecimaverde.png',
-        'guia_texto' => 'Nesta seção você dominará Prática de Strings e Sets integrados. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Projeto Contador de Palavras Únicas<br>System.out.println("3");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    25 => [
-        'titulo' => 'Seção 25',
-        'nome' => 'Data e Hora',
-        'descricao' => 'Módulo focado em Data e Hora.',
-        'cor' => '#ffc800',
-        'mascote' => 'vistodecimalaranja.png',
-        'guia_texto' => 'Nesta seção você dominará A nova API java.time (LocalDate). Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Data e Hora<br>System.out.println("2026");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    26 => [
-        'titulo' => 'Seção 26',
-        'nome' => 'Certificado da Seção 1 e 2',
-        'descricao' => 'Módulo focado em Certificado da Seção 1 e 2.',
-        'cor' => '#1cb0f6',
-        'mascote' => 'vistodecimaazul.png',
-        'guia_texto' => 'Nesta seção você dominará Avaliação Intermediária de Competências. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Certificado da Seção 1 e 2<br>System.out.println("Etapa Concluida");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    27 => [
-        'titulo' => 'Seção 27',
-        'nome' => 'Fundamentos de POO',
-        'descricao' => 'Módulo focado em Fundamentos de POO.',
-        'cor' => '#ff4b4b',
-        'mascote' => 'vistodecimarosa.png',
-        'guia_texto' => 'Nesta seção você dominará Classes, Atributos e Métodos. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Fundamentos de POO<br>System.out.println("Ana");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    28 => [
-        'titulo' => 'Seção 28',
-        'nome' => 'Modificadores de Acesso e Encapsulamento',
-        'descricao' => 'Módulo focado em Modificadores de Acesso e Encapsulamento.',
-        'cor' => '#ce82ff',
-        'mascote' => 'vistodecimaroxo.png',
-        'guia_texto' => 'Nesta seção você dominará Modificadores private, public e Getters/Setters. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Modificadores de Acesso e Encapsulamento<br>System.out.println("100");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    29 => [
-        'titulo' => 'Seção 29',
-        'nome' => 'Prioridades de Classe e Membros Estáticos',
-        'descricao' => 'Módulo focado em Prioridades de Classe e Membros Estáticos.',
-        'cor' => '#58cc02',
-        'mascote' => 'vistodecimaverde.png',
-        'guia_texto' => 'Nesta seção você dominará Palavra-chave static e Constantes final. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Prioridades de Classe e Membros Estáticos<br>System.out.println("1");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    30 => [
-        'titulo' => 'Seção 30',
-        'nome' => 'Herança',
-        'descricao' => 'Módulo focado em Herança.',
-        'cor' => '#ffc800',
-        'mascote' => 'vistodecimalaranja.png',
-        'guia_texto' => 'Nesta seção você dominará Reuso de Classes com a palavra-chave extends. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Herança<br>System.out.println("Au");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    31 => [
-        'titulo' => 'Seção 31',
-        'nome' => 'Polimorfismo',
-        'descricao' => 'Módulo focado em Polimorfismo.',
-        'cor' => '#1cb0f6',
-        'mascote' => 'vistodecimaazul.png',
-        'guia_texto' => 'Nesta seção você dominará Sobrescrita de Métodos e Polimorfismo Dinâmico. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Polimorfismo<br>System.out.println("Polimorfismo");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    32 => [
-        'titulo' => 'Seção 32',
-        'nome' => 'Interfaces e Classes Abstratas',
-        'descricao' => 'Módulo focado em Interfaces e Classes Abstratas.',
-        'cor' => '#ff4b4b',
-        'mascote' => 'vistodecimarosa.png',
-        'guia_texto' => 'Nesta seção você dominará Contratos de Software com Interface e Classes Abstract. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Interfaces e Classes Abstratas<br>System.out.println("Autenticado");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    33 => [
-        'titulo' => 'Seção 33',
-        'nome' => 'Métodos Especiais e Classe Object',
-        'descricao' => 'Módulo focado em Métodos Especiais e Classe Object.',
-        'cor' => '#ce82ff',
-        'mascote' => 'vistodecimaroxo.png',
-        'guia_texto' => 'Nesta seção você dominará Sobrescrita de toString(), equals() e hashCode(). Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Métodos Especiais e Classe Object<br>System.out.println("Objeto Ativo");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    34 => [
-        'titulo' => 'Seção 34',
-        'nome' => 'Conceitos Avançados de OOP (Generics)',
-        'descricao' => 'Módulo focado em Conceitos Avançados de OOP (Generics).',
-        'cor' => '#58cc02',
-        'mascote' => 'vistodecimaverde.png',
-        'guia_texto' => 'Nesta seção você dominará Tipagem Genérica com Generics <T>. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Conceitos Avançados de OOP (Generics)<br>System.out.println("Tesouro");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    35 => [
-        'titulo' => 'Seção 35',
-        'nome' => 'Tratamento de Exceção em PPO',
-        'descricao' => 'Módulo focado em Tratamento de Exceção em PPO.',
-        'cor' => '#ffc800',
-        'mascote' => 'vistodecimalaranja.png',
-        'guia_texto' => 'Nesta seção você dominará Criação de Exceções Customizadas com throw e throws. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Tratamento de Exceção em POO<br>System.out.println("SaldoInvalido");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    36 => [
-        'titulo' => 'Seção 36',
-        'nome' => 'Padrões de Projeto Parte 1',
-        'descricao' => 'Módulo focado em Padrões de Projeto Parte 1.',
-        'cor' => '#1cb0f6',
-        'mascote' => 'vistodecimaazul.png',
-        'guia_texto' => 'Nesta seção você dominará Padrão Singleton e Factory Method. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Padrões de Projeto Parte 1<br>System.out.println("Conexao Unica");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    37 => [
-        'titulo' => 'Seção 37',
-        'nome' => 'Padrões de Projeto Parte 2',
-        'descricao' => 'Módulo focado em Padrões de Projeto Parte 2.',
-        'cor' => '#ff4b4b',
-        'mascote' => 'vistodecimarosa.png',
-        'guia_texto' => 'Nesta seção você dominará Padrões Comportamentais: Strategy e Observer. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Padrões de Projeto Parte 2<br>System.out.println("Estrategia A");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    38 => [
-        'titulo' => 'Seção 38',
-        'nome' => 'Projeto Gerenciamento de Biblioteca',
-        'descricao' => 'Módulo focado em Projeto Gerenciamento de Biblioteca.',
-        'cor' => '#ce82ff',
-        'mascote' => 'vistodecimaroxo.png',
-        'guia_texto' => 'Nesta seção você dominará Modelagem Completa de Sistema em POO. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Projeto Gerenciamento de Biblioteca<br>System.out.println("Livro Cadastrado");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    39 => [
-        'titulo' => 'Seção 39',
-        'nome' => 'Desafio Final',
-        'descricao' => 'Módulo focado em Desafio Final.',
-        'cor' => '#58cc02',
-        'mascote' => 'vistodecimaverde.png',
-        'guia_texto' => 'Nesta seção você dominará Desafio Integrador de Arquitetura e Lógica. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Desafio Final<br>System.out.println("Sistema Concluido");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-    40 => [
-        'titulo' => 'Seção 40',
-        'nome' => 'Certificado de tudo',
-        'descricao' => 'Módulo focado em Certificado de tudo.',
-        'cor' => '#ffc800',
-        'mascote' => 'vistodecimalaranja.png',
-        'guia_texto' => 'Nesta seção você dominará Conclusão Geral do Curso Opus Java Master. Pratique os conceitos centrais, analise os exemplos de código e consolide seu aprendizado com repetição e desafios reais.',
-        'guia_codigo' => '// Exemplo prático de Certificado de tudo<br>System.out.println("Mestre em Java");',
-        'licoes' => [1, 2, 3, 4, 5]
-    ],
-];
-
-// Configuração das Divisões da Trilha (Divisão 1, 2 e 3)
-$divisoes = [
-    1 => [
-        'id' => 1,
-        'nome' => 'Divisão 1',
-        'tema' => 'Fundamentos de Java',
-        'descricao' => 'Aprenda os pilares essenciais: estrutura básica, variáveis, operadores, decisões, laços e métodos.',
-        'secao_inicio' => 1,
-        'secao_fim' => 15,
-        'icone' => 'fa-seedling',
-        'cor' => '#1cb0f6',
-        'badge' => 'Fundamentos',
-    ],
-    2 => [
-        'id' => 2,
-        'nome' => 'Divisão 2',
-        'tema' => 'Estruturas de Dados & Coleções',
-        'descricao' => 'Avance para matrizes, HashMap, HashSet, manipulação avançada de Strings com Regex e datas modernas.',
-        'secao_inicio' => 16,
-        'secao_fim' => 26,
-        'icone' => 'fa-layer-group',
-        'cor' => '#ce82ff',
-        'badge' => 'Intermediário',
-    ],
-    3 => [
-        'id' => 3,
-        'nome' => 'Divisão 3',
-        'tema' => 'Orientação a Objetos & Avançado',
-        'descricao' => 'Domine POO completo: classes, encapsulamento, herança, polimorfismo, generics, exceções e design patterns.',
-        'secao_inicio' => 27,
-        'secao_fim' => 40,
-        'icone' => 'fa-crown',
-        'cor' => '#ffc800',
-        'badge' => 'Avançado',
-    ],
-];
+// Conteúdo da trilha (seções e divisões) vem do banco: tabelas `unidades` e `divisoes`
+$nomes_unidades = conteudo_unidades($conn);
+$divisoes = conteudo_divisoes($conn);
 
 // Identifica a seção corrente do aluno
 $capitulo_corrente_usuario = 1;
@@ -573,14 +122,7 @@ foreach ($nomes_unidades as $num_cap => $info) {
 }
 
 // Determina qual divisão o usuário está cursando atualmente
-$divisao_ativa_padrao = 1;
-if ($capitulo_corrente_usuario >= 27) {
-    $divisao_ativa_padrao = 3;
-} elseif ($capitulo_corrente_usuario >= 16) {
-    $divisao_ativa_padrao = 2;
-} else {
-    $divisao_ativa_padrao = 1;
-}
+$divisao_ativa_padrao = conteudo_divisao_da_secao($divisoes, $capitulo_corrente_usuario);
 
 // Estatísticas e progresso de cada divisão
 foreach ($divisoes as $d_id => &$d_info) {
@@ -617,10 +159,10 @@ unset($d_info);
 </head>
 <body>
     <div class="app-container">
-        <?php include '../../back/sidebar.php'; ?>
+        <?php include '../../back/includes/sidebar.php'; ?>
 
         <main class="main-content">
-            <?php include '../../back/topbar.php'; ?>
+            <?php include '../../back/includes/topbar.php'; ?>
 
             <section class="dashboard-grid">
                 
@@ -658,7 +200,7 @@ unset($d_info);
                             $imagem_mascote = $info['mascote'] ?? 'vistodecimaazul.png';
 
                             // Identifica a divisão a que este capítulo pertence (Divisão 1, 2 ou 3)
-                            $divisao_capitulo = ($num_cap <= 15) ? 1 : (($num_cap <= 26) ? 2 : 3);
+                            $divisao_capitulo = conteudo_divisao_da_secao($divisoes, $num_cap);
                         ?>
                             <div class="capitulo-container <?php echo ($status_cap_banco === 'current' || $status_cap_banco === 'corrente' ? 'current-chapter' : ''); ?>" 
                                  id="capitulo_<?php echo $num_cap; ?>" 

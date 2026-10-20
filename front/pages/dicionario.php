@@ -25,12 +25,12 @@ if (!isset($_SESSION['user_id'])) {
     <div class="app-container">
         
         <!-- Sidebar -->
-        <?php include '../../back/sidebar.php'; ?>
+        <?php include '../../back/includes/sidebar.php'; ?>
 
         <main class="main-content">
             
             <!-- Topbar -->
-            <?php include '../../back/topbar.php'; ?>
+            <?php include '../../back/includes/topbar.php'; ?>
 
             <div class="codex-container">
                 

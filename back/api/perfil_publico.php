@@ -1,8 +1,8 @@
 <?php
 session_start();
 header('Content-Type: application/json; charset=utf-8');
-require_once __DIR__ . '/../conexao.php';
-require_once __DIR__ . '/../jogador_status.php';
+require_once __DIR__ . '/../config/conexao.php';
+require_once __DIR__ . '/../lib/jogador_status.php';
 
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['sucesso' => false, 'mensagem' => 'Não autenticado']);
