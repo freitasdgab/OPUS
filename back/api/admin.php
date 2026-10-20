@@ -287,7 +287,7 @@ try {
             $user_status = opus_sincronizar_jogador($conn, $target_id);
 
             $stmt_u = $conn->prepare("
-                SELECT u.id, u.nome, u.email, u.foto_perfil, u.vidas, u.dias_fogo, u.xp, u.trofeus, u.dificuldade, u.nivel_acesso, u.criado_em,
+                SELECT u.id, u.nome, u.email, u.foto_perfil, u.vidas, u.dias_fogo, u.xp, u.trofeus, u.nivel_acesso, u.criado_em,
                        COALESCE(l.divisao, 'bronze') AS divisao,
                        COALESCE(l.xp_semana, 0) AS xp_semana,
                        l.grupo_id
@@ -304,11 +304,31 @@ try {
                 exit();
             }
 
-            // Progresso nos 5 Capítulos
+            // Progresso nos 5 Capítulos com coerência de trilha
             $stmt_prog = $conn->prepare("SELECT unidade_numero, status, licoes_concluidas, atualizado_em FROM progresso_usuario WHERE usuario_id = ? ORDER BY unidade_numero ASC");
             $stmt_prog->bind_param("i", $target_id);
             $stmt_prog->execute();
-            $progresso = $stmt_prog->get_result()->fetch_all(MYSQLI_ASSOC);
+            $progresso_raw = $stmt_prog->get_result()->fetch_all(MYSQLI_ASSOC);
+
+            // Identifica se há unidades posteriores completas (ou se completou a trilha)
+            $max_unidade_completa = 0;
+            foreach ($progresso_raw as $p) {
+                if (($p['status'] ?? '') === 'completo') {
+                    $max_unidade_completa = max($max_unidade_completa, (int) $p['unidade_numero']);
+                }
+            }
+
+            $progresso = [];
+            foreach ($progresso_raw as $p) {
+                $num = (int) $p['unidade_numero'];
+                $st = $p['status'] ?? 'trancado';
+                // Se o aluno está cursando esta unidade mas já concluiu unidades posteriores, ele está REFAZENDO
+                if ($st === 'corrente' && $max_unidade_completa > $num) {
+                    $st = 'refazendo';
+                }
+                $p['status'] = $st;
+                $progresso[] = $p;
+            }
 
             // Histórico de ligas
             $stmt_hist = $conn->prepare("SELECT divisao_anterior, divisao_nova, resultado, posicao_final, semana_ref, criado_em FROM ligas_historico WHERE usuario_id = ? ORDER BY semana_ref DESC LIMIT 10");
@@ -323,25 +343,6 @@ try {
             if ($res_seg) $seguidores_count = (int) ($res_seg->fetch_assoc()['total'] ?? 0);
             $res_indo = $conn->query("SELECT COUNT(*) AS total FROM seguidores WHERE seguidor_id = $target_id");
             if ($res_indo) $seguindo_count = (int) ($res_indo->fetch_assoc()['total'] ?? 0);
-
-            // Grupo de Batalha (se pertencer a algum)
-            $grupo_info = null;
-            $res_g = $conn->query("
-                SELECT g.id, g.nome, g.codigo_convite,
-                       (SELECT COUNT(*) FROM grupo_membros WHERE grupo_id = g.id) AS total_membros
-                FROM grupo_membros gm 
-                JOIN grupos_batalha g ON g.id = gm.grupo_id 
-                WHERE gm.usuario_id = $target_id 
-                LIMIT 1
-            ");
-            if ($res_g && $g_row = $res_g->fetch_assoc()) {
-                $grupo_info = [
-                    'id'            => (int) $g_row['id'],
-                    'nome'          => $g_row['nome'],
-                    'codigo'        => $g_row['codigo_convite'],
-                    'total_membros' => (int) $g_row['total_membros']
-                ];
-            }
 
             // Total de Conquistas desbloqueadas
             $conquistas_total = 0;
@@ -359,7 +360,6 @@ try {
                         'dias_fogo'        => (int) $user_data['dias_fogo'],
                         'xp'               => (int) ($user_data['xp'] ?? 0),
                         'trofeus'          => (int) ($user_data['trofeus'] ?? 0),
-                        'dificuldade'      => $user_data['dificuldade'] ?? 'Iniciante',
                         'nivel_acesso'     => $user_data['nivel_acesso'] ?? 'comum',
                         'divisao'          => $user_data['divisao'] ?: 'bronze',
                         'xp_semana'        => (int) ($user_data['xp_semana'] ?? 0),
@@ -369,7 +369,6 @@ try {
                     'social'          => [
                         'seguidores' => $seguidores_count,
                         'seguindo'   => $seguindo_count,
-                        'grupo'      => $grupo_info,
                     ],
                     'conquistas_total'=> $conquistas_total,
                     'progresso'       => $progresso,
@@ -399,32 +398,14 @@ try {
             break;
 
         // ------------------------------------------------
-        // ALTERAR DIVISÃO DO USUÁRIO MANUALMENTE (PELO ADMIN)
+        // ALTERAÇÃO MANUAL DE DIVISÃO DESATIVADA
+        // A divisão de ligas é conquista orgânica do usuário
         // ------------------------------------------------
         case 'change_user_division':
-            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-                echo json_encode(['sucesso' => false, 'mensagem' => 'Método inválido. Use POST.']);
-                exit();
-            }
-
-            $target_id = (int) ($_POST['user_id'] ?? 0);
-            $nova_divisao = strtolower(trim($_POST['divisao'] ?? ''));
-
-            if ($target_id <= 0 || !in_array($nova_divisao, ['bronze', 'prata', 'ouro', 'diamante', 'mestre'])) {
-                echo json_encode(['sucesso' => false, 'mensagem' => 'Dados inválidos para alteração de divisão.']);
-                exit();
-            }
-
-            $ok = liga_alterar_divisao_usuario($conn, $target_id, $nova_divisao);
-            if ($ok) {
-                echo json_encode([
-                    'sucesso'      => true,
-                    'mensagem'     => "Divisão do aluno alterada para " . ucfirst($nova_divisao) . " com sucesso!",
-                    'nova_divisao' => $nova_divisao
-                ]);
-            } else {
-                echo json_encode(['sucesso' => false, 'mensagem' => 'Erro ao atualizar divisão do aluno.']);
-            }
+            echo json_encode([
+                'sucesso' => false,
+                'mensagem' => 'A divisão da liga é conquista exclusiva do usuário por XP e não pode ser alterada manualmente.'
+            ]);
             break;
 
         default:

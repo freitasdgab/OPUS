@@ -11,7 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 // 1. Busca as informações do usuário logado
-$stmt = $conn->prepare("SELECT nome, xp, trofeus, dificuldade, foto_perfil, pais, pais_codigo FROM usuarios WHERE id = ?");
+$stmt = $conn->prepare("SELECT nome, xp, trofeus, foto_perfil, pais, pais_codigo FROM usuarios WHERE id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $user_info = $stmt->get_result()->fetch_assoc();

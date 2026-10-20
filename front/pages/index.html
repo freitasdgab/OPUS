@@ -8,16 +8,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/png" href="../assets/img/LOGO.png?v=2">
-    <link rel="shortcut icon" type="image/png" href="../assets/img/LOGO.png?v=2">
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="icon" type="image/png" href="../assets/img/LOGO.png?v=3">
+    <link rel="shortcut icon" type="image/png" href="../assets/img/LOGO.png?v=3">
+    <link rel="stylesheet" href="../assets/css/style.css?v=3">
 </head>
 <body>
 
     <!-- TOP BAR DE NAVEGAÇÃO -->
     <header class="topbar">
         <a href="index.html" class="topbar-brand">
-            <img src="../assets/img/LOGO.png?v=2" alt="Logo Opus" class="topbar-logo">
+            <img src="../assets/img/LOGO.png?v=3" alt="Logo Opus" class="topbar-logo">
             <span class="topbar-title">OPUS</span>
         </a>
         <div class="topbar-actions">
@@ -35,7 +35,7 @@
 
         <div class="right-side">
             <h1 class="title">
-                Bem-vindo<br>ao<br><span class="brand">Opus</span>
+                Bem-vindo<br>ao<br><span class="brand"><span id="typewriter-text">Opus</span><span class="typewriter-cursor">|</span></span>
             </h1>
             <p class="description">
                 o site onde você aprende programação de forma simples, interativa e divertida.
@@ -45,6 +45,55 @@
         </div>
     </div>
 
-    <script src="../assets/js/script.js"></script>
+    <script src="../assets/js/script.js?v=3"></script>
+    <script>
+        // Efeito Máquina de Escrever (Typewriter Effect)
+        (function() {
+            function initTypewriter() {
+                const el = document.getElementById('typewriter-text');
+                if (!el || el.dataset.typewriterStarted) return;
+                el.dataset.typewriterStarted = 'true';
+
+                const word = 'Opus';
+                let charIndex = word.length;
+                let isDeleting = true;
+
+                const typingSpeed = 160;
+                const deletingSpeed = 90;
+                const pauseFull = 1800;
+                const pauseEmpty = 450;
+
+                function tick() {
+                    if (isDeleting) {
+                        charIndex--;
+                        el.textContent = word.substring(0, charIndex);
+                    } else {
+                        charIndex++;
+                        el.textContent = word.substring(0, charIndex);
+                    }
+
+                    let delay = isDeleting ? deletingSpeed : typingSpeed;
+
+                    if (!isDeleting && charIndex === word.length) {
+                        isDeleting = true;
+                        delay = pauseFull;
+                    } else if (isDeleting && charIndex === 0) {
+                        isDeleting = false;
+                        delay = pauseEmpty;
+                    }
+
+                    setTimeout(tick, delay);
+                }
+
+                setTimeout(tick, pauseFull);
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initTypewriter);
+            } else {
+                initTypewriter();
+            }
+        })();
+    </script>
 </body>
 </html>

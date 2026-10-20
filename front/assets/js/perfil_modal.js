@@ -71,7 +71,7 @@
         body.innerHTML = `
             <div style="padding: 60px 20px; text-align: center; color: var(--text-muted, #94a3b8);">
                 <i class="fa-solid fa-spinner fa-spin" style="font-size: 2.2rem; color: #1cb0f6; margin-bottom: 14px;"></i>
-                <div style="font-weight: 800; font-size: 1.1rem; color: #fff;">Carregando perfil...</div>
+                <div class="pmodal-loading-text" style="font-weight: 800; font-size: 1.1rem;">Carregando perfil...</div>
             </div>
         `;
         overlay.classList.add('active');

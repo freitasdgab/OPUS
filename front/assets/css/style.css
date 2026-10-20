@@ -1,4 +1,4 @@
-/* --- ESTILOS GERAIS --- */
+﻿/* --- ESTILOS GERAIS --- */
 * {
     margin: 0;
     padding: 0;
@@ -127,7 +127,7 @@ body, html {
 }
 
 .left-side {
-    flex: 1;
+    flex: 1.15;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -138,17 +138,19 @@ body, html {
 .left-side::before {
     content: '';
     position: absolute;
-    width: 350px;
-    height: 350px;
-    background: radial-gradient(circle, rgba(0, 230, 118, 0.12) 0%, rgba(0,0,0,0) 70%);
+    width: 420px;
+    height: 420px;
+    background: radial-gradient(circle, rgba(0, 230, 118, 0.15) 0%, rgba(0,0,0,0) 70%);
     z-index: -1;
 }
 
 .mascots-img {
-    max-width: 90%;
+    max-width: 105%;
+    width: 100%;
     height: auto;
     object-fit: contain;
     animation: float 4s ease-in-out infinite;
+    filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.45));
 }
 
 .right-side {
@@ -175,6 +177,23 @@ body, html {
     color: #1a36ca;
     text-shadow: 0 0 15px rgba(26, 54, 202, 0.6);
     font-weight: 900;
+    display: inline-flex;
+    align-items: baseline;
+    min-height: 1.2em;
+}
+
+.typewriter-cursor {
+    display: inline-block;
+    color: #1a36ca;
+    margin-left: 3px;
+    animation: blink 0.75s step-end infinite;
+    font-weight: 700;
+    text-shadow: 0 0 12px rgba(26, 54, 202, 0.7);
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
 }
 
 .description {

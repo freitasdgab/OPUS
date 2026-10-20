@@ -119,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         require_once __DIR__ . '/../lib/jogador_status.php';
 
         // Insere o usuário com 3 vidas e status zerado no banco
-        $stmt_insert = $conn->prepare("INSERT INTO usuarios (nome, email, senha, xp, trofeus, dificuldade, vidas, vidas_proxima_em, dias_fogo) VALUES (?, ?, ?, 0, 0, 'Iniciante', 3, NULL, 0)");
+        $stmt_insert = $conn->prepare("INSERT INTO usuarios (nome, email, senha, xp, trofeus, vidas, vidas_proxima_em, dias_fogo) VALUES (?, ?, ?, 0, 0, 3, NULL, 0)");
         $stmt_insert->bind_param("sss", $nome, $email, $senha);
 
         if ($stmt_insert->execute()) {

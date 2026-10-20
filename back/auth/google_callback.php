@@ -155,8 +155,8 @@ if ($usuario) {
 } else {
     // 5b. Novo usuário → cria conta
     $stmt_insert = $conn->prepare(
-        "INSERT INTO usuarios (nome, email, senha, google_id, foto_google, xp, trofeus, dificuldade, vidas, vidas_proxima_em, dias_fogo)
-         VALUES (?, ?, '', ?, ?, 0, 0, 'Iniciante', 3, NULL, 0)"
+        "INSERT INTO usuarios (nome, email, senha, google_id, foto_google, xp, trofeus, vidas, vidas_proxima_em, dias_fogo)
+         VALUES (?, ?, '', ?, ?, 0, 0, 3, NULL, 0)"
     );
     $stmt_insert->bind_param("ssss", $nome, $email, $google_id, $foto);
 

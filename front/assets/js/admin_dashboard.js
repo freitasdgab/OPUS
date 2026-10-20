@@ -478,7 +478,7 @@
                 box.innerHTML = `
                     <div style="text-align:center; padding: 40px 20px;">
                         <i class="fa-solid fa-circle-exclamation" style="font-size: 3rem; color: #ef4444; margin-bottom: 14px;"></i>
-                        <h3 style="color: #fff; margin-bottom: 8px;">Erro ao carregar perfil</h3>
+                        <h3 class="profile-error-title" style="margin-bottom: 8px;">Erro ao carregar perfil</h3>
                         <p style="color: var(--text-muted);">${escapeHtml(data.mensagem || 'Usuário não encontrado.')}</p>
                     </div>
                 `;
@@ -494,7 +494,7 @@
             const temFoto = u.foto_perfil && String(u.foto_perfil).trim() !== '';
             const avatarBigHtml = temFoto
                 ? `<img src="${u.foto_perfil}" alt="Avatar de ${escapeHtml(u.nome)}" class="profile-avatar-big" style="object-fit:contain;">`
-                : `<div class="profile-avatar-big" style="display:flex; align-items:center; justify-content:center; background:#1e1e2c; color:#94a3b8; font-size:2.2rem;"><i class="fa-solid fa-user"></i></div>`;
+                : `<div class="profile-avatar-big profile-avatar-placeholder" style="display:flex; align-items:center; justify-content:center; font-size:2.2rem;"><i class="fa-solid fa-user"></i></div>`;
             const divSlug = (u.divisao || 'bronze').toLowerCase();
             const divInfo = LIGAS_INFO[divSlug] || LIGAS_INFO.bronze;
 
@@ -727,7 +727,7 @@
             box.innerHTML = `
                 <div style="text-align:center; padding: 40px 20px;">
                     <i class="fa-solid fa-triangle-exclamation" style="font-size: 3rem; color: #ef4444; margin-bottom: 14px;"></i>
-                    <h3 style="color: #fff; margin-bottom: 8px;">Erro de Comunicação</h3>
+                    <h3 class="profile-error-title" style="margin-bottom: 8px;">Erro de Comunicação</h3>
                     <p style="color: var(--text-muted);">Não foi possível carregar os detalhes do usuário.</p>
                 </div>
             `;
