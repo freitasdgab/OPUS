@@ -1,4 +1,8 @@
 /* --- RESET E ESTRUTURA GERAL --- */
+:root {
+    color-scheme: dark;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -20,32 +24,58 @@ body {
     z-index: -1;
 }
 
-/* --- NOVO: CONTAINER LADO A LADO --- */
+/* --- CONTAINER PRINCIPAL (Centralizado) --- */
 .main-wrapper {
     position: relative;
     z-index: 10;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 50px; /* Espaço entre o mascote e o form */
-    width: 90%;
-    max-width: 1100px;
+    width: 100%;
 }
 
-/* --- MASCOTE --- */
-.opi-side {
-    flex: 1;
+/* --- CONTAINER DO FORMULÁRIO (No centro da tela) --- */
+.auth-container {
+    position: relative; /* Importante para ancorar o mascote nela */
+    background: rgba(20, 20, 28, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(26, 54, 202, 0.4);
+    border-radius: 16px;
+    padding: 25px 35px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    z-index: 20;
+}
+
+.auth-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+    color: #fff;
+    margin-top: 0;
+    margin-bottom: 20px;
+    line-height: 1.4;
+    text-align: center;
+}
+
+/* --- MASCOTE (Posicionado ao lado da caixa) --- */
+.opi-side {
+    position: absolute;
+    right: calc(50% + 220px);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 15;
+    pointer-events: none;
 }
 
 .opi-img {
     width: 100%;
-    max-width: 400px; /* Limita o tamanho máximo da foto */
+    max-width: 350px;
     height: auto;
     filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.5));
-    animation: float 3s ease-in-out infinite; /* Animação flutuante sutil */
+    animation: float 3s ease-in-out infinite;
 }
 
 @keyframes float {
@@ -54,50 +84,34 @@ body {
     100% { transform: translateY(0px); }
 }
 
-/* --- CONTAINER DO FORMULÁRIO --- */
-.auth-container {
-    flex: 1;
-    background: rgba(20, 20, 28, 0.85);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(26, 54, 202, 0.4);
-    border-radius: 16px;
-    padding: 25px 35px; /* Padding reduzido para caber na tela */
-    width: 100%;
-    max-width: 420px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-    display: flex;
-    flex-direction: column;
-}
-
-.auth-title {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 0.9rem; /* Texto levemente menor */
-    color: #fff;
-    margin-top: 0;
-    margin-bottom: 20px;
-    line-height: 1.4;
-    text-align: center;
-}
-
-/* --- INPUTS --- */
+/* --- INPUTS E FORMULÁRIO (PADRONIZAÇÃO COMPLETA) --- */
 .card-input {
     display: flex;
     flex-direction: column;
-    gap: 12px; /* Reduzido o espaço entre os campos */
+    gap: 14px;
+    width: 100%;
 }
 
-.input-group {
+.input-group,
+#group-nome,
+#group-email,
+#group-senha,
+#group-confirmar {
+    display: flex;
+    flex-direction: column;
     text-align: left;
     width: 100%;
 }
 
 .input-group label {
     display: block;
+    width: 100%;
     font-size: 0.8rem;
     font-weight: 600;
-    margin-bottom: 5px;
+    margin-bottom: 6px;
     color: #aeb9f8;
     text-transform: uppercase;
+    box-sizing: border-box;
 }
 
 .input-group label i {
@@ -108,30 +122,57 @@ body {
 .input-with-icon {
     position: relative;
     width: 100%;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
 }
 
-.input-with-icon input {
+/* TODOS os inputs do formulário padronizados */
+.input-with-icon input,
+.input-group input,
+.card-input input,
+#nome,
+#email,
+#senha,
+#confirme_senha {
     width: 100%;
+    height: 44px;
+    min-height: 44px;
+    max-height: 44px;
     background: rgba(0, 0, 0, 0.4);
     border: 1px solid rgba(26, 54, 202, 0.5);
-    color: #fff;
-    padding: 10px 15px; /* Altura do campo reduzida */
+    color: #ffffff;
+    padding: 10px 15px;
     border-radius: 8px;
     font-family: 'Poppins', sans-serif;
     font-size: 0.9rem;
     outline: none;
     transition: 0.3s ease;
     box-sizing: border-box;
+    color-scheme: dark;
 }
 
-.input-with-icon input:focus {
+.input-with-icon input:focus,
+.input-group input:focus,
+.card-input input:focus {
     border-color: #4d66f5;
+    background: rgba(0, 0, 0, 0.55);
+    color: #ffffff;
     box-shadow: 0 0 10px rgba(77, 102, 245, 0.3);
 }
 
-.input-with-icon input[type="password"],
-.input-with-icon input[type="text"] {
-    padding-right: 40px;
+.input-with-icon input::placeholder,
+.card-input input::placeholder {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+/* Campos de senha possuem botão de toggle: espaçamento extra à direita para o texto não ficar sob o ícone */
+.input-with-icon:has(.toggle-password) input,
+#group-senha input,
+#group-confirmar input,
+#senha,
+#confirme_senha {
+    padding-right: 42px;
 }
 
 .toggle-password {
@@ -145,16 +186,62 @@ body {
     cursor: pointer;
     font-size: 1rem;
     padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
 }
 
 .toggle-password:hover {
-    color: #fff;
+    color: #ffffff;
+}
+
+/* --- PREVENÇÃO CONTRA FUNDO BRANCO NO AUTOFILL / COPIAR E COLAR / SUGESTÕES DO NAVEGADOR --- */
+.input-with-icon input:-webkit-autofill,
+.input-with-icon input:-webkit-autofill:hover, 
+.input-with-icon input:-webkit-autofill:focus, 
+.input-with-icon input:-webkit-autofill:active,
+.card-input input:-webkit-autofill,
+.card-input input:-webkit-autofill:hover,
+.card-input input:-webkit-autofill:focus,
+.card-input input:-webkit-autofill:active,
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #0e0f17 inset !important;
+    box-shadow: 0 0 0 1000px #0e0f17 inset !important;
+    -webkit-text-fill-color: #ffffff !important;
+    color: #ffffff !important;
+    caret-color: #ffffff !important;
+    border-color: rgba(26, 54, 202, 0.5) !important;
+    transition: background-color 500000s ease-in-out 0s !important;
+    font-family: 'Poppins', sans-serif !important;
+    font-size: 0.9rem !important;
+}
+
+.input-with-icon input:-webkit-autofill:focus,
+.card-input input:-webkit-autofill:focus,
+input:-webkit-autofill:focus {
+    border-color: #4d66f5 !important;
+    -webkit-box-shadow: 0 0 0 1000px #0e0f17 inset, 0 0 10px rgba(77, 102, 245, 0.3) !important;
+    box-shadow: 0 0 0 1000px #0e0f17 inset, 0 0 10px rgba(77, 102, 245, 0.3) !important;
+}
+
+.input-with-icon input:autofill,
+.card-input input:autofill,
+input:autofill {
+    background-color: #0e0f17 !important;
+    -webkit-text-fill-color: #ffffff !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 0 1000px #0e0f17 inset !important;
+    border-color: rgba(26, 54, 202, 0.5) !important;
 }
 
 /* --- BOTÕES DE AÇÃO --- */
 .buttons-group {
     display: flex;
-    justify-content: center; /* Centraliza os botões */
+    justify-content: center;
     gap: 12px;
     margin-top: 20px;
 }
@@ -192,95 +279,6 @@ body {
 .btn-auth.secondary:hover {
     background: rgba(26, 54, 202, 0.15);
     color: #fff;
-}
-
-/* Responsividade Básica para telas menores que 800px (Celulares) */
-@media (max-width: 800px) {
-    .main-wrapper {
-        flex-direction: column;
-        gap: 20px;
-    }
-    .opi-img {
-        max-width: 150px; /* Mascote menor no celular */
-    }
-    body {
-        overflow-y: auto; /* Devolve a rolagem apenas no celular */
-    }
-}
-/* --- CONTAINER PRINCIPAL (Centralizado) --- */
-.main-wrapper {
-    position: relative;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    /* Removemos o gap, pois usaremos position absolute no mascote */
-}
-
-/* --- CONTAINER DO FORMULÁRIO (No centro da tela) --- */
-.auth-container {
-    position: relative; /* Importante para ancorar o mascote nela */
-    background: rgba(20, 20, 28, 0.85);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(26, 54, 202, 0.4);
-    border-radius: 16px;
-    padding: 25px 35px;
-    width: 100%;
-    max-width: 420px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-    display: flex;
-    flex-direction: column;
-    z-index: 20; /* Fica por cima do mascote se precisar sobrepor */
-}
-
-/* --- MASCOTE (Posicionado ao lado da caixa) --- */
-.opi-side {
-    position: absolute;
-    /* Ancora o lado direito do mascote no lado esquerdo da caixa */
-    right: calc(50% + 220px); /* 50% é o meio, + metade da largura da caixa (420/2 = 210px) + um espacinho */
-    top: 50%;
-    transform: translateY(-50%); /* Centraliza verticalmente junto com a caixa */
-    z-index: 15;
-    pointer-events: none; /* Impede que a imagem roube cliques do fundo */
-}
-
-.opi-img {
-    width: 100%;
-    max-width: 350px; /* Diminuído para não ficar desproporcional */
-    height: auto;
-    filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.5));
-    animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-15px); }
-    100% { transform: translateY(0px); }
-}
-
-/* Responsividade Básica para telas menores que 800px (Celulares) */
-@media (max-width: 800px) {
-    .main-wrapper {
-        flex-direction: column;
-    }
-    .opi-side {
-        position: relative; /* Volta para o fluxo normal no celular */
-        right: auto;
-        top: auto;
-        transform: none;
-        margin-bottom: 20px;
-    }
-    .opi-img {
-        max-width: 150px; /* Mascote menor no celular */
-        animation: none; /* Opcional: remove animação no mobile para não pular muito */
-    }
-    body {
-        overflow-y: auto;
-    }
-    .auth-container {
-        max-width: 90%;
-    }
 }
 
 /* ─── Separador "ou" ────────────────────────────────────────── */
@@ -356,4 +354,28 @@ body {
 .btn-google .fa-spin {
     font-size: 1rem;
     color: #4285F4;
-}
+}
+
+/* Responsividade Básica para telas menores que 800px (Celulares) */
+@media (max-width: 800px) {
+    .main-wrapper {
+        flex-direction: column;
+    }
+    .opi-side {
+        position: relative;
+        right: auto;
+        top: auto;
+        transform: none;
+        margin-bottom: 20px;
+    }
+    .opi-img {
+        max-width: 150px;
+        animation: none;
+    }
+    body {
+        overflow-y: auto;
+    }
+    .auth-container {
+        max-width: 90%;
+    }
+}
