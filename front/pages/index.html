@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="../assets/img/LOGO.png?v=3">
     <link rel="shortcut icon" type="image/png" href="../assets/img/LOGO.png?v=3">
-    <link rel="stylesheet" href="../assets/css/style.css?v=3">
+    <link rel="stylesheet" href="../assets/css/style.css?v=7">
 </head>
 <body>
 
@@ -35,65 +35,16 @@
 
         <div class="right-side">
             <h1 class="title">
-                Bem-vindo<br>ao<br><span class="brand"><span id="typewriter-text">Opus</span><span class="typewriter-cursor">|</span></span>
+                Bem-vindo<br>ao <span class="brand">Opus</span>
             </h1>
             <p class="description">
-                o site onde você aprende programação de forma simples, interativa e divertida.
+                o site onde você aprende programação <span class="typewriter-line"><span>de forma</span><span class="typewriter-container"><span id="typewriter-text" class="typewriter-word">simples</span><span class="typewriter-cursor">|</span></span></span>
             </p>
             
             <a href="auth.html?mode=cadastro" class="btn-start" id="btnComecar">COMEÇAR</a>
         </div>
     </div>
 
-    <script src="../assets/js/script.js?v=3"></script>
-    <script>
-        // Efeito Máquina de Escrever (Typewriter Effect)
-        (function() {
-            function initTypewriter() {
-                const el = document.getElementById('typewriter-text');
-                if (!el || el.dataset.typewriterStarted) return;
-                el.dataset.typewriterStarted = 'true';
-
-                const word = 'Opus';
-                let charIndex = word.length;
-                let isDeleting = true;
-
-                const typingSpeed = 160;
-                const deletingSpeed = 90;
-                const pauseFull = 1800;
-                const pauseEmpty = 450;
-
-                function tick() {
-                    if (isDeleting) {
-                        charIndex--;
-                        el.textContent = word.substring(0, charIndex);
-                    } else {
-                        charIndex++;
-                        el.textContent = word.substring(0, charIndex);
-                    }
-
-                    let delay = isDeleting ? deletingSpeed : typingSpeed;
-
-                    if (!isDeleting && charIndex === word.length) {
-                        isDeleting = true;
-                        delay = pauseFull;
-                    } else if (isDeleting && charIndex === 0) {
-                        isDeleting = false;
-                        delay = pauseEmpty;
-                    }
-
-                    setTimeout(tick, delay);
-                }
-
-                setTimeout(tick, pauseFull);
-            }
-
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', initTypewriter);
-            } else {
-                initTypewriter();
-            }
-        })();
-    </script>
+    <script src="../assets/js/script.js?v=4"></script>
 </body>
 </html>

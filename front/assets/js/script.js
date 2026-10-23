@@ -4,38 +4,42 @@ if (canvas) {
     canvas.style.display = 'none';
 }
 
-// Efeito Máquina de Escrever (Typewriter Effect) na palavra Opus
+// Efeito Máquina de Escrever (Typewriter Effect) nas palavras dinâmicas
 (function() {
     function initTypewriter() {
         const el = document.getElementById('typewriter-text');
         if (!el || el.dataset.typewriterStarted) return;
         el.dataset.typewriterStarted = 'true';
 
-        const word = 'Opus';
-        let charIndex = word.length;
+        const words = ['simples', 'interativa', 'divertida'];
+        let wordIndex = 0;
+        let charIndex = words[0].length;
         let isDeleting = true;
 
-        const typingSpeed = 160;
-        const deletingSpeed = 90;
+        const typingSpeed = 130;
+        const deletingSpeed = 70;
         const pauseFull = 1800;
-        const pauseEmpty = 450;
+        const pauseEmpty = 350;
 
         function tick() {
+            const currentWord = words[wordIndex];
+
             if (isDeleting) {
                 charIndex--;
-                el.textContent = word.substring(0, charIndex);
+                el.textContent = currentWord.substring(0, charIndex);
             } else {
                 charIndex++;
-                el.textContent = word.substring(0, charIndex);
+                el.textContent = currentWord.substring(0, charIndex);
             }
 
             let delay = isDeleting ? deletingSpeed : typingSpeed;
 
-            if (!isDeleting && charIndex === word.length) {
+            if (!isDeleting && charIndex === currentWord.length) {
                 isDeleting = true;
                 delay = pauseFull;
             } else if (isDeleting && charIndex === 0) {
                 isDeleting = false;
+                wordIndex = (wordIndex + 1) % words.length;
                 delay = pauseEmpty;
             }
 
