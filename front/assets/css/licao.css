@@ -1124,6 +1124,549 @@
 }
 
 /* =========================================================================
+   1. PROBLEMAS DE PARSONS (ORDENAÇÃO DE CÓDIGO)
+   ========================================================================= */
+.parsons-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    width: 100%;
+    margin-top: 5px;
+}
+
+.parsons-target-panel {
+    background: #14161f;
+    border: 2px solid #232738;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.parsons-panel-header {
+    background: #1c202d;
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #282d3f;
+}
+
+.parsons-panel-title {
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    color: #1cb0f6;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.parsons-dropzone {
+    min-height: 120px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: #0f1017;
+    transition: all 0.25s ease;
+}
+
+.parsons-dropzone.parsons-correct {
+    border: 2px solid #58cc02;
+    background: rgba(88, 204, 2, 0.08);
+}
+
+.parsons-dropzone.parsons-wrong {
+    border: 2px solid #ff4b4b;
+    background: rgba(255, 75, 75, 0.08);
+}
+
+.parsons-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 90px;
+    border: 2px dashed #2d3345;
+    border-radius: 12px;
+    color: #717b94;
+    font-size: 0.95rem;
+    font-weight: 600;
+    gap: 10px;
+    user-select: none;
+    text-align: center;
+    padding: 15px;
+}
+
+.parsons-target-item {
+    display: flex;
+    align-items: center;
+    background: #1d212e;
+    border: 2px solid #2d344a;
+    border-bottom: 4px solid #1a1e2b;
+    border-radius: 12px;
+    padding: 8px 12px;
+    gap: 12px;
+    animation: popInChip 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    transition: transform 0.1s ease, border-color 0.2s ease;
+}
+
+.parsons-target-item:hover {
+    border-color: #1cb0f6;
+    transform: translateY(-1px);
+}
+
+.parsons-line-num {
+    font-family: 'Courier New', monospace;
+    font-weight: 800;
+    color: #1cb0f6;
+    background: rgba(28, 176, 246, 0.12);
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+.parsons-target-code {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #f8f8f2;
+    flex: 1;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.parsons-item-controls {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.parsons-ctrl-btn {
+    background: #282e42;
+    border: 1px solid #38415c;
+    color: #a6b2c9;
+    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.parsons-ctrl-btn:hover {
+    background: #1cb0f6;
+    color: #fff;
+    border-color: #1cb0f6;
+}
+
+.parsons-remove-btn:hover {
+    background: #ff4b4b !important;
+    border-color: #ff4b4b !important;
+    color: #fff !important;
+}
+
+.parsons-bank-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.parsons-bank-header {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #8fa0b8;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.parsons-bank {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.parsons-chip {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: #171922;
+    border: 2px solid #2b3042;
+    border-bottom: 4px solid #1c1f2b;
+    border-radius: 12px;
+    color: #fff;
+    cursor: pointer;
+    text-align: left;
+    transition: transform 0.08s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.parsons-chip:hover:not(.used) {
+    border-color: #1cb0f6;
+    border-bottom-color: #1793ce;
+    transform: translateY(-2px);
+    background: #202433;
+}
+
+.parsons-chip:active:not(.used) {
+    transform: translateY(2px);
+    border-bottom-width: 2px;
+}
+
+.parsons-chip.used {
+    opacity: 0.3;
+    pointer-events: none;
+    background: #0f1016 !important;
+    border-color: #1b1d28 !important;
+    border-bottom-width: 2px !important;
+}
+
+.parsons-chip-icon {
+    color: #6272a4;
+    font-size: 0.9rem;
+}
+
+.parsons-chip-code {
+    font-family: 'Courier New', monospace;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+/* =========================================================================
+   2. CAÇADOR DE BUGS (SPOT THE BUG)
+   ========================================================================= */
+.spot-bug-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+}
+
+.spot-bug-alert {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    background: rgba(255, 200, 0, 0.12);
+    border: 1px solid rgba(255, 200, 0, 0.35);
+    border-radius: 12px;
+    color: #ffd233;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.bug-pulse-icon {
+    font-size: 1.3rem;
+    animation: bugPulse 1.8s infinite;
+}
+
+@keyframes bugPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2) rotate(-8deg); }
+    100% { transform: scale(1); }
+}
+
+.spot-bug-badge {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    color: #ff5555;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.spot-bug-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.spot-bug-line {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    gap: 12px;
+    user-select: none;
+}
+
+.spot-bug-line:hover:not(.disabled) {
+    background: rgba(255, 200, 0, 0.1);
+    border-color: rgba(255, 200, 0, 0.3);
+}
+
+.spot-bug-line.selected {
+    background: rgba(28, 176, 246, 0.16) !important;
+    border-color: #1cb0f6 !important;
+    box-shadow: 0 0 14px rgba(28, 176, 246, 0.25);
+}
+
+.spot-line-num {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    color: #6272a4;
+    min-width: 24px;
+    font-size: 0.95rem;
+}
+
+.spot-line-code {
+    flex: 1;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #f8f8f2;
+}
+
+.spot-line-crosshair {
+    color: #6272a4;
+    font-size: 1rem;
+    opacity: 0.5;
+    transition: all 0.2s ease;
+}
+
+.spot-bug-line:hover .spot-line-crosshair,
+.spot-bug-line.selected .spot-line-crosshair {
+    color: #1cb0f6;
+    opacity: 1;
+    transform: scale(1.15);
+}
+
+.spot-bug-line.bug-correct {
+    background: rgba(88, 204, 2, 0.2) !important;
+    border-color: #58cc02 !important;
+    color: #58cc02;
+}
+.spot-bug-line.bug-correct .spot-line-crosshair {
+    color: #58cc02;
+}
+
+.spot-bug-line.bug-wrong {
+    background: rgba(255, 75, 75, 0.2) !important;
+    border-color: #ff4b4b !important;
+}
+.spot-bug-line.bug-wrong .spot-line-crosshair {
+    color: #ff4b4b;
+}
+
+.spot-bug-line.target-bug-line:not(.bug-correct) {
+    border: 2px dashed #ffd233 !important;
+    background: rgba(255, 210, 51, 0.15) !important;
+}
+
+/* =========================================================================
+   3. PREDIÇÃO DE SAÍDA (OUTPUT PREDICTION)
+   ========================================================================= */
+.output-pred-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+}
+
+.terminal-sim-box {
+    background: #090a0f;
+    border: 2px solid #202330;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.terminal-sim-header {
+    background: #14161f;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #202330;
+}
+
+.terminal-sim-badge {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    background: rgba(80, 250, 123, 0.15);
+    color: #50fa7b;
+    padding: 3px 8px;
+    border-radius: 6px;
+}
+
+.terminal-sim-body {
+    padding: 14px 18px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.05rem;
+    line-height: 1.6;
+}
+
+.terminal-sim-cmd {
+    color: #8be9fd;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.terminal-sim-output {
+    color: #f8f8f2;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.term-wait-text {
+    color: #6272a4;
+    font-style: italic;
+    font-size: 0.95rem;
+}
+
+.term-predicted-val {
+    color: #50fa7b;
+    font-weight: 700;
+    font-size: 1.15rem;
+}
+
+.term-blinking-cursor {
+    color: #50fa7b;
+    animation: termBlink 1s infinite;
+}
+
+@keyframes termBlink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+}
+
+/* =========================================================================
+   4. PAREAMENTO DE CONCEITOS (PAIR MATCHING)
+   ========================================================================= */
+.pair-match-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    margin-top: 5px;
+}
+
+.pair-match-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.pair-prompt {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pair-counter-pill {
+    font-size: 0.8rem;
+    font-weight: 800;
+    background: #1e2230;
+    border: 1px solid #2d3448;
+    padding: 4px 12px;
+    border-radius: 20px;
+    color: #1cb0f6;
+}
+
+.pair-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    width: 100%;
+}
+
+.pair-match-card {
+    background: #171922;
+    border: 2px solid #2a2e40;
+    border-bottom: 5px solid #1c1f2b;
+    border-radius: 14px;
+    padding: 16px 20px;
+    color: #f1f5f9;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: transform 0.08s ease, border-color 0.15s ease, background 0.15s ease, opacity 0.2s;
+    user-select: none;
+    text-align: left;
+    min-height: 56px;
+}
+
+.pair-match-card:hover:not(.pair-matched):not(.pair-wrong) {
+    border-color: #3b425b;
+    background: #202433;
+    transform: translateY(-2px);
+}
+
+.pair-match-card:active:not(.pair-matched):not(.pair-wrong) {
+    transform: translateY(2px);
+    border-bottom-width: 2px;
+}
+
+.pair-match-card.pair-selected {
+    border-color: #1cb0f6 !important;
+    border-bottom: 5px solid #1899d6 !important;
+    background: rgba(28, 176, 246, 0.14) !important;
+    color: #1cb0f6 !important;
+}
+
+.pair-match-card.pair-matched {
+    border-color: #58cc02 !important;
+    border-bottom: 5px solid #46a302 !important;
+    background: rgba(88, 204, 2, 0.14) !important;
+    color: #58cc02 !important;
+    pointer-events: none;
+    opacity: 0.85;
+}
+
+.pair-match-card .pair-card-icon {
+    display: none;
+    font-size: 1rem;
+    color: #58cc02;
+}
+
+.pair-match-card.pair-matched .pair-card-icon {
+    display: inline-flex;
+}
+
+.pair-match-card.pair-wrong {
+    border-color: #ff4b4b !important;
+    border-bottom: 5px solid #cc3c3c !important;
+    background: rgba(255, 75, 75, 0.14) !important;
+    color: #ff4b4b !important;
+    animation: pairShake 0.45s ease-in-out;
+}
+
+@keyframes pairShake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+}
+
+/* =========================================================================
    INTERFACE CODÉDEX (LIÇÃO 5 - DESAFIO FINAL DA SEÇÃO COM IDE SPLIT-SCREEN)
    ========================================================================= */
 .codedex-container {

@@ -28,7 +28,15 @@ $stmt = $conn->prepare("
            COALESCE(l.divisao, 'Bronze') AS divisao,
            COALESCE(l.xp_semana, 0) AS xp_semana
     FROM usuarios u
-    LEFT JOIN ligas_usuario l ON l.usuario_id = u.id
+    LEFT JOIN (
+        SELECT lu.* 
+        FROM ligas_usuario lu
+        INNER JOIN (
+            SELECT usuario_id, MAX(id) as max_id 
+            FROM ligas_usuario 
+            GROUP BY usuario_id
+        ) latest ON lu.id = latest.max_id
+    ) l ON l.usuario_id = u.id
     WHERE u.id = ?
 ");
 $stmt->bind_param("i", $target_id);

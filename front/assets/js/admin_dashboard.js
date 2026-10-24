@@ -516,6 +516,10 @@
                     badgeText = 'Concluído';
                     iconStatus = 'fa-circle-check';
                     pct = 100;
+                } else if (st === 'refazendo') {
+                    badgeClass = 'status-refazendo';
+                    badgeText = 'Refazendo';
+                    iconStatus = 'fa-rotate-right';
                 } else if (st === 'corrente') {
                     badgeClass = 'status-current';
                     badgeText = 'Em Andamento';
@@ -542,62 +546,7 @@
                 `;
             }
 
-            // Histórico de Ligas
-            let historicoHtml = '';
-            if (hist.length > 0) {
-                hist.forEach(h => {
-                    const resLower = (h.resultado || '').toLowerCase();
-                    let resBadge = '<span class="hist-badge neutro">Permaneceu</span>';
-                    if (resLower === 'subiu') resBadge = '<span class="hist-badge subiu"><i class="fa-solid fa-arrow-trend-up"></i> Promovido</span>';
-                    if (resLower === 'desceu') resBadge = '<span class="hist-badge desceu"><i class="fa-solid fa-arrow-trend-down"></i> Rebaixado</span>';
-
-                    historicoHtml += `
-                        <div class="hist-row">
-                            <div class="hist-week">
-                                <i class="fa-solid fa-calendar-day"></i>
-                                <span>Semana: <strong>${escapeHtml(h.semana_ref)}</strong></span>
-                            </div>
-                            <div class="hist-transition">
-                                <span style="text-transform: capitalize;">${escapeHtml(h.divisao_anterior)}</span>
-                                <i class="fa-solid fa-arrow-right" style="font-size: 10px; color: var(--text-dim);"></i>
-                                <span style="text-transform: capitalize; font-weight: bold;">${escapeHtml(h.divisao_nova)}</span>
-                            </div>
-                            ${resBadge}
-                        </div>
-                    `;
-                });
-            } else {
-                historicoHtml = `
-                    <div class="empty-sub-box">
-                        <i class="fa-solid fa-clock-rotate-left"></i>
-                        <p>Nenhuma virada de ligas registrada no histórico deste aluno.</p>
-                    </div>
-                `;
-            }
-
-            // Informação do Grupo de Batalha
-            let grupoBoxHtml = '';
-            if (soc.grupo) {
-                grupoBoxHtml = `
-                    <div class="profile-group-box">
-                        <div class="group-icon-wrap">
-                            <i class="fa-solid fa-people-group"></i>
-                        </div>
-                        <div class="group-info">
-                            <div class="group-title">${escapeHtml(soc.grupo.nome)}</div>
-                            <div class="group-meta">Código de Convite: <strong>${escapeHtml(soc.grupo.codigo)}</strong> • ${soc.grupo.total_membros} membros</div>
-                        </div>
-                    </div>
-                `;
-            } else {
-                grupoBoxHtml = `
-                    <div class="profile-group-empty">
-                        <i class="fa-solid fa-user-group"></i> O aluno ainda não está participando de um Grupo de Batalha.
-                    </div>
-                `;
-            }
-
-            // Template completo de inspeção
+            // Template completo de inspeção (Somente visualização)
             box.innerHTML = `
                 <!-- 1. CABEÇALHO DO PERFIL -->
                 <div class="profile-header-card">
@@ -610,10 +559,6 @@
                     <div class="profile-user-details">
                         <div class="profile-name-row">
                             <h2 class="profile-user-name">${escapeHtml(u.nome)}</h2>
-                            <span class="profile-role-badge ${u.nivel_acesso === 'admin' ? 'role-admin' : 'role-user'}">
-                                <i class="fa-solid ${u.nivel_acesso === 'admin' ? 'fa-shield-cat' : 'fa-graduation-cap'}"></i>
-                                ${u.nivel_acesso === 'admin' ? 'ADMINISTRADOR' : 'ALUNO'}
-                            </span>
                         </div>
                         <div class="profile-email-text">
                             <i class="fa-solid fa-envelope"></i> ${escapeHtml(u.email)}
@@ -621,12 +566,11 @@
                         <div class="profile-tags-row">
                             <span class="profile-tag"><i class="fa-solid fa-hashtag"></i> ID: ${u.id}</span>
                             <span class="profile-tag"><i class="fa-solid fa-calendar-check"></i> Cadastrado em: ${u.criado_em}</span>
-                            <span class="profile-tag"><i class="fa-solid fa-compass"></i> Dificuldade: ${escapeHtml(u.dificuldade)}</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- 2. GRID DE ESTATÍSTICAS PRINCIPAIS (6 CARDS) -->
+                <!-- 2. GRID DE ESTATÍSTICAS PRINCIPAIS (6 CARDS - SOMENTE LEITURA) -->
                 <div class="profile-stats-grid">
                     <!-- XP TOTAL -->
                     <div class="pstat-card stat-xp">
@@ -646,20 +590,11 @@
                         </div>
                     </div>
 
-                    <!-- DIVISÃO DE LIGA -->
+                    <!-- DIVISÃO DE LIGA (VISUALIZAÇÃO PURA) -->
                     <div class="pstat-card stat-league" style="border-left: 3px solid ${divInfo.corClara};">
                         <div class="pstat-icon" style="color: ${divInfo.corClara};"><i class="fa-solid fa-shield-halved"></i></div>
-                        <div class="pstat-data" style="width: 100%;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
-                                <div class="pstat-val" style="color: ${divInfo.corClara};">${divInfo.nome}</div>
-                                <select onchange="alterarDivisaoAluno(${u.id}, this.value)" title="Trocar liga do aluno a qualquer momento" style="background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 3px 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; outline: none;">
-                                    <option value="bronze" style="background: #1e1e28; color: #fff;" ${(u.divisao || 'bronze') === 'bronze' ? 'selected' : ''}>Bronze</option>
-                                    <option value="prata" style="background: #1e1e28; color: #fff;" ${u.divisao === 'prata' ? 'selected' : ''}>Prata</option>
-                                    <option value="ouro" style="background: #1e1e28; color: #fff;" ${u.divisao === 'ouro' ? 'selected' : ''}>Ouro</option>
-                                    <option value="diamante" style="background: #1e1e28; color: #fff;" ${u.divisao === 'diamante' ? 'selected' : ''}>Diamante</option>
-                                    <option value="mestre" style="background: #1e1e28; color: #fff;" ${u.divisao === 'mestre' ? 'selected' : ''}>Mestre</option>
-                                </select>
-                            </div>
+                        <div class="pstat-data">
+                            <div class="pstat-val" style="color: ${divInfo.corClara};">${divInfo.nome}</div>
                             <div class="pstat-lbl">${Number(u.xp_semana || 0).toLocaleString('pt-BR')} XP nesta semana</div>
                         </div>
                     </div>
@@ -692,33 +627,12 @@
                     </div>
                 </div>
 
-                <!-- 3. GRUPO DE BATALHA -->
-                <div class="profile-section-title">
-                    <i class="fa-solid fa-people-robotic"></i> Grupo de Batalha
-                </div>
-                ${grupoBoxHtml}
-
-                <!-- 4. PROGRESSO NAS 5 UNIDADES -->
+                <!-- 3. PROGRESSO NAS 5 UNIDADES -->
                 <div class="profile-section-title" style="margin-top: 24px;">
                     <i class="fa-solid fa-graduation-cap"></i> Trilha de Aprendizado (Capítulos 1 a 5)
                 </div>
                 <div class="profile-chapters-grid">
                     ${progressoCardsHtml}
-                </div>
-
-                <!-- 5. HISTÓRICO DE LIGAS -->
-                <div class="profile-section-title" style="margin-top: 24px;">
-                    <i class="fa-solid fa-timeline"></i> Histórico de Viradas e Divisões
-                </div>
-                <div class="profile-hist-container">
-                    ${historicoHtml}
-                </div>
-
-                <!-- 6. AÇÕES DO MODAL -->
-                <div class="profile-modal-footer">
-                    <button type="button" class="btn-profile-close" onclick="fecharModalAluno()">
-                        <i class="fa-solid fa-xmark"></i> Fechar Visualização
-                    </button>
                 </div>
             `;
 

@@ -7,6 +7,12 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+// Administrador não possui perfil de jogador
+if (!empty($_SESSION['is_admin']) || (isset($_SESSION['user_nivel_acesso']) && $_SESSION['user_nivel_acesso'] === 'admin')) {
+    header("Location: admin_dashboard.php");
+    exit();
+}
+
 $user_id =$_SESSION['user_id'];
 
 $stmt_user =$conn->prepare("SELECT * FROM usuarios WHERE id = ?");

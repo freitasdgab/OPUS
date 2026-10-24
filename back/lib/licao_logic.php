@@ -52,13 +52,10 @@ $perguntas = [];
 // Seleciona as perguntas (se a coluna 'tipo' não existir, o PHP não quebra, apenas não a trará)
 $result_perguntas = $conn->query("SELECT * FROM perguntas WHERE licao_id = $licao_id LIMIT 10");
 
-$tipos_intercalados = ['multipla_escolha', 'digitar_codigo', 'completar_codigo', 'completar_codigo_escrito'];
-$idx_tipo = 0;
-
 while ($row = $result_perguntas->fetch_assoc()) {
     // Se o banco ainda não tiver a coluna 'tipo' preenchida para outros capítulos antigos, usa fallback
     if (!isset($row['tipo']) || empty($row['tipo'])) {
-        $row['tipo'] = $tipos_intercalados[$idx_tipo % 4];
+        $row['tipo'] = 'multipla_escolha';
     }
     
     // Para 'digitar_codigo' e 'completar_codigo_escrito', garantir que alternativa_correta seja o alvo se não definido.
@@ -67,7 +64,7 @@ while ($row = $result_perguntas->fetch_assoc()) {
     }
     
     $perguntas[] = $row;
-    $idx_tipo++;
+
 }
 
 // Divide o texto explicativo por parágrafos para gerar os slides

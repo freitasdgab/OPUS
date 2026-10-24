@@ -16,8 +16,8 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $user_info = $stmt->get_result()->fetch_assoc();
 
-// 2. Busca TODOS os usuários ordenados pelo XP
-$query = "SELECT id, nome, xp, foto_perfil, pais, pais_codigo FROM usuarios ORDER BY xp DESC, id ASC";
+// 2. Busca TODOS os usuários ordenados pelo XP (apenas alunos, ignorando admin)
+$query = "SELECT id, nome, xp, foto_perfil, pais, pais_codigo FROM usuarios WHERE (nivel_acesso IS NULL OR nivel_acesso != 'admin') ORDER BY xp DESC, id ASC";
 $result = $conn->query($query);
 
 $ranking = [];

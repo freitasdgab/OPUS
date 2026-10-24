@@ -74,7 +74,7 @@ function liga_registrar_xp(mysqli $conn, int $usuario_id, int $xp): void {
 function liga_garantir_usuario(mysqli $conn, int $usuario_id): array {
     liga_registrar_xp($conn, $usuario_id, 0);
 
-    $stmt = $conn->prepare("SELECT * FROM ligas_usuario WHERE usuario_id = ?");
+    $stmt = $conn->prepare("SELECT * FROM ligas_usuario WHERE usuario_id = ? ORDER BY id DESC LIMIT 1");
     $stmt->bind_param("i", $usuario_id);
     $stmt->execute();
     return $stmt->get_result()->fetch_assoc() ?: ['usuario_id' => $usuario_id, 'divisao' => 'bronze', 'grupo_id' => null, 'xp_semana' => 0];

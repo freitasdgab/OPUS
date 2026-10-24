@@ -1158,6 +1158,10 @@ body:not(.light-mode) .role-user {
     border-color: var(--duo-blue-border);
 }
 
+.chapter-card.refazendo {
+    border-color: rgba(249, 115, 22, 0.5);
+}
+
 .chapter-card-header {
     display: flex;
     align-items: center;

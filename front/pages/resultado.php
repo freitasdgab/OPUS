@@ -221,20 +221,8 @@ if ($fogo_acendeu_agora) {
                         +<?php echo $xp_ganho; ?> XP
                     </div>
 
-                    <?php if ($liberou_bau): ?>
-                        <div class="bau-unlocked-banner">
-                            <div class="bau-banner-icon">
-                                <i class="fa-solid fa-gift"></i>
-                            </div>
-                            <div class="bau-banner-text">
-                                <h3>Baú de Recompensas Liberado!</h3>
-                                <p>Você concluiu a 3ª lição e liberou o Baú de Recompensas na Dashboard. Resgate vidas extras e XP!</p>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-
                     <?php if ($perdeu_vida): ?>
-                        <p class="result-message" style="color:#ff8a8a;">
+                        <p class="result-message" style="color:#ff8a8a; margin-bottom: 16px;">
                             <i class="fa-solid fa-heart-crack"></i>
                             <?php echo $vidas_restantes > 0
                                 ? "Vidas restantes: {$vidas_restantes}/3. Cada coração volta a cada 5h."
@@ -244,32 +232,39 @@ if ($fogo_acendeu_agora) {
 
                     <div class="buttons">
                         <?php if ($liberou_bau): ?>
-                            <a href="dashboard.php" class="btn-action btn-dash" style="background: linear-gradient(135deg, #ffd700, #ff9600); color: #1a1a24; border: none; font-weight: 900; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);">
-                                <i class="fa-solid fa-gift"></i> Abrir Baú na Dashboard
+                            <a href="dashboard.php?abrir_bau=<?php echo $cap_atual; ?>" class="btn-action btn-solid-gold">
+                                <i class="fa-solid fa-box-open"></i> ABRIR BAÚ NA DASHBOARD
+                            </a>
+                            <a href="licao.php?cap=<?php echo $prox_cap_link; ?>&licao=<?php echo $prox_licao; ?>" class="btn-action btn-solid-green">
+                                Próxima Lição <i class="fa-solid fa-arrow-right"></i>
                             </a>
                         <?php elseif ($licao_atual == 5): ?>
-                            <a href="dashboard.php" class="btn-action btn-dash"><i class="fa-solid fa-house"></i> Voltar ao dashboard</a>
-                        <?php else: ?>
-                            <a href="dashboard.php" class="btn-action btn-dash"><i class="fa-solid fa-house"></i> Dashboard</a>
-                        <?php endif; ?>
-                        
-                        <?php if ($acertos > 0): ?>
-                            <?php if (!$is_curso_finalizado): ?>
-                                <a href="licao.php?cap=<?php echo $prox_cap_link; ?>&licao=<?php echo $prox_licao; ?>" class="btn-action btn-next">
-                                    <?php echo ($licao_atual == 5) ? 'Ir para a lição' : 'Próxima Lição'; ?> <i class="fa-solid fa-arrow-right"></i>
+                            <a href="dashboard.php" class="btn-action btn-solid-dash"><i class="fa-solid fa-house"></i> Voltar ao dashboard</a>
+                            <?php if ($acertos > 0 && !$is_curso_finalizado): ?>
+                                <a href="licao.php?cap=<?php echo $prox_cap_link; ?>&licao=<?php echo $prox_licao; ?>" class="btn-action btn-solid-green">
+                                    Ir para a lição <i class="fa-solid fa-arrow-right"></i>
                                 </a>
-                            <?php else: ?>
-                                <a href="conquistas.php" class="btn-action btn-next">Ver Troféu! <i class="fa-solid fa-trophy"></i></a>
                             <?php endif; ?>
                         <?php else: ?>
-                            <?php if ($vidas_restantes > 0): ?>
-                            <a href="licao.php?cap=<?php echo $cap_atual; ?>&licao=<?php echo $licao_atual; ?>" class="btn-action btn-next">
-                                Tentar Novamente <i class="fa-solid fa-rotate-right"></i>
-                            </a>
+                            <a href="dashboard.php" class="btn-action btn-solid-dash"><i class="fa-solid fa-house"></i> Dashboard</a>
+                            <?php if ($acertos > 0): ?>
+                                <?php if (!$is_curso_finalizado): ?>
+                                    <a href="licao.php?cap=<?php echo $prox_cap_link; ?>&licao=<?php echo $prox_licao; ?>" class="btn-action btn-solid-green">
+                                        Próxima Lição <i class="fa-solid fa-arrow-right"></i>
+                                    </a>
+                                <?php else: ?>
+                                    <a href="conquistas.php" class="btn-action btn-solid-green">Ver Troféu! <i class="fa-solid fa-trophy"></i></a>
+                                <?php endif; ?>
                             <?php else: ?>
-                            <a href="dashboard.php?sem_vidas=1" class="btn-action btn-next">
-                                Sem vidas <i class="fa-solid fa-heart-crack"></i>
-                            </a>
+                                <?php if ($vidas_restantes > 0): ?>
+                                    <a href="licao.php?cap=<?php echo $cap_atual; ?>&licao=<?php echo $licao_atual; ?>" class="btn-action btn-solid-green">
+                                        Tentar Novamente <i class="fa-solid fa-rotate-right"></i>
+                                    </a>
+                                <?php else: ?>
+                                    <a href="dashboard.php?sem_vidas=1" class="btn-action btn-solid-dash">
+                                        Sem vidas <i class="fa-solid fa-heart-crack"></i>
+                                    </a>
+                                <?php endif; ?>
                             <?php endif; ?>
                         <?php endif; ?>
                     </div>
@@ -277,6 +272,44 @@ if ($fogo_acendeu_agora) {
             </div>
         </main>
     </div>
+
+    <?php if ($liberou_bau): ?>
+    <!-- POPUP ANIMADO DE DESBLOQUEIO DO BAÚ (DIRETO NA TELA SEM ROLAGEM) -->
+    <div id="modalDesbloqueioBau" class="popup-bau-overlay active" role="dialog" aria-modal="true">
+        <div class="popup-bau-card">
+            <button type="button" class="popup-bau-close" onclick="fecharPopupBau()" title="Fechar"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="popup-bau-stage">
+                <div class="cartoon-chest-preview">
+                    <div class="cc-lid"></div>
+                    <div class="cc-body">
+                        <span class="cc-clasp"></span>
+                    </div>
+                </div>
+                <div class="popup-bau-sparkles">
+                    <i class="fa-solid fa-star s1"></i>
+                    <i class="fa-solid fa-star s2"></i>
+                    <i class="fa-solid fa-sparkles s3"></i>
+                </div>
+            </div>
+
+            <span class="popup-bau-badge"><i class="fa-solid fa-crown"></i> NOVO BAÚ DESBLOQUEADO</span>
+            <h2 class="popup-bau-title">Você desbloqueou o Baú!</h2>
+            <p class="popup-bau-desc">
+                Parabéns! Você concluiu a 3ª lição da <strong>Unidade <?php echo $cap_atual; ?></strong>. Abra o baú agora para resgatar <strong>XP Bônus</strong> e <strong>Corações de Vida</strong>, ou continue sua lição!
+            </p>
+
+            <div class="popup-bau-buttons">
+                <a href="dashboard.php?abrir_bau=<?php echo $cap_atual; ?>" class="btn-solid btn-solid-gold">
+                    <i class="fa-solid fa-box-open"></i> ABRIR BAÚ AGORA
+                </a>
+                <a href="licao.php?cap=<?php echo $prox_cap_link; ?>&licao=<?php echo $prox_licao; ?>" class="btn-solid btn-solid-green">
+                    <i class="fa-solid fa-arrow-right"></i> CONTINUAR LIÇÃO
+                </a>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <?php if ($fogo_acendeu_agora): ?>
     <!-- OFENSIVA DE FOGO: chama acendendo + dias da semana -->
@@ -527,7 +560,24 @@ if ($fogo_acendeu_agora) {
                     mascote.classList.add('mascote-jump');
                 });
             }
+            // Popup de Desbloqueio do Baú
+            <?php if ($liberou_bau): ?>
+            if (window.OpusAudio) {
+                setTimeout(function() {
+                    window.OpusAudio.playChest();
+                }, 250);
+            }
+            <?php endif; ?>
         });
+
+        function fecharPopupBau() {
+            if (window.OpusAudio) window.OpusAudio.playClick();
+            const modal = document.getElementById('modalDesbloqueioBau');
+            if (modal) {
+                modal.classList.remove('active');
+                setTimeout(() => modal.style.display = 'none', 250);
+            }
+        }
     </script>
 </body>
 </html>

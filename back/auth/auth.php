@@ -52,16 +52,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $conn->query("INSERT IGNORE INTO seguidores (seguidor_id, seguido_id) VALUES ($convite_id, $uid)");
                 }
 
+                if ($nivel === 'admin') {
+                    header("Location: ../../front/pages/admin_dashboard.php");
+                    exit();
+                }
+
                 if (!empty($codigo_grupo) || $convite_id > 0) {
                     header("Location: ../../front/pages/perfil.php");
                     exit();
                 }
 
-                if ($nivel === 'admin') {
-                    header("Location: ../../front/pages/admin_dashboard.php");
-                } else {
-                    header("Location: ../../front/pages/dashboard.php");
-                }
+                header("Location: ../../front/pages/dashboard.php");
                 exit();
             }
         }

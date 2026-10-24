@@ -56,18 +56,18 @@ try {
         // ESTATÍSTICAS ESPECÍFICAS DO PAINEL ADMIN
         // ------------------------------------------------
         case 'stats':
-            // 1. Total de Usuários
-            $total_users = (int) ($conn->query("SELECT COUNT(*) AS total FROM usuarios")->fetch_assoc()['total'] ?? 0);
+            // 1. Total de Usuários (Apenas alunos/jogadores, desconsiderando administradores)
+            $total_users = (int) ($conn->query("SELECT COUNT(*) AS total FROM usuarios WHERE (nivel_acesso IS NULL OR nivel_acesso != 'admin')")->fetch_assoc()['total'] ?? 0);
 
             // 2. Dias de Ofensiva
-            $com_ofensiva = (int) ($conn->query("SELECT COUNT(*) AS total FROM usuarios WHERE dias_fogo > 0")->fetch_assoc()['total'] ?? 0);
-            $max_ofensiva = (int) ($conn->query("SELECT MAX(dias_fogo) AS max_fogo FROM usuarios")->fetch_assoc()['max_fogo'] ?? 0);
+            $com_ofensiva = (int) ($conn->query("SELECT COUNT(*) AS total FROM usuarios WHERE dias_fogo > 0 AND (nivel_acesso IS NULL OR nivel_acesso != 'admin')")->fetch_assoc()['total'] ?? 0);
+            $max_ofensiva = (int) ($conn->query("SELECT MAX(dias_fogo) AS max_fogo FROM usuarios WHERE (nivel_acesso IS NULL OR nivel_acesso != 'admin')")->fetch_assoc()['max_fogo'] ?? 0);
 
             // 3. Status de Vidas dos Jogadores
-            $vidas_3 = (int) ($conn->query("SELECT COUNT(*) AS total FROM usuarios WHERE vidas >= 3")->fetch_assoc()['total'] ?? 0);
-            $vidas_2 = (int) ($conn->query("SELECT COUNT(*) AS total FROM usuarios WHERE vidas = 2")->fetch_assoc()['total'] ?? 0);
-            $vidas_1 = (int) ($conn->query("SELECT COUNT(*) AS total FROM usuarios WHERE vidas = 1")->fetch_assoc()['total'] ?? 0);
-            $vidas_0 = (int) ($conn->query("SELECT COUNT(*) AS total FROM usuarios WHERE vidas <= 0")->fetch_assoc()['total'] ?? 0);
+            $vidas_3 = (int) ($conn->query("SELECT COUNT(*) AS total FROM usuarios WHERE vidas >= 3 AND (nivel_acesso IS NULL OR nivel_acesso != 'admin')")->fetch_assoc()['total'] ?? 0);
+            $vidas_2 = (int) ($conn->query("SELECT COUNT(*) AS total FROM usuarios WHERE vidas = 2 AND (nivel_acesso IS NULL OR nivel_acesso != 'admin')")->fetch_assoc()['total'] ?? 0);
+            $vidas_1 = (int) ($conn->query("SELECT COUNT(*) AS total FROM usuarios WHERE vidas = 1 AND (nivel_acesso IS NULL OR nivel_acesso != 'admin')")->fetch_assoc()['total'] ?? 0);
+            $vidas_0 = (int) ($conn->query("SELECT COUNT(*) AS total FROM usuarios WHERE vidas <= 0 AND (nivel_acesso IS NULL OR nivel_acesso != 'admin')")->fetch_assoc()['total'] ?? 0);
 
             // 4. Usuários por Divisão / Ligas
             global $LIGAS_CONFIG;
@@ -79,7 +79,21 @@ try {
                 'mestre'   => 0,
             ];
 
-            $res_divisoes = $conn->query("SELECT divisao, COUNT(*) AS total FROM ligas_usuario GROUP BY divisao");
+            $res_divisoes = $conn->query("
+                SELECT l.divisao, COUNT(*) AS total 
+                FROM (
+                    SELECT lu.usuario_id, lu.divisao
+                    FROM ligas_usuario lu
+                    INNER JOIN (
+                        SELECT usuario_id, MAX(id) as max_id 
+                        FROM ligas_usuario 
+                        GROUP BY usuario_id
+                    ) latest ON lu.id = latest.max_id
+                ) l
+                JOIN usuarios u ON u.id = l.usuario_id
+                WHERE (u.nivel_acesso IS NULL OR u.nivel_acesso != 'admin')
+                GROUP BY l.divisao
+            ");
             $alocados_em_ligas = 0;
             if ($res_divisoes) {
                 while ($row = $res_divisoes->fetch_assoc()) {
@@ -112,7 +126,12 @@ try {
             // 5. Dados de Conclusão de Capítulos (1 a 5)
             $progresso_capitulos = [];
             for ($cap = 1; $cap <= 5; $cap++) {
-                $stmt_prog = $conn->query("SELECT COUNT(*) AS concluidos FROM progresso_usuario WHERE unidade_numero = $cap AND status = 'completo'");
+                $stmt_prog = $conn->query("
+                    SELECT COUNT(*) AS concluidos 
+                    FROM progresso_usuario pu
+                    JOIN usuarios u ON u.id = pu.usuario_id
+                    WHERE pu.unidade_numero = $cap AND pu.status = 'completo' AND (u.nivel_acesso IS NULL OR u.nivel_acesso != 'admin')
+                ");
                 $concluidos = (int) ($stmt_prog->fetch_assoc()['concluidos'] ?? 0);
                 $pct_cap = $total_users > 0 ? round(($concluidos / $total_users) * 100, 1) : 0;
                 $progresso_capitulos[] = [
@@ -164,7 +183,7 @@ try {
             $limit = min(100, max(5, (int) ($_GET['limit'] ?? 15)));
             $offset = ($page - 1) * $limit;
 
-            $where = ["1=1"];
+            $where = ["(u.nivel_acesso IS NULL OR u.nivel_acesso != 'admin')"];
             $params = [];
             $types = "";
 
@@ -292,7 +311,15 @@ try {
                        COALESCE(l.xp_semana, 0) AS xp_semana,
                        l.grupo_id
                 FROM usuarios u
-                LEFT JOIN ligas_usuario l ON l.usuario_id = u.id
+                LEFT JOIN (
+                    SELECT lu.* 
+                    FROM ligas_usuario lu
+                    INNER JOIN (
+                        SELECT usuario_id, MAX(id) as max_id 
+                        FROM ligas_usuario 
+                        GROUP BY usuario_id
+                    ) latest ON lu.id = latest.max_id
+                ) l ON l.usuario_id = u.id
                 WHERE u.id = ?
             ");
             $stmt_u->bind_param("i", $target_id);
@@ -301,6 +328,11 @@ try {
 
             if (!$user_data) {
                 echo json_encode(['sucesso' => false, 'mensagem' => 'Usuário não encontrado.']);
+                exit();
+            }
+
+            if (($user_data['nivel_acesso'] ?? '') === 'admin') {
+                echo json_encode(['sucesso' => false, 'mensagem' => 'Administradores não são alunos e não possuem perfil de jogador.']);
                 exit();
             }
 
@@ -319,15 +351,33 @@ try {
             }
 
             $progresso = [];
+            $progresso_map = [];
             foreach ($progresso_raw as $p) {
-                $num = (int) $p['unidade_numero'];
-                $st = $p['status'] ?? 'trancado';
-                // Se o aluno está cursando esta unidade mas já concluiu unidades posteriores, ele está REFAZENDO
-                if ($st === 'corrente' && $max_unidade_completa > $num) {
+                $progresso_map[(int)$p['unidade_numero']] = $p;
+            }
+
+            for ($c = 1; $c <= 5; $c++) {
+                if (isset($progresso_map[$c])) {
+                    $item = $progresso_map[$c];
+                } else {
+                    $item = [
+                        'unidade_numero' => $c,
+                        'status' => ($c === 1 ? 'corrente' : 'trancado'),
+                        'licoes_concluidas' => 0,
+                        'atualizado_em' => null
+                    ];
+                }
+
+                $num = (int) $item['unidade_numero'];
+                $st = $item['status'] ?? 'trancado';
+
+                // Se o aluno já concluiu unidades posteriores e esta não está completa, ele está REFAZENDO
+                if ($max_unidade_completa > $num && $st !== 'completo') {
                     $st = 'refazendo';
                 }
-                $p['status'] = $st;
-                $progresso[] = $p;
+
+                $item['status'] = $st;
+                $progresso[] = $item;
             }
 
             // Histórico de ligas

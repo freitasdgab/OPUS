@@ -1,16 +1,131 @@
 // dashboard.js - logica da pagina Dashboard
         let capAtualBau = 0;
+        let tituloAtualBau = '';
+        let chestConfettiAnimId = null;
+
+        // Disparo de Confetes Festivos no Modal
+        function dispararConfetesBau() {
+            const canvas = document.getElementById('chestConfettiCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const box = canvas.parentElement;
+            canvas.width = box.clientWidth || 440;
+            canvas.height = box.clientHeight || 520;
+
+            const colors = ['#ffd700', '#ff9600', '#58cc02', '#1cb0f6', '#ff4b4b', '#ffffff', '#e066ff'];
+            const particles = [];
+            const count = 70;
+
+            for (let i = 0; i < count; i++) {
+                const angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.5;
+                const speed = Math.random() * 9 + 4;
+                particles.push({
+                    x: canvas.width / 2 + (Math.random() - 0.5) * 40,
+                    y: 110,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    gravity: 0.22,
+                    size: Math.random() * 7 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    rotation: Math.random() * Math.PI * 2,
+                    rotSpeed: (Math.random() - 0.5) * 0.25,
+                    opacity: 1,
+                    shape: Math.random() > 0.3 ? 'rect' : 'circle'
+                });
+            }
+
+            if (chestConfettiAnimId) cancelAnimationFrame(chestConfettiAnimId);
+
+            function step() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let active = 0;
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += p.gravity;
+                    p.vx *= 0.985;
+                    p.rotation += p.rotSpeed;
+                    if (p.y > canvas.height * 0.5) {
+                        p.opacity -= 0.018;
+                    }
+                    if (p.opacity > 0 && p.y < canvas.height + 20) {
+                        active++;
+                        ctx.save();
+                        ctx.globalAlpha = Math.max(0, p.opacity);
+                        ctx.translate(p.x, p.y);
+                        ctx.rotate(p.rotation);
+                        ctx.fillStyle = p.color;
+                        if (p.shape === 'circle') {
+                            ctx.beginPath();
+                            ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+                            ctx.fill();
+                        } else {
+                            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.7);
+                        }
+                        ctx.restore();
+                    }
+                });
+                if (active > 0) {
+                    chestConfettiAnimId = requestAnimationFrame(step);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+            chestConfettiAnimId = requestAnimationFrame(step);
+        }
+
+        // Animação de Contador Numérico Suave
+        function animarContadorXP(el, valorFinal) {
+            if (!el) return;
+            const duracao = 900;
+            const inicio = performance.now();
+            el.innerText = '+0 XP';
+            function frame(agora) {
+                const progresso = Math.min((agora - inicio) / duracao, 1);
+                const facil = 1 - Math.pow(1 - progresso, 3);
+                const atual = Math.round(facil * valorFinal);
+                el.innerText = '+' + atual + ' XP';
+                if (progresso < 1) {
+                    requestAnimationFrame(frame);
+                } else {
+                    el.innerText = '+' + valorFinal + ' XP';
+                }
+            }
+            requestAnimationFrame(frame);
+        }
 
         function abrirModalBau(cap, titulo) {
             if (window.OpusAudio) window.OpusAudio.playClick();
             capAtualBau = cap;
-            document.getElementById('modalBauTitle').innerText = 'Baú de Recompensas!';
-            document.getElementById('modalBauSub').innerText = titulo + ' · Recompensa de Meio de Trilha';
+            tituloAtualBau = titulo || ('Unidade ' + cap);
+
+            const modalTitle = document.getElementById('modalBauTitle');
+            const modalSub = document.getElementById('modalBauSub');
+            if (modalTitle) modalTitle.innerText = 'Baú de Recompensas!';
+            if (modalSub) modalSub.innerHTML = '<i class="fa-solid fa-crown"></i> Unidade ' + cap + (titulo ? (' · ' + titulo) : '') + ' · Meio de Trilha';
+
+            // Reseta visual do baú no modal
+            const chestGraphic = document.getElementById('modalChestGraphic');
+            if (chestGraphic) {
+                chestGraphic.classList.remove('chest-modal-rumble', 'chest-open-burst');
+            }
+            const sunburst = document.getElementById('chestSunburst');
+            if (sunburst) {
+                sunburst.classList.remove('sunburst-active');
+            }
+
+            const canvas = document.getElementById('chestConfettiCanvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+
             document.getElementById('rewardContainerPre').style.display = 'block';
             document.getElementById('rewardContainerPos').style.display = 'none';
-            document.getElementById('btnResgatarBau').style.display = 'block';
-            document.getElementById('btnResgatarBau').innerHTML = '<i class="fa-solid fa-box-open"></i> ABRIR BAÚ DE RECOMPENSA';
-            document.getElementById('btnResgatarBau').disabled = false;
+            const btnResgatar = document.getElementById('btnResgatarBau');
+            btnResgatar.style.display = 'flex';
+            btnResgatar.innerHTML = '<i class="fa-solid fa-box-open"></i> ABRIR BAÚ DE RECOMPENSA';
+            btnResgatar.disabled = false;
             document.getElementById('btnFecharBauPronto').style.display = 'none';
             
             const modal = document.getElementById('modalBauRecompensa');
@@ -20,6 +135,10 @@
 
         function fecharModalBau() {
             if (window.OpusAudio) window.OpusAudio.playClick();
+            if (chestConfettiAnimId) {
+                cancelAnimationFrame(chestConfettiAnimId);
+                chestConfettiAnimId = null;
+            }
             const modal = document.getElementById('modalBauRecompensa');
             modal.classList.remove('active');
             setTimeout(() => modal.style.display = 'none', 300);
@@ -33,28 +152,118 @@
             setTimeout(() => modal.style.display = 'none', 250);
         }
 
-        function avisoBauColetado(cap) {
+        function avisoBauColetado(cap, titulo) {
             const modal = document.getElementById('modalAvisoBau');
             if (!modal) return;
-            document.getElementById('avisoBauIconBox').style.background = 'linear-gradient(135deg, #1cb0f6, #0088cc)';
-            document.getElementById('avisoBauIconBox').style.borderBottomColor = '#0070a8';
-            document.getElementById('avisoBauIcone').className = 'fa-solid fa-box-open';
-            document.getElementById('avisoBauIcone').style.color = '#fff';
+            const iconBox = document.getElementById('avisoBauIconBox');
+            iconBox.style.background = '#58cc02';
+            iconBox.style.border = '3px solid #2e1800';
+            iconBox.style.borderBottom = '6px solid #225c01';
+            iconBox.style.boxShadow = 'none';
+            
+            const icon = document.getElementById('avisoBauIcone');
+            icon.className = 'fa-solid fa-box-open';
+            icon.style.color = '#fff';
+
             document.getElementById('avisoBauTitulo').innerText = 'Baú Já Coletado!';
-            document.getElementById('avisoBauTexto').innerText = 'Você já resgatou as recompensas de XP e vida deste baú da Unidade ' + cap + '!';
+            document.getElementById('avisoBauSub').innerHTML = '<i class="fa-solid fa-circle-check"></i> Unidade ' + cap + (titulo ? (' · ' + titulo) : '');
+            
+            const progressBox = document.getElementById('avisoBauProgressoBox');
+            if (progressBox) progressBox.style.display = 'none';
+
+            document.getElementById('avisoBauTexto').innerHTML = 'Você já resgatou as recompensas deste baú da <strong>Unidade ' + cap + '</strong> (+100 XP e Corações de Vida extras)! Continue sua trilha para encontrar novos baús nas próximas unidades.';
+            
+            const btn = document.getElementById('btnAvisoAcao');
+            if (btn) {
+                btn.className = 'btn-claim-chest';
+                btn.style.background = '#58cc02';
+                btn.style.border = 'none';
+                btn.style.borderBottom = '5px solid #46a302';
+                btn.style.boxShadow = 'none';
+                btn.innerHTML = '<i class="fa-solid fa-arrow-right"></i> CONTINUAR TRILHA';
+                btn.onclick = fecharAvisoBau;
+            }
+
             modal.style.display = 'flex';
             setTimeout(() => modal.classList.add('active'), 10);
         }
 
-        function avisoBauTrancado(cap) {
+        function avisoBauTrancado(cap, titulo, concluidas) {
             const modal = document.getElementById('modalAvisoBau');
             if (!modal) return;
-            document.getElementById('avisoBauIconBox').style.background = 'linear-gradient(135deg, #ff9600, #e67e00)';
-            document.getElementById('avisoBauIconBox').style.borderBottomColor = '#b36200';
-            document.getElementById('avisoBauIcone').className = 'fa-solid fa-lock';
-            document.getElementById('avisoBauIcone').style.color = '#fff';
-            document.getElementById('avisoBauTitulo').innerText = 'Baú Trancado!';
-            document.getElementById('avisoBauTexto').innerText = 'Complete pelo menos 3 lições da Unidade ' + cap + ' para desbloquear e abrir este baú de recompensa!';
+            concluidas = Number(concluidas) || 0;
+            if (concluidas > 3) concluidas = 3;
+
+            const iconBox = document.getElementById('avisoBauIconBox');
+            iconBox.style.background = '#ff9600';
+            iconBox.style.border = '3px solid #2e1800';
+            iconBox.style.borderBottom = '6px solid #b45309';
+            iconBox.style.boxShadow = 'none';
+
+            const icon = document.getElementById('avisoBauIcone');
+            icon.className = 'fa-solid fa-lock';
+            icon.style.color = '#fff';
+
+            document.getElementById('avisoBauTitulo').innerText = 'Baú Trancado';
+            document.getElementById('avisoBauSub').innerHTML = '<i class="fa-solid fa-lock"></i> Unidade ' + cap + (titulo ? (' · ' + titulo) : '');
+            
+            // Configura Trilha Visual de Passos (1 -> 2 -> Baú)
+            const progressBox = document.getElementById('avisoBauProgressoBox');
+            if (progressBox) progressBox.style.display = 'block';
+
+            const step1 = document.getElementById('avisoStep1');
+            const step2 = document.getElementById('avisoStep2');
+            const step3 = document.getElementById('avisoStep3');
+            const stepFill = document.getElementById('avisoStepFill');
+
+            if (step1) {
+                step1.className = 'step-point' + (concluidas >= 1 ? ' completed' : (concluidas === 0 ? ' target' : ''));
+                step1.querySelector('.step-dot').innerHTML = concluidas >= 1 ? '<i class="fa-solid fa-check"></i>' : '1';
+            }
+            if (step2) {
+                step2.className = 'step-point' + (concluidas >= 2 ? ' completed' : (concluidas === 1 ? ' target' : ''));
+                step2.querySelector('.step-dot').innerHTML = concluidas >= 2 ? '<i class="fa-solid fa-check"></i>' : '2';
+            }
+            if (step3) {
+                step3.className = 'step-point' + (concluidas >= 3 ? ' completed' : ' target');
+            }
+
+            const percent = Math.round((concluidas / 3) * 100);
+            if (stepFill) {
+                const fillWidth = concluidas === 0 ? 0 : (concluidas === 1 ? 50 : (concluidas === 2 ? 80 : 100));
+                stepFill.style.width = fillWidth + '%';
+            }
+
+            const txtMeta = document.getElementById('avisoProgressoTexto');
+            if (txtMeta) txtMeta.innerText = concluidas + ' de 3 lições concluídas';
+            const badgeMeta = document.getElementById('avisoProgressoPorcentagem');
+            if (badgeMeta) badgeMeta.innerText = percent + '%';
+
+            // Mensagem motivacional de acordo com o progresso
+            let desc = '';
+            if (concluidas === 0) {
+                desc = 'Conclua as 3 primeiras lições da <strong>Unidade ' + cap + '</strong> para desbloquear este baú mágico de recompensas com <strong>+100 XP</strong> e <strong>Corações de Vida</strong>!';
+            } else if (concluidas === 1) {
+                desc = 'Faltam apenas <strong>2 lições</strong> nesta unidade para abrir o baú e garantir seu bônus de XP e corações!';
+            } else {
+                desc = 'Quase lá! Falta só <strong>1 lição</strong> para desbloquear o baú de ouro desta unidade!';
+            }
+            document.getElementById('avisoBauTexto').innerHTML = desc;
+
+            const btn = document.getElementById('btnAvisoAcao');
+            if (btn) {
+                btn.className = 'btn-claim-chest btn-aviso-primario';
+                btn.style.background = '#1cb0f6';
+                btn.style.border = 'none';
+                btn.style.borderBottom = '5px solid #148bc4';
+                btn.style.boxShadow = 'none';
+                btn.innerHTML = '<i class="fa-solid fa-play"></i> CONTINUAR LIÇÃO';
+                btn.onclick = function() {
+                    fecharAvisoBau();
+                    setTimeout(rolarAteLicaoAtual, 120);
+                };
+            }
+
             modal.style.display = 'flex';
             setTimeout(() => modal.classList.add('active'), 10);
         }
@@ -64,6 +273,16 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Abrindo Baú...';
 
+            const chestGraphic = document.getElementById('modalChestGraphic');
+            const sunburst = document.getElementById('chestSunburst');
+            if (chestGraphic) chestGraphic.classList.add('chest-modal-rumble');
+            if (sunburst) sunburst.classList.add('sunburst-active');
+
+            // Suspense sonoro da abertura
+            if (window.OpusAudio && typeof window.OpusAudio.playChestRumble === 'function') {
+                window.OpusAudio.playChestRumble();
+            }
+
             fetch('../../back/api/resgatar_bau.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -72,6 +291,9 @@
             .then(r => r.json())
             .then(data => {
                 if (!data.success) {
+                    if (chestGraphic) chestGraphic.classList.remove('chest-modal-rumble');
+                    if (sunburst) sunburst.classList.remove('sunburst-active');
+
                     if (typeof opusToast === 'function') {
                         opusToast(data.mensagem || 'Não foi possível resgatar o baú.', 'error');
                     } else {
@@ -82,38 +304,70 @@
                     return;
                 }
 
-                // Exibe resultados com efeito sonoro mágico
+                // Efeito triunfal de abertura com fanfarra e confetes
+                if (chestGraphic) {
+                    chestGraphic.classList.remove('chest-modal-rumble');
+                    chestGraphic.classList.add('chest-open-burst');
+                }
                 if (window.OpusAudio) {
                     window.OpusAudio.playChest();
                 }
+                dispararConfetesBau();
+
                 document.getElementById('rewardContainerPre').style.display = 'none';
-                document.getElementById('rewardContainerPos').style.display = 'block';
-                document.getElementById('resgateXpVal').innerText = '+' + data.xp_ganho + ' XP';
+                const containerPos = document.getElementById('rewardContainerPos');
+                containerPos.style.display = 'block';
+
+                // Animação de entrada dos cards
+                const cardXp = document.getElementById('resgateXpCard');
+                const cardVida = document.getElementById('resgateVidaCard');
+                if (cardXp) {
+                    cardXp.classList.remove('reveal-bounce');
+                    void cardXp.offsetWidth;
+                    cardXp.classList.add('reveal-bounce');
+                }
+                if (cardVida) {
+                    cardVida.classList.remove('reveal-bounce');
+                    void cardVida.offsetWidth;
+                    setTimeout(() => cardVida.classList.add('reveal-bounce'), 120);
+                }
+
+                animarContadorXP(document.getElementById('resgateXpVal'), data.xp_ganho);
                 
                 if (data.vidas_ganhas > 0) {
                     document.getElementById('resgateVidaVal').innerText = '+1 Coração';
                     document.getElementById('resgateVidaLbl').innerText = 'Vida Recuperada';
                     document.getElementById('resgateVidaIcon').className = 'fa-solid fa-heart rc-icon';
-                    document.getElementById('resgateVidaIcon').style.color = '#ef4444';
+                    document.getElementById('resgateVidaBadge').innerHTML = '<i class="fa-solid fa-shield-heart"></i> Recuperação';
+                    cardVida.classList.remove('vida-max');
                 } else {
-                    document.getElementById('resgateVidaVal').innerText = 'XP Bônus Max';
-                    document.getElementById('resgateVidaLbl').innerText = 'Vidas já cheias';
-                    document.getElementById('resgateVidaIcon').className = 'fa-solid fa-star rc-icon';
-                    document.getElementById('resgateVidaIcon').style.color = '#ffc800';
+                    document.getElementById('resgateVidaVal').innerText = '+100 XP Extra';
+                    document.getElementById('resgateVidaLbl').innerText = 'Vidas no Máximo';
+                    document.getElementById('resgateVidaIcon').className = 'fa-solid fa-shield-heart rc-icon';
+                    document.getElementById('resgateVidaBadge').innerHTML = '<i class="fa-solid fa-star"></i> Bônus Máximo';
+                    cardVida.classList.add('vida-max');
                 }
 
                 document.getElementById('resgateDetalheTxt').innerText = data.detalhe || data.mensagem;
                 btn.style.display = 'none';
-                document.getElementById('btnFecharBauPronto').style.display = 'block';
+                document.getElementById('btnFecharBauPronto').style.display = 'flex';
 
-                // Atualiza o nó do baú na trilha
+                // Atualiza o nó 3D do baú na trilha
                 const chestNode = document.getElementById('chestNode_' + capAtualBau);
                 if (chestNode) {
                     chestNode.className = 'chest-node claimed';
-                    chestNode.onclick = function() { avisoBauColetado(capAtualBau); };
-                    chestNode.innerHTML = '<i class="fa-solid fa-box-open"></i><span class="chest-tag-done"><i class="fa-solid fa-check"></i> Coletado</span>';
+                    chestNode.onclick = function() { avisoBauColetado(capAtualBau, tituloAtualBau); };
+                    chestNode.innerHTML = `
+                        <div class="chest-sprite open">
+                            <div class="chest-lid"></div>
+                            <div class="chest-body"><span class="chest-interior-glow"></span></div>
+                        </div>
+                        <span class="chest-tag-done"><i class="fa-solid fa-check"></i> Coletado</span>
+                    `;
                     const balloon = chestNode.parentElement.querySelector('.chest-balloon');
                     if (balloon) balloon.remove();
+                    const aura = chestNode.querySelector('.chest-aura-glow');
+                    if (aura) aura.remove();
                     setTimeout(renderizarTrilhasConexao, 60);
                 }
 
@@ -129,6 +383,9 @@
             })
             .catch(err => {
                 console.error(err);
+                if (chestGraphic) chestGraphic.classList.remove('chest-modal-rumble');
+                if (sunburst) sunburst.classList.remove('sunburst-active');
+
                 if (typeof opusToast === 'function') {
                     opusToast('Erro de conexão ao abrir o baú.', 'error');
                 } else {
@@ -743,5 +1000,28 @@
         if (observerCurriculum) {
             observerCurriculum.observe(document.querySelector('.curriculum-column'));
         }
+
+        // Abertura automática do baú quando redirecionado da tela de resultado (?abrir_bau=X)
+        (function() {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const bauNum = params.get('abrir_bau');
+                if (bauNum) {
+                    setTimeout(() => {
+                        const chestNode = document.getElementById('chestNode_' + bauNum);
+                        if (chestNode) {
+                            chestNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            chestNode.classList.add('chest-spotlight-focus');
+                            // Se estiver disponível para abrir, aciona o modal com animação
+                            if (chestNode.classList.contains('available')) {
+                                setTimeout(() => {
+                                    chestNode.click();
+                                }, 600);
+                            }
+                        }
+                    }, 450);
+                }
+            } catch (e) {}
+        })();
 
 

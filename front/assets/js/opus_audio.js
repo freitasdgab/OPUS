@@ -256,7 +256,34 @@
         },
 
         /**
-         * 5. EFEITO DE BAÚ / RECOMPENSA ESPECIAL (Chime mágico ascendente)
+         * 5. EFEITO DE SUSPENSE DO BAÚ (Vibração e antecipação antes de abrir)
+         */
+        playChestRumble: function() {
+            if (this.isMuted()) return;
+            const ctx = getAudioContext();
+            if (!ctx) return;
+
+            try {
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(90, now);
+                osc.frequency.exponentialRampToValueAtTime(260, now + 0.45);
+
+                gain.gain.setValueAtTime(0.001, now);
+                gain.gain.linearRampToValueAtTime(0.14, now + 0.35);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.48);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.5);
+            } catch (e) {}
+        },
+
+        /**
+         * 5.1 EFEITO DE BAÚ / FANFARRA TRIUNFAL (Chime mágico ascendente + acorde triunfal)
          */
         playChest: function() {
             if (this.isMuted()) return;
@@ -265,24 +292,44 @@
 
             try {
                 const now = ctx.currentTime;
-                const freqs = [440, 554.37, 659.25, 880, 1108.73, 1318.51];
+                // Arpeggio brilhante em Dó Maior 7M / Nono (C5, E5, G5, B5, C6, E6, G6)
+                const freqs = [523.25, 659.25, 783.99, 987.77, 1046.50, 1318.51, 1567.98];
                 freqs.forEach((f, i) => {
                     const osc = ctx.createOscillator();
                     const gain = ctx.createGain();
 
-                    const t = now + i * 0.06;
+                    const t = now + i * 0.055;
                     osc.type = 'sine';
                     osc.frequency.setValueAtTime(f, t);
 
                     gain.gain.setValueAtTime(0.001, t);
-                    gain.gain.linearRampToValueAtTime(0.18, t + 0.015);
-                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+                    gain.gain.linearRampToValueAtTime(0.22, t + 0.015);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
 
                     osc.connect(gain);
                     gain.connect(ctx.destination);
 
                     osc.start(t);
-                    osc.stop(t + 0.38);
+                    osc.stop(t + 0.48);
+                });
+
+                // Acorde final de sustentação dourada (brilho mágico)
+                const finalChord = [523.25, 659.25, 1046.50, 1567.98];
+                const tFinal = now + freqs.length * 0.055;
+                finalChord.forEach(f => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(f, tFinal);
+
+                    gain.gain.setValueAtTime(0.001, tFinal);
+                    gain.gain.linearRampToValueAtTime(0.12, tFinal + 0.03);
+                    gain.gain.exponentialRampToValueAtTime(0.001, tFinal + 0.85);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(tFinal);
+                    osc.stop(tFinal + 0.9);
                 });
             } catch (e) {
                 console.warn('[OpusAudio] Falha ao tocar baú:', e);

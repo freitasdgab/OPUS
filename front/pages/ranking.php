@@ -5,6 +5,12 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: auth.html");
     exit();
 }
+
+// Administrador não disputa ranking de jogadores
+if (!empty($_SESSION['is_admin']) || (isset($_SESSION['user_nivel_acesso']) && $_SESSION['user_nivel_acesso'] === 'admin')) {
+    header("Location: admin_dashboard.php");
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">

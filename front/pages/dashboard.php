@@ -297,18 +297,37 @@ unset($d_info);
                                             <div class="reward-chest-container pos-chest <?php echo $chest_state; ?>" data-chest-state="<?php echo $chest_state; ?>">
                                                 <?php if ($chest_state === 'available'): ?>
                                                     <div class="chest-balloon"><i class="fa-solid fa-gift"></i> ABRIR BAÚ!</div>
-                                                    <div class="chest-node available" id="chestNode_<?php echo $num_cap; ?>" onclick="abrirModalBau(<?php echo $num_cap; ?>, '<?php echo htmlspecialchars($info['titulo']); ?>')">
-                                                        <i class="fa-solid fa-gift"></i>
+                                                    <div class="chest-node available" id="chestNode_<?php echo $num_cap; ?>" onclick="abrirModalBau(<?php echo $num_cap; ?>, '<?php echo addslashes(htmlspecialchars($info['titulo'])); ?>')">
+                                                        <div class="chest-aura-glow"></div>
+                                                        <div class="chest-sprite">
+                                                            <div class="chest-lid">
+                                                                <span class="chest-clasp"></span>
+                                                            </div>
+                                                            <div class="chest-body">
+                                                                <span class="chest-keyhole"></span>
+                                                            </div>
+                                                        </div>
                                                         <i class="fa-solid fa-sparkles logic-hologram"></i>
                                                     </div>
                                                 <?php elseif ($chest_state === 'claimed'): ?>
-                                                    <div class="chest-node claimed" id="chestNode_<?php echo $num_cap; ?>" onclick="avisoBauColetado(<?php echo $num_cap; ?>)">
-                                                        <i class="fa-solid fa-box-open"></i>
+                                                    <div class="chest-node claimed" id="chestNode_<?php echo $num_cap; ?>" onclick="avisoBauColetado(<?php echo $num_cap; ?>, '<?php echo addslashes(htmlspecialchars($info['titulo'])); ?>')">
+                                                        <div class="chest-sprite open">
+                                                            <div class="chest-lid"></div>
+                                                            <div class="chest-body">
+                                                                <span class="chest-interior-glow"></span>
+                                                            </div>
+                                                        </div>
                                                         <span class="chest-tag-done"><i class="fa-solid fa-check"></i> Coletado</span>
                                                     </div>
                                                 <?php else: ?>
-                                                    <div class="chest-node locked" id="chestNode_<?php echo $num_cap; ?>" onclick="avisoBauTrancado(<?php echo $num_cap; ?>)">
-                                                        <i class="fa-solid fa-lock"></i>
+                                                    <div class="chest-node locked" id="chestNode_<?php echo $num_cap; ?>" onclick="avisoBauTrancado(<?php echo $num_cap; ?>, '<?php echo addslashes(htmlspecialchars($info['titulo'])); ?>', <?php echo (int)min(3, $licoes_feitas); ?>)">
+                                                        <div class="chest-sprite locked">
+                                                            <div class="chest-lid"></div>
+                                                            <div class="chest-body">
+                                                                <span class="chest-padlock"><i class="fa-solid fa-lock"></i></span>
+                                                            </div>
+                                                        </div>
+                                                        <span class="chest-progress-pill"><i class="fa-solid fa-lock"></i> <?php echo (int)min(3, $licoes_feitas); ?>/3</span>
                                                     </div>
                                                 <?php endif; ?>
                                             </div>
@@ -554,58 +573,105 @@ unset($d_info);
     <!-- Modal do Baú de Recompensas -->
     <div id="modalBauRecompensa" class="modal-overlay">
         <div class="modal-bau-box">
+            <canvas id="chestConfettiCanvas" class="chest-confetti-canvas"></canvas>
             <button class="close-btn-modal" onclick="fecharModalBau()"><i class="fa-solid fa-xmark"></i></button>
-            <div class="modal-bau-icon-wrapper">
-                <i class="fa-solid fa-gift" id="modalBauIconePrincipal"></i>
+            
+            <div class="modal-chest-stage">
+                <div class="chest-sunburst-bg" id="chestSunburst"></div>
+                <div class="modal-chest-graphic" id="modalChestGraphic">
+                    <div class="modal-chest-lid" id="modalChestLid">
+                        <span class="modal-chest-clasp"></span>
+                    </div>
+                    <div class="modal-chest-body">
+                        <span class="modal-chest-light-blast" id="modalChestLightBlast"></span>
+                        <span class="modal-chest-keyhole"></span>
+                    </div>
+                    <div class="modal-chest-shadow"></div>
+                </div>
             </div>
+
             <h2 class="modal-bau-title" id="modalBauTitle">Baú de Recompensas!</h2>
-            <p class="modal-bau-sub" id="modalBauSub">Unidade X · Recompensa de Meio de Trilha</p>
+            <div class="modal-bau-sub" id="modalBauSub"><i class="fa-solid fa-crown"></i> Unidade X · Recompensa de Meio de Trilha</div>
 
             <div id="rewardContainerPre">
-                <p style="color: #d0d0d8; font-size: 1rem; line-height: 1.5; margin-bottom: 25px;">
-                    Você atingiu a metade desta unidade! Abra este baú misterioso para resgatar <strong>XP Bônus</strong> e <strong>Corações de Vida</strong> para continuar sua jornada.
+                <p class="modal-bau-desc">
+                    Você atingiu a metade desta unidade! Abra este baú mágico para garantir <strong>XP Bônus</strong> no ranking da liga e recuperar <strong>Corações de Vida</strong> para continuar aprendendo.
                 </p>
             </div>
 
             <div id="rewardContainerPos" style="display: none;">
                 <div class="reward-cards-grid">
-                    <div class="reward-card">
-                        <i class="fa-solid fa-bolt rc-icon" style="color: #ffc800;"></i>
-                        <div class="rc-val" id="resgateXpVal">+50 XP</div>
+                    <div class="reward-card reward-card-xp" id="resgateXpCard">
+                        <div class="rc-icon-wrap"><i class="fa-solid fa-bolt rc-icon"></i></div>
+                        <div class="rc-val" id="resgateXpVal">+100 XP</div>
                         <div class="rc-lbl">Bônus de XP</div>
+                        <span class="rc-badge"><i class="fa-solid fa-trophy"></i> Liga & Missões</span>
                     </div>
-                    <div class="reward-card" id="resgateVidaCard">
-                        <i class="fa-solid fa-heart rc-icon" id="resgateVidaIcon" style="color: #ef4444;"></i>
+                    <div class="reward-card reward-card-vida" id="resgateVidaCard">
+                        <div class="rc-icon-wrap"><i class="fa-solid fa-heart rc-icon" id="resgateVidaIcon"></i></div>
                         <div class="rc-val" id="resgateVidaVal">+1 Coração</div>
                         <div class="rc-lbl" id="resgateVidaLbl">Vida Bônus</div>
+                        <span class="rc-badge" id="resgateVidaBadge"><i class="fa-solid fa-shield-heart"></i> Recuperação</span>
                     </div>
                 </div>
-                <p id="resgateDetalheTxt" style="color: #58cc02; font-weight: 700; font-size: 0.95rem; margin-bottom: 20px;"></p>
+                <div class="chest-perk-banner">
+                    <i class="fa-solid fa-sparkles"></i> <span id="resgateDetalheTxt">Recompensa resgatada com sucesso!</span>
+                </div>
             </div>
 
             <button class="btn-claim-chest" id="btnResgatarBau" onclick="resgatarRecompensaBau()">
                 <i class="fa-solid fa-box-open"></i> ABRIR BAÚ DE RECOMPENSA
             </button>
-            <button class="btn-claim-chest" id="btnFecharBauPronto" onclick="fecharModalBau()" style="display: none; background: #1cb0f6; border-bottom-color: #148bc4;">
-                <i class="fa-solid fa-check"></i> CONTINUAR APRENDENDO
+            <button class="btn-claim-chest" id="btnFecharBauPronto" onclick="fecharModalBau()" style="display: none; background: #58cc02; border-bottom: 5px solid #46a302; box-shadow: none;">
+                <i class="fa-solid fa-arrow-right"></i> CONTINUAR APRENDENDO
             </button>
         </div>
     </div>
 
-    <!-- Modal de Aviso Personalizado para Baú Coletado/Trancado -->
+    <!-- Modal de Aviso Personalizado para Baú Coletado/Trancado com Trilha de Progresso -->
     <div id="modalAvisoBau" class="modal-overlay">
-        <div class="modal-bau-box" style="max-width: 380px; padding: 30px 24px;">
+        <div class="modal-bau-box modal-aviso-box">
             <button class="close-btn-modal" onclick="fecharAvisoBau()"><i class="fa-solid fa-xmark"></i></button>
-            <div class="modal-bau-icon-wrapper" id="avisoBauIconBox" style="width: 80px; height: 80px; font-size: 36px; margin-bottom: 18px;">
+            <div class="modal-aviso-icon-wrap" id="avisoBauIconBox">
                 <i class="fa-solid fa-lock" id="avisoBauIcone"></i>
             </div>
-            <h2 class="modal-bau-title" id="avisoBauTitulo" style="font-size: 1.35rem;">Baú Trancado</h2>
-            <p style="color: #b0b0c2; font-size: 0.92rem; line-height: 1.5; margin: 12px 0 22px 0;" id="avisoBauTexto">
-                Complete mais lições para desbloquear este baú.
+            
+            <h2 class="modal-bau-title" id="avisoBauTitulo">Baú Trancado</h2>
+            <div class="modal-bau-sub" id="avisoBauSub">Unidade X</div>
+            
+            <div id="avisoBauProgressoBox" class="aviso-bau-progress-container">
+                <div class="aviso-steps-track">
+                    <div class="step-line-bg">
+                        <div class="step-line-fill" id="avisoStepFill"></div>
+                    </div>
+                    <div class="step-point" id="avisoStep1">
+                        <span class="step-dot"><i class="fa-solid fa-1"></i></span>
+                        <span class="step-lbl">Lição 1</span>
+                    </div>
+                    <div class="step-point" id="avisoStep2">
+                        <span class="step-dot"><i class="fa-solid fa-2"></i></span>
+                        <span class="step-lbl">Lição 2</span>
+                    </div>
+                    <div class="step-point" id="avisoStep3">
+                        <span class="step-dot"><i class="fa-solid fa-gift"></i></span>
+                        <span class="step-lbl">Baú</span>
+                    </div>
+                </div>
+                <div class="aviso-progress-meta">
+                    <span id="avisoProgressoTexto">0 de 3 lições concluídas</span>
+                    <span class="aviso-percent-badge" id="avisoProgressoPorcentagem">0%</span>
+                </div>
+            </div>
+
+            <p class="aviso-bau-desc" id="avisoBauTexto">
+                Complete pelo menos 3 lições para desbloquear este baú.
             </p>
-            <button class="btn-claim-chest" onclick="fecharAvisoBau()" style="background: #1cb0f6; border-bottom-color: #148bc4; padding: 14px;">
-                ENTENDIDO
-            </button>
+            
+            <div class="aviso-action-buttons">
+                <button class="btn-claim-chest btn-aviso-primario" id="btnAvisoAcao" onclick="fecharAvisoBau()">
+                    CONTINUAR
+                </button>
+            </div>
         </div>
     </div>
 

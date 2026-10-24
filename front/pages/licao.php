@@ -619,10 +619,18 @@ $desafio_atual = conteudo_desafio($conn, $unidade_atual) ?? conteudo_desafio($co
             <div class="quiz-question-side">
                 <?php foreach ($perguntas as $index => $p): $q_num = $index + 1; 
                     $tipo = $p['tipo'] ?? 'multipla_escolha';
-                    $correct_val = $p['alternativa_correta'] ?? '';
-                    $correct_text = ($tipo === 'digitar_codigo' || $tipo === 'completar_codigo_escrito')
-                        ? $correct_val
-                        : ($p['alternativa_' . strtolower($correct_val)] ?? $correct_val);
+                    $correct_val = trim($p['alternativa_correta'] ?? '');
+                    if ($tipo === 'spot_bug') {
+                        $correct_text = "Linha " . $correct_val;
+                    } elseif ($tipo === 'ordenar_codigo' || $tipo === 'parsons') {
+                        $correct_text = "Ordem correta dos blocos";
+                    } elseif ($tipo === 'pareamento') {
+                        $correct_text = "Todos os pares correspondentes";
+                    } elseif ($tipo === 'digitar_codigo' || $tipo === 'completar_codigo_escrito') {
+                        $correct_text = $correct_val;
+                    } else {
+                        $correct_text = $p['alternativa_' . strtolower($correct_val)] ?? $correct_val;
+                    }
                 ?>
                     <div class="question-slide" 
                          data-index="<?php echo $index; ?>" 
@@ -635,7 +643,7 @@ $desafio_atual = conteudo_desafio($conn, $unidade_atual) ?? conteudo_desafio($co
                         <span class="question-number">Exercício <?php echo $q_num; ?> de <?php echo count($perguntas); ?></span>
                         <h2 class="question-text"><?php echo htmlspecialchars($p['pergunta_texto']); ?></h2>
                         
-                        <?php if (!empty($p['codigo_contexto']) && $tipo !== 'completar_codigo'): ?>
+                        <?php if (!empty($p['codigo_contexto']) && !in_array($tipo, ['completar_codigo', 'ordenar_codigo', 'parsons', 'spot_bug', 'predicao_saida', 'pareamento'])): ?>
                             <div class="code-editor" style="margin-top: 5px; margin-bottom: 20px;">
                                 <div class="code-header" style="margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
                                     <div style="display: flex; gap: 6px;">
@@ -728,6 +736,222 @@ $desafio_atual = conteudo_desafio($conn, $unidade_atual) ?? conteudo_desafio($co
                                     <?php endif; ?>
                                 </div>
                             </div>
+                        <?php elseif ($tipo === 'ordenar_codigo' || $tipo === 'parsons'): ?>
+                            <?php
+                                $raw_lines = [];
+                                $code_raw = trim($p['codigo_contexto'] ?? '');
+                                $decoded = json_decode($code_raw, true);
+                                if (is_array($decoded) && isset($decoded['linhas'])) {
+                                    $raw_lines = $decoded['linhas'];
+                                    $expected_order = implode(',', $decoded['ordem_correta'] ?? range(0, count($raw_lines) - 1));
+                                } elseif (!empty($code_raw)) {
+                                    $lines_arr = preg_split('/\r\n|\r|\n/', $code_raw);
+                                    foreach ($lines_arr as $la) {
+                                        if (trim($la) !== '') $raw_lines[] = $la;
+                                    }
+                                    $expected_order = implode(',', range(0, count($raw_lines) - 1));
+                                } else {
+                                    if (!empty($p['alternativa_a'])) $raw_lines[] = $p['alternativa_a'];
+                                    if (!empty($p['alternativa_b'])) $raw_lines[] = $p['alternativa_b'];
+                                    if (!empty($p['alternativa_c'])) $raw_lines[] = $p['alternativa_c'];
+                                    $expected_order = implode(',', range(0, count($raw_lines) - 1));
+                                }
+                                if (!empty($p['alternativa_correta']) && preg_match('/^[0-9,]+$/', trim($p['alternativa_correta']))) {
+                                    $expected_order = trim($p['alternativa_correta']);
+                                }
+
+                                $shuffled_blocks = [];
+                                foreach ($raw_lines as $idx_l => $line_t) {
+                                    $shuffled_blocks[] = ['id' => $idx_l, 'text' => $line_t];
+                                }
+                                shuffle($shuffled_blocks);
+                                if (count($shuffled_blocks) > 1) {
+                                    $is_same = true;
+                                    foreach ($shuffled_blocks as $k => $sb) {
+                                        if ($sb['id'] !== $k) { $is_same = false; break; }
+                                    }
+                                    if ($is_same) {
+                                        $shuffled_blocks = array_reverse($shuffled_blocks);
+                                    }
+                                }
+                            ?>
+                            <div class="parsons-wrapper" data-expected-order="<?php echo htmlspecialchars($expected_order); ?>" data-total="<?php echo count($raw_lines); ?>">
+                                <div class="parsons-target-panel">
+                                    <div class="parsons-panel-header">
+                                        <div style="display: flex; gap: 6px;">
+                                            <div class="dot r"></div>
+                                            <div class="dot y"></div>
+                                            <div class="dot g"></div>
+                                        </div>
+                                        <span class="parsons-panel-title"><i class="fa-solid fa-code"></i> CÓDIGO ORDENADO</span>
+                                    </div>
+                                    <div class="parsons-dropzone" id="parsons_drop_<?php echo $p['id']; ?>">
+                                        <div class="parsons-placeholder">
+                                            <i class="fa-regular fa-hand-pointer"></i> Toque nas linhas abaixo para organizá-las aqui na ordem lógica
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="parsons-bank-section">
+                                    <div class="parsons-bank-header">
+                                        <i class="fa-solid fa-arrow-down-short-wide"></i> Linhas Disponíveis (Toque para posicionar):
+                                    </div>
+                                    <div class="parsons-bank" id="parsons_bank_<?php echo $p['id']; ?>">
+                                        <?php foreach ($shuffled_blocks as $sb): ?>
+                                            <button type="button" class="parsons-chip" data-block-id="<?php echo $sb['id']; ?>" onclick="parsonsBlockClick(this)">
+                                                <span class="parsons-chip-icon"><i class="fa-solid fa-grip-vertical"></i></span>
+                                                <code class="parsons-chip-code"><?php echo htmlspecialchars($sb['text']); ?></code>
+                                            </button>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            </div>
+
+                        <?php elseif ($tipo === 'spot_bug'): ?>
+                            <?php
+                                $bug_code = trim($p['codigo_contexto'] ?? '');
+                                $bug_lines = preg_split('/\r\n|\r|\n/', $bug_code);
+                                $target_line = intval($p['alternativa_correta']);
+                                if ($target_line <= 0) {
+                                    $map = ['A' => 1, 'B' => 2, 'C' => 3, 'D' => 4];
+                                    $target_line = $map[strtoupper(trim($p['alternativa_correta']))] ?? 1;
+                                }
+                            ?>
+                            <div class="spot-bug-wrapper" data-target-line="<?php echo $target_line; ?>">
+                                <div class="spot-bug-alert">
+                                    <i class="fa-solid fa-bug bug-pulse-icon"></i>
+                                    <span>Toque na <strong>linha exata</strong> onde está o erro de sintaxe ou lógica:</span>
+                                </div>
+                                <div class="code-editor spot-bug-editor">
+                                    <div class="code-header" style="display:flex; justify-content:space-between; align-items:center;">
+                                        <div style="display: flex; gap: 6px;">
+                                            <div class="dot r"></div>
+                                            <div class="dot y"></div>
+                                            <div class="dot g"></div>
+                                        </div>
+                                        <span class="spot-bug-badge"><i class="fa-solid fa-crosshairs"></i> CAÇADOR DE BUGS</span>
+                                    </div>
+                                    <div class="spot-bug-lines">
+                                        <?php foreach ($bug_lines as $b_idx => $b_str): $l_num = $b_idx + 1; ?>
+                                            <div class="spot-bug-line" data-line="<?php echo $l_num; ?>" onclick="selectBugLine(this)">
+                                                <span class="spot-line-num"><?php echo $l_num; ?></span>
+                                                <div class="spot-line-code"><code><?php echo htmlspecialchars($b_str); ?></code></div>
+                                                <span class="spot-line-crosshair"><i class="fa-solid fa-bug"></i></span>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            </div>
+
+                        <?php elseif ($tipo === 'predicao_saida'): ?>
+                            <div class="output-pred-wrapper">
+                                <?php if (!empty($p['codigo_contexto'])): ?>
+                                    <div class="code-editor" style="margin-top: 5px; margin-bottom: 14px;">
+                                        <div class="code-header" style="margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+                                            <div style="display: flex; gap: 6px;">
+                                                <div class="dot r"></div>
+                                                <div class="dot y"></div>
+                                                <div class="dot g"></div>
+                                            </div>
+                                            <span style="font-size: 0.75rem; font-weight: 700; color: #569cd6; letter-spacing: 1px;">JAVA</span>
+                                        </div>
+                                        <div class="code-snippet-box" style="padding: 0; border: none; background: transparent;">
+                                            <pre style="margin: 0; font-size: 1.15rem; color: #f8f8f2; font-family: 'Courier New', monospace; font-weight: 600;"><code><?php echo htmlspecialchars($p['codigo_contexto']); ?></code></pre>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+
+                                <div class="terminal-sim-box">
+                                    <div class="terminal-sim-header">
+                                        <div style="display:flex; align-items:center; gap:8px;">
+                                            <i class="fa-solid fa-terminal" style="color:#50fa7b;"></i>
+                                            <span style="font-weight:700; font-size:0.8rem; letter-spacing:1px; color:#a0aec0;">CONSOLE / TERMINAL</span>
+                                        </div>
+                                        <span class="terminal-sim-badge">PREVISÃO DE SAÍDA</span>
+                                    </div>
+                                    <div class="terminal-sim-body">
+                                        <div class="terminal-sim-cmd"><span style="color:#50fa7b;">$</span> java Programa</div>
+                                        <div class="terminal-sim-output" id="term_pred_<?php echo $p['id']; ?>">
+                                            <span class="term-wait-text"><i class="fa-solid fa-angles-right"></i> Escolha uma opção de saída abaixo...</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="duo-options" style="margin-top: 14px;">
+                                    <div class="duo-option" data-value="A" data-text="<?php echo htmlspecialchars($p['alternativa_a']); ?>" onclick="selectPredictionOption(this)">
+                                        <span class="option-letter">A</span>
+                                        <span class="option-text"><?php echo htmlspecialchars($p['alternativa_a']); ?></span>
+                                    </div>
+                                    <div class="duo-option" data-value="B" data-text="<?php echo htmlspecialchars($p['alternativa_b']); ?>" onclick="selectPredictionOption(this)">
+                                        <span class="option-letter">B</span>
+                                        <span class="option-text"><?php echo htmlspecialchars($p['alternativa_b']); ?></span>
+                                    </div>
+                                    <?php if (!empty($p['alternativa_c'])): ?>
+                                        <div class="duo-option" data-value="C" data-text="<?php echo htmlspecialchars($p['alternativa_c']); ?>" onclick="selectPredictionOption(this)">
+                                            <span class="option-letter">C</span>
+                                            <span class="option-text"><?php echo htmlspecialchars($p['alternativa_c']); ?></span>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+
+                        <?php elseif ($tipo === 'pareamento'): ?>
+                            <?php
+                                $pairs_data = [];
+                                $raw_ctx = trim($p['codigo_contexto'] ?? '');
+                                $json_p = json_decode($raw_ctx, true);
+                                if (is_array($json_p) && isset($json_p['pares'])) {
+                                    foreach ($json_p['pares'] as $pi) {
+                                        $pairs_data[] = [
+                                            'left' => $pi['esq'] ?? $pi['left'],
+                                            'right' => $pi['dir'] ?? $pi['right']
+                                        ];
+                                    }
+                                } else {
+                                    foreach (['a', 'b', 'c'] as $ak) {
+                                        $str_p = $p['alternativa_' . $ak] ?? '';
+                                        if (!empty($str_p)) {
+                                            $parts = preg_split('/[:=→\-]/i', $str_p, 2);
+                                            if (count($parts) === 2) {
+                                                $pairs_data[] = ['left' => trim($parts[0]), 'right' => trim($parts[1])];
+                                            }
+                                        }
+                                    }
+                                }
+                                if (empty($pairs_data)) {
+                                    $pairs_data = [
+                                        ['left' => 'int', 'right' => '42'],
+                                        ['left' => 'String', 'right' => '"Opus"'],
+                                        ['left' => 'boolean', 'right' => 'true']
+                                    ];
+                                }
+                                $pair_cards = [];
+                                foreach ($pairs_data as $p_id => $pd) {
+                                    $pair_cards[] = ['id' => $p_id, 'side' => 'L', 'text' => $pd['left']];
+                                    $pair_cards[] = ['id' => $p_id, 'side' => 'R', 'text' => $pd['right']];
+                                }
+                                shuffle($pair_cards);
+                                $total_pairs_count = count($pairs_data);
+                            ?>
+                            <div class="pair-match-wrapper" data-total-pairs="<?php echo $total_pairs_count; ?>" data-matched-count="0">
+                                <div class="pair-match-header">
+                                    <span class="pair-prompt"><i class="fa-solid fa-link"></i> Toque em um item e depois em seu par correspondente:</span>
+                                    <span class="pair-counter-pill"><span class="pair-remaining-num"><?php echo $total_pairs_count; ?></span> restantes</span>
+                                </div>
+                                <div class="pair-cards-grid">
+                                    <?php foreach ($pair_cards as $pc): ?>
+                                        <button type="button" 
+                                                class="pair-match-card" 
+                                                data-pair-id="<?php echo $pc['id']; ?>" 
+                                                data-side="<?php echo $pc['side']; ?>"
+                                                onclick="selectPairCard(this)">
+                                            <span class="pair-card-label"><?php echo htmlspecialchars($pc['text']); ?></span>
+                                            <span class="pair-card-icon"><i class="fa-solid fa-check"></i></span>
+                                        </button>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+
                         <?php endif; ?>
 
                     </div>

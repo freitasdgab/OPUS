@@ -8,6 +8,12 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+// Administrador não acessa chat de alunos
+if (!empty($_SESSION['is_admin']) || (isset($_SESSION['user_nivel_acesso']) && $_SESSION['user_nivel_acesso'] === 'admin')) {
+    header("Location: admin_dashboard.php");
+    exit();
+}
+
 $user_id = (int) $_SESSION['user_id'];
 $status_jogador = opus_sincronizar_jogador($conn, $user_id);
 

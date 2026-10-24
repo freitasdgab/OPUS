@@ -155,17 +155,52 @@ body.light-mode .modulo-node.locked .circle-button {
 }
 body.light-mode .active-ring { background: transparent !important; }
 body.light-mode .chest-node.locked {
-    background: #e5e5e5 !important;
-    color: #afafaf !important;
-    border: none !important;
-    box-shadow: 0 6px 0 #cecece !important;
+    background: #f1f5f9 !important;
+    border: 2px solid #cbd5e1 !important;
+    box-shadow: 0 6px 0 #94a3b8 !important;
 }
 body.light-mode .chest-node.claimed {
     background: #ffffff !important;
-    color: #afafaf !important;
-    border: 2px solid #e5e5e5 !important;
-    box-shadow: 0 6px 0 #e5e5e5 !important;
+    border: 2px solid rgba(88, 204, 2, 0.4) !important;
+    box-shadow: 0 6px 0 #e2e8f0 !important;
 }
+body.light-mode .chest-progress-pill {
+    background: #ffffff !important;
+    color: #d97706 !important;
+    border-color: #cbd5e1 !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+}
+body.light-mode .modal-bau-box {
+    background: #ffffff !important;
+    border: 2px solid #e2e8f0 !important;
+    box-shadow: 0 16px 0 #cbd5e1, 0 25px 50px rgba(0,0,0,0.15) !important;
+}
+body.light-mode .modal-bau-title { color: #1e293b !important; }
+body.light-mode .modal-bau-desc { color: #64748b !important; }
+body.light-mode .modal-bau-desc strong { color: #0f172a !important; }
+body.light-mode .reward-card {
+    background: #f8fafc !important;
+    border: 2px solid #e2e8f0 !important;
+    border-bottom: 5px solid #cbd5e1 !important;
+}
+body.light-mode .reward-card .rc-val { color: #0f172a !important; }
+body.light-mode .reward-card .rc-lbl { color: #64748b !important; }
+body.light-mode .aviso-bau-progress-container {
+    background: #f1f5f9 !important;
+    border-color: #e2e8f0 !important;
+}
+body.light-mode .step-line-bg { background: #cbd5e1 !important; }
+body.light-mode .step-dot {
+    background: #e2e8f0 !important;
+    border-color: #f1f5f9 !important;
+    color: #64748b !important;
+}
+body.light-mode .step-point.completed .step-dot {
+    background: #58cc02 !important;
+    color: #ffffff !important;
+}
+body.light-mode .aviso-bau-desc { color: #64748b !important; }
+body.light-mode .aviso-bau-desc strong { color: #0f172a !important; }
 
 /* Tooltip "COMEÇAR" em cima do botão */
 body.light-mode .start-balloon {
@@ -544,7 +579,6 @@ body.light-mode .podium-avatar {
    CHAT E MODAIS
    ======================================================================= */
 body.light-mode .modal-content,
-body.light-mode .modal-bau-box,
 body.light-mode .modal-box {
     background: #ffffff !important;
     border: 2px solid #e5e5e5 !important;
@@ -1369,18 +1403,7 @@ body:not(.light-mode) .modulo-node.locked .circle-button {
     border: none !important;
     box-shadow: 0 6px 0 #28343b !important;
 }
-body:not(.light-mode) .chest-node.locked {
-    background: #37464f !important;
-    color: #777777 !important;
-    border: none !important;
-    box-shadow: 0 6px 0 #28343b !important;
-}
-body:not(.light-mode) .chest-node.claimed {
-    background: #131f24 !important;
-    color: #a5b4bc !important;
-    border: 2px solid #37464f !important;
-    box-shadow: 0 6px 0 #37464f !important;
-}
+/* Baús no tema escuro mantêm o visual 3D exclusivo de dashboard-page.css */
 
 /* Balão Começar no Escuro */
 body:not(.light-mode) .start-balloon {
@@ -1438,7 +1461,6 @@ body:not(.light-mode) .interact-card,
 body:not(.light-mode) .friends-card,
 body:not(.light-mode) .trophy-profile-card,
 body:not(.light-mode) .modal-content,
-body:not(.light-mode) .modal-bau-box,
 body:not(.light-mode) .modal-box,
 body:not(.light-mode) .chat-hub-container,
 body:not(.light-mode) .chat-sidebar,
@@ -2187,4 +2209,151 @@ body.light-mode .btn-voltar-divisao {
 body.light-mode .btn-voltar-divisao:hover {
     background: #f7f9fa !important;
     color: #1e293b !important;
+}
+
+/* Suporte ao Popup de Desbloqueio do Baú e Botões Sólidos no Modo Claro */
+body.light-mode .popup-bau-card {
+    background: #ffffff !important;
+    border: 3.5px solid #2e1800 !important;
+    border-bottom: 7px solid #cc7800 !important;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.15) !important;
+}
+body.light-mode .popup-bau-title { color: #1e293b !important; }
+body.light-mode .popup-bau-desc { color: #64748b !important; }
+body.light-mode .popup-bau-close {
+    background: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+    color: #64748b !important;
+}
+body.light-mode .popup-bau-close:hover {
+    background: #e2e8f0 !important;
+    color: #0f172a !important;
+}
+body.light-mode .btn-solid-dash {
+    background: #f1f5f9 !important;
+    border: 2px solid #cbd5e1 !important;
+    border-bottom: 5px solid #94a3b8 !important;
+    color: #1e293b !important;
+}
+body.light-mode .btn-solid-dash:hover {
+    background: #e2e8f0 !important;
+}
+
+
+/* =========================================================================
+   EXERCÍCIOS INTERATIVOS (MICROLEARNING) NO MODO CLARO
+   ========================================================================= */
+body.light-mode.licao-page .parsons-target-panel,
+html.light-mode .parsons-target-panel {
+    background: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+body.light-mode.licao-page .parsons-panel-header,
+html.light-mode .parsons-panel-header {
+    background: #f1f5f9 !important;
+    border-color: #e2e8f0 !important;
+}
+
+body.light-mode.licao-page .parsons-dropzone,
+html.light-mode .parsons-dropzone {
+    background: #f8fafc !important;
+}
+
+body.light-mode.licao-page .parsons-placeholder,
+html.light-mode .parsons-placeholder {
+    border-color: #cbd5e1 !important;
+    color: #64748b !important;
+}
+
+body.light-mode.licao-page .parsons-target-item,
+html.light-mode .parsons-target-item {
+    background: #ffffff !important;
+    border-color: #cbd5e1 !important;
+    border-bottom: 4px solid #94a3b8 !important;
+    color: #0f172a !important;
+}
+
+body.light-mode.licao-page .parsons-target-code,
+html.light-mode .parsons-target-code {
+    color: #0f172a !important;
+}
+
+body.light-mode.licao-page .parsons-chip,
+html.light-mode .parsons-chip {
+    background: #ffffff !important;
+    border-color: #cbd5e1 !important;
+    border-bottom: 4px solid #94a3b8 !important;
+    color: #0f172a !important;
+}
+
+body.light-mode.licao-page .parsons-chip:hover:not(.used),
+html.light-mode .parsons-chip:hover:not(.used) {
+    background: #f8fafc !important;
+    border-color: #1cb0f6 !important;
+}
+
+body.light-mode.licao-page .parsons-chip-code,
+html.light-mode .parsons-chip-code {
+    color: #0f172a !important;
+}
+
+body.light-mode.licao-page .parsons-chip.used,
+html.light-mode .parsons-chip.used {
+    background: #e2e8f0 !important;
+    border-color: #cbd5e1 !important;
+}
+
+body.light-mode.licao-page .spot-bug-alert,
+html.light-mode .spot-bug-alert {
+    background: #fffbeb !important;
+    border-color: #fde68a !important;
+    color: #b45309 !important;
+}
+
+body.light-mode.licao-page .spot-bug-editor,
+html.light-mode .spot-bug-editor {
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+}
+
+body.light-mode.licao-page .spot-line-code,
+html.light-mode .spot-line-code {
+    color: #0f172a !important;
+}
+
+body.light-mode.licao-page .pair-match-card,
+html.light-mode .pair-match-card {
+    background: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    border-bottom: 5px solid #cbd5e1 !important;
+    color: #1e293b !important;
+}
+
+body.light-mode.licao-page .pair-match-card:hover:not(.pair-matched):not(.pair-wrong),
+html.light-mode .pair-match-card:hover:not(.pair-matched):not(.pair-wrong) {
+    background: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+}
+
+body.light-mode.licao-page .pair-match-card.pair-selected,
+html.light-mode .pair-match-card.pair-selected {
+    background: #ddf4ff !important;
+    border-color: #1cb0f6 !important;
+    color: #0369a1 !important;
+}
+
+body.light-mode.licao-page .pair-match-card.pair-matched,
+html.light-mode .pair-match-card.pair-matched {
+    background: #d7ffb8 !important;
+    border-color: #58cc02 !important;
+    color: #15803d !important;
+}
+
+body.light-mode.licao-page .pair-counter-pill,
+html.light-mode .pair-counter-pill {
+    background: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+    color: #0284c7 !important;
 }

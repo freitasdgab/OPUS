@@ -33,6 +33,12 @@
         }
     }
 
+    function escapeHtml(text) {
+        if (text === null || text === undefined) return '';
+        const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+        return String(text).replace(/[&<>"']/g, function(m) { return map[m]; });
+    }
+
     // ====================================
     // CONTROLE DOS SLIDES DE EXPLICAÇÃO
     // ====================================
@@ -244,6 +250,233 @@
         if (btn) btn.disabled = true;
     };
 
+    // ==========================================
+    // 1. PROBLEMAS DE PARSONS (ORDENAÇÃO DE CÓDIGO)
+    // ==========================================
+    window.parsonsBlockClick = function(btnChip) {
+        if (state === 'checked') return;
+        playAudio('playClick');
+
+        const wrapper = btnChip.closest('.parsons-wrapper');
+        if (!wrapper) return;
+        const dropzone = wrapper.querySelector('.parsons-dropzone');
+        const bank = wrapper.querySelector('.parsons-bank');
+        if (!dropzone || !bank) return;
+
+        if (btnChip.closest('.parsons-bank')) {
+            const placeholder = dropzone.querySelector('.parsons-placeholder');
+            if (placeholder) placeholder.style.display = 'none';
+
+            const targetItem = document.createElement('div');
+            targetItem.className = 'parsons-target-item';
+            targetItem.setAttribute('data-block-id', btnChip.getAttribute('data-block-id'));
+            
+            targetItem.innerHTML = `
+                <span class="parsons-line-num"></span>
+                <span class="parsons-target-code">${btnChip.querySelector('.parsons-chip-code').innerHTML}</span>
+                <div class="parsons-item-controls">
+                    <button type="button" class="parsons-ctrl-btn" title="Subir" onclick="parsonsShiftBlock(event, this, -1)"><i class="fa-solid fa-chevron-up"></i></button>
+                    <button type="button" class="parsons-ctrl-btn" title="Descer" onclick="parsonsShiftBlock(event, this, 1)"><i class="fa-solid fa-chevron-down"></i></button>
+                    <button type="button" class="parsons-ctrl-btn parsons-remove-btn" title="Remover" onclick="parsonsRemoveFromTarget(event, this)"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            `;
+            
+            targetItem.addEventListener('click', function(e) {
+                if (e.target.closest('.parsons-ctrl-btn')) return;
+                parsonsReturnChip(targetItem, btnChip, wrapper);
+            });
+
+            dropzone.appendChild(targetItem);
+            btnChip.classList.add('used');
+        }
+
+        parsonsUpdateState(wrapper);
+    };
+
+    window.parsonsShiftBlock = function(e, btn, direction) {
+        e.stopPropagation();
+        if (state === 'checked') return;
+        playAudio('playClick');
+
+        const item = btn.closest('.parsons-target-item');
+        const dropzone = item.parentElement;
+        const wrapper = item.closest('.parsons-wrapper');
+
+        if (direction === -1 && item.previousElementSibling && !item.previousElementSibling.classList.contains('parsons-placeholder')) {
+            dropzone.insertBefore(item, item.previousElementSibling);
+        } else if (direction === 1 && item.nextElementSibling) {
+            dropzone.insertBefore(item.nextElementSibling, item);
+        }
+
+        parsonsUpdateState(wrapper);
+    };
+
+    window.parsonsRemoveFromTarget = function(e, btn) {
+        e.stopPropagation();
+        if (state === 'checked') return;
+        playAudio('playClick');
+
+        const item = btn.closest('.parsons-target-item');
+        const wrapper = item.closest('.parsons-wrapper');
+        const blockId = item.getAttribute('data-block-id');
+        const chip = wrapper.querySelector(`.parsons-chip[data-block-id="${blockId}"]`);
+        
+        parsonsReturnChip(item, chip, wrapper);
+    };
+
+    function parsonsReturnChip(targetItem, chip, wrapper) {
+        if (targetItem) targetItem.remove();
+        if (chip) chip.classList.remove('used');
+        parsonsUpdateState(wrapper);
+    }
+
+    function parsonsUpdateState(wrapper) {
+        const dropzone = wrapper.querySelector('.parsons-dropzone');
+        const items = dropzone.querySelectorAll('.parsons-target-item');
+        const total = parseInt(wrapper.getAttribute('data-total') || '0', 10);
+        const placeholder = dropzone.querySelector('.parsons-placeholder');
+
+        if (items.length === 0) {
+            if (placeholder) placeholder.style.display = 'flex';
+        } else {
+            if (placeholder) placeholder.style.display = 'none';
+        }
+
+        items.forEach((it, idx) => {
+            const num = it.querySelector('.parsons-line-num');
+            if (num) num.textContent = (idx + 1);
+        });
+
+        const btn = document.getElementById('btnAction');
+
+        if (items.length === total && total > 0) {
+            const currentOrder = Array.from(items).map(it => it.getAttribute('data-block-id')).join(',');
+            selectedValue = currentOrder;
+            if (btn) btn.disabled = false;
+        } else {
+            selectedValue = null;
+            if (btn) btn.disabled = true;
+        }
+    }
+
+    // ==========================================
+    // 2. CAÇADOR DE BUGS (SPOT THE BUG)
+    // ==========================================
+    window.selectBugLine = function(lineEl) {
+        if (state === 'checked') return;
+        playAudio('playClick');
+
+        const wrapper = lineEl.closest('.spot-bug-wrapper');
+        if (!wrapper) return;
+
+        const allLines = wrapper.querySelectorAll('.spot-bug-line');
+        allLines.forEach(l => l.classList.remove('selected'));
+
+        lineEl.classList.add('selected');
+        selectedValue = lineEl.getAttribute('data-line');
+
+        const btn = document.getElementById('btnAction');
+        if (btn) btn.disabled = false;
+    };
+
+    // ==========================================
+    // 3. PREDIÇÃO DE SAÍDA (OUTPUT PREDICTION)
+    // ==========================================
+    window.selectPredictionOption = function(optionEl) {
+        if (state === 'checked') return;
+        playAudio('playClick');
+
+        const slide = optionEl.closest('.question-slide');
+        const options = slide.querySelectorAll('.duo-option');
+        options.forEach(opt => opt.classList.remove('selected'));
+
+        optionEl.classList.add('selected');
+        selectedValue = optionEl.getAttribute('data-value');
+
+        const termOutput = slide.querySelector('.terminal-sim-output');
+        const textVal = optionEl.getAttribute('data-text') || optionEl.querySelector('.option-text')?.textContent || selectedValue;
+        if (termOutput) {
+            termOutput.innerHTML = `<span class="term-predicted-val">${escapeHtml(textVal)}</span> <span class="term-blinking-cursor">█</span>`;
+        }
+
+        const btn = document.getElementById('btnAction');
+        if (btn) btn.disabled = false;
+    };
+
+    // ==========================================
+    // 4. PAREAMENTO DE CONCEITOS (PAIR MATCHING)
+    // ==========================================
+    let firstPairCard = null;
+
+    window.selectPairCard = function(cardEl) {
+        if (state === 'checked' || cardEl.classList.contains('pair-matched') || cardEl.classList.contains('pair-wrong')) return;
+
+        const wrapper = cardEl.closest('.pair-match-wrapper');
+        if (!wrapper) return;
+
+        if (cardEl === firstPairCard) {
+            cardEl.classList.remove('pair-selected');
+            firstPairCard = null;
+            playAudio('playClick');
+            return;
+        }
+
+        if (!firstPairCard) {
+            playAudio('playClick');
+            firstPairCard = cardEl;
+            firstPairCard.classList.add('pair-selected');
+            return;
+        }
+
+        if (firstPairCard.getAttribute('data-side') === cardEl.getAttribute('data-side')) {
+            playAudio('playClick');
+            firstPairCard.classList.remove('pair-selected');
+            firstPairCard = cardEl;
+            firstPairCard.classList.add('pair-selected');
+            return;
+        }
+
+        const id1 = firstPairCard.getAttribute('data-pair-id');
+        const id2 = cardEl.getAttribute('data-pair-id');
+        const card1 = firstPairCard;
+        const card2 = cardEl;
+        firstPairCard = null;
+
+        if (id1 === id2) {
+            playAudio('playClick');
+            card1.classList.remove('pair-selected');
+            card1.classList.add('pair-matched');
+            card2.classList.add('pair-matched');
+
+            let matchedCount = parseInt(wrapper.getAttribute('data-matched-count') || '0', 10) + 1;
+            const totalPairs = parseInt(wrapper.getAttribute('data-total-pairs') || '0', 10);
+            wrapper.setAttribute('data-matched-count', matchedCount);
+
+            const badgeRemaining = wrapper.querySelector('.pair-remaining-num');
+            if (badgeRemaining) badgeRemaining.textContent = (totalPairs - matchedCount);
+
+            if (matchedCount >= totalPairs) {
+                selectedValue = 'ALL_MATCHED';
+                const slide = wrapper.closest('.question-slide');
+                if (slide) slide.setAttribute('data-correct', 'ALL_MATCHED');
+
+                setTimeout(() => {
+                    verificar();
+                }, 350);
+            }
+        } else {
+            playAudio('playError');
+            card1.classList.remove('pair-selected');
+            card1.classList.add('pair-wrong');
+            card2.classList.add('pair-wrong');
+
+            setTimeout(() => {
+                card1.classList.remove('pair-wrong');
+                card2.classList.remove('pair-wrong');
+            }, 600);
+        }
+    };
+
     // Ação do botão principal (VERIFICAR ou CONTINUAR)
     window.handleAction = function() {
         if (state === 'selecting') {
@@ -267,7 +500,19 @@
         const feedbackMsg = document.getElementById('feedbackMsg');
         const btn = document.getElementById('btnAction');
 
-        let isCorrect = (selectedValue.trim().toUpperCase() === correct);
+        let isCorrect = false;
+
+        if (tipo === 'spot_bug') {
+            const targetLine = slide.querySelector('.spot-bug-wrapper')?.getAttribute('data-target-line') || correct;
+            isCorrect = (String(selectedValue).trim() === String(targetLine).trim());
+        } else if (tipo === 'ordenar_codigo' || tipo === 'parsons') {
+            const expectedOrder = slide.querySelector('.parsons-wrapper')?.getAttribute('data-expected-order') || correct;
+            isCorrect = (String(selectedValue).trim() === String(expectedOrder).trim());
+        } else if (tipo === 'pareamento') {
+            isCorrect = (selectedValue === 'ALL_MATCHED' || selectedValue === correct);
+        } else {
+            isCorrect = (String(selectedValue).trim().toUpperCase() === correct);
+        }
 
         // Salva resposta no form hidden se o input existir
         const inputResp = document.getElementById('resp_' + perguntaId);
@@ -286,6 +531,31 @@
                 if (isCorrect) selectedEl.classList.add('correct');
                 else selectedEl.classList.add('wrong');
             }
+        } else if (tipo === 'predicao_saida') {
+            const options = slide.querySelectorAll('.duo-option');
+            options.forEach(opt => {
+                opt.classList.add('disabled');
+                if (opt.getAttribute('data-value') === correct && !isCorrect) {
+                    opt.classList.add('reveal-correct');
+                }
+            });
+            const selectedEl = slide.querySelector('.duo-option.selected');
+            if (selectedEl) {
+                if (isCorrect) selectedEl.classList.add('correct');
+                else selectedEl.classList.add('wrong');
+            }
+            const termOutput = slide.querySelector('.terminal-sim-output');
+            if (termOutput) {
+                if (isCorrect) {
+                    termOutput.innerHTML = `<span style="color:#50fa7b; font-weight:700;"><i class="fa-solid fa-circle-check"></i> Saída confirmada:</span><br>` + termOutput.innerHTML;
+                } else {
+                    let corrText = correct;
+                    slide.querySelectorAll('.duo-option').forEach(o => {
+                        if (o.getAttribute('data-value') === correct) corrText = o.getAttribute('data-text') || correct;
+                    });
+                    termOutput.innerHTML = `<span style="color:#ff5555; font-weight:700;"><i class="fa-solid fa-circle-xmark"></i> Previsão incorreta!</span><br><span style="color:#50fa7b;">Saída esperada no terminal:</span> <strong>${escapeHtml(corrText)}</strong>`;
+                }
+            }
         } else if (tipo === 'completar_codigo') {
             const slot = slide.querySelector('.code-blank-slot');
             const chips = slide.querySelectorAll('.word-chip');
@@ -300,6 +570,31 @@
                     slot.style.color = '#ff4b4b';
                 }
             }
+        } else if (tipo === 'spot_bug') {
+            const targetLine = slide.querySelector('.spot-bug-wrapper')?.getAttribute('data-target-line') || correct;
+            const lines = slide.querySelectorAll('.spot-bug-line');
+            lines.forEach(l => {
+                l.classList.add('disabled');
+                if (l.getAttribute('data-line') === targetLine.toString()) {
+                    l.classList.add('target-bug-line');
+                }
+            });
+            const selectedLineEl = slide.querySelector(`.spot-bug-line[data-line="${selectedValue}"]`);
+            if (selectedLineEl) {
+                if (isCorrect) selectedLineEl.classList.add('bug-correct');
+                else selectedLineEl.classList.add('bug-wrong');
+            }
+        } else if (tipo === 'ordenar_codigo' || tipo === 'parsons') {
+            const dropzone = slide.querySelector('.parsons-dropzone');
+            if (dropzone) {
+                if (isCorrect) dropzone.classList.add('parsons-correct');
+                else dropzone.classList.add('parsons-wrong');
+            }
+            const ctrlBtns = slide.querySelectorAll('.parsons-ctrl-btn');
+            ctrlBtns.forEach(b => b.disabled = true);
+        } else if (tipo === 'pareamento') {
+            const wrapper = slide.querySelector('.pair-match-wrapper');
+            if (wrapper) wrapper.classList.add('pair-complete');
         }
 
         if (isCorrect) {
@@ -339,7 +634,14 @@
             if (footer) footer.className = 'quiz-footer feedback-wrong';
             
             let correctText = correct;
-            if (tipo === 'multipla_escolha') {
+            if (tipo === 'spot_bug') {
+                const targetLine = slide.querySelector('.spot-bug-wrapper')?.getAttribute('data-target-line') || correct;
+                correctText = "Linha " + targetLine;
+            } else if (tipo === 'ordenar_codigo' || tipo === 'parsons') {
+                correctText = "Ordem correta de cima para baixo";
+            } else if (tipo === 'pareamento') {
+                correctText = "Todos os pares correspondentes";
+            } else if (tipo === 'multipla_escolha' || tipo === 'predicao_saida') {
                 const options = slide.querySelectorAll('.duo-option');
                 options.forEach(opt => {
                     if (opt.getAttribute('data-value') === correct) {
@@ -452,6 +754,7 @@
         // Avança o índice
         currentIndex++;
         selectedValue = null;
+        firstPairCard = null;
         state = 'selecting';
 
         // Mostra a próxima pergunta
