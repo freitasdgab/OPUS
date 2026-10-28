@@ -34,10 +34,23 @@ if (!isset($_SESSION['user_id'])) {
 
             <div class="codex-container">
                 
-                <div class="codex-header">
-                    <h1>Dicionário de Comandos</h1>
-                    <p>Passe o mouse sobre os comandos para descobrir o que eles fazem no Java!</p>
-                </div>
+                <!-- Hero do Dicionario com Mascote Opi Investigador -->
+                <section class="codex-hero">
+                    <div class="codex-hero-content">
+                        <div class="codex-hero-badge">
+                            <i class="fa-solid fa-book-bookmark"></i> C&oacute;dex de Consulta
+                        </div>
+                        <h1 class="codex-hero-title">
+                            Dicion&aacute;rio de <span>Comandos Java</span>
+                        </h1>
+                        <p class="codex-hero-desc">
+                            Explore palavras-chave, operadores, cole&ccedil;&otilde;es e m&eacute;todos fundamentais. Passe o mouse ou toque sobre qualquer comando para inspecionar sua explica&ccedil;&atilde;o pr&aacute;tica!
+                        </p>
+                    </div>
+                    <div class="codex-hero-mascote">
+                        <img src="../assets/img/opi_dicionario.png" alt="Mascote Opi com Lupa">
+                    </div>
+                </section>
 
                 <!-- Categoria: Fundamentos -->
                 <div class="categoria-section">

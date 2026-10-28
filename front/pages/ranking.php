@@ -37,10 +37,24 @@ if (!empty($_SESSION['is_admin']) || (isset($_SESSION['user_nivel_acesso']) && $
             <?php include '../../back/includes/topbar.php'; ?>
 
             <div class="ranking-container">
-                <div class="ranking-header">
-                    <h1>Ranking Global</h1>
-                    <p>Suba de nível resolvendo lições e garanta seu lugar no pódio!</p>
-                </div>
+                <!-- Hero do Ranking com Mascote Opi Comemorando -->
+                <section class="ranking-hero">
+                    <div class="ranking-hero-content">
+                        <div class="ranking-hero-badge">
+                            <i class="fa-solid fa-trophy"></i> Liga Competitiva
+                        </div>
+                        <h1 class="ranking-hero-title">
+                            Ranking <span>Global</span>
+                        </h1>
+                        <p class="ranking-hero-desc">
+                            Suba de n&iacute;vel resolvendo li&ccedil;&otilde;es, acumule XP com seus acertos e dispute o lugar mais alto do p&oacute;dio com desenvolvedores de toda a comunidade!
+                        </p>
+                    </div>
+                    <div class="ranking-hero-mascote">
+                        <img src="../assets/img/opi_ranking.png" alt="Mascote Opi Comemorando">
+                    </div>
+                </section>
+
                 <div id="my-status" class="my-status-alert"></div>
                 <div id="podium-container" class="podium"></div>
                 <div id="ranking-list" class="ranking-list"></div>

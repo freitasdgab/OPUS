@@ -17,7 +17,7 @@
             </div>
             <div class="opi-chat-title-box">
                 <span class="opi-chat-name">Opi IA</span>
-                <span class="opi-chat-sub">Assistente do Opus & Java</span>
+                <span class="opi-chat-sub">Assistente Livre & Consultas Web/DB</span>
             </div>
         </div>
         <div class="opi-chat-actions">
@@ -35,31 +35,32 @@
             </div>
             <div class="opi-msg-bubble">
                 Olá! Eu sou o <strong>Opi IA</strong> 🤖<br>
-                Estou aqui para tirar suas dúvidas sobre a plataforma Opus (Vidas, Fogo, Ligas, Baús) ou explicar matérias de programação em Java. Como posso te ajudar agora?
+                Respondo <strong>qualquer pergunta sobre qualquer assunto</strong> e faço consultas em tempo real! Experimente os comandos rápidos <code>/browser</code>, <code>/goal</code> e <code>/boost</code> ou pergunte o que quiser!
             </div>
         </div>
     </div>
 
-
-
     <!-- PÍLULAS DE SUGESTÃO RÁPIDA (Rolar ou arrastar para o lado) -->
     <div class="opi-chat-suggestions" id="opiChatSuggestions">
+        <button class="opi-chip opi-chip-cmd" onclick="acionarComandoOpi('/browser')">🌐 /browser</button>
+        <button class="opi-chip opi-chip-cmd" onclick="enviarSugestaoOpi('/goal')">🎯 /goal</button>
+        <button class="opi-chip opi-chip-cmd" onclick="enviarSugestaoOpi('/boost')">⚡ /boost</button>
         <button class="opi-chip" onclick="enviarSugestaoOpi('Quantas sessões faltam para eu terminar o curso?')">📊 Sessões Restantes</button>
         <button class="opi-chip" onclick="enviarSugestaoOpi('E por porcentagem?')">📈 Por Porcentagem</button>
         <button class="opi-chip" onclick="enviarSugestaoOpi('Nas ligas, quanto XP eu tenho que ganhar para conseguir subir de liga?')">🏆 Subir de Liga</button>
         <button class="opi-chip" onclick="enviarSugestaoOpi('Hoje eu fiz quantas lições?')">📅 Lições de Hoje</button>
         <button class="opi-chip" onclick="enviarSugestaoOpi('O que eu vou aprender na sessão dois?')">📚 Sessão 2</button>
         <button class="opi-chip" onclick="enviarSugestaoOpi('Com esse conhecimento eu consigo uma vaga de emprego ou estágio?')">💼 Emprego & Estágio</button>
-        <button class="opi-chip" onclick="enviarSugestaoOpi('Como funcionam as Vidas e o Fogo no Opus?')">❤️ Vidas & Fogo</button>
+        <button class="opi-chip" onclick="enviarSugestaoOpi('Quais são os meus troféus e conquistas?')">🎖️ Meus Troféus</button>
     </div>
 
     <div class="opi-chat-input-container">
-        <input type="text" id="opiChatInput" placeholder="Pergunte ao Opi sobre Java ou sobre o sistema..." onkeypress="handleOpiKeyPress(event)" autocomplete="off">
+        <input type="text" id="opiChatInput" placeholder="Pergunte qualquer coisa ou use /browser, /goal, /boost..." onkeypress="handleOpiKeyPress(event)" autocomplete="off">
         <button id="opiChatSendBtn" onclick="enviarMensagemOpi()" title="Enviar mensagem">
             <i class="fa-solid fa-paper-plane"></i>
         </button>
     </div>
 </div>
 
-<link rel="stylesheet" href="../assets/css/chatbot.css">
-<script src="../assets/js/chatbot.js"></script>
+<link rel="stylesheet" href="../assets/css/chatbot.css?v=2.2">
+<script src="../assets/js/chatbot.js?v=2.2"></script>

@@ -6,25 +6,81 @@ function openLogoutModal() { document.getElementById('logoutModal').classList.ad
 function closeLogoutModal() { document.getElementById('logoutModal').classList.remove('active'); }
 
 const profileModal = document.getElementById('profileModal');
-const avatarOptions = document.querySelectorAll('.avatar-option');
 const colorOptions = document.querySelectorAll('.color-option');
 const inputAvatar = document.getElementById('input-avatar');
 const inputCor = document.getElementById('input-cor');
+const inputRemoverFoto = document.getElementById('input-remover-foto');
+const inputFotoUpload = document.getElementById('input-foto-upload');
+const modalCirclePreview = document.getElementById('modalCirclePreview') || document.getElementById('modalOvalPreview');
+const btnRemoverFoto = document.getElementById('btnRemoverFoto');
 
-const currentAvatar = window.OPUS_PERFIL ? window.OPUS_PERFIL.avatar : '';
-const currentColor = window.OPUS_PERFIL ? window.OPUS_PERFIL.cor : '#1cb0f6';
+function getPerfilState() {
+    return {
+        avatar: (window.OPUS_PERFIL && window.OPUS_PERFIL.avatar) ? window.OPUS_PERFIL.avatar : '',
+        cor: (window.OPUS_PERFIL && window.OPUS_PERFIL.cor) ? window.OPUS_PERFIL.cor : '#1cb0f6'
+    };
+}
+
+function resetModalPreview() {
+    const state = getPerfilState();
+
+    if (inputFotoUpload) inputFotoUpload.value = '';
+    if (inputRemoverFoto) inputRemoverFoto.value = '0';
+    if (inputAvatar) inputAvatar.value = state.avatar;
+    if (inputCor) inputCor.value = state.cor;
+
+    const preview = document.getElementById('modalCirclePreview') || document.getElementById('modalOvalPreview');
+    if (preview) {
+        preview.style.borderColor = state.cor;
+        preview.style.backgroundColor = state.cor;
+    }
+
+    colorOptions.forEach(opt => {
+        const isMatch = opt.dataset.color && (opt.dataset.color.toLowerCase() === state.cor.toLowerCase());
+        opt.classList.toggle('selected', isMatch);
+    });
+
+    const box = document.getElementById('modalAvatarBox');
+    let img = document.getElementById('modalAvatarImg');
+    let placeholder = document.getElementById('modalAvatarPlaceholder');
+
+    if (state.avatar && state.avatar.trim() !== '') {
+        if (!img && box) {
+            img = document.createElement('img');
+            img.id = 'modalAvatarImg';
+            img.className = 'modal-avatar-img';
+            img.alt = 'Avatar';
+            box.insertBefore(img, box.firstChild);
+        }
+        if (img) {
+            img.src = state.avatar;
+            img.style.display = 'block';
+        }
+        if (placeholder) placeholder.style.display = 'none';
+        if (btnRemoverFoto) btnRemoverFoto.style.display = 'inline-flex';
+    } else {
+        if (img) img.style.display = 'none';
+        if (!placeholder && box) {
+            placeholder = document.createElement('div');
+            placeholder.id = 'modalAvatarPlaceholder';
+            placeholder.className = 'modal-avatar-placeholder';
+            placeholder.innerHTML = '<i class="fa-solid fa-user"></i>';
+            box.insertBefore(placeholder, box.firstChild);
+        }
+        if (placeholder) placeholder.style.display = 'flex';
+        if (btnRemoverFoto) btnRemoverFoto.style.display = 'none';
+    }
+}
 
 function openProfileModal() {
     if (!profileModal) return;
+    resetModalPreview();
     profileModal.classList.add('active');
-    
-    avatarOptions.forEach(opt => {
-        opt.classList.toggle('selected', opt.dataset.src === currentAvatar);
-    });
-    colorOptions.forEach(opt => opt.classList.toggle('selected', opt.dataset.color === currentColor));
 }
+
 function closeProfileModal() { 
     if (profileModal) profileModal.classList.remove('active'); 
+    resetModalPreview();
 }
 
 // Fechar ao clicar fora do modal
@@ -34,21 +90,104 @@ if (profileModal) {
     });
 }
 
-avatarOptions.forEach(opt => {
-    opt.addEventListener('click', function() {
-        avatarOptions.forEach(o => o.classList.remove('selected'));
-        this.classList.add('selected');
-        if (inputAvatar) inputAvatar.value = this.dataset.src;
-    });
-});
-
+// Seleção de cor do fundo
 colorOptions.forEach(opt => {
     opt.addEventListener('click', function() {
         colorOptions.forEach(o => o.classList.remove('selected'));
         this.classList.add('selected');
-        if (inputCor) inputCor.value = this.dataset.color;
+        const novaCor = this.dataset.color;
+        if (inputCor) inputCor.value = novaCor;
+        const preview = document.getElementById('modalCirclePreview') || document.getElementById('modalOvalPreview');
+        if (preview) {
+            preview.style.borderColor = novaCor;
+            preview.style.backgroundColor = novaCor;
+        }
     });
 });
+
+// Manipulação do upload de foto
+window.aoSelecionarFoto = function(input) {
+    if (!input.files || !input.files[0]) return;
+    const file = input.files[0];
+
+    // Limite de 5MB
+    if (file.size > 5 * 1024 * 1024) {
+        if (typeof opusAlerta === 'function') {
+            opusAlerta({
+                tipo: 'erro',
+                titulo: 'Arquivo Muito Grande',
+                mensagem: 'Por favor, selecione uma imagem de até 5MB.'
+            });
+        } else {
+            alert('Por favor, selecione uma imagem de até 5MB.');
+        }
+        input.value = '';
+        return;
+    }
+
+    if (!file.type.match(/^image\/(png|jpe?g|webp|gif)$/i)) {
+        if (typeof opusAlerta === 'function') {
+            opusAlerta({
+                tipo: 'erro',
+                titulo: 'Formato Não Suportado',
+                mensagem: 'Selecione uma imagem válida nos formatos PNG, JPG ou WEBP.'
+            });
+        } else {
+            alert('Selecione uma imagem válida nos formatos PNG, JPG ou WEBP.');
+        }
+        input.value = '';
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const box = document.getElementById('modalAvatarBox');
+        let img = document.getElementById('modalAvatarImg');
+        let placeholder = document.getElementById('modalAvatarPlaceholder');
+
+        if (!img && box) {
+            img = document.createElement('img');
+            img.id = 'modalAvatarImg';
+            img.className = 'modal-avatar-img user-upload-img';
+            img.alt = 'Avatar';
+            box.insertBefore(img, box.firstChild);
+        }
+
+        if (img) {
+            img.src = e.target.result;
+            img.className = 'modal-avatar-img user-upload-img';
+            img.style.display = 'block';
+        }
+        if (placeholder) placeholder.style.display = 'none';
+
+        if (inputRemoverFoto) inputRemoverFoto.value = '0';
+        if (btnRemoverFoto) btnRemoverFoto.style.display = 'inline-flex';
+    };
+    reader.readAsDataURL(file);
+};
+
+// Remover foto e voltar para o avatar padrão
+window.removerFotoPerfil = function() {
+    if (inputFotoUpload) inputFotoUpload.value = '';
+    if (inputAvatar) inputAvatar.value = '';
+    if (inputRemoverFoto) inputRemoverFoto.value = '1';
+
+    const img = document.getElementById('modalAvatarImg');
+    if (img) img.style.display = 'none';
+
+    const box = document.getElementById('modalAvatarBox');
+    let placeholder = document.getElementById('modalAvatarPlaceholder');
+    if (!placeholder && box) {
+        placeholder = document.createElement('div');
+        placeholder.id = 'modalAvatarPlaceholder';
+        placeholder.className = 'modal-avatar-placeholder';
+        placeholder.innerHTML = '<i class="fa-solid fa-user"></i>';
+        box.insertBefore(placeholder, box.firstChild);
+    }
+    if (placeholder) placeholder.style.display = 'flex';
+
+    if (btnRemoverFoto) btnRemoverFoto.style.display = 'none';
+};
 
 // Busca estatísticas de Seguidores e Seguindo
 fetch('../../back/api/amigos.php?action=estatisticas_sociais')
@@ -92,6 +231,104 @@ function copiarConvitePerfil(userId) {
     });
 }
 
+// Modal de Troféu Ampliado (Fullscreen)
+window.OPUS_TROFEUS = {};
+
+function getOrCreateTrophyModal() {
+    let m = document.getElementById('trophyModal');
+    if (!m) {
+        m = document.createElement('div');
+        m.className = 'trophy-fullscreen-modal';
+        m.id = 'trophyModal';
+        m.style.display = 'none';
+        m.innerHTML = `
+            <div class="trophy-fullscreen-backdrop" onclick="closeTrophyModal()"></div>
+            <div class="trophy-fullscreen-container">
+                <button type="button" class="trophy-fullscreen-close" onclick="closeTrophyModal()" aria-label="Fechar visualização" title="Fechar visualização">
+                    <i class="fa-solid fa-xmark"></i>
+                    <span>Fechar</span>
+                </button>
+                <div class="trophy-fullscreen-img-wrap" id="trophyModalImgWrapper">
+                    <div class="trophy-fullscreen-glow"></div>
+                    <img id="trophyModalImg" src="" alt="Troféu Ampliado" class="trophy-fullscreen-img">
+                </div>
+                <div class="trophy-fullscreen-info">
+                    <div id="trophyModalStatus" class="trophy-fullscreen-status"></div>
+                    <h2 id="trophyModalTitle" class="trophy-fullscreen-title"></h2>
+                    <p id="trophyModalDesc" class="trophy-fullscreen-desc"></p>
+                </div>
+                <div class="trophy-fullscreen-actions">
+                    <button type="button" class="trophy-fullscreen-btn-close" onclick="closeTrophyModal()">
+                        <i class="fa-solid fa-xmark"></i> Fechar
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(m);
+    }
+    return m;
+}
+
+function openTrophyModal(slug) {
+    const modal = getOrCreateTrophyModal();
+    const t = window.OPUS_TROFEUS ? window.OPUS_TROFEUS[slug] : null;
+    if (!t) return;
+
+    const imgEl = document.getElementById('trophyModalImg');
+    const titleEl = document.getElementById('trophyModalTitle');
+    const descEl = document.getElementById('trophyModalDesc');
+    const statusEl = document.getElementById('trophyModalStatus');
+    const wrapperEl = document.getElementById('trophyModalImgWrapper');
+
+    if (imgEl) {
+        imgEl.src = t.imgSrc;
+        imgEl.alt = t.nome;
+    }
+    if (titleEl) titleEl.innerText = t.nome;
+    if (descEl) descEl.innerText = t.desc;
+
+    if (statusEl) {
+        if (t.isUnlocked) {
+            statusEl.className = 'trophy-fullscreen-status unlocked';
+            statusEl.innerHTML = '<i class="fa-solid fa-trophy"></i> Conquista Desbloqueada!';
+        } else {
+            statusEl.className = 'trophy-fullscreen-status locked';
+            const falta = 100 - (t.progress || 0);
+            statusEl.innerHTML = `<i class="fa-solid fa-lock"></i> Bloqueado (Falta ${falta}% para conseguir isso)`;
+        }
+    }
+
+    if (wrapperEl) {
+        wrapperEl.classList.toggle('locked-wrap', !t.isUnlocked);
+    }
+
+    modal.classList.add('active');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeTrophyModal() {
+    const modal = document.getElementById('trophyModal');
+    if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+    }
+    document.body.style.overflow = '';
+}
+
+window.openTrophyModal = openTrophyModal;
+window.closeTrophyModal = closeTrophyModal;
+window.getOrCreateTrophyModal = getOrCreateTrophyModal;
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeTrophyModal();
+        closeProfileModal();
+        closeSocialModal();
+        closeLogoutModal();
+    }
+});
+
 // Consumo da API de Conquistas e Criação dos Cards no Perfil
 fetch('../../back/api/conquistas.php?v=' + Date.now())
 .then(r => r.json())
@@ -100,20 +337,31 @@ fetch('../../back/api/conquistas.php?v=' + Date.now())
     if (!container) return;
 
     container.innerHTML = '';
+    window.OPUS_TROFEUS = {};
 
     if (data.lista) {
         data.lista.forEach(t => {
-            const isUnlocked = data.conquistados.includes(t.slug);
+            const isUnlocked = Array.isArray(data.conquistados) && data.conquistados.includes(t.slug);
             const imgSrc = t.imagem ? `../assets/img/${encodeURI(t.imagem)}` : '../assets/img/LOGO.png';
             
             const progress = isUnlocked ? 100 : (t.progresso_percent || 0);
+
+            window.OPUS_TROFEUS[t.slug] = {
+                slug: t.slug,
+                nome: t.nome,
+                desc: t.desc,
+                imagem: t.imagem,
+                imgSrc: imgSrc,
+                isUnlocked: isUnlocked,
+                progress: progress
+            };
             
             const progressTextHtml = !isUnlocked 
                 ? `<div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 500;">Falta ${100 - progress}% para conseguir isso</div>` 
                 : `<div style="font-size: 0.75rem; color: #58cc02; margin-bottom: 4px; font-weight: bold;">Concluído</div>`;
 
             container.innerHTML += `
-                <div class="trophy-profile-card ${isUnlocked ? 'unlocked' : 'locked'}">
+                <div class="trophy-profile-card ${isUnlocked ? 'unlocked' : 'locked'}" onclick="openTrophyModal('${t.slug}')" role="button" tabindex="0" title="Clique para ver o troféu em tela cheia">
                     <div class="trophy-img-box">
                         <img src="${imgSrc}" class="trophy-img" alt="${t.nome}">
                     </div>
@@ -123,6 +371,10 @@ fetch('../../back/api/conquistas.php?v=' + Date.now())
                         <div class="trophy-progress">
                             <div class="trophy-progress-fill" style="width: ${progress}%;"></div>
                         </div>
+                        <button type="button" class="btn-card-zoom" onclick="event.stopPropagation(); openTrophyModal('${t.slug}')">
+                            <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+                            <span>Ampliar Troféu</span>
+                        </button>
                     </div>
                 </div>`;
         });

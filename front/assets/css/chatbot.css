@@ -423,6 +423,13 @@
     transform: translateY(-2px);
 }
 
+.opi-chip-cmd {
+    background: rgba(28, 176, 246, 0.14);
+    border-color: rgba(28, 176, 246, 0.45);
+    color: #38bdf8;
+    font-weight: 700;
+}
+
 /* BARRA DE ENTRADA */
 .opi-chat-input-container {
     padding: 12px 14px;

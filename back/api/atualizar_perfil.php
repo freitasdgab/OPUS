@@ -18,12 +18,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $action = $_POST['action'] ?? '';
 
+    $avatar = $dados['foto_perfil'] ?? '';
+    $cor = !empty($_POST['cor_selecionada']) ? trim($_POST['cor_selecionada']) : ($dados['cor_fundo'] ?? '#1cb0f6');
+
+    // Validação de cor hexadecimal segura
+    if (!preg_match('/^#[0-9a-fA-F]{6}$/', $cor)) {
+        $cor = $dados['cor_fundo'] ?? '#1cb0f6';
+    }
+
     if ($action === 'atualizar_aparencia') {
-        $avatar = isset($_POST['avatar_selecionado']) ? trim($_POST['avatar_selecionado']) : ($dados['foto_perfil'] ?? '');
-        $cor = !empty($_POST['cor_selecionada']) ? $_POST['cor_selecionada'] : ($dados['cor_fundo'] ?? '#1cb0f6');
-    } else {
-        $avatar = !empty($_POST['avatar_selecionado']) ? trim($_POST['avatar_selecionado']) : ($dados['foto_perfil'] ?? '');
-        $cor = !empty($_POST['cor_selecionada']) ? $_POST['cor_selecionada'] : ($dados['cor_fundo'] ?? '#1cb0f6');
+        // 1. O usuário solicitou a remoção da foto?
+        if (!empty($_POST['remover_foto']) && $_POST['remover_foto'] === '1') {
+            if (!empty($avatar) && strpos($avatar, '../assets/uploads/avatars/') === 0) {
+                $old_file = __DIR__ . '/../../front/assets/uploads/avatars/' . basename($avatar);
+                if (file_exists($old_file)) {
+                    @unlink($old_file);
+                }
+            }
+            $avatar = '';
+        }
+
+        // 2. Novo upload de foto enviado via multipart?
+        if (isset($_FILES['foto_upload']) && $_FILES['foto_upload']['error'] === UPLOAD_ERR_OK) {
+            $file = $_FILES['foto_upload'];
+            $max_size = 5 * 1024 * 1024; // 5 MB
+            
+            if ($file['size'] <= $max_size) {
+                $allowed_exts = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+                $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+                
+                if (in_array($ext, $allowed_exts)) {
+                    // Valida se o arquivo é realmente uma imagem
+                    $check_img = @getimagesize($file['tmp_name']);
+                    if ($check_img !== false) {
+                        $upload_dir = __DIR__ . '/../../front/assets/uploads/avatars/';
+                        if (!is_dir($upload_dir)) {
+                            @mkdir($upload_dir, 0755, true);
+                        }
+                        
+                        $new_filename = 'avatar_' . $user_id . '_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
+                        $destination = $upload_dir . $new_filename;
+                        
+                        if (move_uploaded_file($file['tmp_name'], $destination)) {
+                            // Se havia foto enviada anteriormente, remove para não acumular
+                            if (!empty($avatar) && strpos($avatar, '../assets/uploads/avatars/') === 0) {
+                                $old_file = $upload_dir . basename($avatar);
+                                if (file_exists($old_file)) {
+                                    @unlink($old_file);
+                                }
+                            }
+                            $avatar = '../assets/uploads/avatars/' . $new_filename;
+                        }
+                    }
+                }
+            }
+        } elseif (isset($_POST['avatar_selecionado']) && empty($_POST['remover_foto'])) {
+            $avatar = trim($_POST['avatar_selecionado']);
+        }
     }
     
     $paises_map = [

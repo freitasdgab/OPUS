@@ -24,6 +24,7 @@ $foto_perfil = !empty($dados_user['foto_perfil']) ? trim($dados_user['foto_perfi
 $cor_fundo = !empty($dados_user['cor_fundo']) ? $dados_user['cor_fundo'] : '#1cb0f6';
 $pais_usuario = !empty($dados_user['pais']) ? $dados_user['pais'] : 'Brasil';
 $pais_codigo_usuario = !empty($dados_user['pais_codigo']) ? strtolower($dados_user['pais_codigo']) : 'br';
+$is_mascot = (!empty($foto_perfil) && strpos($foto_perfil, '../assets/img/') !== false);
 
 // Dados do Usuário
 $nome_principal = !empty($dados_user['nome']) ?$dados_user['nome'] : 'Usuário';
@@ -75,17 +76,21 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                 <!-- COLUNA ESQUERDA -->
                 <div class="main-column">
                     
-                    <div class="banner-section" style="background-color: <?php echo htmlspecialchars($cor_fundo); ?>;">
-                        <?php if (!empty($foto_perfil)): ?>
-                            <img src="<?php echo htmlspecialchars($foto_perfil); ?>" alt="Avatar" class="avatar-img">
-                        <?php else: ?>
-                            <div class="avatar-placeholder" style="display:flex; align-items:center; justify-content:center; width:120px; height:120px; border-radius:50%; background:rgba(0,0,0,0.25); color:#fff; font-size:3.5rem; z-index:1;">
-                                <i class="fa-solid fa-user"></i>
+                    <div class="profile-avatar-header">
+                        <div class="profile-avatar-wrapper">
+                            <div class="profile-avatar-circle" id="profileAvatarCircle" style="border-color: <?php echo htmlspecialchars($cor_fundo); ?>; background-color: <?php echo htmlspecialchars($cor_fundo); ?>;" onclick="openProfileModal()" title="Alterar foto de perfil">
+                                <?php if (!empty($foto_perfil)): ?>
+                                    <img src="<?php echo htmlspecialchars($foto_perfil); ?>" alt="Avatar" class="avatar-img <?php echo $is_mascot ? 'mascot-img' : 'user-upload-img'; ?>">
+                                <?php else: ?>
+                                    <div class="avatar-placeholder">
+                                        <i class="fa-solid fa-user"></i>
+                                    </div>
+                                <?php endif; ?>
                             </div>
-                        <?php endif; ?>
-                        <button class="edit-banner-btn" onclick="openProfileModal()">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
+                            <button type="button" class="edit-avatar-btn" onclick="openProfileModal()" title="Editar foto de perfil">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="user-info">
@@ -203,33 +208,49 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
         <div class="modal-content">
             <div class="modal-title">Editar Perfil</div>
             
-            <form method="POST" action="../../back/api/atualizar_perfil.php">
+            <form method="POST" action="../../back/api/atualizar_perfil.php" enctype="multipart/form-data" id="formEditarPerfil">
                 <input type="hidden" name="action" value="atualizar_aparencia">
                 <input type="hidden" name="avatar_selecionado" id="input-avatar" value="<?php echo htmlspecialchars($foto_perfil); ?>">
                 <input type="hidden" name="cor_selecionada" id="input-cor" value="<?php echo htmlspecialchars($cor_fundo); ?>">
+                <input type="hidden" name="remover_foto" id="input-remover-foto" value="0">
+                <input type="file" id="input-foto-upload" name="foto_upload" accept="image/png, image/jpeg, image/jpg, image/webp" style="display: none;" onchange="aoSelecionarFoto(this)">
 
-                <div class="modal-subtitle">Escolha seu avatar</div>
+                <div class="modal-subtitle">Sua foto de perfil</div>
                 
-                <div class="avatar-grid">
-                    <div class="avatar-option" data-src="" title="Sem foto" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:#94a3b8; font-weight:800; font-size:0.8rem; min-height:70px;">
-                        <i class="fa-solid fa-user-slash" style="font-size: 1.8rem;"></i>
-                        <span>Sem foto</span>
+                <div class="modal-avatar-preview-wrap">
+                    <div class="modal-circle-preview" id="modalCirclePreview" style="border-color: <?php echo htmlspecialchars($cor_fundo); ?>; background-color: <?php echo htmlspecialchars($cor_fundo); ?>;">
+                        <div class="modal-avatar-box" id="modalAvatarBox" onclick="document.getElementById('input-foto-upload').click();" title="Clique para escolher uma foto">
+                            <?php if (!empty($foto_perfil)): ?>
+                                <img src="<?php echo htmlspecialchars($foto_perfil); ?>" alt="Avatar" id="modalAvatarImg" class="modal-avatar-img <?php echo $is_mascot ? 'mascot-img' : 'user-upload-img'; ?>">
+                            <?php else: ?>
+                                <div class="modal-avatar-placeholder" id="modalAvatarPlaceholder">
+                                    <i class="fa-solid fa-user"></i>
+                                </div>
+                            <?php endif; ?>
+                            <div class="modal-avatar-overlay">
+                                <i class="fa-solid fa-camera"></i>
+                                <span>Alterar</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="avatar-option" data-src="../assets/img/rosa.png" title="Skatista"><img src="../assets/img/rosa.png" alt="Skatista"></div>
-                    <div class="avatar-option" data-src="../assets/img/roxo.png" title="Gamer"><img src="../assets/img/roxo.png" alt="Gamer"></div>
-                    <div class="avatar-option" data-src="../assets/img/laranja.png" title="Rockstar"><img src="../assets/img/laranja.png" alt="Rockstar"></div>
-                    <div class="avatar-option" data-src="../assets/img/verdefeliz.png" title="Atleta"><img src="../assets/img/verdefeliz.png" alt="Atleta"></div>
-                    <div class="avatar-option" data-src="../assets/img/azulpesquisar.png" title="Detetive"><img src="../assets/img/azulpesquisar.png" alt="Detetive"></div>
-                    <div class="avatar-option" data-src="../assets/img/acertoutudo.png" title="Campeão"><img src="../assets/img/acertoutudo.png" alt="Campeão"></div>
+                </div>
+
+                <div class="modal-avatar-actions">
+                    <button type="button" class="btn-avatar-opt btn-avatar-upload" onclick="document.getElementById('input-foto-upload').click();">
+                        <i class="fa-solid fa-upload"></i> Escolher foto
+                    </button>
+                    <button type="button" class="btn-avatar-opt btn-avatar-remove" id="btnRemoverFoto" onclick="removerFotoPerfil()" style="<?php echo empty($foto_perfil) ? 'display: none;' : ''; ?>">
+                        <i class="fa-solid fa-trash-can"></i> Remover
+                    </button>
                 </div>
 
                 <div class="modal-subtitle">Cor de fundo</div>
                 <div class="color-grid">
-                    <div class="color-option" style="background-color: #1cb0f6;" data-color="#1cb0f6"></div>
-                    <div class="color-option" style="background-color: #e56565;" data-color="#e56565"></div>
-                    <div class="color-option" style="background-color: #78c800;" data-color="#78c800"></div>
-                    <div class="color-option" style="background-color: #ce82ff;" data-color="#ce82ff"></div>
-                    <div class="color-option" style="background-color: #ff9600;" data-color="#ff9600"></div>
+                    <div class="color-option" style="background-color: #1cb0f6;" data-color="#1cb0f6" title="Azul"></div>
+                    <div class="color-option" style="background-color: #e56565;" data-color="#e56565" title="Vermelho"></div>
+                    <div class="color-option" style="background-color: #78c800;" data-color="#78c800" title="Verde"></div>
+                    <div class="color-option" style="background-color: #ce82ff;" data-color="#ce82ff" title="Roxo"></div>
+                    <div class="color-option" style="background-color: #ff9600;" data-color="#ff9600" title="Laranja"></div>
                 </div>
 
                 <div class="modal-subtitle">País de Origem</div>
@@ -303,6 +324,31 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
             <div class="modal-actions">
                 <button type="button" class="btn-modal btn-cancel" onclick="closeLogoutModal()">Cancelar</button>
                 <a href="../../back/auth/logout.php" class="btn-modal btn-danger" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">Sim, Sair</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL FULLSCREEN DE TROFÉU AMPLIADO -->
+    <div class="trophy-fullscreen-modal" id="trophyModal" style="display: none;">
+        <div class="trophy-fullscreen-backdrop" onclick="closeTrophyModal()"></div>
+        <div class="trophy-fullscreen-container">
+            <button type="button" class="trophy-fullscreen-close" onclick="closeTrophyModal()" aria-label="Fechar visualização" title="Fechar visualização">
+                <i class="fa-solid fa-xmark"></i>
+                <span>Fechar</span>
+            </button>
+            <div class="trophy-fullscreen-img-wrap" id="trophyModalImgWrapper">
+                <div class="trophy-fullscreen-glow"></div>
+                <img id="trophyModalImg" src="" alt="Troféu Ampliado" class="trophy-fullscreen-img">
+            </div>
+            <div class="trophy-fullscreen-info">
+                <div id="trophyModalStatus" class="trophy-fullscreen-status"></div>
+                <h2 id="trophyModalTitle" class="trophy-fullscreen-title"></h2>
+                <p id="trophyModalDesc" class="trophy-fullscreen-desc"></p>
+            </div>
+            <div class="trophy-fullscreen-actions">
+                <button type="button" class="trophy-fullscreen-btn-close" onclick="closeTrophyModal()">
+                    <i class="fa-solid fa-xmark"></i> Fechar
+                </button>
             </div>
         </div>
     </div>

@@ -3,7 +3,7 @@
 body {
     background-color: #0d0d0f;
     color: #fff;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Nunito', sans-serif;
     overflow: hidden;
 }
 
@@ -25,6 +25,7 @@ body {
     display: flex;
     flex-direction: column;
     padding: 40px 20px;
+    font-family: 'Nunito', sans-serif;
 }
 
 .logo {
@@ -36,13 +37,14 @@ body {
     text-align: center;
 }
 
-.menu { display: flex; flex-direction: column; gap: 10px; }
+.menu { display: flex; flex-direction: column; gap: 10px; font-family: 'Nunito', sans-serif; }
 .nav-link {
     text-decoration: none;
     color: #8e95a1;
     padding: 15px;
     border-radius: 12px;
-    font-weight: 600;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
     transition: 0.3s;
     display: flex;
     align-items: center;

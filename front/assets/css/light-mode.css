@@ -41,6 +41,7 @@ body.light-mode .sidebar .nav-link {
     color: #777777 !important; 
     font-weight: 700 !important;
     text-transform: uppercase;
+    font-family: 'Nunito', sans-serif !important;
 }
 body.light-mode .sidebar .nav-link:hover, 
 body.light-mode .sidebar .nav-link.active {
@@ -541,6 +542,34 @@ body.light-mode .trophy-profile-card.locked {
 }
 body.light-mode .trophy-progress { background: #e5e5e5 !important; }
 body.light-mode .trophy-progress-fill { background: #ff4b4b !important; }
+body.light-mode .trophy-profile-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1) !important;
+}
+body.light-mode .btn-card-zoom {
+    background: #f0f9ff !important;
+    border-color: #bae6fd !important;
+    border-bottom: 3px solid #7dd3fc !important;
+    color: #0284c7 !important;
+}
+body.light-mode .trophy-profile-card.unlocked .btn-card-zoom {
+    background: #fffbeb !important;
+    border-color: #fde68a !important;
+    border-bottom: 3px solid #fcd34d !important;
+    color: #b45309 !important;
+}
+body.light-mode .btn-card-zoom:hover {
+    background: #0284c7 !important;
+    color: #fff !important;
+    border-color: #0284c7 !important;
+    border-bottom-color: #0369a1 !important;
+}
+body.light-mode .trophy-profile-card.unlocked .btn-card-zoom:hover {
+    background: #f59e0b !important;
+    color: #fff !important;
+    border-color: #f59e0b !important;
+    border-bottom-color: #d97706 !important;
+}
 
 /* Projetos Github no perfil */
 body.light-mode a[style*="background: #191924"],
@@ -1323,6 +1352,7 @@ body:not(.light-mode) .sidebar .nav-link {
     color: #a5b4bc !important; 
     font-weight: 700 !important;
     text-transform: uppercase;
+    font-family: 'Nunito', sans-serif !important;
 }
 body:not(.light-mode) .sidebar .nav-link:hover, 
 body:not(.light-mode) .sidebar .nav-link.active {

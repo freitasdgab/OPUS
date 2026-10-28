@@ -15,10 +15,16 @@ $raw_input = file_get_contents('php://input');
 $json_data = json_decode($raw_input, true);
 
 $codigo = '';
-if (is_array($json_data) && isset($json_data['codigo'])) {
-    $codigo = trim($json_data['codigo']);
-} elseif (isset($_POST['codigo'])) {
+$stdin  = '';
+if (is_array($json_data)) {
+    if (isset($json_data['codigo'])) $codigo = trim($json_data['codigo']);
+    if (isset($json_data['stdin']))  $stdin  = (string) $json_data['stdin'];
+}
+if (isset($_POST['codigo']) && empty($codigo)) {
     $codigo = trim($_POST['codigo']);
+}
+if (isset($_POST['stdin']) && empty($stdin)) {
+    $stdin = (string) $_POST['stdin'];
 }
 
 if (empty($codigo)) {
@@ -45,11 +51,15 @@ if (!$possui_class && !$possui_main) {
 }
 
 // Monta o payload para a API de compilação Wandbox (OpenJDK 21)
-$payload = json_encode([
+$payload_data = [
     'compiler' => 'openjdk-jdk-21+35',
     'code' => $codigo_para_executar,
     'save' => false
-]);
+];
+if ($stdin !== '') {
+    $payload_data['stdin'] = $stdin;
+}
+$payload = json_encode($payload_data);
 
 $ch = curl_init('https://wandbox.org/api/compile.json');
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

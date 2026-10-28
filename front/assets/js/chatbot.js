@@ -41,11 +41,46 @@ function enviarSugestaoOpi(texto) {
     enviarMensagemOpi(texto);
 }
 
+function acionarComandoOpi(comando) {
+    if (opiArrastandoSugestoes) return;
+    const chatWin = document.getElementById('opiChatWindow');
+    if (chatWin && !chatWin.classList.contains('active')) {
+        chatWin.classList.add('active');
+    }
+    const input = document.getElementById('opiChatInput');
+    const atual = input ? input.value.trim() : '';
+
+    if (atual && !atual.startsWith('/')) {
+        input.value = '';
+        enviarMensagemOpi(comando + ' ' + atual);
+    } else {
+        enviarMensagemOpi(comando);
+        if (input && comando === '/browser') {
+            input.value = '/browser ';
+            input.focus();
+        }
+    }
+}
+
 function obterContextoAtual() {
     try {
-        const lessonTitle = document.querySelector('.lesson-title');
+        const partes = [];
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('cap')) partes.push('Seção ' + params.get('cap'));
+        if (params.get('licao')) partes.push('Lição ' + params.get('licao'));
+
+        const lessonTitle = document.querySelector('.lesson-title, .cdx-heading');
         if (lessonTitle && lessonTitle.textContent.trim()) {
-            return 'Lição atual de Java: ' + lessonTitle.textContent.trim();
+            partes.push('Título: ' + lessonTitle.textContent.trim());
+        }
+
+        const missionBox = document.querySelector('.cdx-mission-box, .question-text');
+        if (missionBox && missionBox.textContent.trim()) {
+            partes.push('Questão/Missão: ' + missionBox.textContent.trim().substring(0, 180));
+        }
+
+        if (partes.length > 0) {
+            return partes.join(' | ');
         }
 
         const pageHeading = document.querySelector('h1, h2');
@@ -89,7 +124,7 @@ function enviarMensagemOpi(textoManual) {
     scrollChatAoFim();
     if (sendBtn) sendBtn.disabled = true;
 
-    // 4. Faz chamada à API do Opi IA (Groq / Local)
+    // 4. Faz chamada à API do Opi IA (Groq / Local + Consultas)
     const payload = {
         mensagem: mensagem,
         contexto: obterContextoAtual(),
@@ -211,7 +246,7 @@ function limparChatOpi() {
             </div>
             <div class="opi-msg-bubble">
                 Histórico limpo! 🧹<br>
-                Como posso te ajudar agora? Pergunte sobre conceitos de Java ou sobre as regras do Opus!
+                Pergunte <strong>qualquer coisa</strong> ou use os comandos de consulta em tempo real: <code>/browser</code>, <code>/goal</code> e <code>/boost</code>!
             </div>
         </div>
     `;
@@ -232,14 +267,20 @@ function formatarMarkdownOpi(texto) {
 
     // 1. Isola blocos de código ```java ... ``` para proteger a formatação
     const codeBlocks = [];
-    let processado = texto.replace(/```([a-zA-Z0-9_-]*)\n?([\s\S]*?)```/g, function(match, lang, code) {
+    let processado = texto.replace(/```([a-zA-Z0-9_+#.-]*)\n?([\s\S]*?)```/g, function(match, lang, code) {
         const placeholder = '___CODEBLOCK_' + codeBlocks.length + '___';
-        codeBlocks.push({ lang: lang ? lang.trim() : 'java', code: code.trim() });
+        codeBlocks.push({ lang: lang ? lang.trim() : 'code', code: code.trim() });
         return placeholder;
     });
 
     // 2. Escapa caracteres HTML para segurança contra XSS
     processado = escaparHTML(processado);
+
+    // 2.5 Cabeçalhos Markdown (#, ##, ###, ####)
+    processado = processado.replace(/^#{1,4}\s+(.+)$/gm, '<strong style="display:block;margin-top:6px;margin-bottom:2px;font-size:1.04em;">$1</strong>');
+
+    // 2.6 Linhas divisórias Markdown (---)
+    processado = processado.replace(/^-{3,}$/gm, '<hr style="border:none;border-top:1px solid rgba(255,255,255,0.15);margin:6px 0;">');
 
     // 3. Código em linha `exemplo`
     processado = processado.replace(/`([^`]+)`/g, '<code>$1</code>');
@@ -248,15 +289,35 @@ function formatarMarkdownOpi(texto) {
     processado = processado.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
 
     // 5. Itálico *texto*
-    processado = processado.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    processado = processado.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
 
-    // 6. Listas e marcadores
+    // 6. Links Markdown [texto](https://...) e Links HTTP/HTTPS clicáveis (preservando parênteses de URLs da Wikipédia)
+    const linkBlocks = [];
+    processado = processado.replace(/\[([^\]]+)\]\((https?:\/\/(?:[^\s\(\)]+|\([^\s\(\)]*\))+)\)/g, function(match, label, url) {
+        const placeholder = '___LINKBLOCK_' + linkBlocks.length + '___';
+        linkBlocks.push(`<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:#38bdf8;text-decoration:underline;">${label}</a>`);
+        return placeholder;
+    });
+    processado = processado.replace(/(https?:\/\/[^\s<]+)/g, function(rawUrl) {
+        let cleanUrl = rawUrl;
+        let trailing = '';
+        while (/[.,;:!?]$/.test(cleanUrl) || (cleanUrl.endsWith(')') && (cleanUrl.match(/\(/g) || []).length < (cleanUrl.match(/\)/g) || []).length)) {
+            trailing = cleanUrl.slice(-1) + trailing;
+            cleanUrl = cleanUrl.slice(0, -1);
+        }
+        return `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer" style="color:#38bdf8;text-decoration:underline;">${cleanUrl}</a>${trailing}`;
+    });
+    linkBlocks.forEach(function(htmlLink, idx) {
+        processado = processado.replace('___LINKBLOCK_' + idx + '___', htmlLink);
+    });
+
+    // 7. Listas e marcadores
     processado = processado.replace(/^[•*-]\s+(.+)$/gm, '• $1');
 
-    // 7. Quebras de linha normais
+    // 8. Quebras de linha normais
     processado = processado.replace(/\n/g, '<br>');
 
-    // 8. Reinsere os blocos de código com formatação limpa
+    // 9. Reinsere os blocos de código com formatação limpa
     codeBlocks.forEach(function(item, idx) {
         const placeholder = '___CODEBLOCK_' + idx + '___';
         const codeEscapado = escaparHTML(item.code);

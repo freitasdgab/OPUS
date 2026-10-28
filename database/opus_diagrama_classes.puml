@@ -1,0 +1,388 @@
+@startuml Diagrama_Classes_OPUS
+' =============================================================================
+' PROJETO OPUS - DIAGRAMA DE CLASSES UML (COMPLETO COM RELACIONAMENTOS)
+' Cole este código diretamente no site: https://www.planttext.com
+' ou http://www.plantuml.com/plantuml/uml
+' =============================================================================
+
+skinparam classAttributeIconSize false
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam linetype ortho
+skinparam nodesep 60
+skinparam ranksep 70
+
+skinparam class {
+    BackgroundColor #FFFFFF
+    ArrowColor #1E293B
+    BorderColor #334155
+    HeaderBackgroundColor #F1F5F9
+}
+
+' =============================================================================
+' 1. ACESSO E USUÁRIOS
+' =============================================================================
+package "Acesso & Usuários" #F8FAFC {
+    abstract class Usuario {
+        # id : int
+        # nome : String
+        # email : String
+        # senha : String
+        # xp : int
+        # trofeus : int
+        # dificuldade : String
+        # fotoPerfil : String
+        # diasFogo : int
+        # vidas : int
+        # vidasProximaEm : DateTime
+        # ultimaAtividade : Date
+        # nivelAcesso : String
+        # username : String
+        # pais : String
+        # criadoEm : Timestamp
+        + autenticar(email: String, senha: String) : boolean
+        + atualizarPerfil(dados: Object) : boolean
+        + sincronizarStatus() : void
+        + adicionarXP(pontos: int) : void
+        + perderVida() : void
+        + regenerarVidas() : void
+        + atualizarFogoDiario() : void
+    }
+
+    class Jogador {
+        - corFundo : String
+        - googleId : String
+        - linkGithub : String
+        - linkLinkedin : String
+        + iniciarLicao(unidade: int, licao: int) : Licao
+        + resolverDesafio(unidade: int, codigo: String) : boolean
+        + resgatarBau(unidade: int) : boolean
+        + entrarLiga(grupoId: int) : void
+    }
+
+    class Administrador {
+        - nivelPrivilegio : int
+        + cadastrarUnidade(dados: Unidade) : boolean
+        + cadastrarLicao(dados: Licao) : boolean
+        + cadastrarPergunta(dados: Pergunta) : boolean
+        + gerenciarUsuarios() : List~Usuario~
+        + visualizarMetricas() : Object
+    }
+
+    class RecuperacaoSenha {
+        - id : int
+        - email : String
+        - codigo : String
+        - expiraEm : DateTime
+        - usado : boolean
+        - criadoEm : Timestamp
+        + gerarCodigo(email: String) : String
+        + validarCodigo(codigo: String) : boolean
+        + marcarComoUsado() : void
+    }
+}
+
+' =============================================================================
+' 2. CONTEÚDO PEDAGÓGICO
+' =============================================================================
+package "Conteúdo Pedagógico" #F8FAFC {
+    class Divisao {
+        - id : int
+        - nome : String
+        - tema : String
+        - descricao : String
+        - secaoInicio : int
+        - secaoFim : int
+        - icone : String
+        - cor : String
+        - badge : String
+        + listarUnidades() : List~Unidade~
+        + calcularProgresso(jogadorId: int) : float
+    }
+
+    class Unidade {
+        - numero : int
+        - divisaoId : int
+        - titulo : String
+        - nome : String
+        - descricao : String
+        - cor : String
+        - mascote : String
+        - guiaTexto : String
+        - guiaCodigo : String
+        - totalLicoes : int
+        + obterLicoes() : List~Licao~
+        + obterDesafio() : Desafio
+        + estaCompleta(jogadorId: int) : boolean
+    }
+
+    class Licao {
+        - id : int
+        - unidadeNumero : int
+        - licaoNumero : int
+        - titulo : String
+        - textoExplicativo : String
+        - codigoExemplo : String
+        - criadoEm : Timestamp
+        + obterPerguntas() : List~Pergunta~
+        + validarConclusao(jogadorId: int) : boolean
+    }
+
+    class Pergunta {
+        - id : int
+        - licaoId : int
+        - perguntaTexto : String
+        - codigoContexto : String
+        - tipo : String
+        - alternativaA : String
+        - alternativaB : String
+        - alternativaC : String
+        - alternativaCorreta : String
+        + verificarResposta(opcaoEscolhida: String) : boolean
+        + obterGabarito() : String
+    }
+
+    class Desafio {
+        - unidadeNumero : int
+        - badge : String
+        - heading : String
+        - intro : String
+        - missao : String
+        - alvoVisual : String
+        - dicaTexto : String
+        - dicaCodigo : String
+        - arquivo : String
+        - codigoInicial : String
+        - validadorJs : String
+        - mensagemAjuste : String
+        + executarCodigo(codigoSubmetido: String) : Object
+        + validarSolucao(saida: String) : boolean
+        + solicitarDica() : String
+    }
+}
+
+' =============================================================================
+' 3. GAMIFICAÇÃO & PROGRESSO
+' =============================================================================
+package "Gamificação & Progresso" #F8FAFC {
+    class ProgressoUsuario {
+        - id : int
+        - usuarioId : int
+        - unidadeNumero : int
+        - status : String
+        - licoesConcluidas : int
+        - atualizadoEm : Timestamp
+        + registrarLicaoConcluida() : void
+        + desbloquear() : void
+        + concluirUnidade() : void
+    }
+
+    class MissaoDiaria {
+        - id : int
+        - usuarioId : int
+        - dataRef : Date
+        - xpGanho : int
+        - licoesConcluidas : int
+        - licoesPerfeitas : int
+        - criadoEm : Timestamp
+        - atualizadoEm : Timestamp
+        + registrarAcerto() : void
+        + computarLicaoConcluida(perfeita: boolean) : void
+        + todasMetasCumpridas() : boolean
+    }
+
+    class BauRecompensas {
+        - id : int
+        - usuarioId : int
+        - unidadeNumero : int
+        - tipoRecompensa : String
+        - xpGanho : int
+        - vidasGanhas : int
+        - resgatadoEm : Timestamp
+        + resgatarRecompensa() : Object
+        + jaFoiResgatado() : boolean
+    }
+
+    class AcertoDiario {
+        - id : int
+        - usuarioId : int
+        - dataDia : Date
+        - acertos : int
+        + incrementarAcertos() : void
+    }
+}
+
+' =============================================================================
+' 4. CONQUISTAS E TROFÉUS
+' =============================================================================
+package "Conquistas & Troféus" #F8FAFC {
+    class CatalogoTrofeu {
+        - slug : String
+        - nome : String
+        - descricao : String
+        - listado : boolean
+        - ordem : int
+        - icone : String
+        - imagem : String
+        - cor : String
+        - raridade : String
+        + verificarRequisitos(jogador: Jogador) : boolean
+    }
+
+    class UserTrofeu {
+        - id : int
+        - userId : int
+        - trofeuSlug : String
+        - conquistadoEm : Timestamp
+        + registrarConquista() : void
+    }
+}
+
+' =============================================================================
+' 5. LIGAS & COMPETIÇÕES
+' =============================================================================
+package "Ligas & Competições" #F8FAFC {
+    class GrupoLiga {
+        - id : int
+        - divisao : String
+        - semanaRef : Date
+        - capacidade : int
+        - criadoEm : DateTime
+        + adicionarParticipante(jogador: Jogador) : boolean
+        + classificarParticipantes() : List~LigaUsuario~
+        + processarViradaSemanal() : void
+    }
+
+    class LigaUsuario {
+        - id : int
+        - usuarioId : int
+        - divisao : String
+        - grupoId : int
+        - xpSemana : int
+        - posicaoSemanaAnterior : int
+        - ultimaAtualizacao : DateTime
+        + somarXpSemanal(xp: int) : void
+        + atualizarPosicao(posicao: int) : void
+    }
+
+    class HistoricoLiga {
+        - id : int
+        - usuarioId : int
+        - divisaoAnterior : String
+        - divisaoNova : String
+        - resultado : String
+        - posicaoFinal : int
+        - xpFinal : int
+        - semanaRef : Date
+        - criadoEm : Timestamp
+        + salvarHistorico() : void
+    }
+}
+
+' =============================================================================
+' 6. SOCIAL & COMUNICAÇÃO
+' =============================================================================
+package "Social & Comunicação" #F8FAFC {
+    class PedidoConexao {
+        - id : int
+        - remetenteId : int
+        - destinatarioId : int
+        - status : String
+        - dataCriacao : DateTime
+        - notificadoAceite : boolean
+        - dataResposta : DateTime
+        - viraramAmigos : boolean
+        + aceitar() : void
+        + recusar() : void
+        + cancelar() : void
+    }
+
+    class Seguidor {
+        - id : int
+        - seguidorId : int
+        - seguidoId : int
+        - dataCriacao : DateTime
+        + seguir() : void
+        + deixarDeSeguir() : void
+    }
+
+    class ChatMensagem {
+        - id : int
+        - remetenteId : int
+        - destinatarioId : int
+        - mensagem : String
+        - statusLeitura : String
+        - dataEnvio : DateTime
+        + enviar() : boolean
+        + marcarComoLida() : void
+    }
+}
+
+' =============================================================================
+' 7. SUPORTE & SERVIÇOS DE IA
+' =============================================================================
+package "Suporte & Serviços" #F8FAFC {
+    class ChatbotTutor {
+        - nome : String
+        - personalidade : String
+        - modeloIA : String
+        + responderDuvida(pergunta: String, contexto: String) : String
+        + gerarDicaExercicio(exercicioId: int) : String
+        + analisarCodigoAluno(codigo: String) : String
+    }
+
+    class EmailService {
+        - smtpHost : String
+        - smtpPort : int
+        - usuario : String
+        - remetente : String
+        + enviarTokenRecuperacao(destinatario: String, token: String) : boolean
+        + enviarBoasVindas(destinatario: String, nome: String) : boolean
+    }
+}
+
+' =============================================================================
+' RELACIONAMENTOS DE CLASSE (HERANÇA, COMPOSIÇÃO, AGREGAÇÃO, ASSOCIAÇÃO)
+' =============================================================================
+
+' Herança / Generalização
+Usuario <|-- Jogador : "é um (especialização)"
+Usuario <|-- Administrador : "é um (especialização)"
+
+' Acesso & Recuperação
+Usuario "1" ..> "0..*" RecuperacaoSenha : "solicita recuperação >"
+EmailService ..> RecuperacaoSenha : "despacha token por e-mail >"
+
+' Núcleo Pedagógico
+Divisao "1" o-- "1..*" Unidade : "agrupa >"
+Unidade "1" *-- "1..*" Licao : "composta por >"
+Licao "1" *-- "1..*" Pergunta : "composta por >"
+Unidade "1" *-- "0..1" Desafio : "contém desafio prático >"
+
+' Progresso do Jogador
+Jogador "1" *-- "0..*" ProgressoUsuario : "possui progresso >"
+ProgressoUsuario "0..*" --> "1" Unidade : "vinculado a >"
+Jogador "1" *-- "0..*" BauRecompensas : "resgata >"
+BauRecompensas "0..*" --> "1" Unidade : "pertence a >"
+Jogador "1" *-- "0..*" MissaoDiaria : "cumpre diariamente >"
+Jogador "1" *-- "0..*" AcertoDiario : "acumula acertos >"
+
+' Troféus e Conquistas
+CatalogoTrofeu "1" <-- "0..*" UserTrofeu : "define requisitos <"
+Jogador "1" o-- "0..*" UserTrofeu : "desbloqueia >"
+
+' Ligas e Ranking Semanal
+GrupoLiga "1" o-- "0..30" LigaUsuario : "aloca competidores >"
+Jogador "1" -- "1" LigaUsuario : "disputa classificação em >"
+Jogador "1" *-- "0..*" HistoricoLiga : "registra histórico >"
+
+' Social e Chat
+Jogador "1" --> "0..*" PedidoConexao : "envia / recebe solicitação >"
+Jogador "1" --> "0..*" Seguidor : "segue / é seguido >"
+Jogador "1" --> "0..*" ChatMensagem : "troca mensagens diretas >"
+
+' Assistente Virtual / Tutor IA
+ChatbotTutor ..> Licao : "orienta nas dúvidas da >"
+ChatbotTutor ..> Desafio : "analisa código do >"
+
+@enduml

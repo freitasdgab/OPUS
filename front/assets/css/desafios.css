@@ -1,0 +1,861 @@
+/* =========================================================================
+   DESAFIOS.CSS - ABA DE DESAFIOS E PROJETOS PRÁTICOS (OPUS)
+   Design limpo, sem auras/glitter artificiais e com estado bloqueado em cinza
+   ========================================================================= */
+
+:root {
+    --desafios-bg: #0d0d12;
+    --desafios-card-bg: #141722;
+    --desafios-card-border: #232738;
+    --desafios-card-hover: #1c2030;
+    --desafios-text: #f8fafc;
+    --desafios-text-muted: #94a3b8;
+    --desafios-accent: #1cb0f6;
+    --desafios-success: #58cc02;
+    --desafios-warning: #ffc800;
+    --desafios-danger: #ff4b4b;
+    --desafios-purple: #ce82ff;
+}
+
+.desafios-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 20px 60px 20px;
+    font-family: 'Nunito', sans-serif;
+}
+
+/* HERO / HEADER (SEM AURA BRILHANTE / SEM GLITTER) */
+.desafios-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #141722;
+    border: 1px solid #232738;
+    border-radius: 20px;
+    padding: 30px 40px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Remove qualquer aura ou gradiente circular de fundo */
+.desafios-hero::before {
+    display: none !important;
+}
+
+.desafios-hero-content {
+    max-width: 680px;
+    z-index: 2;
+}
+
+.desafios-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(28, 176, 246, 0.12);
+    color: #38bdf8;
+    border: 1px solid rgba(28, 176, 246, 0.3);
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.desafios-hero-title {
+    font-size: 2.1rem;
+    font-weight: 900;
+    color: #ffffff;
+    font-family: 'Nunito', sans-serif;
+    line-height: 1.25;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+}
+
+.desafios-hero-title span {
+    color: #1cb0f6;
+}
+
+.desafios-hero-desc {
+    color: #94a3b8;
+    font-size: 0.98rem;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+.desafios-hero-mascote {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+/* Mascote limpo, sem qualquer aura brilhante em volta */
+.desafios-hero-mascote img {
+    width: 135px;
+    height: auto;
+    filter: none !important;
+    animation: floatMascot 4s ease-in-out infinite;
+}
+
+@keyframes floatMascot {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+/* STATS BAR */
+.desafios-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 30px;
+}
+
+.desafio-stat-card {
+    background: #141722;
+    border: 1px solid #232738;
+    border-radius: 16px;
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.desafio-stat-card:hover {
+    transform: translateY(-2px);
+    border-color: #38425d;
+}
+
+.desafio-stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+}
+
+.desafio-stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.desafio-stat-val {
+    font-size: 1.45rem;
+    font-weight: 900;
+    color: #ffffff;
+    font-family: 'Nunito', sans-serif;
+    line-height: 1.2;
+}
+
+.desafio-stat-label {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* FILTERS */
+.desafios-filter-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.desafios-tabs {
+    display: flex;
+    gap: 10px;
+    background: #12141e;
+    padding: 6px;
+    border-radius: 14px;
+    border: 1px solid #232738;
+}
+
+.desafios-tab-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    padding: 8px 18px;
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.desafios-tab-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Botão de aba ativa: sem glitter / sem box-shadow difuso */
+.desafios-tab-btn.active {
+    background: #1cb0f6;
+    color: #ffffff;
+    border-bottom: 3px solid #148bc4;
+    box-shadow: none !important;
+}
+
+.desafios-tab-btn .badge-count {
+    background: rgba(0, 0, 0, 0.25);
+    padding: 2px 7px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+}
+
+/* CARDS GRID */
+.desafios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 24px;
+}
+
+/* =========================================================================
+   ESTRUTURA BASE DOS CARDS
+   ========================================================================= */
+.desafio-card {
+    background: #141722;
+    border: 1px solid #232738;
+    border-radius: 18px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.desafio-card.card-disponivel:hover {
+    transform: translateY(-3px);
+    border-color: #3b4460;
+}
+
+.desafio-card.card-concluido {
+    border-color: rgba(88, 204, 2, 0.35);
+    background: #141822;
+}
+
+/* CARD TOP HEADER */
+.desafio-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.desafio-icon-wrapper {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+}
+
+.desafio-badges-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.badge-xp {
+    background: rgba(255, 200, 0, 0.12);
+    border: 1px solid rgba(255, 200, 0, 0.35);
+    color: #ffc800;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.badge-dificuldade {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+.badge-dificuldade.iniciante { background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+.badge-dificuldade.facil     { background: rgba(88, 204, 2, 0.12); color: #58cc02; border: 1px solid rgba(88, 204, 2, 0.3); }
+.badge-dificuldade.medio     { background: rgba(255, 200, 0, 0.12); color: #ffc800; border: 1px solid rgba(255, 200, 0, 0.3); }
+.badge-dificuldade.desafiador{ background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+/* CARD BODY */
+.desafio-card-body {
+    flex: 1;
+    margin-bottom: 18px;
+}
+
+.desafio-card-categoria {
+    font-size: 0.75rem;
+    color: #38bdf8;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.desafio-card-titulo {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 8px;
+    line-height: 1.35;
+}
+
+.desafio-card-desc {
+    font-size: 0.88rem;
+    color: #94a3b8;
+    line-height: 1.55;
+    margin-bottom: 16px;
+}
+
+/* REQUISITO BOX */
+.desafio-requisito-box {
+    background: #0f111a;
+    border-radius: 12px;
+    padding: 12px 14px;
+    border: 1px solid #1e2232;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.82rem;
+}
+
+.desafio-requisito-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+}
+
+.desafio-requisito-box.unlocked .desafio-requisito-status {
+    color: #58cc02;
+}
+
+.desafio-requisito-box.completed .desafio-requisito-status {
+    color: #1cb0f6;
+}
+
+.desafio-requisito-desc {
+    color: #94a3b8;
+    font-size: 0.78rem;
+    line-height: 1.4;
+}
+
+.desafio-progresso-bar-mini {
+    height: 5px;
+    background: #1a1e2c;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 4px;
+}
+
+.desafio-progresso-bar-fill {
+    height: 100%;
+    border-radius: 10px;
+}
+
+/* CARD FOOTER */
+.desafio-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 14px;
+    border-top: 1px solid #1e2230;
+}
+
+.btn-desafio-action {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 18px;
+    border-radius: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 800;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.1s ease;
+    text-align: center;
+}
+
+/* =========================================================================
+   BOTÕES SÓLIDOS (SEM GLITTER / SEM BOX-SHADOW DIFUSO)
+   ========================================================================= */
+.btn-desafio-iniciar {
+    background: #1cb0f6 !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-bottom: 4px solid #148bc4 !important;
+    box-shadow: none !important; /* Sem glitter */
+}
+
+.btn-desafio-iniciar:hover {
+    background: #2cbbfb !important;
+    transform: translateY(-2px);
+    box-shadow: none !important;
+}
+
+.btn-desafio-iniciar:active {
+    transform: translateY(2px) !important;
+    border-bottom-width: 2px !important;
+}
+
+.btn-desafio-concluido {
+    background: #182218 !important;
+    border: 1.5px solid #2f542f !important;
+    border-bottom: 4px solid #1f3b1f !important;
+    color: #58cc02 !important;
+    box-shadow: none !important;
+}
+
+.btn-desafio-concluido:hover {
+    background: #202e20 !important;
+    color: #6ee7b7 !important;
+    transform: translateY(-2px);
+    box-shadow: none !important;
+}
+
+.btn-desafio-concluido:active {
+    transform: translateY(2px) !important;
+    border-bottom-width: 2px !important;
+}
+
+/* =========================================================================
+   ESTADO TOTALMENTE EM CINZA PARA DESAFIOS BLOQUEADOS
+   Conforme solicitado: card inteiro, badges (fácil, XP, requisitos) e botão em cinza,
+   com símbolo de cadeado maior e bem visível.
+   ========================================================================= */
+.desafio-card.card-bloqueado {
+    background: #13151f !important;
+    border: 1px solid #232738 !important;
+    box-shadow: none !important;
+}
+
+.desafio-card.card-bloqueado:hover {
+    border-color: #383f54 !important;
+}
+
+/* Ícone de Cadeado Grande e Destacado */
+.desafio-icon-wrapper.desafio-icon-locked {
+    width: 52px !important;
+    height: 52px !important;
+    background: #1b1e2a !important;
+    border: 1.5px solid #2d3346 !important;
+    color: #8b96ab !important;
+    font-size: 1.55rem !important; /* Cadeado maior e nítido */
+    box-shadow: none !important;
+    border-radius: 14px;
+}
+
+/* Badges em cinza (Dificuldade e XP) */
+.desafio-card.card-bloqueado .badge-locked,
+.badge-locked {
+    background: #1a1d28 !important;
+    color: #7b8599 !important;
+    border: 1px solid #292e3e !important;
+    box-shadow: none !important;
+}
+
+/* Textos e Títulos em Cinza */
+.desafio-card.card-bloqueado .desafio-card-categoria {
+    color: #64748b !important;
+}
+
+.desafio-card.card-bloqueado .desafio-card-titulo {
+    color: #8e95a5 !important;
+}
+
+.desafio-card.card-bloqueado .desafio-card-desc {
+    color: #5d6778 !important;
+}
+
+/* Box de Requisitos em Cinza com Cadeado Visível */
+.desafio-card.card-bloqueado .desafio-requisito-box,
+.desafio-requisito-box.locked {
+    background: #0d0f16 !important;
+    border: 1px solid #1e2230 !important;
+}
+
+.desafio-card.card-bloqueado .desafio-requisito-status,
+.desafio-requisito-box.locked .desafio-requisito-status {
+    color: #8b95a8 !important;
+    font-size: 0.88rem !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 9px !important;
+}
+
+.desafio-card.card-bloqueado .desafio-requisito-status i {
+    font-size: 1.15rem !important;
+    color: #8b95a8 !important;
+}
+
+.desafio-card.card-bloqueado .desafio-requisito-desc {
+    color: #5d6778 !important;
+}
+
+.desafio-card.card-bloqueado .desafio-progresso-bar-mini {
+    background: #161822 !important;
+}
+
+.desafio-card.card-bloqueado .desafio-progresso-bar-fill {
+    background: #475569 !important; /* Barra de progresso discreta em cinza */
+}
+
+/* Botão de Bloqueado em Cinza com Estilo 3D Sólido (Sem Glitter) */
+.btn-desafio-bloqueado {
+    background: #1e2230 !important;
+    color: #7d889b !important;
+    border: 1px solid #2b3246 !important;
+    border-bottom: 4px solid #151824 !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+    font-weight: 800 !important;
+}
+
+.btn-desafio-bloqueado:hover {
+    color: #cbd5e1 !important;
+    background: #252b3d !important;
+    border-color: #3b445e !important;
+    border-bottom: 4px solid #191c28 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: none !important;
+}
+
+.btn-desafio-bloqueado:active {
+    transform: translateY(2px) !important;
+    border-bottom-width: 2px !important;
+}
+
+/* =========================================================================
+   MODAL DE DESAFIO BLOQUEADO
+   ========================================================================= */
+.desafio-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(8, 9, 14, 0.8);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.desafio-modal-box {
+    background: #141722;
+    border: 1px solid #2b3147;
+    border-radius: 20px;
+    max-width: 480px;
+    width: 90%;
+    padding: 32px 30px;
+    text-align: center;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.desafio-modal-icon {
+    width: 68px;
+    height: 68px;
+    border-radius: 18px;
+    background: #1a1d29;
+    border: 2px solid #2d3447;
+    color: #8b96ab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    margin: 0 auto 18px auto;
+}
+
+.desafio-modal-title {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+
+.desafio-modal-desc {
+    color: #94a3b8;
+    font-size: 0.94rem;
+    line-height: 1.6;
+    margin-bottom: 22px;
+}
+
+.desafio-modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.btn-modal-primary {
+    background: #1cb0f6;
+    color: #ffffff;
+    padding: 11px 22px;
+    border-radius: 12px;
+    font-weight: 800;
+    text-decoration: none;
+    border: none;
+    border-bottom: 4px solid #148bc4;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    transition: all 0.15s ease;
+}
+
+.btn-modal-primary:hover {
+    background: #2cbbfb;
+    transform: translateY(-2px);
+}
+
+.btn-modal-primary:active {
+    transform: translateY(2px);
+    border-bottom-width: 2px;
+}
+
+.btn-modal-secondary {
+    background: #1e2230;
+    color: #cbd5e1;
+    padding: 11px 20px;
+    border-radius: 12px;
+    font-weight: 700;
+    border: 1px solid #2d3348;
+    border-bottom: 4px solid #151824;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    transition: all 0.15s ease;
+}
+
+.btn-modal-secondary:hover {
+    background: #252b3d;
+    color: #ffffff;
+}
+
+.btn-modal-secondary:active {
+    transform: translateY(2px);
+    border-bottom-width: 2px;
+}
+
+/* =========================================================================
+   LIGHT MODE OVERRIDES
+   ========================================================================= */
+body.light-mode .desafios-hero {
+    background: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    box-shadow: none !important;
+}
+
+body.light-mode .desafios-hero-title {
+    color: #0f172a !important;
+}
+
+body.light-mode .desafios-hero-desc {
+    color: #475569 !important;
+}
+
+body.light-mode .desafio-stat-card {
+    background: #ffffff !important;
+    border-color: #e2e8f0 !important;
+}
+
+body.light-mode .desafio-stat-val {
+    color: #0f172a !important;
+}
+
+body.light-mode .desafio-stat-label {
+    color: #64748b !important;
+}
+
+body.light-mode .desafios-tabs {
+    background: #f1f5f9 !important;
+    border-color: #e2e8f0 !important;
+}
+
+body.light-mode .desafios-tab-btn {
+    color: #64748b !important;
+}
+
+body.light-mode .desafios-tab-btn:hover {
+    color: #0f172a !important;
+    background: #e2e8f0 !important;
+}
+
+body.light-mode .desafios-tab-btn.active {
+    background: #1cb0f6 !important;
+    color: #ffffff !important;
+    border-bottom: 3px solid #148bc4 !important;
+    box-shadow: none !important;
+}
+
+body.light-mode .desafio-card {
+    background: #ffffff !important;
+    border-color: #e2e8f0 !important;
+}
+
+body.light-mode .desafio-card-titulo {
+    color: #0f172a !important;
+}
+
+body.light-mode .desafio-card-desc {
+    color: #475569 !important;
+}
+
+body.light-mode .desafio-requisito-box {
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+}
+
+body.light-mode .desafio-requisito-desc {
+    color: #64748b !important;
+}
+
+body.light-mode .desafio-requisito-box.unlocked .desafio-requisito-status {
+    color: #15803d !important;
+}
+
+body.light-mode .desafio-requisito-box.completed .desafio-requisito-status {
+    color: #0284c7 !important;
+}
+
+body.light-mode .btn-desafio-concluido {
+    background: #dcfce7 !important;
+    color: #15803d !important;
+    border: 1.5px solid #86efac !important;
+    border-bottom: 4px solid #4ade80 !important;
+}
+
+body.light-mode .btn-desafio-concluido:hover {
+    background: #bbf7d0 !important;
+}
+
+body.light-mode .desafio-card.card-concluido {
+    background: #f0fdf4 !important;
+    border-color: #86efac !important;
+}
+
+body.light-mode .desafio-card.card-bloqueado {
+    background: #f3f4f6 !important;
+    border-color: #d1d5db !important;
+}
+
+body.light-mode .desafio-card.card-bloqueado .desafio-icon-locked {
+    background: #e5e7eb !important;
+    border-color: #d1d5db !important;
+    color: #6b7280 !important;
+}
+
+body.light-mode .desafio-card.card-bloqueado .badge-locked {
+    background: #e5e7eb !important;
+    border-color: #d1d5db !important;
+    color: #6b7280 !important;
+}
+
+body.light-mode .desafio-card.card-bloqueado .desafio-card-titulo {
+    color: #4b5563 !important;
+}
+
+body.light-mode .desafio-card.card-bloqueado .desafio-card-desc,
+body.light-mode .desafio-card.card-bloqueado .desafio-card-categoria {
+    color: #9ca3af !important;
+}
+
+body.light-mode .desafio-card.card-bloqueado .desafio-requisito-box {
+    background: #e5e7eb !important;
+    border-color: #d1d5db !important;
+}
+
+body.light-mode .desafio-card.card-bloqueado .desafio-requisito-status {
+    color: #4b5563 !important;
+}
+
+body.light-mode .btn-desafio-bloqueado {
+    background: #e5e7eb !important;
+    color: #6b7280 !important;
+    border: 1px solid #d1d5db !important;
+    border-bottom: 4px solid #cbd5e1 !important;
+    box-shadow: none !important;
+}
+
+body.light-mode .btn-desafio-bloqueado:hover {
+    background: #dbe0e8 !important;
+    color: #374151 !important;
+}
+
+body.light-mode .btn-desafio-iniciar {
+    box-shadow: none !important;
+}
+
+body.light-mode .desafio-modal-box {
+    background: #ffffff !important;
+    border-color: #e2e8f0 !important;
+}
+
+body.light-mode .desafio-modal-title {
+    color: #0f172a !important;
+}
+
+body.light-mode .desafio-modal-desc {
+    color: #475569 !important;
+}
+
+body.light-mode .desafio-modal-icon {
+    background: #f1f5f9 !important;
+    border-color: #e2e8f0 !important;
+    color: #64748b !important;
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 900px) {
+    .desafios-hero {
+        flex-direction: column;
+        text-align: center;
+        padding: 24px 20px;
+        gap: 18px;
+    }
+    .desafios-hero-content {
+        max-width: 100%;
+    }
+    .desafios-hero-title {
+        font-size: 1.8rem;
+    }
+    .desafios-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 580px) {
+    .desafios-stats-grid {
+        grid-template-columns: 1fr;
+    }
+    .desafios-grid {
+        grid-template-columns: 1fr;
+    }
+    .desafios-filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .desafios-tabs {
+        overflow-x: auto;
+    }
+}
