@@ -2550,16 +2550,11 @@ function responder_opi_local(string $msg, string $nome, string $ctx = '', array 
     }
 
     if (preg_match('/^(oi|olá|ola|bom dia|boa tarde|boa noite|fala|eae|hey|salve|opa|tudo bem|como vai)[\?!\.\s]*$/iu', $m)) {
-        return "👋 Olá, **$nome**! Eu sou o **Opi IA**, seu assistente de Inteligência Artificial no Opus! 🤖✨\n\n" .
-               "Pode me perguntar **qualquer coisa sobre qualquer assunto** (programação, ciência, história, cultura pop, matemática, receitas, etc.) ou usar os comandos:\n" .
-               "• 🌐 `/browser <assunto>` — Pesquisa em tempo real na Web e no banco de dados.\n" .
-               "• 🎯 `/goal` — Consulta suas missões diárias, metas da sessão, liga e troféus.\n" .
-               "• 🚀 `/boost` — Impulso imediato de XP, baús liberados e resumo da sua lição/desafio atual.\n\n" .
-               "Como posso te ajudar agora?";
+        return "👋 Olá, **$nome**! Eu sou o **Opi IA**, seu assistente no Opus. Estou aqui para tirar suas dúvidas sobre a lição e programação em Java. Como posso te ajudar agora?";
     }
 
     if (preg_match('/^(obrigado|valeu|obrigada|vlw|tmj|tks|thanks|top|legal|show)[\?!\.\s]*$/iu', $m)) {
-        return "Por nada, **$nome**! 🧡 Estou sempre por aqui para responder qualquer dúvida ou fazer consultas para você. Use `/browser`, `/goal` ou `/boost` quando quiser! 💻🔥";
+        return "Por nada, **$nome**! 🧡 Estou sempre por aqui se precisar de ajuda com a sua lição. Bons códigos! 💻🚀";
     }
 
     // Tentativa secundária buscando as palavras mais relevantes da frase na enciclopédia
@@ -2591,12 +2586,9 @@ function responder_opi_local(string $msg, string $nome, string $ctx = '', array 
     }
 
     $clean_msg = htmlspecialchars(trim($msg));
-    return "🤖 **Opi IA — Assistente Livre & Consultas:**\n\n" .
-           "Recebi sua mensagem: *\"$clean_msg\"* 💡\n\n" .
-           "Posso responder qualquer assunto ou realizar consultas em tempo real para você! Experimente:\n" .
-           "• 🌐 **`/browser <termo>`** — Para pesquisar qualquer pessoa, país, tecnologia, conceito científico ou histórico na web.\n" .
-           "• 🎯 **`/goal`** — Para consultar o status em tempo real das suas Missões Diárias, Sessões, Liga e Troféus.\n" .
-           "• ⚡ **`/boost`** — Para receber dicas do desafio atual, ver baús disponíveis e acelerar seu XP!";
+    return "🤖 **Opi — Assistente de Estudos**\n\n" .
+           "Recebi sua pergunta: *\"$clean_msg\"*\n\n" .
+           "Como posso te orientar? Você pode me perguntar sobre conceitos de programação, exercícios ou sobre seu progresso no curso.";
 }
 
 

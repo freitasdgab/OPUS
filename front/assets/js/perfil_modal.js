@@ -127,26 +127,6 @@
                 conquistasHtml = `<div class="pmodal-empty-box">Nenhuma conquista desbloqueada ainda.</div>`;
             }
 
-            // Projetos Git
-            let projetosHtml = '';
-            if (u.projetos && u.projetos.length > 0) {
-                projetosHtml = '<div class="pmodal-projects-list">';
-                u.projetos.forEach(p => {
-                    projetosHtml += `
-                        <a href="${escapeHtml(p.url)}" target="_blank" class="pmodal-project-card">
-                            <i class="fa-brands fa-git-alt"></i>
-                            <div class="pmodal-project-info">
-                                <div class="p-title">${escapeHtml(p.titulo)}</div>
-                                <div class="p-sub">Ver no GitHub <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.7rem; margin-left: 4px;"></i></div>
-                            </div>
-                        </a>
-                    `;
-                });
-                projetosHtml += '</div>';
-            } else {
-                projetosHtml = `<div class="pmodal-empty-box">Nenhum projeto Git cadastrado ainda.</div>`;
-            }
-
             // Botões de Ação (Seguir / Solicitar / Quer ser amigo? / Chat)
             let actionsGroupHtml = '';
             if (!u.is_me) {
@@ -267,14 +247,6 @@
                         <div class="pmodal-stat-val">${u.trofeus}</div>
                         <div class="pmodal-stat-lbl">Troféus</div>
                     </div>
-                </div>
-
-                <!-- PROJETOS GIT -->
-                <div class="pmodal-section">
-                    <div class="pmodal-sec-title">
-                        <i class="fa-brands fa-git-alt" style="color: #f34f29;"></i> Projetos no Git
-                    </div>
-                    ${projetosHtml}
                 </div>
 
                 <!-- CONQUISTAS -->

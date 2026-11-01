@@ -251,7 +251,7 @@
             width: 100%; position: relative; padding: 20px 0 50px 0;
         }
 
-        /* SVG DA TRILHA CONECTANDO OS MÓDULOS (ESTILO DUOLINGO / CANVA) */
+        /* SVG DA TRILHA CONECTANDO OS MÓDULOS (ESTILO DUOLINGO / CARTOON) */
         .trail-svg {
             position: absolute;
             top: 0;
@@ -263,40 +263,203 @@
             overflow: visible;
         }
 
+        /* Sombra / Relevo 3D da trilha ativa (tom cinza cartoon elegante, sem preto pesado) */
         .trail-path-shadow {
             fill: none;
-            stroke: rgba(10, 11, 17, 0.85);
-            stroke-width: 14px;
+            stroke: #2e3547;
+            stroke-width: 13px;
             stroke-linecap: round;
             stroke-linejoin: round;
+            opacity: 0.75;
         }
 
+        /* Trilha base conectando os módulos - Cinza Claro Cartoon Elegante */
         .trail-path-base {
             fill: none;
-            stroke: #b0b8c4;
+            stroke: #cbd5e1;
+            stroke-width: 10px;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+            transition: stroke 0.3s ease;
+        }
+
+        /* Trilha de capítulos bloqueados - Cinza Claro tracejado amigável e limpo */
+        .trail-path-locked {
+            fill: none;
+            stroke: #94a3b8;
             stroke-width: 8px;
             stroke-linecap: round;
             stroke-linejoin: round;
-            filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
+            stroke-dasharray: 8 12;
+            opacity: 0.8;
             transition: stroke 0.3s ease;
         }
 
-        .trail-path-locked {
-            fill: none;
-            stroke: rgba(176, 184, 196, 0.3);
-            stroke-width: 7px;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            stroke-dasharray: 8 10;
-        }
-
+        /* Trilha concluída na cor viva da seção com relevo cartoon */
         .trail-path-completed, .trail-path-active {
             fill: none;
-            stroke-width: 8.5px;
+            stroke-width: 10.5px;
             stroke-linecap: round;
             stroke-linejoin: round;
-            filter: drop-shadow(0 0 8px currentColor);
+            filter: drop-shadow(0 0 6px currentColor);
             transition: stroke 0.3s ease;
+        }
+
+        /* Suporte ao Modo Claro para a Trilha */
+        body.light-mode .trail-path-base {
+            stroke: #e2e8f0;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05));
+        }
+        body.light-mode .trail-path-shadow {
+            stroke: #cbd5e1;
+            opacity: 0.7;
+        }
+        body.light-mode .trail-path-locked {
+            stroke: #cbd5e1;
+            opacity: 0.85;
+        }
+
+        /* Suporte ao Modo Claro para o Baú de Recompensas (Cores Suaves) */
+        body.light-mode .chest-node.available {
+            background: #fffbeb !important;
+            border: 2.5px solid #f59e0b !important;
+            box-shadow: 0 7px 0 #d97706 !important;
+        }
+        body.light-mode .chest-node.available:hover {
+            box-shadow: 0 10px 0 #d97706 !important;
+        }
+        body.light-mode .chest-node.available:active {
+            box-shadow: 0 2px 0 #d97706 !important;
+        }
+        body.light-mode .chest-sprite .chest-lid {
+            background: #fbbf24 !important;
+            border-color: #92400e !important;
+            box-shadow: inset 0 6px 0 #fef08a, inset 0 -3px 0 #d97706 !important;
+        }
+        body.light-mode .chest-sprite .chest-lid::before,
+        body.light-mode .chest-sprite .chest-lid::after {
+            background: #fde68a !important;
+            border-color: #92400e !important;
+        }
+        body.light-mode .chest-sprite .chest-clasp {
+            background: #fffbeb !important;
+            border-color: #92400e !important;
+            box-shadow: inset 0 2px 0 #ffffff, 0 2px 0 rgba(146, 64, 14, 0.2) !important;
+        }
+        body.light-mode .chest-sprite .chest-clasp::after {
+            background: #92400e !important;
+        }
+        body.light-mode .chest-sprite .chest-body {
+            background: #f59e0b !important;
+            border-color: #92400e !important;
+            box-shadow: inset 0 -5px 0 #d97706 !important;
+        }
+        body.light-mode .chest-sprite .chest-body::before,
+        body.light-mode .chest-sprite .chest-body::after {
+            background: #fde68a !important;
+            border-color: #92400e !important;
+        }
+        body.light-mode .chest-sprite .chest-keyhole {
+            background: #92400e !important;
+        }
+        body.light-mode .chest-balloon {
+            background: #fffbeb !important;
+            border: 2px solid #f59e0b !important;
+            border-bottom: 3.5px solid #d97706 !important;
+            color: #92400e !important;
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.18) !important;
+        }
+        body.light-mode .chest-balloon::after {
+            border-top-color: #fffbeb !important;
+        }
+        body.light-mode .chest-node.locked {
+            background: #f8fafc !important;
+            border: 2.5px solid #e2e8f0 !important;
+            box-shadow: 0 6px 0 #cbd5e1 !important;
+        }
+        body.light-mode .chest-node.locked .chest-sprite .chest-lid {
+            background: #e2e8f0 !important;
+            border-color: #94a3b8 !important;
+            box-shadow: inset 0 4px 0 #f8fafc, inset 0 -2px 0 #cbd5e1 !important;
+        }
+        body.light-mode .chest-node.locked .chest-sprite .chest-lid::before,
+        body.light-mode .chest-node.locked .chest-sprite .chest-lid::after {
+            background: #cbd5e1 !important;
+            border-color: #94a3b8 !important;
+        }
+        body.light-mode .chest-node.locked .chest-sprite .chest-body {
+            background: #cbd5e1 !important;
+            border-color: #94a3b8 !important;
+            box-shadow: inset 0 -4px 0 #94a3b8 !important;
+        }
+        body.light-mode .chest-node.locked .chest-sprite .chest-body::before,
+        body.light-mode .chest-node.locked .chest-sprite .chest-body::after {
+            background: #e2e8f0 !important;
+            border-color: #94a3b8 !important;
+        }
+        body.light-mode .chest-node.locked .chest-padlock {
+            color: #d97706 !important;
+            -webkit-text-stroke: 1px #94a3b8 !important;
+        }
+        body.light-mode .chest-node.claimed {
+            background: #ffffff !important;
+            border: 2px solid #e2e8f0 !important;
+            box-shadow: 0 6px 0 #e2e8f0 !important;
+        }
+        body.light-mode .chest-node.claimed .chest-sprite.open .chest-lid {
+            background: #fcd34d !important;
+            border-color: #b45309 !important;
+            opacity: 0.9 !important;
+        }
+        body.light-mode .chest-node.claimed .chest-interior-glow {
+            background: #4ade80 !important;
+            box-shadow: inset 0 2px 0 #86efac !important;
+        }
+        body.light-mode .chest-tag-done {
+            background: #22c55e !important;
+            border: 2px solid #16a34a !important;
+            border-bottom: 3.5px solid #15803d !important;
+            color: #ffffff !important;
+        }
+        body.light-mode .chest-progress-pill {
+            background: #ffffff !important;
+            color: #d97706 !important;
+            border-color: #cbd5e1 !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+        }
+        body.light-mode .modal-chest-graphic .modal-chest-lid {
+            background: #fbbf24 !important;
+            border-color: #92400e !important;
+            box-shadow: inset 0 8px 0 #fef08a, inset 0 -4px 0 #d97706 !important;
+        }
+        body.light-mode .modal-chest-graphic .modal-chest-lid::before,
+        body.light-mode .modal-chest-graphic .modal-chest-lid::after {
+            background: #fde68a !important;
+            border-color: #92400e !important;
+        }
+        body.light-mode .modal-chest-clasp {
+            background: #fffbeb !important;
+            border-color: #92400e !important;
+        }
+        body.light-mode .modal-chest-clasp::after {
+            background: #92400e !important;
+        }
+        body.light-mode .modal-chest-graphic .modal-chest-body {
+            background: #f59e0b !important;
+            border-color: #92400e !important;
+            box-shadow: inset 0 -7px 0 #d97706 !important;
+        }
+        body.light-mode .modal-chest-graphic .modal-chest-body::before,
+        body.light-mode .modal-chest-graphic .modal-chest-body::after {
+            background: #fde68a !important;
+            border-color: #92400e !important;
+        }
+        body.light-mode .modal-chest-keyhole {
+            background: #92400e !important;
+        }
+        body.light-mode .modal-chest-shadow {
+            background: rgba(146, 64, 14, 0.12) !important;
         }
 
         @keyframes floatNode {
@@ -812,6 +975,306 @@
         .btn-claim-chest:hover { filter: brightness(1.06); transform: translateY(-2px); }
         .btn-claim-chest:active { transform: translateY(4px) !important; border-bottom-width: 1px !important; }
         .btn-claim-chest:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        /* ==========================================================
+           ROLETA LATERALIZADA (HORIZONTAL REEL / GAME CARTOON SÓLIDO)
+           ========================================================== */
+        .modal-roleta-lateral {
+            max-width: 580px !important;
+            width: 95% !important;
+            padding: 26px 20px 22px 20px !important;
+        }
+        .modal-roulette-header {
+            margin-bottom: 8px;
+        }
+
+        /* Palco Horizontal da Roleta Lateral */
+        .roleta-horizontal-stage {
+            position: relative;
+            width: 100%;
+            height: 165px;
+            margin: 12px auto 16px auto;
+            background: #141622;
+            border-radius: 22px;
+            border: 3.5px solid #2f3246;
+            border-bottom: 6px solid #1c1e2b;
+            box-shadow: inset 0 4px 14px rgba(0,0,0,0.45), 0 8px 16px rgba(0,0,0,0.3);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Marcador Central / Agulha Indicadora */
+        .roleta-center-needle {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 25;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.08s ease;
+        }
+        .roleta-center-needle.tick {
+            animation: needleTick 0.12s ease-out;
+        }
+        @keyframes needleTick {
+            0% { transform: translateX(-50%) scale(1); }
+            40% { transform: translateX(-50%) scale(1.15) translateY(-2px); }
+            100% { transform: translateX(-50%) scale(1); }
+        }
+
+        .needle-bar {
+            width: 4px;
+            height: calc(100% - 28px);
+            background: #ffc800;
+            border-radius: 2px;
+            box-shadow: 0 0 10px rgba(255, 200, 0, 0.75);
+        }
+        .needle-arrow {
+            width: 0;
+            height: 0;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.6));
+        }
+        .needle-arrow.needle-top {
+            border-left: 11px solid transparent;
+            border-right: 11px solid transparent;
+            border-top: 15px solid #ffc800;
+            position: relative;
+            top: 1px;
+        }
+        .needle-arrow.needle-bottom {
+            border-left: 11px solid transparent;
+            border-right: 11px solid transparent;
+            border-bottom: 15px solid #ffc800;
+            position: relative;
+            bottom: 1px;
+        }
+
+        /* Sombras de fade nas extremidades para entrada/saída elegante */
+        .roleta-fade {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 70px;
+            z-index: 15;
+            pointer-events: none;
+        }
+        .roleta-fade-left {
+            left: 0;
+            background: linear-gradient(90deg, #141622 15%, rgba(20,22,34,0) 100%);
+        }
+        .roleta-fade-right {
+            right: 0;
+            background: linear-gradient(-90deg, #141622 15%, rgba(20,22,34,0) 100%);
+        }
+
+        /* Viewport e Trilho */
+        .roleta-reel-viewport {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+        .roleta-cards-track {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            height: 100%;
+            padding: 0 12px;
+            will-change: transform;
+            transform: translateX(0);
+        }
+
+        /* Cartões Individuais da Roleta Lateral */
+        .roleta-item-card {
+            width: 125px;
+            height: 135px;
+            flex-shrink: 0;
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            position: relative;
+            user-select: none;
+            box-sizing: border-box;
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+        .roleta-item-card.winner-highlight {
+            transform: scale(1.08);
+            z-index: 10;
+            box-shadow: 0 0 24px rgba(255, 200, 0, 0.65), 0 6px 12px rgba(0,0,0,0.4);
+            border-color: #ffd700 !important;
+        }
+
+        /* Temas dos Cartões por Prêmio */
+        .card-theme-gold {
+            background: #251e10;
+            border: 2.5px solid #ffc800;
+            border-bottom: 5px solid #d97706;
+        }
+        .card-theme-purple {
+            background: #1f172e;
+            border: 2.5px solid #a855f7;
+            border-bottom: 5px solid #7c3aed;
+        }
+        .card-theme-orange {
+            background: #271a0e;
+            border: 2.5px solid #ff9600;
+            border-bottom: 5px solid #ea580c;
+        }
+        .card-theme-blue {
+            background: #101e2c;
+            border: 2.5px solid #1cb0f6;
+            border-bottom: 5px solid #0284c7;
+        }
+        .card-theme-green {
+            background: #122414;
+            border: 2.5px solid #58cc02;
+            border-bottom: 5px solid #16a34a;
+        }
+        .card-theme-red {
+            background: #291215;
+            border: 2.5px solid #ff4b4b;
+            border-bottom: 5px solid #dc2626;
+        }
+
+        /* Conteúdo interno do cartão */
+        .ric-tag {
+            font-size: 0.66rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            padding: 2px 8px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .card-theme-gold .ric-tag { background: #3b2800; color: #ffc800; border: 1px solid #78350f; }
+        .card-theme-purple .ric-tag { background: #35164d; color: #d8b4fe; border: 1px solid #6b21a8; }
+        .card-theme-orange .ric-tag { background: #3b1d03; color: #fdba74; border: 1px solid #9a3412; }
+        .card-theme-blue .ric-tag { background: #0c2b42; color: #7dd3fc; border: 1px solid #0369a1; }
+        .card-theme-green .ric-tag { background: #133314; color: #86efac; border: 1px solid #15803d; }
+        .card-theme-red .ric-tag { background: #3c1214; color: #fca5a5; border: 1px solid #991b1b; }
+
+        .ric-icon-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            border: 2px solid #2e1800;
+            border-bottom: 3.5px solid #2e1800;
+        }
+        .card-theme-gold .ric-icon-box { background: #ffc800; color: #2e1800; }
+        .card-theme-purple .ric-icon-box { background: #a855f7; color: #ffffff; }
+        .card-theme-orange .ric-icon-box { background: #ff9600; color: #ffffff; }
+        .card-theme-blue .ric-icon-box { background: #1cb0f6; color: #ffffff; }
+        .card-theme-green .ric-icon-box { background: #58cc02; color: #ffffff; }
+        .card-theme-red .ric-icon-box { background: #ef4444; color: #ffffff; }
+
+        .ric-val {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: -0.3px;
+            line-height: 1.1;
+        }
+        .ric-sub {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .btn-spin-roleta {
+            background: #ff9600 !important;
+            border-bottom: 5px solid #b45309 !important;
+        }
+        .btn-spin-roleta:hover {
+            filter: brightness(1.08);
+        }
+
+        /* Cartão de Vitória / Prêmio Conquistado */
+        .roleta-win-card {
+            background: #202330; border: 2.5px solid #ffc800; border-bottom: 5.5px solid #b45309;
+            border-radius: 20px; padding: 14px 16px; margin: 4px 0 14px 0; text-align: center;
+            animation: cardSpring 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        .win-sparkle-tag {
+            display: inline-flex; align-items: center; gap: 6px; font-size: 0.72rem;
+            font-weight: 900; letter-spacing: 0.6px; color: #ffc800; background: #3b2800;
+            border: 1.5px solid #78350f; padding: 3px 12px; border-radius: 12px;
+            text-transform: uppercase; margin-bottom: 8px;
+        }
+        .win-card-body {
+            display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 8px;
+        }
+        .win-icon-wrap {
+            width: 52px; height: 52px; border-radius: 16px; display: flex;
+            align-items: center; justify-content: center; font-size: 26px;
+            background: #ff9600; border: 2.5px solid #b45309; border-bottom: 4px solid #78350f;
+            color: #fff;
+        }
+        .win-icon-wrap.win-xp-max {
+            background: #ffc800; border-color: #d97706; border-bottom-color: #92400e; color: #2e1800;
+        }
+        .win-icon-wrap.win-vida {
+            background: #ef4444; border-color: #b91c1c; border-bottom-color: #7f1d1d;
+        }
+        .win-card-texts {
+            text-align: left;
+        }
+        .win-val {
+            font-family: 'Poppins', sans-serif; font-size: 1.7rem; font-weight: 900;
+            line-height: 1.1; color: #fff;
+        }
+        .win-sub {
+            font-size: 0.8rem; font-weight: 800; color: #ffc800; text-transform: uppercase; letter-spacing: 0.4px;
+        }
+        .win-detalhe-pill {
+            background: #141620; border: 1.5px solid #2f3244; border-radius: 12px;
+            padding: 7px 12px; font-size: 0.84rem; font-weight: 600; color: #c4c4d4;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+
+        @media (max-width: 600px) {
+            .modal-roleta-lateral {
+                padding: 22px 14px 18px 14px !important;
+            }
+            .roleta-horizontal-stage {
+                height: 148px;
+            }
+            .roleta-item-card {
+                width: 108px;
+                height: 122px;
+                border-radius: 15px;
+                gap: 4px;
+            }
+            .ric-icon-box {
+                width: 38px;
+                height: 38px;
+                font-size: 19px;
+            }
+            .ric-val {
+                font-size: 1.12rem;
+            }
+            .ric-tag {
+                font-size: 0.6rem;
+                padding: 1px 6px;
+            }
+        }
 
         /* ==========================================================
            MODAL DE AVISO (TRANCADO / COLETADO) — 100% SÓLIDO SEM NEON

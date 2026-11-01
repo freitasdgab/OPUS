@@ -1,25 +1,47 @@
 <?php
 /**
  * Lógica do Sistema de Missões Diárias do OPUS.
- * Cria a tabela automaticamente se não existir e gerencia o progresso diário.
+ * Gerencia o progresso diário e verificação de metas alcançadas.
  */
 
 /**
  * Registra o progresso de uma lição concluída nas missões do dia.
- * Lógica em sp_registrar_missao_progresso (database/opus.sql).
- * A tabela missoes_diarias_usuario já faz parte do schema (opus.sql),
- * não precisa mais ser criada em tempo de execução.
  */
-function missoes_registrar_progresso(mysqli $conn, int $usuario_id, int $xp_ganho, int $acertos): void {
+function missoes_registrar_progresso(mysqli $conn, int $usuario_id, int $xp_ganho, int $acertos, int $total_questoes = 0): void {
     if ($usuario_id <= 0) {
         return;
     }
 
-    $stmt = $conn->prepare("CALL sp_registrar_missao_progresso(?, ?, ?)");
-    $stmt->bind_param("iii", $usuario_id, $xp_ganho, $acertos);
-    $stmt->execute();
-    $stmt->close();
-    $conn->next_result();
+    $eh_perfeita = ($total_questoes > 0) ? ($acertos >= $total_questoes ? 1 : 0) : ($acertos >= 3 ? 1 : 0);
+
+    try {
+        $stmt = $conn->prepare("CALL sp_registrar_missao_progresso(?, ?, ?)");
+        if ($stmt) {
+            $stmt->bind_param("iii", $usuario_id, $xp_ganho, $eh_perfeita);
+            $stmt->execute();
+            $stmt->close();
+            while ($conn->more_results() && $conn->next_result()) {;}
+            return;
+        }
+    } catch (Throwable $e) {
+        // Fallback direto via INSERT ... ON DUPLICATE KEY UPDATE se a procedure falhar
+    }
+
+    $hoje = date('Y-m-d');
+    $concluida = ($acertos > 0) ? 1 : 0;
+    $stmt = $conn->prepare("
+        INSERT INTO missoes_diarias_usuario (usuario_id, data_ref, xp_ganho, licoes_concluidas, licoes_perfeitas)
+        VALUES (?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+            xp_ganho = xp_ganho + VALUES(xp_ganho),
+            licoes_concluidas = licoes_concluidas + VALUES(licoes_concluidas),
+            licoes_perfeitas = licoes_perfeitas + VALUES(licoes_perfeitas)
+    ");
+    if ($stmt) {
+        $stmt->bind_param("isiii", $usuario_id, $hoje, $xp_ganho, $concluida, $eh_perfeita);
+        $stmt->execute();
+        $stmt->close();
+    }
 }
 
 /**
@@ -29,9 +51,14 @@ function missoes_obter_hoje(mysqli $conn, int $usuario_id): array {
     $hoje = date('Y-m-d');
 
     $stmt = $conn->prepare("SELECT xp_ganho, licoes_concluidas, licoes_perfeitas FROM missoes_diarias_usuario WHERE usuario_id = ? AND data_ref = ?");
-    $stmt->bind_param("is", $usuario_id, $hoje);
-    $stmt->execute();
-    $row = $stmt->get_result()->fetch_assoc();
+    if ($stmt) {
+        $stmt->bind_param("is", $usuario_id, $hoje);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+    } else {
+        $row = null;
+    }
 
     $xp_hoje = (int) ($row['xp_ganho'] ?? 0);
     $licoes_hoje = (int) ($row['licoes_concluidas'] ?? 0);
@@ -72,4 +99,17 @@ function missoes_obter_hoje(mysqli $conn, int $usuario_id): array {
             'porcentagem' => min(100, (int) round(($perfeitas_hoje / 1) * 100))
         ]
     ];
+}
+
+/**
+ * Verifica se todas as metas diárias foram batidas hoje.
+ */
+function missoes_todas_concluidas(array $missoes): bool {
+    if (empty($missoes)) return false;
+    foreach ($missoes as $m) {
+        if (empty($m['completo'])) {
+            return false;
+        }
+    }
+    return true;
 }

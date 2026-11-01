@@ -652,6 +652,20 @@ UNLOCK TABLES;
 --
 -- Dumping routines for database 'opus'
 --
+/*!50003 DROP PROCEDURE IF EXISTS `sp_registrar_missao_progresso` */;
+DELIMITER ;;
+CREATE PROCEDURE `sp_registrar_missao_progresso`(IN p_user_id INT, IN p_xp INT, IN p_perfeita INT)
+BEGIN
+    DECLARE v_hoje DATE DEFAULT CURDATE();
+    INSERT INTO missoes_diarias_usuario (usuario_id, data_ref, xp_ganho, licoes_concluidas, licoes_perfeitas)
+    VALUES (p_user_id, v_hoje, p_xp, 1, IF(p_perfeita >= 1, 1, 0))
+    ON DUPLICATE KEY UPDATE
+        xp_ganho = xp_ganho + p_xp,
+        licoes_concluidas = licoes_concluidas + 1,
+        licoes_perfeitas = licoes_perfeitas + IF(p_perfeita >= 1, 1, 0);
+END ;;
+DELIMITER ;
+
 /*!50003 DROP PROCEDURE IF EXISTS `sp_processar_resultado_licao` */;
 DELIMITER ;;
 CREATE PROCEDURE `sp_processar_resultado_licao`(
@@ -668,14 +682,20 @@ BEGIN
     DECLARE v_xp_ganho INT DEFAULT 10;
     DECLARE v_licoes_feitas INT DEFAULT NULL;
     DECLARE v_eh_repeticao INT DEFAULT 0;
+    DECLARE v_eh_perfeita INT DEFAULT 0;
 
     IF p_acertos > 0 THEN
         IF p_acertos >= p_total AND p_total > 0 THEN
             SET v_xp_ganho = 50;
+            SET v_eh_perfeita = 1;
             INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES (p_user_id, 'perfeicao');
             INSERT IGNORE INTO conquistas_usuario (usuario_id, conquista_slug) VALUES (p_user_id, 'perfeicao');
-        ELSEIF p_acertos = 2 THEN
+        ELSEIF (p_acertos * 10 >= p_total * 8) AND p_total > 0 THEN
+            SET v_xp_ganho = 40;
+        ELSEIF (p_acertos * 10 >= p_total * 5) AND p_total > 0 THEN
             SET v_xp_ganho = 25;
+        ELSEIF (p_acertos * 10 >= p_total * 2) AND p_total > 0 THEN
+            SET v_xp_ganho = 15;
         ELSE
             SET v_xp_ganho = 10;
         END IF;
@@ -730,7 +750,7 @@ BEGIN
         END IF;
 
         CALL sp_liga_registrar_xp(p_user_id, v_xp_ganho);
-        CALL sp_registrar_missao_progresso(p_user_id, v_xp_ganho, 1);
+        CALL sp_registrar_missao_progresso(p_user_id, v_xp_ganho, v_eh_perfeita);
         CALL sp_atualizar_fogo(p_user_id);
         CALL sp_verificar_conquistas(p_user_id);
     END IF;

@@ -31,7 +31,7 @@ $historico = is_array($input['historico'] ?? null) ? $input['historico'] : [];
 if (empty($mensagem)) {
     echo json_encode([
         'success' => false, 
-        'resposta' => 'Por favor, envie uma mensagem ou comando (/browser, /goal, /boost) para o Opi!'
+        'resposta' => 'Por favor, digite sua mensagem ou dúvida para o Opi.'
     ]);
     exit();
 }

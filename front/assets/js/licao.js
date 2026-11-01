@@ -348,8 +348,10 @@
         });
 
         const btn = document.getElementById('btnAction');
+        const expectedOrder = (wrapper.getAttribute('data-expected-order') || '').trim();
+        const requiredCount = expectedOrder ? expectedOrder.split(',').length : total;
 
-        if (items.length === total && total > 0) {
+        if (items.length === requiredCount && requiredCount > 0) {
             const currentOrder = Array.from(items).map(it => it.getAttribute('data-block-id')).join(',');
             selectedValue = currentOrder;
             if (btn) btn.disabled = false;

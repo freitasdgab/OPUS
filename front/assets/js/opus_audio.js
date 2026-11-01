@@ -337,6 +337,65 @@
         },
 
         /**
+         * 5.2 EFEITO DE GIRO DA ROLETA DO BAÚ (Click tátil mecânico de pino/ponteiro)
+         */
+        playRouletteTick: function(isHighlight) {
+            if (this.isMuted()) return;
+            const ctx = getAudioContext();
+            if (!ctx) return;
+
+            try {
+                const now = Math.max(ctx.currentTime, 0.001) + 0.002;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = isHighlight ? 'triangle' : 'sine';
+                const startFreq = isHighlight ? 950 : 750;
+                const endFreq = isHighlight ? 350 : 250;
+                osc.frequency.setValueAtTime(startFreq, now);
+                osc.frequency.exponentialRampToValueAtTime(endFreq, now + 0.022);
+
+                gain.gain.setValueAtTime(0.001, now);
+                gain.gain.linearRampToValueAtTime(isHighlight ? 0.16 : 0.09, now + 0.003);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.026);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.03);
+            } catch (e) {}
+        },
+
+        /**
+         * 5.3 EFEITO DE INÍCIO DO GIRO DA ROLETA (Whoosh acelerado)
+         */
+        playRouletteSpin: function() {
+            if (this.isMuted()) return;
+            const ctx = getAudioContext();
+            if (!ctx) return;
+
+            try {
+                const now = Math.max(ctx.currentTime, 0.001) + 0.005;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(180, now);
+                osc.frequency.exponentialRampToValueAtTime(520, now + 0.22);
+                osc.frequency.exponentialRampToValueAtTime(260, now + 0.45);
+
+                gain.gain.setValueAtTime(0.001, now);
+                gain.gain.linearRampToValueAtTime(0.18, now + 0.06);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.48);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.5);
+            } catch (e) {}
+        },
+
+        /**
          * 6. EFEITO DE LIÇÃO NÃO CONCLUÍDA / DERROTA SUAVE (Mascote triste, 0 acertos)
          * Amigável e reconfortante estilo Duolingo, tom cartoon suave em modo menor sem ser agressivo.
          */

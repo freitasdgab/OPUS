@@ -775,7 +775,7 @@ $desafio_atual = conteudo_desafio($conn, $unidade_atual) ?? conteudo_desafio($co
                                     }
                                 }
                             ?>
-                            <div class="parsons-wrapper" data-expected-order="<?php echo htmlspecialchars($expected_order); ?>" data-total="<?php echo count($raw_lines); ?>">
+                            <div class="parsons-wrapper" data-expected-order="<?php echo htmlspecialchars($expected_order); ?>" data-total="<?php echo count(explode(',', $expected_order)); ?>">
                                 <div class="parsons-target-panel">
                                     <div class="parsons-panel-header">
                                         <div style="display: flex; gap: 6px;">

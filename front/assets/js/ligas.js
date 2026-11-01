@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span class="pos-num">${m.posicao}</span>
                             <span class="pos-status-dot ${m.zona}" title="${tooltipZona}"></span>
                         </div>
-                        <div class="row-avatar-wrapper" onclick="abrirPerfilPublico(${m.id})" style="cursor:pointer;" title="Ver Perfil">
+                        <div class="row-avatar-wrapper" ${m.is_me ? "" : `onclick="abrirPerfilPublico(${m.id})" style="cursor:pointer;" title="Ver Perfil"`}>
                             ${renderizarAvatarLiga(m.foto_perfil, m.nome)}
                         </div>
                         <div class="row-name">
@@ -140,10 +140,12 @@ document.addEventListener('DOMContentLoaded', () => {
                             </span>
                         </div>
                         <div class="row-xp">${m.xp} XP</div>
+                        ${m.is_me ? "" : `
                         <button type="button" class="btn-user-action" onclick="abrirPerfilPublico(${m.id})" title="Ver Perfil">
                             <i class="fa-solid fa-plus"></i>
                             <span>Ver Perfil</span>
                         </button>
+                        `}
                     </div>`;
             });
             document.getElementById('liga-list').innerHTML = html;

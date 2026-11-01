@@ -24,7 +24,6 @@ $stmt = $conn->prepare("
     SELECT u.id, u.nome, u.email, u.foto_perfil, u.cor_fundo, u.xp, u.trofeus, u.dias_fogo, u.ultima_atividade,
            u.pais, u.pais_codigo, u.criado_em,
            u.link_github, u.link_instagram, u.link_facebook, u.link_youtube, u.link_linkedin, u.link_email,
-           u.projeto_titulo_1, u.projeto_url_1, u.projeto_titulo_2, u.projeto_url_2, u.projeto_titulo_3, u.projeto_url_3,
            COALESCE(l.divisao, 'Bronze') AS divisao,
            COALESCE(l.xp_semana, 0) AS xp_semana
     FROM usuarios u
@@ -126,16 +125,8 @@ if ($res_trofeus) {
     }
 }
 
-// Projetos Git
+// Projetos Git (Removido)
 $projetos = [];
-for ($i = 1; $i <= 3; $i++) {
-    if (!empty($user["projeto_titulo_$i"])) {
-        $projetos[] = [
-            'titulo' => $user["projeto_titulo_$i"],
-            'url'    => $user["projeto_url_$i"] ?? '#'
-        ];
-    }
-}
 
 // Redes Sociais
 $redes = [];

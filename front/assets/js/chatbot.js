@@ -245,8 +245,7 @@ function limparChatOpi() {
                 <span class="opi-msg-ia-badge">IA</span>
             </div>
             <div class="opi-msg-bubble">
-                Histórico limpo! 🧹<br>
-                Pergunte <strong>qualquer coisa</strong> ou use os comandos de consulta em tempo real: <code>/browser</code>, <code>/goal</code> e <code>/boost</code>!
+                Histórico limpo! 🧹 Como posso te ajudar com a sua lição agora?
             </div>
         </div>
     `;

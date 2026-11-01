@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.top3[1]) {
                 const u2 = data.top3[1];
                 podiumHTML += `<div class="podium-item rank-2 ${u2.is_me ? 'is-me' : ''}" ${u2.is_me ? 'id="currentUserRankingNode"' : ''}>
-                    <div class="podium-avatar" onclick="abrirPerfilPublico(${u2.id})" style="cursor:pointer;" title="Ver Perfil">
+                    <div class="podium-avatar" ${u2.is_me ? '' : `onclick="abrirPerfilPublico(${u2.id})" style="cursor:pointer;" title="Ver Perfil"`}>
                         ${renderizarAvatarRanking(u2.foto_perfil)}
                     </div>
                     <div class="podium-xp">${Number(u2.xp).toLocaleString('pt-BR')} XP</div>
@@ -40,9 +40,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${obterBandeira(u2.pais_codigo, u2.pais)}
                     </div>
                     <div class="podium-country-badge">${u2.pais || 'Brasil'}</div>
+                    ${u2.is_me ? "" : `
                     <button type="button" class="podium-btn-action" onclick="abrirPerfilPublico(${u2.id})" title="Ver Perfil">
                         <i class="fa-solid fa-plus"></i> Ver Perfil
                     </button>
+                    `}
                     <div class="podium-bar">2</div>
                 </div>`;
             }
@@ -51,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.top3[0]) {
                 const u1 = data.top3[0];
                 podiumHTML += `<div class="podium-item rank-1 ${u1.is_me ? 'is-me' : ''}" ${u1.is_me ? 'id="currentUserRankingNode"' : ''}>
-                    <div class="podium-avatar" onclick="abrirPerfilPublico(${u1.id})" style="cursor:pointer;" title="Ver Perfil">
+                    <div class="podium-avatar" ${u1.is_me ? "" : `onclick="abrirPerfilPublico(${u1.id})" style="cursor:pointer;" title="Ver Perfil"`}>
                         <i class="fa-solid fa-crown crown"></i>
                         ${renderizarAvatarRanking(u1.foto_perfil)}
                     </div>
@@ -61,9 +63,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${obterBandeira(u1.pais_codigo, u1.pais)}
                     </div>
                     <div class="podium-country-badge">${u1.pais || 'Brasil'}</div>
+                    ${u1.is_me ? "" : `
                     <button type="button" class="podium-btn-action" onclick="abrirPerfilPublico(${u1.id})" title="Ver Perfil">
                         <i class="fa-solid fa-plus"></i> Ver Perfil
                     </button>
+                    `}
                     <div class="podium-bar">1</div>
                 </div>`;
             }
@@ -72,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.top3[2]) {
                 const u3 = data.top3[2];
                 podiumHTML += `<div class="podium-item rank-3 ${u3.is_me ? 'is-me' : ''}" ${u3.is_me ? 'id="currentUserRankingNode"' : ''}>
-                    <div class="podium-avatar" onclick="abrirPerfilPublico(${u3.id})" style="cursor:pointer;" title="Ver Perfil">
+                    <div class="podium-avatar" ${u3.is_me ? "" : `onclick="abrirPerfilPublico(${u3.id})" style="cursor:pointer;" title="Ver Perfil"`}>
                         ${renderizarAvatarRanking(u3.foto_perfil)}
                     </div>
                     <div class="podium-xp">${Number(u3.xp).toLocaleString('pt-BR')} XP</div>
@@ -81,9 +85,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${obterBandeira(u3.pais_codigo, u3.pais)}
                     </div>
                     <div class="podium-country-badge">${u3.pais || 'Brasil'}</div>
+                    ${u3.is_me ? "" : `
                     <button type="button" class="podium-btn-action" onclick="abrirPerfilPublico(${u3.id})" title="Ver Perfil">
                         <i class="fa-solid fa-plus"></i> Ver Perfil
                     </button>
+                    `}
                     <div class="podium-bar">3</div>
                 </div>`;
             }
@@ -95,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
             data.lista_resto.forEach(user => {
                 listHTML += `<div class="ranking-row ${user.is_me ? 'is-me' : ''}" ${user.is_me ? 'id="currentUserRankingNode"' : ''}>
                     <div class="row-pos">${user.posicao}º</div>
-                    <div class="row-avatar" onclick="abrirPerfilPublico(${user.id})" style="cursor:pointer;" title="Ver Perfil">
+                    <div class="row-avatar" ${user.is_me ? "" : `onclick="abrirPerfilPublico(${user.id})" style="cursor:pointer;" title="Ver Perfil"`}>
                         ${renderizarAvatarRanking(user.foto_perfil)}
                     </div>
                     <div class="row-name">
@@ -106,10 +112,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         </span>
                     </div>
                     <div class="row-xp">${Number(user.xp).toLocaleString('pt-BR')} XP</div>
+                    ${user.is_me ? "" : `
                     <button type="button" class="btn-user-action" onclick="abrirPerfilPublico(${user.id})" title="Ver Perfil">
                         <i class="fa-solid fa-plus"></i>
                         <span>Ver Perfil</span>
                     </button>
+                    `}
                 </div>`;
             });
             

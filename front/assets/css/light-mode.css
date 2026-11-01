@@ -131,6 +131,20 @@ body.light-mode .widget-vidas {
 }
 
 /* TRILHA DE APRENDIZAGEM / BOTÕES */
+/* Trilha SVG Cartoon no Modo Claro */
+body.light-mode .trail-path-base {
+    stroke: #e2e8f0 !important;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05)) !important;
+}
+body.light-mode .trail-path-shadow {
+    stroke: #cbd5e1 !important;
+    opacity: 0.7 !important;
+}
+body.light-mode .trail-path-locked {
+    stroke: #cbd5e1 !important;
+    opacity: 0.85 !important;
+}
+
 /* Ajuste de z-index para o balão COMEÇAR não ficar atrás do cabeçalho da seção */
 body.light-mode .modulo-node {
     z-index: 10;
@@ -155,21 +169,188 @@ body.light-mode .modulo-node.locked .circle-button {
     box-shadow: 0 6px 0 #cecece !important;
 }
 body.light-mode .active-ring { background: transparent !important; }
-body.light-mode .chest-node.locked {
-    background: #f1f5f9 !important;
-    border: 2px solid #cbd5e1 !important;
-    box-shadow: 0 6px 0 #94a3b8 !important;
+/* =======================================================================
+   BAÚ DE RECOMPENSAS NO MODO CLARO (CORES SUAVES / CARTOON PASTEL)
+   ======================================================================= */
+/* Baú Disponível na Trilha */
+body.light-mode .chest-node.available {
+    background: #fffbeb !important;
+    border: 2.5px solid #f59e0b !important;
+    box-shadow: 0 7px 0 #d97706 !important;
 }
+body.light-mode .chest-node.available:hover {
+    box-shadow: 0 10px 0 #d97706 !important;
+}
+body.light-mode .chest-node.available:active {
+    box-shadow: 0 2px 0 #d97706 !important;
+}
+
+/* Sprite do Baú Dourado (Tampa e Corpo em Tons Suaves) */
+body.light-mode .chest-sprite .chest-lid {
+    background: #fbbf24 !important;
+    border-color: #92400e !important;
+    box-shadow: inset 0 6px 0 #fef08a, inset 0 -3px 0 #d97706 !important;
+}
+body.light-mode .chest-sprite .chest-lid::before,
+body.light-mode .chest-sprite .chest-lid::after {
+    background: #fde68a !important;
+    border-color: #92400e !important;
+}
+body.light-mode .chest-sprite .chest-clasp {
+    background: #fffbeb !important;
+    border-color: #92400e !important;
+    box-shadow: inset 0 2px 0 #ffffff, 0 2px 0 rgba(146, 64, 14, 0.2) !important;
+}
+body.light-mode .chest-sprite .chest-clasp::after {
+    background: #92400e !important;
+}
+body.light-mode .chest-sprite .chest-body {
+    background: #f59e0b !important;
+    border-color: #92400e !important;
+    box-shadow: inset 0 -5px 0 #d97706 !important;
+}
+body.light-mode .chest-sprite .chest-body::before,
+body.light-mode .chest-sprite .chest-body::after {
+    background: #fde68a !important;
+    border-color: #92400e !important;
+}
+body.light-mode .chest-sprite .chest-keyhole {
+    background: #92400e !important;
+}
+
+/* Balão Cartoon "BAÚ" em cima do baú disponível */
+body.light-mode .chest-balloon {
+    background: #fffbeb !important;
+    border: 2px solid #f59e0b !important;
+    border-bottom: 3.5px solid #d97706 !important;
+    color: #92400e !important;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.18) !important;
+}
+body.light-mode .chest-balloon::after {
+    border-top-color: #fffbeb !important;
+}
+
+/* Baú Trancado na Trilha (Cinza Claro Suave) */
+body.light-mode .chest-node.locked {
+    background: #f8fafc !important;
+    border: 2.5px solid #e2e8f0 !important;
+    box-shadow: 0 6px 0 #cbd5e1 !important;
+}
+body.light-mode .chest-node.locked .chest-sprite .chest-lid {
+    background: #e2e8f0 !important;
+    border-color: #94a3b8 !important;
+    box-shadow: inset 0 4px 0 #f8fafc, inset 0 -2px 0 #cbd5e1 !important;
+}
+body.light-mode .chest-node.locked .chest-sprite .chest-lid::before,
+body.light-mode .chest-node.locked .chest-sprite .chest-lid::after {
+    background: #cbd5e1 !important;
+    border-color: #94a3b8 !important;
+}
+body.light-mode .chest-node.locked .chest-sprite .chest-body {
+    background: #cbd5e1 !important;
+    border-color: #94a3b8 !important;
+    box-shadow: inset 0 -4px 0 #94a3b8 !important;
+}
+body.light-mode .chest-node.locked .chest-sprite .chest-body::before,
+body.light-mode .chest-node.locked .chest-sprite .chest-body::after {
+    background: #e2e8f0 !important;
+    border-color: #94a3b8 !important;
+}
+body.light-mode .chest-node.locked .chest-padlock {
+    color: #d97706 !important;
+    -webkit-text-stroke: 1px #94a3b8 !important;
+}
+
+/* Baú Coletado / Aberto */
 body.light-mode .chest-node.claimed {
     background: #ffffff !important;
-    border: 2px solid rgba(88, 204, 2, 0.4) !important;
+    border: 2px solid #e2e8f0 !important;
     box-shadow: 0 6px 0 #e2e8f0 !important;
+}
+body.light-mode .chest-node.claimed .chest-sprite.open .chest-lid {
+    background: #fcd34d !important;
+    border-color: #b45309 !important;
+    opacity: 0.9 !important;
+}
+body.light-mode .chest-node.claimed .chest-interior-glow {
+    background: #4ade80 !important;
+    box-shadow: inset 0 2px 0 #86efac !important;
+}
+body.light-mode .chest-tag-done {
+    background: #22c55e !important;
+    border: 2px solid #16a34a !important;
+    border-bottom: 3.5px solid #15803d !important;
+    color: #ffffff !important;
 }
 body.light-mode .chest-progress-pill {
     background: #ffffff !important;
     color: #d97706 !important;
     border-color: #cbd5e1 !important;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+}
+
+/* Baú Grande no Modal de Abertura */
+body.light-mode .modal-chest-graphic .modal-chest-lid {
+    background: #fbbf24 !important;
+    border-color: #92400e !important;
+    box-shadow: inset 0 8px 0 #fef08a, inset 0 -4px 0 #d97706 !important;
+}
+body.light-mode .modal-chest-graphic .modal-chest-lid::before,
+body.light-mode .modal-chest-graphic .modal-chest-lid::after {
+    background: #fde68a !important;
+    border-color: #92400e !important;
+}
+body.light-mode .modal-chest-clasp {
+    background: #fffbeb !important;
+    border-color: #92400e !important;
+}
+body.light-mode .modal-chest-clasp::after {
+    background: #92400e !important;
+}
+body.light-mode .modal-chest-graphic .modal-chest-body {
+    background: #f59e0b !important;
+    border-color: #92400e !important;
+    box-shadow: inset 0 -7px 0 #d97706 !important;
+}
+body.light-mode .modal-chest-graphic .modal-chest-body::before,
+body.light-mode .modal-chest-graphic .modal-chest-body::after {
+    background: #fde68a !important;
+    border-color: #92400e !important;
+}
+body.light-mode .modal-chest-keyhole {
+    background: #92400e !important;
+}
+body.light-mode .modal-chest-shadow {
+    background: rgba(146, 64, 14, 0.12) !important;
+}
+
+/* Mini Baú de Preview em Telas de Conclusão / Resultado */
+body.light-mode .cartoon-chest-preview .cc-lid {
+    background: #fbbf24 !important;
+    border-color: #92400e !important;
+    box-shadow: inset 0 7px 0 #fef08a, inset 0 -3px 0 #d97706 !important;
+}
+body.light-mode .cartoon-chest-preview .cc-lid::before,
+body.light-mode .cartoon-chest-preview .cc-lid::after {
+    background: #fde68a !important;
+    border-color: #92400e !important;
+}
+body.light-mode .cartoon-chest-preview .cc-body {
+    background: #f59e0b !important;
+    border-color: #92400e !important;
+    box-shadow: inset 0 -6px 0 #d97706 !important;
+}
+body.light-mode .cartoon-chest-preview .cc-body::before,
+body.light-mode .cartoon-chest-preview .cc-body::after {
+    background: #fde68a !important;
+    border-color: #92400e !important;
+}
+body.light-mode .cartoon-chest-preview .cc-clasp {
+    background: #fffbeb !important;
+    border-color: #92400e !important;
+}
+body.light-mode .cartoon-chest-preview .cc-clasp::after {
+    background: #92400e !important;
 }
 body.light-mode .modal-bau-box {
     background: #ffffff !important;
@@ -186,6 +367,34 @@ body.light-mode .reward-card {
 }
 body.light-mode .reward-card .rc-val { color: #0f172a !important; }
 body.light-mode .reward-card .rc-lbl { color: #64748b !important; }
+body.light-mode .roleta-horizontal-stage {
+    background: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+    border-bottom-color: #94a3b8 !important;
+    box-shadow: inset 0 3px 8px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.08) !important;
+}
+body.light-mode .roleta-fade-left {
+    background: linear-gradient(90deg, #f1f5f9 15%, rgba(241,245,249,0) 100%) !important;
+}
+body.light-mode .roleta-fade-right {
+    background: linear-gradient(-90deg, #f1f5f9 15%, rgba(241,245,249,0) 100%) !important;
+}
+body.light-mode .roleta-item-card {
+    background: #ffffff !important;
+}
+body.light-mode .ric-val { color: #0f172a !important; }
+body.light-mode .ric-sub { color: #64748b !important; }
+body.light-mode .roleta-win-card {
+    background: #f8fafc !important;
+    border-color: #f59e0b !important;
+    border-bottom-color: #d97706 !important;
+}
+body.light-mode .win-val { color: #0f172a !important; }
+body.light-mode .win-detalhe-pill {
+    background: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+    color: #475569 !important;
+}
 body.light-mode .aviso-bau-progress-container {
     background: #f1f5f9 !important;
     border-color: #e2e8f0 !important;

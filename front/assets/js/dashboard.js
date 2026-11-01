@@ -94,6 +94,54 @@
             requestAnimationFrame(frame);
         }
 
+        // ==========================================================
+        // SISTEMA DE ROLETA LATERALIZADA DO BAÚ (HORIZONTAL REEL)
+        // ==========================================================
+        let roletaGirarAtiva = false;
+        let roletaAnimTickId = null;
+
+        // Catálogo dos 6 Prêmios da Roleta Lateral
+        const OPUS_ROLETA_PREMIOS = [
+            { id: 'xp25',    slice_index: 0, tipo: 'xp',   valor: 25, label: '+25 XP',     tag: 'MÁXIMO', sub: 'Prêmio Máximo', icon: 'fa-solid fa-crown', theme: 'gold' },
+            { id: 'xp5',     slice_index: 1, tipo: 'xp',   valor: 5,  label: '+5 XP',      tag: 'BÔNUS',  sub: 'XP Bônus',      icon: 'fa-solid fa-bolt',  theme: 'blue' },
+            { id: 'coracao', slice_index: 2, tipo: 'vida', valor: 1,  label: '+1 Coração', tag: 'VIDA',   sub: 'Recupera Vida', icon: 'fa-solid fa-heart', theme: 'red' },
+            { id: 'xp10',    slice_index: 3, tipo: 'xp',   valor: 10, label: '+10 XP',     tag: 'BÔNUS',  sub: 'Belo Prêmio',   icon: 'fa-solid fa-bolt',  theme: 'orange' },
+            { id: 'xp3',     slice_index: 4, tipo: 'xp',   valor: 3,  label: '+3 XP',      tag: 'BÔNUS',  sub: 'XP Bônus',      icon: 'fa-solid fa-bolt',  theme: 'green' },
+            { id: 'xp20',    slice_index: 5, tipo: 'xp',   valor: 20, label: '+20 XP',     tag: 'SUPER',  sub: 'Super Bônus',   icon: 'fa-solid fa-bolt',  theme: 'purple' }
+        ];
+
+        function criarCardRoletaHtml(p, index) {
+            return `
+                <div class="roleta-item-card card-theme-${p.theme}" data-index="${index}" data-id="${p.id}">
+                    <span class="ric-tag"><i class="${p.icon}"></i> ${p.tag}</span>
+                    <div class="ric-icon-box">
+                        <i class="${p.icon}"></i>
+                    </div>
+                    <div class="ric-val">${p.label}</div>
+                    <div class="ric-sub">${p.sub}</div>
+                </div>
+            `;
+        }
+
+        function popularTrilhoRoleta(winningItem = null, targetIndex = 48) {
+            const track = document.getElementById('roletaCardsTrack');
+            if (!track) return;
+
+            const totalCards = 65;
+            let html = '';
+            for (let i = 0; i < totalCards; i++) {
+                let p;
+                if (i === targetIndex && winningItem) {
+                    p = winningItem;
+                } else {
+                    const baseIdx = (i * 7 + 3) % OPUS_ROLETA_PREMIOS.length;
+                    p = OPUS_ROLETA_PREMIOS[baseIdx];
+                }
+                html += criarCardRoletaHtml(p, i);
+            }
+            track.innerHTML = html;
+        }
+
         function abrirModalBau(cap, titulo) {
             if (window.OpusAudio) window.OpusAudio.playClick();
             capAtualBau = cap;
@@ -101,18 +149,27 @@
 
             const modalTitle = document.getElementById('modalBauTitle');
             const modalSub = document.getElementById('modalBauSub');
-            if (modalTitle) modalTitle.innerText = 'Baú de Recompensas!';
-            if (modalSub) modalSub.innerHTML = '<i class="fa-solid fa-crown"></i> Unidade ' + cap + (titulo ? (' · ' + titulo) : '') + ' · Meio de Trilha';
+            if (modalTitle) modalTitle.innerText = 'Roleta de Recompensas!';
+            if (modalSub) modalSub.innerHTML = '<i class="fa-solid fa-crown"></i> Unidade ' + cap + (titulo ? (' · ' + titulo) : '') + ' · Baú da Trilha';
 
-            // Reseta visual do baú no modal
-            const chestGraphic = document.getElementById('modalChestGraphic');
-            if (chestGraphic) {
-                chestGraphic.classList.remove('chest-modal-rumble', 'chest-open-burst');
+            // Reseta visual e posição do trilho lateral
+            roletaGirarAtiva = false;
+            if (roletaAnimTickId) {
+                cancelAnimationFrame(roletaAnimTickId);
+                roletaAnimTickId = null;
             }
-            const sunburst = document.getElementById('chestSunburst');
-            if (sunburst) {
-                sunburst.classList.remove('sunburst-active');
+
+            const track = document.getElementById('roletaCardsTrack');
+            if (track) {
+                track.style.transition = 'none';
+                track.style.transform = 'translateX(0px)';
             }
+
+            // Gera a fita horizontal inicial de cartões legíveis
+            popularTrilhoRoleta(null);
+
+            const needle = document.getElementById('roletaCenterNeedle');
+            if (needle) needle.classList.remove('tick');
 
             const canvas = document.getElementById('chestConfettiCanvas');
             if (canvas) {
@@ -120,28 +177,43 @@
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
             }
 
-            document.getElementById('rewardContainerPre').style.display = 'block';
-            document.getElementById('rewardContainerPos').style.display = 'none';
+            const containerPos = document.getElementById('rewardContainerPos');
+            if (containerPos) containerPos.style.display = 'none';
+
             const btnResgatar = document.getElementById('btnResgatarBau');
-            btnResgatar.style.display = 'flex';
-            btnResgatar.innerHTML = '<i class="fa-solid fa-box-open"></i> ABRIR BAÚ DE RECOMPENSA';
-            btnResgatar.disabled = false;
-            document.getElementById('btnFecharBauPronto').style.display = 'none';
-            
+            if (btnResgatar) {
+                btnResgatar.style.display = 'flex';
+                btnResgatar.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i> GIRAR ROLETA!';
+                btnResgatar.disabled = false;
+            }
+
+            const btnFechar = document.getElementById('btnFecharBauPronto');
+            if (btnFechar) btnFechar.style.display = 'none';
+
+            const closeBtn = document.getElementById('btnCloseModalBau');
+            if (closeBtn) closeBtn.style.pointerEvents = 'auto';
+
             const modal = document.getElementById('modalBauRecompensa');
             modal.style.display = 'flex';
             setTimeout(() => modal.classList.add('active'), 10);
         }
 
         function fecharModalBau() {
+            if (roletaGirarAtiva) return; // Não fecha se a roleta estiver girando
             if (window.OpusAudio) window.OpusAudio.playClick();
             if (chestConfettiAnimId) {
                 cancelAnimationFrame(chestConfettiAnimId);
                 chestConfettiAnimId = null;
             }
+            if (roletaAnimTickId) {
+                cancelAnimationFrame(roletaAnimTickId);
+                roletaAnimTickId = null;
+            }
             const modal = document.getElementById('modalBauRecompensa');
-            modal.classList.remove('active');
-            setTimeout(() => modal.style.display = 'none', 300);
+            if (modal) {
+                modal.classList.remove('active');
+                setTimeout(() => modal.style.display = 'none', 300);
+            }
         }
 
         function fecharAvisoBau() {
@@ -171,7 +243,7 @@
             const progressBox = document.getElementById('avisoBauProgressoBox');
             if (progressBox) progressBox.style.display = 'none';
 
-            document.getElementById('avisoBauTexto').innerHTML = 'Você já resgatou as recompensas deste baú da <strong>Unidade ' + cap + '</strong> (+100 XP e Corações de Vida extras)! Continue sua trilha para encontrar novos baús nas próximas unidades.';
+            document.getElementById('avisoBauTexto').innerHTML = 'Você já girou a roleta e resgatou as recompensas deste baú da <strong>Unidade ' + cap + '</strong>! Continue sua trilha para encontrar novos baús nas próximas unidades.';
             
             const btn = document.getElementById('btnAvisoAcao');
             if (btn) {
@@ -268,20 +340,28 @@
             setTimeout(() => modal.classList.add('active'), 10);
         }
 
-        function resgatarRecompensaBau() {
+        function girarRoletaBau() {
+            if (roletaGirarAtiva) return;
+            roletaGirarAtiva = true;
+
             const btn = document.getElementById('btnResgatarBau');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Abrindo Baú...';
-
-            const chestGraphic = document.getElementById('modalChestGraphic');
-            const sunburst = document.getElementById('chestSunburst');
-            if (chestGraphic) chestGraphic.classList.add('chest-modal-rumble');
-            if (sunburst) sunburst.classList.add('sunburst-active');
-
-            // Suspense sonoro da abertura
-            if (window.OpusAudio && typeof window.OpusAudio.playChestRumble === 'function') {
-                window.OpusAudio.playChestRumble();
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-arrows-rotate fa-spin"></i> GIRANDO...';
             }
+
+            const closeBtn = document.getElementById('btnCloseModalBau');
+            if (closeBtn) closeBtn.style.pointerEvents = 'none';
+
+            // Sons de início do giro
+            if (window.OpusAudio) {
+                if (typeof window.OpusAudio.playClick === 'function') window.OpusAudio.playClick();
+                if (typeof window.OpusAudio.playRouletteSpin === 'function') window.OpusAudio.playRouletteSpin();
+            }
+
+            const track = document.getElementById('roletaCardsTrack');
+            const viewport = document.getElementById('roletaReelViewport');
+            const needle = document.getElementById('roletaCenterNeedle');
 
             fetch('../../back/api/resgatar_bau.php', {
                 method: 'POST',
@@ -291,109 +371,195 @@
             .then(r => r.json())
             .then(data => {
                 if (!data.success) {
-                    if (chestGraphic) chestGraphic.classList.remove('chest-modal-rumble');
-                    if (sunburst) sunburst.classList.remove('sunburst-active');
+                    roletaGirarAtiva = false;
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> TENTAR NOVAMENTE';
+                    }
+                    if (closeBtn) closeBtn.style.pointerEvents = 'auto';
 
                     if (typeof opusToast === 'function') {
                         opusToast(data.mensagem || 'Não foi possível resgatar o baú.', 'error');
                     } else {
                         alert(data.mensagem || 'Não foi possível resgatar o baú.');
                     }
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> TENTAR NOVAMENTE';
                     return;
                 }
 
-                // Efeito triunfal de abertura com fanfarra e confetes
-                if (chestGraphic) {
-                    chestGraphic.classList.remove('chest-modal-rumble');
-                    chestGraphic.classList.add('chest-open-burst');
-                }
-                if (window.OpusAudio) {
-                    window.OpusAudio.playChest();
-                }
-                dispararConfetesBau();
-
-                document.getElementById('rewardContainerPre').style.display = 'none';
-                const containerPos = document.getElementById('rewardContainerPos');
-                containerPos.style.display = 'block';
-
-                // Animação de entrada dos cards
-                const cardXp = document.getElementById('resgateXpCard');
-                const cardVida = document.getElementById('resgateVidaCard');
-                if (cardXp) {
-                    cardXp.classList.remove('reveal-bounce');
-                    void cardXp.offsetWidth;
-                    cardXp.classList.add('reveal-bounce');
-                }
-                if (cardVida) {
-                    cardVida.classList.remove('reveal-bounce');
-                    void cardVida.offsetWidth;
-                    setTimeout(() => cardVida.classList.add('reveal-bounce'), 120);
+                // Identifica o prêmio sorteado
+                const premioSorteado = data.premio || {};
+                let winningItem = OPUS_ROLETA_PREMIOS.find(p => p.id === premioSorteado.id);
+                if (!winningItem) {
+                    winningItem = OPUS_ROLETA_PREMIOS.find(p => p.slice_index === premioSorteado.slice_index) || OPUS_ROLETA_PREMIOS[3];
                 }
 
-                animarContadorXP(document.getElementById('resgateXpVal'), data.xp_ganho);
-                
-                if (data.vidas_ganhas > 0) {
-                    document.getElementById('resgateVidaVal').innerText = '+1 Coração';
-                    document.getElementById('resgateVidaLbl').innerText = 'Vida Recuperada';
-                    document.getElementById('resgateVidaIcon').className = 'fa-solid fa-heart rc-icon';
-                    document.getElementById('resgateVidaBadge').innerHTML = '<i class="fa-solid fa-shield-heart"></i> Recuperação';
-                    cardVida.classList.remove('vida-max');
-                } else {
-                    document.getElementById('resgateVidaVal').innerText = '+100 XP Extra';
-                    document.getElementById('resgateVidaLbl').innerText = 'Vidas no Máximo';
-                    document.getElementById('resgateVidaIcon').className = 'fa-solid fa-shield-heart rc-icon';
-                    document.getElementById('resgateVidaBadge').innerHTML = '<i class="fa-solid fa-star"></i> Bônus Máximo';
-                    cardVida.classList.add('vida-max');
-                }
+                // Coloca o cartão sorteado em um índice avançado do trilho (ex: 48 de 65)
+                const targetIndex = 48;
+                popularTrilhoRoleta(winningItem, targetIndex);
 
-                document.getElementById('resgateDetalheTxt').innerText = data.detalhe || data.mensagem;
-                btn.style.display = 'none';
-                document.getElementById('btnFecharBauPronto').style.display = 'flex';
+                // Força reflow para garantir que as posições sejam computadas
+                void track.offsetWidth;
 
-                // Atualiza o nó 3D do baú na trilha
-                const chestNode = document.getElementById('chestNode_' + capAtualBau);
-                if (chestNode) {
-                    chestNode.className = 'chest-node claimed';
-                    chestNode.onclick = function() { avisoBauColetado(capAtualBau, tituloAtualBau); };
-                    chestNode.innerHTML = `
-                        <div class="chest-sprite open">
-                            <div class="chest-lid"></div>
-                            <div class="chest-body"><span class="chest-interior-glow"></span></div>
-                        </div>
-                        <span class="chest-tag-done"><i class="fa-solid fa-check"></i> Coletado</span>
-                    `;
-                    const balloon = chestNode.parentElement.querySelector('.chest-balloon');
-                    if (balloon) balloon.remove();
-                    const aura = chestNode.querySelector('.chest-aura-glow');
-                    if (aura) aura.remove();
-                    setTimeout(renderizarTrilhasConexao, 60);
-                }
+                // Medidas dinâmicas adaptáveis a mobile e desktop
+                const sampleCard = track.querySelector('.roleta-item-card');
+                const cardWidth = sampleCard ? sampleCard.offsetWidth : 125;
+                const cardGap = 12;
+                const step = cardWidth + cardGap;
+                const trackPaddingLeft = 12;
+                const viewportWidth = viewport ? viewport.clientWidth : 540;
 
-                // Atualiza Topbar Vidas e XP em tempo real
-                const topbarXp = document.querySelector('.topbar-stat.stat-xp span');
-                if (topbarXp && data.xp_total) {
-                    topbarXp.innerText = Number(data.xp_total).toLocaleString('pt-BR');
+                // Centro do card targetIndex
+                const cardCenter = trackPaddingLeft + (targetIndex * step) + (cardWidth / 2);
+                const centerOffset = viewportWidth / 2;
+
+                // Pequeno jitter natural (±12px) dentro do card
+                const jitter = (Math.random() - 0.5) * Math.min(24, cardWidth * 0.2);
+                const distanceToScroll = cardCenter - centerOffset + jitter;
+
+                // Animação horizontal desacelerando de 5 segundos
+                const spinDuration = 5000;
+                track.style.transition = `transform ${spinDuration}ms cubic-bezier(0.12, 0.88, 0.2, 1)`;
+                track.style.transform = `translateX(-${distanceToScroll}px)`;
+
+                // Efeito sonoro tátil de cliques mecânicos a cada cartão que cruza o centro
+                const startTime = performance.now();
+                let lastCardPassed = 0;
+
+                function updateTicks(now) {
+                    const elapsed = now - startTime;
+                    const progress = Math.min(1, elapsed / spinDuration);
+                    const ease = 1 - Math.pow(1 - progress, 4.2);
+                    const currentDist = distanceToScroll * ease;
+
+                    const currentCard = Math.floor(currentDist / step);
+                    if (currentCard > lastCardPassed) {
+                        lastCardPassed = currentCard;
+                        if (needle) {
+                            needle.classList.remove('tick');
+                            void needle.offsetWidth;
+                            needle.classList.add('tick');
+                        }
+                        if (window.OpusAudio && typeof window.OpusAudio.playRouletteTick === 'function') {
+                            const isSpecial = (currentCard % 6 === 0);
+                            window.OpusAudio.playRouletteTick(isSpecial);
+                        }
+                    }
+
+                    if (progress < 1) {
+                        roletaAnimTickId = requestAnimationFrame(updateTicks);
+                    }
                 }
-                const topbarVida = document.querySelector('.topbar-stat.stat-vida span');
-                if (topbarVida && typeof data.vidas_atual !== 'undefined') {
-                    topbarVida.innerText = data.vidas_atual;
-                }
+                roletaAnimTickId = requestAnimationFrame(updateTicks);
+
+                // Ao terminar a rolagem horizontal
+                setTimeout(() => {
+                    roletaGirarAtiva = false;
+                    if (roletaAnimTickId) cancelAnimationFrame(roletaAnimTickId);
+
+                    // Destaca o card vencedor
+                    const winnerCard = track.querySelector(`.roleta-item-card[data-index="${targetIndex}"]`);
+                    if (winnerCard) {
+                        winnerCard.classList.add('winner-highlight');
+                    }
+
+                    // Som triunfal e confetes
+                    if (window.OpusAudio && typeof window.OpusAudio.playChest === 'function') {
+                        window.OpusAudio.playChest();
+                    }
+                    dispararConfetesBau();
+
+                    // Preenche e exibe o Card de Celebração
+                    const containerPos = document.getElementById('rewardContainerPos');
+                    if (containerPos) containerPos.style.display = 'block';
+
+                    const winCard = document.getElementById('roletaWinCard');
+                    const winVal = document.getElementById('winVal');
+                    const winSub = document.getElementById('winSub');
+                    const winIcon = document.getElementById('winIcon');
+                    const winIconWrap = document.getElementById('winIconWrap');
+                    const winDetalheTxt = document.getElementById('winDetalheTxt');
+
+                    if (winVal) winVal.innerText = winningItem.label;
+                    if (winSub) winSub.innerText = winningItem.sub;
+                    if (winDetalheTxt) winDetalheTxt.innerText = data.detalhe || data.mensagem;
+
+                    if (winIconWrap && winIcon) {
+                        winIconWrap.className = 'win-icon-wrap';
+                        if (winningItem.tipo === 'vida' || data.vidas_ganhas > 0) {
+                            winIconWrap.classList.add('win-vida');
+                            winIcon.className = 'fa-solid fa-heart';
+                        } else if (winningItem.valor === 25 || data.xp_ganho >= 25) {
+                            winIconWrap.classList.add('win-xp-max');
+                            winIcon.className = 'fa-solid fa-crown';
+                        } else {
+                            winIconWrap.classList.add('win-xp');
+                            winIcon.className = 'fa-solid fa-bolt';
+                        }
+                    }
+
+                    if (winCard) {
+                        winCard.classList.remove('reveal-bounce');
+                        void winCard.offsetWidth;
+                        winCard.classList.add('reveal-bounce');
+                    }
+
+                    // Alterna botões
+                    if (btn) btn.style.display = 'none';
+                    const btnFechar = document.getElementById('btnFecharBauPronto');
+                    if (btnFechar) btnFechar.style.display = 'flex';
+                    if (closeBtn) closeBtn.style.pointerEvents = 'auto';
+
+                    // Atualiza o nó 3D do baú na trilha para status "Coletado"
+                    const chestNode = document.getElementById('chestNode_' + capAtualBau);
+                    if (chestNode) {
+                        chestNode.className = 'chest-node claimed';
+                        chestNode.onclick = function() { avisoBauColetado(capAtualBau, tituloAtualBau); };
+                        chestNode.innerHTML = `
+                            <div class="chest-sprite open">
+                                <div class="chest-lid"></div>
+                                <div class="chest-body"><span class="chest-interior-glow"></span></div>
+                            </div>
+                            <span class="chest-tag-done"><i class="fa-solid fa-check"></i> Coletado</span>
+                        `;
+                        const balloon = chestNode.parentElement.querySelector('.chest-balloon');
+                        if (balloon) balloon.remove();
+                        const aura = chestNode.querySelector('.chest-aura-glow');
+                        if (aura) aura.remove();
+                        setTimeout(renderizarTrilhasConexao, 60);
+                    }
+
+                    // Atualiza Topbar Vidas e XP em tempo real
+                    const topbarXp = document.querySelector('.topbar-stat.stat-xp span');
+                    if (topbarXp && data.xp_total) {
+                        topbarXp.innerText = Number(data.xp_total).toLocaleString('pt-BR');
+                    }
+                    const topbarVida = document.querySelector('.topbar-stat.stat-vida span');
+                    if (topbarVida && typeof data.vidas_atual !== 'undefined') {
+                        topbarVida.innerText = data.vidas_atual;
+                    }
+                }, spinDuration + 120);
             })
             .catch(err => {
                 console.error(err);
-                if (chestGraphic) chestGraphic.classList.remove('chest-modal-rumble');
-                if (sunburst) sunburst.classList.remove('sunburst-active');
+                roletaGirarAtiva = false;
+                if (roletaAnimTickId) cancelAnimationFrame(roletaAnimTickId);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i> GIRAR ROLETA!';
+                }
+                if (closeBtn) closeBtn.style.pointerEvents = 'auto';
 
                 if (typeof opusToast === 'function') {
-                    opusToast('Erro de conexão ao abrir o baú.', 'error');
+                    opusToast('Erro de conexão ao girar a roleta do baú.', 'error');
                 } else {
-                    alert('Erro de conexão ao abrir o baú.');
+                    alert('Erro de conexão ao girar a roleta do baú.');
                 }
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-box-open"></i> ABRIR BAÚ DE RECOMPENSA';
             });
+        }
+
+        // Mantém compatibilidade caso outro script chame resgatarRecompensaBau
+        function resgatarRecompensaBau() {
+            girarRoletaBau();
         }
 
         function abrirGuia(btn) {
@@ -919,19 +1085,22 @@
                 // Monta o SVG limpo, simétrico e contínuo
                 let html = '';
 
-                // 1. Sombras 3D de profundidade
-                if (headerToFirstD) {
-                    html += `<path class="trail-path-shadow" d="${headerToFirstD}"></path>`;
-                }
-                if (fullPathD) {
-                    html += `<path class="trail-path-shadow" d="${fullPathD}"></path>`;
-                }
-                if (lastToNextD) {
-                    html += `<path class="trail-path-shadow" d="${lastToNextD}"></path>`;
+                // 1. Sombras 3D de profundidade (apenas para seções ativas/desbloqueadas para não escurecer capítulos trancados)
+                const isTrancado = (capStatus === 'trancado');
+                if (!isTrancado) {
+                    if (headerToFirstD) {
+                        html += `<path class="trail-path-shadow" d="${headerToFirstD}"></path>`;
+                    }
+                    if (fullPathD) {
+                        html += `<path class="trail-path-shadow" d="${fullPathD}"></path>`;
+                    }
+                    if (lastToNextD) {
+                        html += `<path class="trail-path-shadow" d="${lastToNextD}"></path>`;
+                    }
                 }
 
-                // 2. Trilha base conectando os módulos (cinza clarinho elegante)
-                const baseClass = (capStatus === 'trancado') ? 'trail-path-locked' : 'trail-path-base';
+                // 2. Trilha base conectando os módulos (cinza claro cartoon elegante)
+                const baseClass = isTrancado ? 'trail-path-locked' : 'trail-path-base';
                 if (headerToFirstD) {
                     html += `<path class="${baseClass}" d="${headerToFirstD}"></path>`;
                 }
@@ -982,6 +1151,7 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             renderizarTrilhasConexao();
+            popularTrilhoRoleta();
         });
 
         // Atualização reativa com redimensionamento de tela

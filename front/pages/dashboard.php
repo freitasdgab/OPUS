@@ -296,7 +296,7 @@ unset($d_info);
                                         ?>
                                             <div class="reward-chest-container pos-chest <?php echo $chest_state; ?>" data-chest-state="<?php echo $chest_state; ?>">
                                                 <?php if ($chest_state === 'available'): ?>
-                                                    <div class="chest-balloon"><i class="fa-solid fa-gift"></i> ABRIR BAÚ!</div>
+                                                    <div class="chest-balloon"><i class="fa-solid fa-arrows-rotate"></i> GIRAR ROLETA!</div>
                                                     <div class="chest-node available" id="chestNode_<?php echo $num_cap; ?>" onclick="abrirModalBau(<?php echo $num_cap; ?>, '<?php echo addslashes(htmlspecialchars($info['titulo'])); ?>')">
                                                         <div class="chest-aura-glow"></div>
                                                         <div class="chest-sprite">
@@ -570,57 +570,63 @@ unset($d_info);
         </div>
     </div>
 
-    <!-- Modal do Baú de Recompensas -->
+    <!-- Modal do Baú de Recompensas: ROLETA LATERALIZADA -->
     <div id="modalBauRecompensa" class="modal-overlay">
-        <div class="modal-bau-box">
+        <div class="modal-bau-box modal-roleta-box modal-roleta-lateral">
             <canvas id="chestConfettiCanvas" class="chest-confetti-canvas"></canvas>
-            <button class="close-btn-modal" onclick="fecharModalBau()"><i class="fa-solid fa-xmark"></i></button>
+            <button class="close-btn-modal" id="btnCloseModalBau" onclick="fecharModalBau()" title="Fechar"><i class="fa-solid fa-xmark"></i></button>
             
-            <div class="modal-chest-stage">
-                <div class="chest-sunburst-bg" id="chestSunburst"></div>
-                <div class="modal-chest-graphic" id="modalChestGraphic">
-                    <div class="modal-chest-lid" id="modalChestLid">
-                        <span class="modal-chest-clasp"></span>
+            <div class="modal-roulette-header">
+                <h2 class="modal-bau-title" id="modalBauTitle">Roleta de Recompensas!</h2>
+                <div class="modal-bau-sub" id="modalBauSub"><i class="fa-solid fa-crown"></i> Unidade X · Baú da Trilha</div>
+            </div>
+
+            <p class="modal-bau-desc" id="roletaInstrucao">
+                Gire a roleta lateral e descubra seu prêmio! Prêmios de <strong>3 XP até 25 XP (Máximo)</strong> ou <strong>Coração de Vida</strong>!
+            </p>
+
+            <!-- Palco da Roleta Lateralizada (Horizontal Reel) -->
+            <div class="roleta-horizontal-stage" id="roletaHorizontalStage">
+                <!-- Marcador Central / Agulha Indicadora -->
+                <div class="roleta-center-needle" id="roletaCenterNeedle">
+                    <div class="needle-arrow needle-top"></div>
+                    <div class="needle-bar"></div>
+                    <div class="needle-arrow needle-bottom"></div>
+                </div>
+
+                <!-- Sombras laterais para fade suave de entrada e saída -->
+                <div class="roleta-fade roleta-fade-left"></div>
+                <div class="roleta-fade roleta-fade-right"></div>
+
+                <!-- Trilho deslizante onde ficam os cartões -->
+                <div class="roleta-reel-viewport" id="roletaReelViewport">
+                    <div class="roleta-cards-track" id="roletaCardsTrack">
+                        <!-- Cartões inseridos dinamicamente pelo JS -->
                     </div>
-                    <div class="modal-chest-body">
-                        <span class="modal-chest-light-blast" id="modalChestLightBlast"></span>
-                        <span class="modal-chest-keyhole"></span>
-                    </div>
-                    <div class="modal-chest-shadow"></div>
                 </div>
             </div>
 
-            <h2 class="modal-bau-title" id="modalBauTitle">Baú de Recompensas!</h2>
-            <div class="modal-bau-sub" id="modalBauSub"><i class="fa-solid fa-crown"></i> Unidade X · Recompensa de Meio de Trilha</div>
-
-            <div id="rewardContainerPre">
-                <p class="modal-bau-desc">
-                    Você atingiu a metade desta unidade! Abra este baú mágico para garantir <strong>XP Bônus</strong> no ranking da liga e recuperar <strong>Corações de Vida</strong> para continuar aprendendo.
-                </p>
-            </div>
-
+            <!-- Card de Vitória / Prêmio Conquistado -->
             <div id="rewardContainerPos" style="display: none;">
-                <div class="reward-cards-grid">
-                    <div class="reward-card reward-card-xp" id="resgateXpCard">
-                        <div class="rc-icon-wrap"><i class="fa-solid fa-bolt rc-icon"></i></div>
-                        <div class="rc-val" id="resgateXpVal">+100 XP</div>
-                        <div class="rc-lbl">Bônus de XP</div>
-                        <span class="rc-badge"><i class="fa-solid fa-trophy"></i> Liga & Missões</span>
+                <div class="roleta-win-card" id="roletaWinCard">
+                    <div class="win-sparkle-tag" id="winSparkleTag"><i class="fa-solid fa-star"></i> PRÊMIO CONQUISTADO!</div>
+                    <div class="win-card-body">
+                        <div class="win-icon-wrap" id="winIconWrap">
+                            <i class="fa-solid fa-bolt" id="winIcon"></i>
+                        </div>
+                        <div class="win-card-texts">
+                            <div class="win-val" id="winVal">+25 XP</div>
+                            <div class="win-sub" id="winSub">Prêmio Máximo da Roleta!</div>
+                        </div>
                     </div>
-                    <div class="reward-card reward-card-vida" id="resgateVidaCard">
-                        <div class="rc-icon-wrap"><i class="fa-solid fa-heart rc-icon" id="resgateVidaIcon"></i></div>
-                        <div class="rc-val" id="resgateVidaVal">+1 Coração</div>
-                        <div class="rc-lbl" id="resgateVidaLbl">Vida Bônus</div>
-                        <span class="rc-badge" id="resgateVidaBadge"><i class="fa-solid fa-shield-heart"></i> Recuperação</span>
+                    <div class="win-detalhe-pill" id="winDetalhePill">
+                        <i class="fa-solid fa-circle-check"></i> <span id="winDetalheTxt">Recompensa creditada com sucesso!</span>
                     </div>
-                </div>
-                <div class="chest-perk-banner">
-                    <i class="fa-solid fa-sparkles"></i> <span id="resgateDetalheTxt">Recompensa resgatada com sucesso!</span>
                 </div>
             </div>
 
-            <button class="btn-claim-chest" id="btnResgatarBau" onclick="resgatarRecompensaBau()">
-                <i class="fa-solid fa-box-open"></i> ABRIR BAÚ DE RECOMPENSA
+            <button class="btn-claim-chest btn-spin-roleta" id="btnResgatarBau" onclick="girarRoletaBau()">
+                <i class="fa-solid fa-arrows-rotate"></i> GIRAR ROLETA!
             </button>
             <button class="btn-claim-chest" id="btnFecharBauPronto" onclick="fecharModalBau()" style="display: none; background: #58cc02; border-bottom: 5px solid #46a302; box-shadow: none;">
                 <i class="fa-solid fa-arrow-right"></i> CONTINUAR APRENDENDO
