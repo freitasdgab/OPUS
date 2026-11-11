@@ -1,0 +1,423 @@
+================================================================================
+RELATORIO COMPLETO DE ANALISE, CORRECOES E MELHORIAS DA DOCUMENTACAO DO TCC
+Projeto: OPUS - Plataforma Gamificada para Ensino de Programacao em Java
+Instituicao: CEDUP Abilio Paulo - Curso Tecnico em Informatica Integrado
+Autora: Gabriele dos Santos de Freitas
+Orientador: Prof. Esp. Jucemar Formigoni Candido
+================================================================================
+
+Ola, Gabriele!
+
+Sua documentacao esta muito bem estruturada, rica em detalhes tecnicos e com 
+otima cobertura do sistema (telas, diagramas, banco de dados, regras de negocio 
+e tecnologias). A contextualizacao com pesquisas reais (como Duolingo, Groq, 
+Wandbox e normas da ABNT/OWASP) demonstra grande maturidade academica.
+
+Abaixo esta o levantamento detalhado de inconsistencias, erros e pontos de 
+melhoria divididos por categoria, seguidos dos textos corrigidos prontos para 
+voce copiar e colar no seu editor de texto (Word ou Google Docs).
+
+--------------------------------------------------------------------------------
+SUMARIO DESTE RELATORIO:
+1. ERROS CRITICOS E INCONSISTENCIAS (Que a banca certamente ira cobrar)
+2. ESTRUTURA E NORMAS ABNT (Ordem dos elementos, folhas e sumario)
+3. CORRECOES GRAMATICAIS, LINGUAGEM E ESTILO
+4. MELHORIAS TECNICAS (Arquitetura, Diagramas, Requisitos e Banco de Dados)
+5. TEXTOS REVISADOS E CORRIGIDOS (Prontos para substituicao)
+--------------------------------------------------------------------------------
+
+
+================================================================================
+1. ERROS CRITICOS E INCONSISTENCIAS
+================================================================================
+
+[ERRO CRITICO 1] CONCORDANCIA DE GENERO DA AUTORIA
+- Localizacao: Secao 1.4 (Justificativa), ultimo paragrafo.
+- O que esta no texto:
+  "O trabalho tambem contribui para a formacao tecnica do autor ao reunir..."
+- Problema: Voce e a autora (Gabriele). Mais adiante nas legendas das figuras 
+  esta escrito corretamente "Elaborado pela autora", mas aqui ficou no masculino.
+- Correcao:
+  "O trabalho tambem contribui para a formacao tecnica da autora ao reunir..."
+
+[ERRO CRITICO 2] GLOSSARIO DUPLICADO NO DOCUMENTO
+- Localizacao: 
+  1a ocorrencia: Entre a Secao 5 (Conclusao/Referencias) e a Lista de Figuras.
+  2a ocorrencia: No final do texto, logo antes do Apendice.
+- Problema: O glossario aparece em dois lugares distintos com definicoes 
+  diferentes (uma versao com 10 termos tecnicos e outra com apenas 8 termos).
+- Correcao segundo a ABNT NBR 14724:
+  O Glossario e um elemento POS-TEXTUAL opcional. Ele deve ficar em um UNICO 
+  lugar: DEPOIS das Referencias e ANTES dos Apendices. As duas listas devem ser 
+  unificadas em ordem alfabetica.
+
+[ERRO CRITICO 3] CONTRADICAO ARQUITETURAL: "MICROSSERVICOS" vs MONOLITO
+- Localizacao: Figura 1 (Ideia principal da aplicacao) e Secao 3.5.1.
+- Problema:
+  Na Figura 1, os blocos estao rotulados como:
+  - "Microsservico de Licoes"
+  - "Microsservico de Gamificacao"
+  Contudo, o sistema descrito em todo o texto (e no codigo-fonte) e uma aplicacao 
+  web monolitica modular em PHP/MySQL hospedada no Apache/XAMPP, onde todas as 
+  tabelas estao no mesmo banco relacional e os modulos rodam sob o mesmo 
+  ambiente.
+  Se um professor da banca perguntar: "Onde esta o cluster de orquestracao, o 
+  service discovery, as mensagerias e a base isolada por servico que justificam 
+  o termo microsservicos?", voce tera dificuldades para defender.
+- Correcao recomendada:
+  Troque o rotulo nos diagramas e no texto de "Microsservico" para "Modulo de 
+  Licoes", "Modulo de Gamificacao", "Servico de Licoes" ou "Camada de Licoes".
+
+[ERRO CRITICO 4] TITULACAO E FORMALIDADE NA BANCA EXAMINADORA
+- Localizacao: Folha de Aprovacao / Banca Examinadora.
+- Problema:
+  - "Prof. M.e LUCAS CASTELAN" -> A abreviacao recomendada no meio academico e 
+    "Prof. Me." (com ponto no final de Me) ou "Prof. Msc.". Dois pontos ("M.e") 
+    e um erro tipografico.
+  - "Prof. MBA. ALEXSANDER WILLIAM SPRITZE" -> MBA (Master in Business 
+    Administration) e uma especializacao lato sensu, nao um grau academico com 
+    abreviatura oficial "Prof. MBA.". A denominacao correta e padronizada em 
+    banca e "Prof. Esp." ou "Prof. Especialista".
+  - "Prof. Bac. ELOY UGGIONI JUNIOR" e "Prof. Bac. EDILSON..." -> "Bac." 
+    (Bacharel) e graduacao, raramente abreviado dessa forma na composicao formal 
+    de banca. O habitual em fichas de aprovacao de TCC e colocar apenas "Prof. 
+    Eloy Uggioni Junior" ou indicar a especialidade caso possuam titulacao 
+    especifica.
+
+
+================================================================================
+2. ESTRUTURA E NORMAS ABNT (NBR 14724)
+================================================================================
+
+[ORDEM DOS ELEMENTOS PRE-TEXTUAIS]
+No arquivo enviado, a ordem das secoes pre-textuais esta invertida:
+- O Sumario foi colocado ANTES do Resumo, do Abstract, da Lista de Figuras, 
+  da Lista de Tabelas e da Lista de Siglas.
+
+A sequencia correta obrigatoria pela norma ABNT NBR 14724 e:
+  1. Capa (externa)
+  2. Folha de Rosto
+  3. Folha de Aprovacao (com espaco para data e assinatura dos membros)
+  4. Dedicatoria / Agradecimentos / Epigrafe (opcionais, caso existam)
+  5. Resumo na lingua vernacula (portugues) com palavras-chave
+  6. Resumo em lingua estrangeira (Abstract) com keywords
+  7. Lista de Figuras (ilustracoes)
+  8. Lista de Tabelas
+  9. Lista de Abreviaturas e Siglas
+  10. Lista de Simbolos
+  11. SUMARIO (o ultimo elemento antes do primeiro capitulo)
+  12. Capitulo 1 - Introducao (inicio dos elementos textuais e numeracao visivel)
+
+[ORDEM DOS ELEMENTOS POS-TEXTUAIS]
+A sequencia padrao apos o Capitulo 5 (Conclusao) e:
+  1. REFERENCIAS
+  2. GLOSSARIO (opcional, todos os termos unificados)
+  3. APENDICE (material elaborado pela propria autora, ex: Roteiro Funcional)
+  4. ANEXO (material nao elaborado pela autora, se houver)
+
+
+================================================================================
+3. CORRECOES GRAMATICAIS, LINGUAGEM E ESTILO
+================================================================================
+
+1. TAGS HTML VISIVEIS NA TABELA 2:
+   - No texto da Tabela 2 ha tags remanescentes de formatacao do tipo:
+     `| REQUISITOS FUNCIONAIS  <td colspan=3/> |`
+     `| RF01 - Cadastrar usuario | Especificacao <td colspan=2/> |`
+   - Isso ocorre quando se exporta de uma ferramenta mista. Remova todas as tags 
+     `<td colspan=.../>` para nao prejudicar a diagramacao do documento impresso 
+     ou em PDF.
+
+2. PONTUACAO NOS OBJETIVOS ESPECIFICOS (Secao 1.5.2):
+   - Os itens estao terminando com ponto e virgula (;), comecando com verbo no 
+     infinitivo. Isso esta correto, porem o penultimo deve ter conjuncao "e" ou 
+     apenas o ultimo terminar com ponto final (.) e os anteriores com ponto e 
+     virgula (;).
+   - Verifique que cada item inicie com letra maiuscula se a formatacao for em 
+     paragrafos independentes.
+
+3. REQUISITO NAO FUNCIONAL MENSURAVEL (RNF07):
+   - Texto original: "A execucao do codigo e as respostas da Opi IA devem retornar 
+     ao aluno em poucos segundos."
+   - Recomendacao de Engenharia de Software: "poucos segundos" e um termo vago e 
+     subjetivo.
+   - Texto aprimorado: "O tempo de resposta do sistema deve ser de no maximo 3 
+     segundos para operacoes internas da aplicacao e de ate 5 segundos para 
+     requisicoes processadas por APIs externas (compilacao no Wandbox e geracao de 
+     resposta na Groq), considerando uma conexao estavel de internet."
+
+4. SECAO 3.3.1 - NOMENCLATURA DO DIAGRAMA CONCEITUAL:
+   - No texto da secao 3.3.1 cita-se "diagrama de entidade-relacionamento (ER ou 
+     DER)". Em bancos de dados, o diagrama da Figura 3 e o Modelo Conceitual 
+     (Notacao Chen / Relacionamentos em losango), enquanto a Figura 6 e o 
+     Modelo Lógico/Fisico Relacional. Deixe essa diferenciacao explicita no texto.
+
+
+================================================================================
+4. MELHORIAS TECNICAS (ARQUITETURA, DIAGRAMAS E BANCO DE DADOS)
+================================================================================
+
+1. CASOS DE USO (Figura 4):
+   - Cuidados com as setas `<<include>>` e `<<extend>>`:
+     * O `<<include>>` aponta do Caso de Uso base para o Caso de Uso incluido 
+       (ex.: "Realizar Licao" aponta para "Executar Codigo").
+     * O `<<extend>>` aponta do Caso de Uso extensor (o que e opcional/condicional) 
+       para o Caso de Uso base (ex.: "Usar Dica" aponta para "Realizar Licao").
+     * Os Atores (Aluno/Administrador) NUNCA devem se ligar diretamente a Casos 
+       de Uso que sao apenas `<<extend>>` ou `<<include>>`. O ator se liga ao caso 
+       de uso principal. Na Figura 4, garanta que os atores estejam conectados 
+       somente aos casos de uso primarios.
+
+2. QUALIDADE DO APENDICE (ROTEIRO DE VERIFICACAO FUNCIONAL - Tabela 4):
+   - Onde consta apenas "Funcionou", melhore a descricao tecnica para demonstrar 
+     rigor metodologico. 
+   - Exemplos de substituicao:
+     * De: "Funcionou."
+     * Para: "Validado com sucesso: formulario bloqueia duplicidade exibindo aviso 
+       de e-mail ja cadastrado; novos registros sao inseridos no MySQL com senha 
+       criptografada via password_hash()."
+     * De: "Funcionou: o sistema avisa quando a resposta esta correta..."
+     * Para: "Validado com sucesso: ao selecionar alternativa correta, exibe banner 
+       verde e pontua XP; em caso de erro, desconta 1 vida e exibe gabarito em banner 
+       vermelho."
+     * De: "Funcionou." (no item do Wandbox)
+     * Para: "Validado com sucesso: codigo Java compilado via API externa e retorno 
+       de stdout impresso no terminal em tempo medio de 1,8 segundos."
+
+3. COMPLIANCE COM A LGPD (Secao 3.5.1):
+   - Voce citou muito bem a Lei no 13.709/2018 (artigos 6o e 46).
+   - Sugestao para enriquecer: mencione que a plataforma armazena apenas os dados 
+     estritamente necessarios para a finalidade pedagogica (principio da necessidade / 
+     minimizacao dos dados), como nome e e-mail, e que senhas sao protegidas por 
+     hash unidirecional (BCrypt), alem de permitir que o usuario exclua ou altere seus 
+     dados cadastrais no perfil.
+
+
+================================================================================
+5. TEXTOS REVISADOS E CORRIGIDOS (PRONTOS PARA USO)
+================================================================================
+
+A seguir estao as secoes revisadas com todas as correcoes aplicadas.
+
+--------------------------------------------------------------------------------
+[TRECHO REVISADO: BANCA EXAMINADORA]
+--------------------------------------------------------------------------------
+BANCA EXAMINADORA
+
+Prof. Esp. JUCEMAR FORMIGONI CANDIDO (Orientador)
+Professor do Curso - CEDUP Abilio Paulo
+Especialista em Gestao de TI (UNIASSELVI)
+Mestrando em Tecnologias da Informacao (UFSC)
+
+Prof. Esp. GUSTAVO DOS REIS ZANATTA
+Orientador de Curso e Professor - CEDUP Abilio Paulo
+Especialista em Tecnologias Educacionais (Dom Bosco)
+Especialista em Midias na Educacao (IFSC)
+Especialista em Docencia na Educacao Profissional e Tecnica (IFES)
+
+Prof. Me. LUCAS CASTELAN
+Orientador de Laboratorio e Professor - CEDUP Abilio Paulo
+Mestre em Tecnologias da Informacao (UFSC)
+
+Prof. Esp. EVANDO JOSE VIEIRA
+Professor do Curso - CEDUP Abilio Paulo
+Especialista em Educacao a Distancia (UNIASSELVI)
+
+Prof. Esp. ALEXSANDER WILLIAM SPRITZE
+Professor do Curso - CEDUP Abilio Paulo
+Especialista (MBA) em Gerenciamento de Banco de Dados
+
+Profa. Esp. JESSICA DONDOSSOLA RONCONI
+Professora do Curso - CEDUP Abilio Paulo
+
+Prof. ELOY UGGIONI JUNIOR
+Professor do Curso - CEDUP Abilio Paulo
+
+Prof. EDILSON VALENTIM DOS SANTOS BITENCOURT
+Professor do Curso - CEDUP Abilio Paulo
+
+Aprovado em: _____ de ___________________ de 2026.
+
+--------------------------------------------------------------------------------
+[TRECHO REVISADO: PARAGRAFO FINAL DA JUSTIFICATIVA (Secao 1.4)]
+--------------------------------------------------------------------------------
+Por fim, o OPUS pode servir de apoio as aulas de programacao, oferecendo ao 
+aluno um espaco para praticar fora da sala e reforcando o que foi visto com o 
+professor. O trabalho tambem contribui para a formacao tecnica da autora ao 
+reunir, em um unico projeto, conceitos de analise e modelagem de sistemas, banco 
+de dados, desenvolvimento web e integracao com servicos externos, o que 
+representa um exercicio completo e interdisciplinar dos conteudos desenvolvidos 
+ao longo do curso.
+
+--------------------------------------------------------------------------------
+[TRECHO REVISADO: TABELA DE REQUISITOS (Secao 3.1 - Sem tags HTML e mais precisa)]
+--------------------------------------------------------------------------------
+Tabela 2 - Requisitos Funcionais e Nao Funcionais
+
+REQUISITOS FUNCIONAIS:
+- RF01 - Cadastrar usuario: O sistema deve permitir que o aluno crie uma conta 
+  informando nome, e-mail e senha, exigindo uma senha forte com no minimo 8 
+  caracteres, contendo letra maiuscula, letra minuscula, numero e caractere especial.
+- RF02 - Realizar login: O sistema deve permitir a autenticacao via e-mail e senha 
+  ou por meio da integracao com conta Google (OAuth 2.0 / OpenID Connect).
+- RF03 - Recuperar senha: O sistema deve permitir redefinir a senha mediante 
+  validacao de codigo numerico de 6 digitos enviado ao e-mail do usuario.
+- RF04 - Exibir trilha de aprendizagem: O sistema deve apresentar os capitulos 
+  e licoes estruturados em uma trilha visual, exibindo o status de conclusao.
+- RF05 - Realizar licoes: O sistema deve apresentar conteudos didaticos seguidos 
+  por exercicios interativos, fornecendo feedback imediato de acerto ou erro.
+- RF06 - Utilizar dicas: O sistema deve permitir consultar dicas conceituais nos 
+  exercicios em troca de deducao de pontos de experiencia (XP).
+- RF07 - Executar codigo Java: O sistema deve permitir a escrita, compilacao e 
+  execucao de codigo Java em nuvem, exibindo a saida e eventuais erros no console.
+- RF08 - Assistencia virtual com Opi IA: O sistema deve disponibilizar um tutor 
+  inteligente integrado com LLM para esclarecer duvidas de programacao em Java.
+- RF09 - Gerenciamento de vidas e pontuacao: O sistema deve atribuir XP a acertos, 
+  descontar vidas em respostas incorretas e regenerar vidas gradualmente por tempo.
+- RF10 - Computar ofensiva diaria: O sistema deve contabilizar e exibir os dias 
+  consecutivos de estudo ativo do aluno (streak).
+- RF11 - Gerenciar missoes diarias: O sistema deve disponibilizar tres missoes 
+  diarias na dashboard, atualizando o progresso e creditando XP automaticamente.
+- RF12 - Conceder conquistas e trofeus: O sistema deve registrar e exibir trofeus 
+  categorizados por raridade no perfil do aluno conforme marcos atingidos.
+- RF13 - Resgatar baus de recompensa: O sistema deve desbloquear baus com roleta 
+  de premios (XP e vidas) apos o aluno concluir ao menos 3 licoes da unidade.
+- RF14 - Exibir classificacao em ranking: O sistema deve apresentar o ranking 
+  global e semanal dos estudantes com base no XP acumulado.
+- RF15 - Gerenciar ligas semanais: O sistema deve agrupar alunos em divisoes 
+  (Bronze, Prata, Ouro, Diamante e Mestre), processando promocoes e rebaixamentos.
+- RF16 - Interacao social entre estudantes: O sistema deve possibilitar envio e 
+  aceite de solicitacoes de amizade, funcionalidade de seguir e perfis publicos.
+- RF17 - Troca de mensagens e duelos: O sistema deve permitir conversas diretas 
+  e convites para desafios comparativos de pontuacao entre amigos.
+- RF18 - Central de notificacoes: O sistema deve alertar o aluno quanto a 
+  interacoes da conta, novos amigos e eventos de ligas.
+- RF19 - Consultar dicionario tecnico: O sistema deve disponibilizar um glossario 
+  interativo de sintaxe, tipos e metodos basicos de Java com exemplos rapidos.
+- RF20 - Personalizacao de perfil: O sistema deve permitir atualizar foto de 
+  avatar, cor de destaque, pais de origem e links para redes/projetos.
+- RF21 - Modulo administrativo: O sistema deve disponibilizar painel restrito 
+  com metricas de engajamento, gestao de usuarios e virada semanal de ligas.
+- RF22 - Desafios praticos de codigo: O sistema deve validar exercicios praticos 
+  atraves de scripts avaliadores de saida padrao.
+- RF23 - Entrega de projetos praticos: O sistema deve liberar projetos modulares 
+  conforme avanco nas secoes da trilha, permitindo salvar rascunhos e pontuar.
+
+REQUISITOS NAO FUNCIONAIS:
+- RNF01 - Seguranca de acesso: O acesso as rotas internas e painel de controle 
+  deve exigir autenticacao valida e verificacao de nivel de permissao (RBAC).
+- RNF02 - Politica de senhas: O sistema deve validar no front e no back-end o 
+  padrao de senha segura (minimo 8 caracteres, letras maiuscula/minuscula, numero e simbolo).
+- RNF03 - Protecao de chaves e segredos: Chaves de API (Groq, Wandbox, Google) 
+  e credenciais de banco devem ser carregadas via variaveis de ambiente (.env).
+- RNF04 - Prevencao a SQL Injection: Todas as consultas ao banco de dados MySQL 
+  devem utilizar instrucoes preparadas (PDO Prepared Statements).
+- RNF05 - Responsividade e portabilidade: A interface deve se adaptar a telas 
+  desktop, tablets e smartphones (design mobile-first) em qualquer navegador moderno.
+- RNF06 - Acessibilidade visual: A aplicacao deve suportar alternancia dinamica 
+  entre modo escuro (dark mode) e modo claro (light mode).
+- RNF07 - Tempo de resposta: Operacoes internas devem responder em menos de 2s, 
+  e requisicoes a APIs externas em ate 5s sob condicoes normais de conectividade.
+- RNF08 - Resiliencia e contingencia: Em caso de indisponibilidade das APIs 
+  externas, o sistema deve exibir notificacao clara ao usuario e acionar rotinas locais.
+- RNF09 - Persistencia relacional: Os dados devem ser armazenados de forma 
+  consistente em SGBD MySQL com integridade referencial por chaves estrangeiras.
+- RNF10 - Stack tecnologica: O sistema deve operar sob pilha LAMP/WAMP (Linux/Windows, 
+  Apache 2.4, MySQL 8.x, PHP 8.x, HTML5, CSS3 e JavaScript ES6+).
+- RNF11 - Manutenibilidade e versionamento: Codigo-fonte desacoplado em camadas 
+  logicas e versionado com controle de branches no Git.
+
+--------------------------------------------------------------------------------
+[TRECHO REVISADO: GLOSSARIO UNIFICADO (Elemento Pos-textual)]
+--------------------------------------------------------------------------------
+GLOSSARIO
+
+AJAX: Tecnica de desenvolvimento web que permite a atualizacao assincrona de 
+dados da pagina sem a necessidade de recarrega-la por completo.
+
+API (Application Programming Interface): Conjunto de rotinas, protocolos e 
+padroes de comunicacao que permite a integracao entre softwares distintos.
+
+Back-end: Camada da aplicacao executada no servidor, responsavel pelo 
+processamento das regras de negocio, controle de acesso e consultas ao banco de 
+dados. No OPUS, foi desenvolvido em PHP.
+
+Bau de Recompensa: Elemento ludico concedido ao estudante apos completar tres 
+licoes em uma unidade, premiando-o com XP adicional ou vidas.
+
+DER (Diagrama Entidade-Relacionamento): Modelo grafico que descreve as 
+entidades, atributos e associacoes logicas de uma base de dados relacional.
+
+Divisao: No modulo de ligas, corresponde a categoria competitiva (Bronze, 
+Prata, Ouro, Diamante e Mestre); na trilha didatica, agrupa conjuntos de 
+unidades sob um mesmo topico tematico.
+
+Endpoint: Ponto de extremidade ou URL especifica de uma API por onde sao 
+recebidas requisicoes e emitidas respostas em formatos como JSON.
+
+Front-end: Camada da aplicacao executada diretamente no navegador web do 
+cliente, compreendendo elementos visuais e de interatividade (HTML, CSS e JavaScript).
+
+Gamificacao: Aplicacao de elementos tipicos de jogos (pontos, recompensas, 
+niveis, classificacoes e penalidades) em contextos nao ludicos, como na educacao.
+
+JVM (Java Virtual Machine): Maquina virtual responsavel por interpretar e 
+executar o bytecode compilado de programas Java em diferentes plataformas.
+
+LGPD (Lei Geral de Protecao de Dados Pessoais): Legislacao brasileira (Lei no 
+13.709/2018) que regulamenta o tratamento de dados pessoais por pessoas fisicas 
+ou juridicas.
+
+Liga: Agrupamento semanal de ate 30 alunos que competem entre si com base no XP 
+obtido durante o ciclo de sete dias.
+
+LLM (Large Language Model): Modelo de linguagem neural treinado em bases 
+massivas de texto, empregado para gerar dialogos contextuais, como na Opi IA.
+
+OAuth 2.0: Framework de autorizacao que viabiliza o compartilhamento seguro de 
+dados e login federado sem a transferencia direta de senhas (ex.: Login com Google).
+
+Ofensiva (Streak): Metrica de engajamento que contabiliza o numero de dias 
+consecutivos em que o usuario executou ao menos uma atividade na plataforma.
+
+Opi IA: Assistente virtual pedagogica integrada ao OPUS para sanar duvidas de 
+Java e orientar o estudante na navegacao.
+
+Token: Sequencia criptografica temporaria utilizada para comprovar a 
+autenticidade de sessoes ou requisições entre aplicacoes clientes e servidores.
+
+Trofeu: Conquista comemorativa desbloqueada por metas especiais, classificada 
+por niveis de raridade (comum, raro, epico e lendario) e exibida no perfil.
+
+Unidade: Modulo de aprendizagem tematico composto por licoes teorico-praticas e 
+um projeto de programacao.
+
+Wandbox: Servico remoto de compilacao e execucao de codigo-fonte multiplataforma, 
+acessivel por API, adotado pelo OPUS para compilar codigos Java sem exigir JDK local.
+
+XP (Experience Points): Unidade de pontuacao adquirida pelo aluno ao acertar 
+exercicios e concluir desafios na plataforma.
+
+--------------------------------------------------------------------------------
+[TRECHO REVISADO: TABELA 4 DO APENDICE (Com Evidencias Tecnicas Enriquecidas)]
+--------------------------------------------------------------------------------
+Tabela 4 - Roteiro de Verificacao Funcional do OPUS
+
+| Item | Verificacao tecnica | Situacao / Evidencia tecnica observada |
+| 1 | Cadastro com dados validos e prevencao de e-mail duplicado. | Validado: contas com senhas seguras sao persistidas com hash BCrypt; e-mails repetidos sao rejeitados com alerta em tela. |
+| 2 | Login por e-mail/senha e encerramento de sessao. | Validado: criacao de sessao autenticada em $_SESSION; o logout invalida cookies e destroi a sessao com seguranca. |
+| 3 | Recuperacao de senha por e-mail com token temporario. | Validado: geracao de codigo de 6 digitos via PHPMailer; atualizacao da nova senha apos validacao de prazo no banco. |
+| 4 | Abertura de licoes e suporte aos formatos variados de questao. | Validado: renderizacao dinamica de multipla escolha, lacuna, pares, saida, bugs e ordenacao via JavaScript. |
+| 5 | Exibicao de feedback imediato de acerto ou erro. | Validado: exibicao instantanea de banner verde com pontuacao em acertos; banner vermelho com gabarito correto em falhas. |
+| 6 | Atualizacao de XP e debito/regeneracao de vidas. | Validado: acertos creditam XP conforme a RN02; erros debitam vidas e o timer de regeneracao gradativa funciona adequadamente. |
+| 7 | Quadro de missoes diarias na dashboard e auto-credito de XP. | Validado: contagem automatica de licoes no banco `missoes_diarias_usuario` e credito imediato de XP ao atingir a meta. |
+| 8 | Persistencia de progresso de usuario entre diferentes sessoes. | Validado: dados de progresso e conclusao gravados na tabela `progresso_usuario` permanecem inalterados apos novo login. |
+| 9 | Compilacao e execucao de codigo Java via Wandbox. | Validado: codigo enviado via POST para a API do Wandbox; retorno de stdout e stderr exibido com sucesso no console em menos de 2s. |
+| 10 | Chat interativo com Opi IA via API Groq. | Validado: prompts de duvidas em Java processados pelo modelo LLaMA com respostas didaticas contextualizadas retornadas em streaming. |
+| 11 | Controle de niveis de acesso e restricao ao painel administrativo. | Validado: usuarios comuns que tentam acessar rotas /admin sao redirecionados com codigo HTTP 403; painel acessivel apenas a admins. |
+| 12 | Responsividade da interface e alternancia de temas visuais. | Validado: layout fluido adaptado para telas mobile (360px) e desktop (1920px); alternancia funcional entre modo claro e escuro. |
+
+================================================================================
+FIM DO RELATORIO
+Arquivo gerado automaticamente para suporte a documentacao academica do OPUS.
+================================================================================

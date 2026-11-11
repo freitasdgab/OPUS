@@ -1136,12 +1136,22 @@ RELATÓRIO DO ALUNO E CONSULTA AO BANCO DE DADOS OPUS EM TEMPO REAL:
         }
     }
 
-    $system_prompt = "Você é o Opi IA, uma inteligência artificial generativa completa (nível Google Gemini e ChatGPT) integrada à plataforma OPUS.
+    $system_prompt = "Você é o Opi IA, tutor de programação Java da plataforma OPUS, uma plataforma web gamificada para o ensino introdutório de Java.
 REGRAS:
-1. Responda QUALQUER pergunta sobre QUALQUER assunto (realities como BBB, esportes, cultura pop, ciência, história, matemática, economia, receitas, programação em qualquer linguagem, conversa livre e dúvidas sobre o OPUS).
-2. NUNCA diga que seu conhecimento é limitado a 2023/2024 quando houver dados em 'FATOS E PESQUISA EM TEMPO REAL NA WEB / WIKIPÉDIA' abaixo: use todos os nomes, vencedores, fichas e fatos fornecidos ali como verdade atual!
-3. Se o usuário perguntar sobre vencedores/campeões de um programa ou torneio (ex: 'Quem ganhou o BBB') sem especificar um único ano, apresente os vencedores mais recentes e liste também os campeões das outras edições presentes na tabela!
-4. Responda sempre em português do Brasil, de forma natural, clara, completa e bem formatada.
+1. Seu foco é ensinar Java a iniciantes: explique conceitos como variáveis, tipos de dados, operadores, condicionais, laços de repetição, métodos, vetores, classes e objetos, analise o código do aluno, explique mensagens de erro e dê exemplos curtos e comentados.
+2. Ajude sem entregar tudo: em exercícios, dê dicas e explique o raciocínio em vez de apenas colar a solução, e incentive o aluno a tentar de novo.
+3. Responda dúvidas sobre o uso do OPUS com base nas REGRAS DO OPUS abaixo.
+4. Se a pergunta não for sobre programação nem sobre o OPUS, responda em uma ou duas frases e conduza o aluno de volta ao estudo de Java.
+5. Quando houver dados em 'FATOS E PESQUISA EM TEMPO REAL NA WEB / WIKIPÉDIA' abaixo, use-os como fonte de informação atual.
+6. Responda sempre em português do Brasil, de forma natural, clara, amigável e bem formatada, com o código em blocos.
+
+REGRAS DO OPUS:
+- Cada aluno começa com 3 vidas e perde 1 vida quando conclui uma lição sem acertar nenhuma pergunta. Cada vida leva 5 horas para voltar, de forma progressiva: se as 3 forem perdidas em sequência, a primeira volta após 5 horas, a segunda após 10 e a terceira após 15.
+- Cada unidade tem 5 lições. Ao concluir a quinta, a unidade seguinte é liberada. A partir da terceira lição concluída, o baú da unidade pode ser aberto.
+- XP por lição: 50 com 100% de acertos, 40 com 80% ou mais, 25 com 50% ou mais, 15 com 20% ou mais e 10 nos demais casos com algum acerto. Repetir uma lição já concluída rende 10 XP.
+- Uma dica custa 10 XP. Sair da lição no meio das perguntas custa 15 XP.
+- A ofensiva conta os dias seguidos de estudo e é zerada se o aluno passar um dia inteiro sem fazer atividade.
+- As ligas são semanais e classificam os alunos pelo XP ganho na semana.
 
 Contexto: Data de hoje " . date('d/m/Y') . " | Usuário {$nome} | Tela: " . (!empty($contexto) ? $contexto : "OPUS") . "
 {$info_progresso}
@@ -1895,10 +1905,10 @@ function opus_processar_comando_especial(string $msg, string $nome, array $relat
             $resumoWiki = !empty($webDefault['extrato']) ? $webDefault['extrato'] : "Java é uma linguagem de programação orientada a objetos, multiplataforma e uma das mais utilizadas no mundo corporativo.";
 
             return "🌐 **Modo `/browser` — Pesquisa Livre na Web & Banco de Dados OPUS:**\n\n" .
-                   "O comando `/browser` permite consultar **qualquer assunto da internet, enciclopédia, tecnologia, ciência, história ou dados internos do banco OPUS** sem nenhuma restrição!\n\n" .
+                   "O comando `/browser` permite consultar temas de **tecnologia, Java, ciência, documentação ou dados internos do banco OPUS**!\n\n" .
                    "🔎 **Como usar:**\n" .
-                   "• Digite `/browser <qualquer tema>` (ex: `/browser Inteligência Artificial`, `/browser Python`, `/browser Albert Einstein`, `/browser Seção 5`).\n" .
-                   "• Ou simplesmente faça **qualquer pergunta direta** no chat!\n\n" .
+                   "• Digite `/browser <qualquer tema>` (ex: `/browser Programação Orientada a Objetos`, `/browser Java Collections`, `/browser Seção 5`).\n" .
+                   "• Ou tire suas dúvidas de **Java e do OPUS** diretamente no chat!\n\n" .
                    "📖 **Destaque em Tempo Real (Wikipédia — Java & Seu Módulo Atual: {$sessAtualNome}):**\n" .
                    "{$resumoWiki}";
         }
@@ -2377,7 +2387,7 @@ function opus_resposta_rapida_plataforma(string $msg, string $nome, string $ctx 
         return "❤️ **Status de Vidas de $nome: {$vidasAtuais}/3 Corações**\n\n" .
                "• Você possui até **3 Vidas (corações)**.\n" .
                "• Se errar todas as questões de uma lição (0 acertos), você perde **1 vida**.\n" .
-               "• **Como recuperar:** Uma vida é restaurada a cada **5 horas** automaticamente, ou abrindo um **Baú de Recompensas** na trilha!";
+               "• **Como recuperar:** Cada vida leva 5 horas para voltar, de forma progressiva (se as 3 forem perdidas em sequência, a primeira volta após 5 horas, a segunda após 10 e a terceira após 15), ou abrindo um **Baú de Recompensas** na trilha!";
     }
 
     if (preg_match('/(dias de fogo|minha ofensiva|minha chama|meu fogo|perder o fogo|manter o fogo)/iu', $m)) {
@@ -2393,10 +2403,14 @@ function opus_resposta_rapida_plataforma(string $msg, string $nome, string $ctx 
         $xpHoje = (int) ($relatorio['xp_hoje'] ?? 0);
         return "⚡ **Seu XP Atual: {$meuXp} XP Total (+{$xpHoje} XP hoje)**\n\n" .
                "**Tabela de Pontuação no Opus:**\n" .
-               "• **Lição Perfeita (100% de acertos):** +50 XP\n" .
-               "• **2 Acertos na lição:** +25 XP\n" .
-               "• **1 Acerto ou Revisão de lição concluída:** +10 XP\n" .
+               "• **Lição com 100% de acertos:** +50 XP\n" .
+               "• **Lição com 80% ou mais de acertos:** +40 XP\n" .
+               "• **Lição com 50% ou mais de acertos:** +25 XP\n" .
+               "• **Lição com 20% ou mais de acertos:** +15 XP\n" .
+               "• **Demais casos com algum acerto:** +10 XP\n" .
+               "• **Repetir lição já concluída:** +10 XP\n" .
                "• **Baú de Recompensas:** +50 a +100 XP de bônus!\n\n" .
+               "💡 **Regras adicionais:** Uma dica custa 10 XP e sair da lição no meio das perguntas custa 15 XP.\n\n" .
                "Digite `/boost` para ver onde ganhar XP rápido agora mesmo!";
     }
 
@@ -2424,7 +2438,7 @@ function opus_resposta_rapida_plataforma(string $msg, string $nome, string $ctx 
 
 /**
  * Motor de Conhecimento Híbrido (Multi-LLM + Banco + Web) do Opi IA
- * Responde QUALQUER pergunta sobre qualquer assunto e faz consultas em tempo real no banco e na web.
+ * Tutora de Java e suporte ao OPUS, com consultas em tempo real no banco e na web.
  */
 function responder_opi_local(string $msg, string $nome, string $ctx = '', array $relatorio = [], bool $chave_configurada = false, ?mysqli $conn = null, bool $pularLlm = false, array $historico = []): string {
     $m = mb_strtolower(trim($msg), 'UTF-8');
