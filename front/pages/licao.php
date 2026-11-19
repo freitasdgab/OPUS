@@ -991,6 +991,7 @@ $desafio_atual = conteudo_desafio($conn, $unidade_atual) ?? conteudo_desafio($co
         <input type="hidden" name="cap" value="<?php echo $unidade_atual; ?>">
         <input type="hidden" name="licao" value="<?php echo $licao_atual; ?>">
         <input type="hidden" name="attempt_token" value="<?php echo htmlspecialchars($attempt_token); ?>">
+        <input type="hidden" name="tempo_licao" id="input_tempo_licao" value="0">
         <?php foreach ($perguntas as $p): ?>
             <input type="hidden" name="resposta[<?php echo $p['id']; ?>]" value="" id="resp_<?php echo $p['id']; ?>">
         <?php endforeach; ?>

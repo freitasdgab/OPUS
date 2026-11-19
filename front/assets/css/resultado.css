@@ -411,27 +411,27 @@
     justify-content: center;
 }
 
-/* Brilho radial atrás da chama */
+/* Brilho suave e quente cartoon atrás da chama (sem neon) */
 .streak-flame-glow {
     position: absolute;
-    bottom: 15px;
+    bottom: 12px;
     left: 50%;
-    transform: translateX(-50%) scale(0.6);
-    width: 220px;
-    height: 220px;
+    transform: translateX(-50%) scale(0.7);
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(56, 189, 248, 0.45) 0%, rgba(37, 99, 235, 0.22) 45%, transparent 72%);
+    background: radial-gradient(circle, rgba(255, 150, 0, 0.22) 0%, rgba(255, 100, 0, 0.06) 50%, transparent 72%);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.6s ease, transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .streak-overlay.is-lit .streak-flame-glow {
     opacity: 1;
-    transform: translateX(-50%) scale(1.15);
-    animation: glowPulseMimo 2.4s ease-in-out infinite alternate;
+    transform: translateX(-50%) scale(1.1);
+    animation: glowPulseCartoon 2.4s ease-in-out infinite alternate;
 }
 
-/* Partícula decorativa gráfica em degrau (estilo ícone Mimo) */
+/* Partícula decorativa gráfica em degrau estilo cartoon */
 .streak-spark-accent {
     position: absolute;
     top: 40px;
@@ -451,7 +451,7 @@
     animation: sparkHoverMimo 2.2s ease-in-out infinite alternate;
 }
 .streak-spark-accent span {
-    background: #38bdf8;
+    background: #ffb800;
     border-radius: 2px;
     display: block;
 }
@@ -470,7 +470,7 @@
     100% { transform: translateY(-6px); }
 }
 
-/* SVG da Chama */
+/* SVG da Chama Cartoon */
 .streak-flame-svg-wrap {
     position: relative;
     width: 144px;
@@ -491,30 +491,30 @@
 
 .streak-overlay.is-lit .streak-flame-svg {
     transform: scale(1);
-    filter: drop-shadow(0 0 24px rgba(56, 189, 248, 0.6));
-    animation: flameFloatMimo 2.4s ease-in-out infinite alternate;
+    filter: drop-shadow(0 8px 18px rgba(255, 120, 0, 0.35));
+    animation: flameFloatCartoon 2.4s ease-in-out infinite alternate;
 }
 
 .flame-layer-inner {
     transform-origin: 50% 90%;
 }
 .streak-overlay.is-lit .flame-layer-inner {
-    animation: flameInnerMimo 1.6s ease-in-out infinite alternate;
+    animation: flameInnerCartoon 1.6s ease-in-out infinite alternate;
 }
 
-@keyframes flameFloatMimo {
+@keyframes flameFloatCartoon {
     0%   { transform: scale(1) translateY(0); }
-    100% { transform: scale(1.02, 0.98) translateY(-4px); }
+    100% { transform: scale(1.02, 0.98) translateY(-5px); }
 }
 
-@keyframes flameInnerMimo {
+@keyframes flameInnerCartoon {
     0%   { transform: scale(1); }
     100% { transform: scale(0.96, 1.05); }
 }
 
-@keyframes glowPulseMimo {
-    0%   { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
-    100% { opacity: 1; transform: translateX(-50%) scale(1.25); }
+@keyframes glowPulseCartoon {
+    0%   { opacity: 0.8; transform: translateX(-50%) scale(1.05); }
+    100% { opacity: 1; transform: translateX(-50%) scale(1.15); }
 }
 
 /* Badge circular com o número de dias no pé da chama */
@@ -523,21 +523,40 @@
     bottom: -6px;
     left: 50%;
     transform: translateX(-50%) scale(0.6);
-    width: 48px;
-    height: 48px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     background: #ffffff;
-    border: 3.5px solid #1e1e38;
+    border: 3.5px solid #141724;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
     z-index: 5;
     transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s;
 }
 
 .streak-overlay.is-lit .streak-flame-badge {
     transform: translateX(-50%) scale(1);
+}
+
+.streak-badge-count {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.45rem;
+    font-weight: 900;
+    color: #ff9600;
+    line-height: 1;
+    display: inline-block;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.streak-badge-count.pop {
+    animation: badgePopCartoon 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes badgePopCartoon {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.35); }
+    100% { transform: scale(1); }
+}
 }
 
 .streak-badge-count {
@@ -586,22 +605,24 @@
 }
 
 .streak-overlay.is-lit .streak-chip.is-lit {
-    background: #38bdf8;
+    background: #ff9600;
     color: #ffffff;
-    box-shadow: 0 0 16px rgba(56, 189, 248, 0.5);
+    border-color: #ff9600;
+    box-shadow: 0 4px 10px rgba(255, 150, 0, 0.35);
 }
 
 .streak-overlay.is-lit .streak-chip.is-today {
-    background: #38bdf8;
+    background: #ff9600;
     color: #ffffff;
     transform: scale(1.12);
-    box-shadow: 0 0 20px rgba(56, 189, 248, 0.7);
-    animation: chipTodayPulse 1.8s ease-in-out infinite alternate;
+    border: 2.5px solid #ffffff;
+    box-shadow: 0 4px 16px rgba(255, 150, 0, 0.55);
+    animation: chipTodayPulseCartoon 1.8s ease-in-out infinite alternate;
 }
 
-@keyframes chipTodayPulse {
-    0%   { transform: scale(1.08); box-shadow: 0 0 16px rgba(56, 189, 248, 0.5); }
-    100% { transform: scale(1.16); box-shadow: 0 0 24px rgba(56, 189, 248, 0.85); }
+@keyframes chipTodayPulseCartoon {
+    0%   { transform: scale(1.08); box-shadow: 0 4px 12px rgba(255, 150, 0, 0.4); }
+    100% { transform: scale(1.16); box-shadow: 0 4px 20px rgba(255, 150, 0, 0.7); }
 }
 
 /* ---------- Títulos e Textos ---------- */
@@ -625,7 +646,7 @@
     max-width: 480px;
 }
 
-/* ---------- Barra Inferior & Botão Continuar ---------- */
+/* ---------- Barra Inferior & Botão Continuar (Estilo Duolingo / OPUS) ---------- */
 .streak-bottom-bar {
     position: relative;
     z-index: 3;
@@ -642,26 +663,25 @@
     display: inline-flex;
     align-items: center;
     gap: 12px;
-    padding: 14px 32px;
-    background: #ce82ff;
+    padding: 14px 34px;
+    background: #1cb0f6;
     border: none;
-    border-bottom: 4px solid #a559d9;
+    border-bottom: 4px solid #1899d6;
     border-radius: 16px;
     color: #ffffff;
     font-family: 'Poppins', sans-serif;
-    font-size: 1.05rem;
+    font-size: 1.08rem;
     font-weight: 800;
     letter-spacing: 0.5px;
     cursor: pointer;
-    text-shadow: 0 1px 2px rgba(110, 30, 160, 0.4);
-    box-shadow: 0 6px 20px rgba(206, 130, 255, 0.4);
-    transition: filter 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    transition: filter 0.15s ease, transform 0.1s ease, border-bottom-width 0.08s ease;
 }
 
 .streak-continue-btn:hover {
     filter: brightness(1.08);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(206, 130, 255, 0.55);
+    box-shadow: 0 6px 18px rgba(28, 176, 246, 0.35);
 }
 
 .streak-continue-btn:active {
@@ -1420,9 +1440,9 @@ body.light-mode .chapter-btn-secondary:hover {
     align-items: center;
     gap: 12px;
     padding: 14px 30px;
-    background: #7c3aed;
+    background: #1cb0f6;
     border: none;
-    border-bottom: 4px solid #5b21b6;
+    border-bottom: 4px solid #1899d6;
     border-radius: 14px;
     color: #ffffff;
     font-family: 'Poppins', sans-serif;
@@ -1518,4 +1538,324 @@ body.light-mode .chapter-btn-secondary:hover {
     }
 }
 
+/* =======================================================================
+   NOVA TELA DE FINAL DE LIÇÃO BONITA (ESTILO DUOLINGO / FOTO DE REFERÊNCIA)
+   ======================================================================= */
+body {
+    background: #111b21 !important;
+}
 
+.result-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 80px);
+    padding: 10px 16px 30px 16px;
+    box-sizing: border-box;
+    background: #111b21;
+}
+
+.duo-lesson-screen-wrapper {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+/* Palco da Xícara Opi (Mascote OPUS) com Animação Cartoon Alegre */
+.opi-vitoria-stage {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    overflow: visible;
+}
+
+.opi-vitoria-wrapper {
+    position: relative;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    animation: opiHopCartoon 3s ease-in-out infinite;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.opi-vitoria-wrapper:hover {
+    transform: scale(1.08) translateY(-4px);
+}
+
+.opi-vitoria-wrapper:active {
+    transform: scale(0.95);
+}
+
+@keyframes opiHopCartoon {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    20% { transform: scale(1.08, 0.92) translateY(0); }
+    40% { transform: scale(0.95, 1.08) translateY(-20px) rotate(2deg); }
+    60% { transform: scale(1.02, 0.98) translateY(-6px) rotate(-1deg); }
+    80% { transform: scale(1) translateY(0); }
+}
+
+.opi-vitoria-img {
+    max-height: 210px;
+    max-width: 260px;
+    width: auto;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4));
+    user-select: none;
+    pointer-events: auto;
+}
+
+/* Títulos Centrais */
+.duo-complete-titles {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.duo-title-main {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.15rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+    letter-spacing: -0.6px;
+    line-height: 1.16;
+}
+
+.duo-title-sub {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: #94a3b8;
+    margin: 6px 0 0 0;
+    letter-spacing: -0.3px;
+    line-height: 1.25;
+}
+
+/* Grid com os 3 Cards de Estatísticas */
+.duo-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 32px;
+}
+
+.duo-card-stat {
+    border-radius: 18px;
+    padding: 16px 8px 12px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-sizing: border-box;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.duo-card-stat:hover {
+    transform: translateY(-4px);
+}
+
+.duo-card-stat.stat-words {
+    background: rgba(30, 56, 32, 0.45);
+    border: 1.5px solid rgba(88, 204, 2, 0.35);
+}
+
+.duo-card-stat.stat-sentences {
+    background: rgba(20, 50, 75, 0.45);
+    border: 1.5px solid rgba(28, 176, 246, 0.35);
+}
+
+.duo-card-stat.stat-time {
+    background: rgba(60, 45, 18, 0.45);
+    border: 1.5px solid rgba(255, 150, 0, 0.35);
+}
+
+.duo-card-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.ab-board-icon {
+    background: #e27c3e;
+    color: #ffffff;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+    font-size: 0.72rem;
+    padding: 4px 6px;
+    border-radius: 6px;
+    border: 2px solid #58cc02;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.speech-chat-icon {
+    width: 32px;
+    height: 26px;
+    background: #38bdf8;
+    border-radius: 12px 12px 12px 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0b1928;
+    font-size: 13px;
+    box-shadow: 0 2px 6px rgba(56, 189, 248, 0.35);
+}
+
+.stopwatch-icon {
+    width: 30px;
+    height: 30px;
+    background: #ffc800;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4a2800;
+    font-size: 14px;
+    box-shadow: 0 2px 6px rgba(255, 200, 0, 0.35);
+}
+
+.duo-card-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 800;
+    line-height: 1.24;
+    margin-bottom: 6px;
+}
+
+.stat-words .duo-card-title { color: #58cc02; }
+.stat-sentences .duo-card-title { color: #1cb0f6; }
+.stat-time .duo-card-title { color: #ff9600; }
+
+.duo-card-diff {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.stat-words .duo-card-diff { color: #58cc02; }
+.stat-sentences .duo-card-diff { color: #1cb0f6; }
+.stat-time .duo-card-diff { color: #ff9600; }
+
+.duo-card-pill {
+    width: 100%;
+    min-height: 48px;
+    border-radius: 12px;
+    background: #0d151c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+    font-size: 1.35rem;
+    letter-spacing: -0.4px;
+    box-sizing: border-box;
+    padding: 4px 6px;
+}
+
+.stat-words .duo-card-pill {
+    border: 2px solid #58cc02;
+    color: #58cc02;
+}
+
+.stat-sentences .duo-card-pill {
+    border: 2px solid #1cb0f6;
+    color: #1cb0f6;
+}
+
+.stat-time .duo-card-pill {
+    border: 3px solid #ff9600;
+    color: #ff9600;
+    box-shadow: 0 0 14px rgba(255, 150, 0, 0.45);
+}
+
+/* Botão Duolingo Azul Redondo e Marcante */
+.duo-action-container {
+    width: 100%;
+}
+
+.btn-duo-next {
+    width: 100%;
+    background: #1cb0f6;
+    border: none;
+    border-bottom: 5px solid #1899d6;
+    border-radius: 18px;
+    color: #ffffff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 800;
+    padding: 16px 24px;
+    cursor: pointer;
+    text-transform: capitalize;
+    letter-spacing: 0.4px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+    transition: transform 0.08s ease, filter 0.12s ease, border-bottom-width 0.08s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-duo-next:hover {
+    filter: brightness(1.08);
+}
+
+.btn-duo-next:active {
+    transform: translateY(4px);
+    border-bottom-width: 1px;
+}
+
+/* Light Mode Adaptativo para a Tela de Final de Lição */
+body.light-mode {
+    background: #f7f9fa !important;
+}
+
+body.light-mode .result-container {
+    background: #f7f9fa !important;
+}
+
+body.light-mode .duo-title-main {
+    color: #1e293b !important;
+}
+
+body.light-mode .duo-title-sub {
+    color: #64748b !important;
+}
+
+body.light-mode .duo-card-stat.stat-words {
+    background: #eefbee !important;
+    border-color: #86efac !important;
+}
+
+body.light-mode .duo-card-stat.stat-sentences {
+    background: #f0f9ff !important;
+    border-color: #bae6fd !important;
+}
+
+body.light-mode .duo-card-stat.stat-time {
+    background: #fffbeb !important;
+    border-color: #fde68a !important;
+}
+
+body.light-mode .duo-card-pill {
+    background: #ffffff !important;
+}

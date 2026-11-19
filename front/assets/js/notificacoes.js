@@ -108,8 +108,8 @@ function renderizarNotifDropdown() {
     } else {
         ultimasNotificacoes.forEach(n => {
             const avatarHtml = (n.foto && String(n.foto).trim() !== '')
-                ? `<img src="${n.foto}" class="notif-avatar" style="object-fit:contain;" alt="${n.nome}">`
-                : `<div class="notif-avatar" style="display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:0.95rem;"><i class="fa-solid fa-user"></i></div>`;
+                ? `<img src="${n.foto}" class="notif-avatar" width="40" height="40" style="width:40px;height:40px;max-width:40px;max-height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="${n.nome}">`
+                : `<div class="notif-avatar" style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:0.95rem;flex-shrink:0;"><i class="fa-solid fa-user"></i></div>`;
             if (n.type === 'friend_request') {
                 const nomeEsc = n.nome.replace(/'/g, "\\'");
                 itemsHtml += `

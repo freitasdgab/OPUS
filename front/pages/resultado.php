@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
@@ -10,13 +10,17 @@ require_once '../../back/lib/missoes_logic.php';
 
 $is_streak_preview = isset($_GET['preview_streak']);
 $is_meta_preview   = isset($_GET['preview_meta']) || isset($_GET['meta_diaria']) || isset($_GET['meta_teste']);
+$is_secao_preview  = isset($_GET['preview_secao']) || isset($_GET['secao']);
+$is_tudo_preview   = isset($_GET['preview_tudo']);
 
-if (!isset($_SESSION['user_id']) && !$is_streak_preview && !$is_meta_preview) {
+$is_qualquer_preview = ($is_streak_preview || $is_meta_preview || $is_secao_preview || $is_tudo_preview);
+
+if (!isset($_SESSION['user_id']) && !$is_qualquer_preview) {
     header("Location: dashboard.php");
     exit();
 }
 
-if (!isset($_POST['acertos']) && !$is_streak_preview && !$is_meta_preview) {
+if (!isset($_POST['acertos']) && !$is_qualquer_preview) {
     header("Location: dashboard.php");
     exit();
 }
@@ -61,30 +65,43 @@ $cor_tema = $mascote_capitulo['cor'];
 $total_questoes = isset($_POST['total_questoes']) ? (int)$_POST['total_questoes'] : 6;
 if ($total_questoes <= 0) $total_questoes = 6;
 
+// Tempo real gasto na licao (em segundos), enviado pelo JS
+$tempo_licao_seg = isset($_POST['tempo_licao']) ? max(0, (int)$_POST['tempo_licao']) : 0;
+
 // 1. Mensagens e Imagens PNG Dinâmicas com base na taxa de acertos
 $taxa_acertos = ($total_questoes > 0) ? ($acertos / $total_questoes) : 1;
+$gabaritou = ($acertos >= $total_questoes);
+$errou_todas = ($acertos === 0);
 
-if ($taxa_acertos >= 1.0) {
+// ==============================================================================
+// MASCOTE OFICIAL DO OPUS (XÍCARA DE CAFÉ OPI)
+// Substitui o macaquinho pela xícara do OPUS. Quando você criar sua nova imagem,
+// basta trocar o nome do arquivo abaixo:
+// ==============================================================================
+$imagem_xicara_vitoria = "../assets/img/opi pulando feliz.png";
+
+if ($gabaritou) {
+    $titulo_duo = "Incrível!";
+    $subtitulo_duo = "Você acertou todas as questões!";
     $mensagem = "Perfeito! Você dominou 100% do conteúdo!";
-    $imagem_mascote = "../assets/img/" . $mascote_capitulo['feliz'];
     $xp_ganho = 50;
-} elseif ($taxa_acertos >= 0.8) {
-    $mensagem = "Muito bom! Quase perfeito!";
-    $imagem_mascote = "../assets/img/" . $mascote_capitulo['feliz'];
-    $xp_ganho = 40;
-} elseif ($taxa_acertos >= 0.5) {
-    $mensagem = "Bom trabalho! Você está no caminho certo!";
-    $imagem_mascote = "../assets/img/" . $mascote_capitulo['explicando'];
-    $xp_ganho = 25;
-} elseif ($taxa_acertos >= 0.2) {
-    $mensagem = "Foi por pouco! Que tal revisar o conteúdo?";
-    $imagem_mascote = "../assets/img/" . $mascote_capitulo['triste'];
-    $xp_ganho = 15;
-} else {
+} elseif ($errou_todas) {
+    $titulo_duo = "Não desanime!";
+    $subtitulo_duo = "Errar faz parte! Revise o código e tente de novo.";
     $mensagem = "Não desanime! A programação exige prática. Tente novamente!";
-    $imagem_mascote = "../assets/img/" . $mascote_capitulo['triste'];
-    $xp_ganho = 10; 
+    $xp_ganho = 10;
+} elseif ($taxa_acertos >= 0.7) {
+    $titulo_duo = "Bom trabalho!";
+    $subtitulo_duo = "Lição concluída com sucesso!";
+    $mensagem = "Muito bom! Quase perfeito!";
+    $xp_ganho = 40;
+} else {
+    $titulo_duo = "Bom esforço!";
+    $subtitulo_duo = "Você está no caminho certo!";
+    $mensagem = "Bom trabalho! Continue praticando para fixar os conceitos.";
+    $xp_ganho = 25;
 }
+$imagem_mascote = $imagem_xicara_vitoria;
 
 // Ofensiva de fogo: detecta se ESTA lição foi a que acendeu o fogo de hoje
 // (antes: ultima_atividade != hoje / depois: ultima_atividade == hoje).
@@ -159,6 +176,14 @@ $is_curso_finalizado = ($cap_atual >= 40 && $licao_atual == 5);
 $liberou_bau = ($licao_atual == 3 && $acertos > 0);
 $desbloqueou_secao = ($licao_atual == 5 && $acertos > 0 && !$is_curso_finalizado);
 
+// Se concluiu a última seção do Capítulo 1 (Seção 15) ou Capítulo 2 (Seção 26), aciona a viagem de barco ao retornar ao dashboard
+$dashboard_retorno_url = "dashboard.php?fogo_aceso=1";
+if ($desbloqueou_secao && $cap_atual === 15) {
+    $dashboard_retorno_url = "dashboard.php?de_capitulo=1&viajar_capitulo=2";
+} elseif ($desbloqueou_secao && $cap_atual === 26) {
+    $dashboard_retorno_url = "dashboard.php?de_capitulo=2&viajar_capitulo=3";
+}
+
 // Dados da transição de seção (ex: Seção 1 Azul #1cb0f6 -> Seção 2 Rosa #ff527b)
 $mascote_prox_capitulo = opus_mascote_do_capitulo($prox_cap_link);
 $cor_origem = $mascote_capitulo['cor'];
@@ -183,12 +208,17 @@ $fogo_acendeu_agora = !$ja_processado
     && !$fogo_ja_aceso_hoje
     && ((int) ($fogo_depois['aceso_hoje'] ?? 0) === 1);
 
-if ($is_streak_preview) {
+if ($is_streak_preview || $is_tudo_preview) {
     $fogo_acendeu_agora = true;
-    $dias_fogo_atual = isset($_GET['dias']) ? max(1, (int)$_GET['dias']) : 1;
+    $dias_fogo_atual = isset($_GET['dias']) ? max(1, (int)$_GET['dias']) : max(1, $dias_fogo_atual);
 }
 
-if ($fogo_acendeu_agora && $dias_fogo_atual < 1) {
+// A animação de sequência de fogo celebra o fogo aceso ou mantido na lição (com acertos > 0 ou em previews)
+// Mostra a tela de streak APENAS quando o fogo foi acendido nesta licao (primeira atividade do dia)
+// ou em modo preview. Se a sequencia ja estava ativa, nao mostra de novo.
+$mostrar_streak = ($fogo_acendeu_agora || $is_streak_preview || $is_tudo_preview);
+
+if ($mostrar_streak && $dias_fogo_atual < 1) {
     $dias_fogo_atual = 1;
 }
 
@@ -196,7 +226,7 @@ if ($fogo_acendeu_agora && $dias_fogo_atual < 1) {
 // (hoje e os (dias_fogo - 1) dias anteriores); hoje é destacado e os
 // dias futuros ficam cinzas para incentivar a continuar.
 $semana_fogo = [];
-if ($fogo_acendeu_agora) {
+if ($mostrar_streak) {
     $nomes_dias = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
     $letras_dias = ['S', 'T', 'Q', 'Q', 'S', 'S', 'D'];
     // WEEKDAY() do MySQL: 0 = segunda (mesma data usada pela procedure)
@@ -207,10 +237,13 @@ if ($fogo_acendeu_agora) {
             'nome'  => $nomes_dias[$i],
             'letra' => $letras_dias[$i],
             'hoje'  => ($diff === 0),
-            'aceso' => ($diff <= 0 && -$diff < $dias_fogo_atual),
+            'aceso' => ($diff <= 0 && -$diff < $dias_fogo_atual) || ($diff === 0),
         ];
     }
 }
+
+// Animação de desbloquear nova seção
+$mostrar_secao = ($desbloqueou_secao || $is_secao_preview || $is_tudo_preview);
 
 // Resultado das missões diárias após o processamento da lição
 $missoes_depois = missoes_obter_hoje($conn, $user_id);
@@ -242,10 +275,10 @@ $xp_meta_alvo = 50;
     <link rel="shortcut icon" type="image/png" href="../assets/img/LOGO.png?v=2">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/dashboard.css">
-    <link rel="stylesheet" href="../assets/css/topbar.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/topbar.css?v=<?= time() ?>">
     <link rel="stylesheet" href="../assets/css/resultado.css?v=<?= time() ?>">
-    <link rel="stylesheet" href="../assets/css/light-mode.css">
+    <link rel="stylesheet" href="../assets/css/light-mode.css?v=<?= time() ?>">
     <script src="../assets/js/theme.js"></script>
 </head>
 <body style="--cor-tema: <?php echo $cor_tema; ?>;">
@@ -253,27 +286,80 @@ $xp_meta_alvo = 50;
         
         <main class="main-content" style="width: 100%; margin-left: 0;">
             <?php include '../../back/includes/topbar.php'; ?>
+
             <div class="result-container">
-                <div class="result-card" id="mainResultCard">
-                    <div class="result-mascote-wrapper">
-                        <img src="<?php echo $imagem_mascote; ?>" alt="Mascote Opus" class="mascote-img" id="resultMascoteImg">
+                <div class="duo-lesson-screen-wrapper" id="duoLessonScreen">
+                    
+                    <!-- Mascote Opi (Xícara Oficial do OPUS) com Animação Cartoon Alegre -->
+                    <div class="opi-vitoria-stage">
+                        <div class="opi-vitoria-wrapper" id="opiVitoriaWrapper" title="Opi, a xícara mascote do OPUS!">
+                            <img src="<?php echo htmlspecialchars($imagem_xicara_vitoria); ?>" alt="Opi Xícara OPUS" class="opi-vitoria-img" id="opiVitoriaImg">
+                        </div>
                     </div>
-                    
-                    <?php if ($licao_atual == 5 && !$is_curso_finalizado): ?>
-                        <h1 class="result-title" id="mainResultTitle">Você desbloqueou a Seção <?php echo $prox_cap_link; ?></h1>
-                    <?php elseif ($licao_atual == 5 && $is_curso_finalizado): ?>
-                        <h1 class="result-title" id="mainResultTitle">Curso Concluído!</h1>
-                    <?php else: ?>
-                        <h1 class="result-title" id="mainResultTitle"><?php echo $acertos; ?> / <?php echo $total_questoes; ?> Acertos</h1>
-                    <?php endif; ?>
-                    <p class="result-message"><?php echo $mensagem; ?></p>
-                    
-                    <div class="xp-box">
-                        +<?php echo $xp_ganho; ?> XP
+
+                    <!-- Título e Subtítulo Duolingo Dinâmicos (Acertou todas / Errou todas / Bom trabalho) -->
+                    <div class="duo-complete-titles">
+                        <h1 class="duo-title-main"><?php echo htmlspecialchars($titulo_duo); ?></h1>
+                        <h2 class="duo-title-sub"><?php echo htmlspecialchars($subtitulo_duo); ?></h2>
+                    </div>
+
+                    <!-- 3 Cards de Estatísticas com Cores Vivas (Verde, Azul e Laranja) -->
+                    <div class="duo-stats-grid">
+                        <!-- Card 1: Comandos Aprendidos Hoje (Verde) -->
+                        <div class="duo-card-stat stat-words">
+                            <div class="duo-card-icon">
+                                <span class="ab-board-icon"><i class="fa-solid fa-code" style="color: #fff; font-size: 0.85rem;"></i></span>
+                            </div>
+                            <div class="duo-card-title">
+                                Comandos<br>Aprendidos Hoje
+                            </div>
+                            <div class="duo-card-diff">
+                                +<?php echo $errou_todas ? '0' : '2'; ?> comandos
+                            </div>
+                            <div class="duo-card-pill">
+                                <?php echo 40 + ($errou_todas ? 0 : 2); ?>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Acertos na Lição (Azul) -->
+                        <div class="duo-card-stat stat-sentences">
+                            <div class="duo-card-icon">
+                                <span class="speech-chat-icon"><i class="fa-solid fa-bullseye"></i></span>
+                            </div>
+                            <div class="duo-card-title">
+                                Acertos<br>na Lição
+                            </div>
+                            <div class="duo-card-diff">
+                                <?php echo $gabaritou ? 'Acertou todas!' : ($errou_todas ? 'Errou todas' : '+' . $xp_ganho . ' XP'); ?>
+                            </div>
+                            <div class="duo-card-pill">
+                                <?php echo $acertos; ?> / <?php echo $total_questoes; ?>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Tempo Praticando (Laranja / Ouro) -->
+                        <div class="duo-card-stat stat-time">
+                            <div class="duo-card-icon">
+                                <span class="stopwatch-icon"><i class="fa-solid fa-stopwatch"></i></span>
+                            </div>
+                            <div class="duo-card-title">
+                                Tempo<br>Praticando
+                            </div>
+                            <div class="duo-card-diff">
+                                <?php
+                                    $mins = intdiv($tempo_licao_seg, 60);
+                                    $segs = $tempo_licao_seg % 60;
+                                    echo sprintf('+%d:%02d', $mins, $segs);
+                                ?>
+                            </div>
+                            <div class="duo-card-pill">
+                                <?php echo sprintf('%d:%02d', $mins, $segs); ?>
+                            </div>
+                        </div>
                     </div>
 
                     <?php if ($perdeu_vida): ?>
-                        <p class="result-message" style="color:#ff8a8a; margin-bottom: 16px;">
+                        <p class="result-message" style="color:#ff8a8a; margin-bottom: 20px; text-align: center; font-weight: 700;">
                             <i class="fa-solid fa-heart-crack"></i>
                             <?php echo $vidas_restantes > 0
                                 ? "Vidas restantes: {$vidas_restantes}/3. Cada coração volta a cada 5h."
@@ -281,44 +367,13 @@ $xp_meta_alvo = 50;
                         </p>
                     <?php endif; ?>
 
-                    <div class="buttons">
-                        <?php if ($liberou_bau): ?>
-                            <a href="dashboard.php?abrir_bau=<?php echo $cap_atual; ?>" class="btn-action btn-solid-gold">
-                                <i class="fa-solid fa-arrows-rotate"></i> GIRAR ROLETA DO BAÚ
-                            </a>
-                            <a href="licao.php?cap=<?php echo $prox_cap_link; ?>&licao=<?php echo $prox_licao; ?>" class="btn-action btn-solid-green">
-                                Próxima Lição <i class="fa-solid fa-arrow-right"></i>
-                            </a>
-                        <?php elseif ($licao_atual == 5): ?>
-                            <a href="dashboard.php" class="btn-action btn-solid-dash"><i class="fa-solid fa-house"></i> Voltar ao dashboard</a>
-                            <?php if ($acertos > 0 && !$is_curso_finalizado): ?>
-                                <a href="licao.php?cap=<?php echo $prox_cap_link; ?>&licao=<?php echo $prox_licao; ?>" class="btn-action btn-solid-green">
-                                    Ir para a lição <i class="fa-solid fa-arrow-right"></i>
-                                </a>
-                            <?php endif; ?>
-                        <?php else: ?>
-                            <a href="dashboard.php" class="btn-action btn-solid-dash"><i class="fa-solid fa-house"></i> Dashboard</a>
-                            <?php if ($acertos > 0): ?>
-                                <?php if (!$is_curso_finalizado): ?>
-                                    <a href="licao.php?cap=<?php echo $prox_cap_link; ?>&licao=<?php echo $prox_licao; ?>" class="btn-action btn-solid-green">
-                                        Próxima Lição <i class="fa-solid fa-arrow-right"></i>
-                                    </a>
-                                <?php else: ?>
-                                    <a href="conquistas.php" class="btn-action btn-solid-green">Ver Troféu! <i class="fa-solid fa-trophy"></i></a>
-                                <?php endif; ?>
-                            <?php else: ?>
-                                <?php if ($vidas_restantes > 0): ?>
-                                    <a href="licao.php?cap=<?php echo $cap_atual; ?>&licao=<?php echo $licao_atual; ?>" class="btn-action btn-solid-green">
-                                        Tentar Novamente <i class="fa-solid fa-rotate-right"></i>
-                                    </a>
-                                <?php else: ?>
-                                    <a href="dashboard.php?sem_vidas=1" class="btn-action btn-solid-dash">
-                                        Sem vidas <i class="fa-solid fa-heart-crack"></i>
-                                    </a>
-                                <?php endif; ?>
-                            <?php endif; ?>
-                        <?php endif; ?>
+                    <!-- Botão Continuar Marcante Duolingo -->
+                    <div class="duo-action-container">
+                        <button type="button" class="btn-duo-next" id="btnDuoContinue">
+                            Continuar <i class="fa-solid fa-arrow-right"></i>
+                        </button>
                     </div>
+
                 </div>
             </div>
         </main>
@@ -488,8 +543,8 @@ $xp_meta_alvo = 50;
     </div>
     <?php endif; ?>
 
-    <?php if ($fogo_acendeu_agora): ?>
-    <!-- SEQUÊNCIA / OFENSIVA EM TELA INTEIRA (ESTILO MIMO) -->
+    <?php if ($mostrar_streak): ?>
+    <!-- SEQUÊNCIA / OFENSIVA EM TELA INTEIRA (ESTILO MIMO / DUOLINGO) -->
     <div class="streak-overlay streak-fullscreen-view" id="streakOverlay" role="dialog" aria-modal="true" aria-labelledby="streakTitle">
         <!-- Partículas de fundo sutis -->
         <div class="streak-bg-particles" aria-hidden="true">
@@ -512,27 +567,27 @@ $xp_meta_alvo = 50;
                 <div class="streak-flame-svg-wrap">
                     <svg class="streak-flame-svg" viewBox="0 0 160 200" aria-hidden="true">
                         <defs>
-                            <linearGradient id="mimoFlameOuter" x1="0.1" y1="1" x2="0.9" y2="0">
-                                <stop offset="0%" stop-color="#1d4ed8"/>
-                                <stop offset="50%" stop-color="#2563eb"/>
-                                <stop offset="100%" stop-color="#3b82f6"/>
+                            <linearGradient id="cartoonFlameOuter" x1="0.1" y1="1" x2="0.9" y2="0">
+                                <stop offset="0%" stop-color="#ff3700"/>
+                                <stop offset="45%" stop-color="#ff7300"/>
+                                <stop offset="100%" stop-color="#ff9600"/>
                             </linearGradient>
-                            <linearGradient id="mimoFlameMid" x1="0.1" y1="1" x2="0.9" y2="0">
-                                <stop offset="0%" stop-color="#38bdf8"/>
-                                <stop offset="70%" stop-color="#60a5fa"/>
-                                <stop offset="100%" stop-color="#93c5fd"/>
+                            <linearGradient id="cartoonFlameMid" x1="0.1" y1="1" x2="0.9" y2="0">
+                                <stop offset="0%" stop-color="#ff9900"/>
+                                <stop offset="55%" stop-color="#ffb800"/>
+                                <stop offset="100%" stop-color="#ffd500"/>
                             </linearGradient>
-                            <linearGradient id="mimoFlameInner" x1="0.1" y1="1" x2="0.9" y2="0">
-                                <stop offset="0%" stop-color="#bae6fd"/>
+                            <linearGradient id="cartoonFlameInner" x1="0.1" y1="1" x2="0.9" y2="0">
+                                <stop offset="0%" stop-color="#fff275"/>
                                 <stop offset="100%" stop-color="#ffffff"/>
                             </linearGradient>
                         </defs>
-                        <!-- Camadas da chama estilizada vetorial -->
-                        <path class="flame-layer-outer" fill="url(#mimoFlameOuter)"
+                        <!-- Camadas da chama estilizada vetorial estilo Cartoon -->
+                        <path class="flame-layer-outer" fill="url(#cartoonFlameOuter)"
                               d="M80 8 C98 52 144 82 144 134 C144 174 116 196 80 196 C44 196 16 174 16 134 C16 94 40 76 52 48 C58 70 68 82 76 84 C70 56 72 30 80 8 Z"/>
-                        <path class="flame-layer-mid" fill="url(#mimoFlameMid)"
+                        <path class="flame-layer-mid" fill="url(#cartoonFlameMid)"
                               d="M80 58 C94 84 124 106 124 142 C124 168 104 186 80 186 C56 186 36 168 36 142 C36 114 52 98 62 78 C66 94 72 102 78 104 C74 84 74 68 80 58 Z"/>
-                        <path class="flame-layer-inner" fill="url(#mimoFlameInner)"
+                        <path class="flame-layer-inner" fill="url(#cartoonFlameInner)"
                               d="M80 102 C88 120 106 134 106 154 C106 172 94 180 80 180 C66 180 54 172 54 154 C54 136 64 126 70 116 C72 126 75 130 78 131 C76 120 76 110 80 102 Z"/>
                     </svg>
                 </div>
@@ -578,7 +633,7 @@ $xp_meta_alvo = 50;
     </div>
     <?php endif; ?>
 
-    <?php if ($desbloqueou_secao): ?>
+    <?php if ($mostrar_secao): ?>
     <!-- ANIMAÇÃO DE DESBLOQUEIO DE SEÇÃO (TRANSIÇÃO DO AZUL PARA O ROSA) -->
     <div class="chapter-unlock-overlay" id="chapterUnlockOverlay" role="dialog" aria-modal="true" aria-labelledby="chapterUnlockTitle"
          style="--cor-origem: <?php echo htmlspecialchars($cor_origem); ?>; --cor-destino: <?php echo htmlspecialchars($cor_destino); ?>;">
@@ -625,14 +680,14 @@ $xp_meta_alvo = 50;
                 Você desbloqueou a Seção <?php echo $prox_cap_link; ?>
             </h2>
             <p class="chapter-unlock-sub">
-                Parabéns! Você concluiu o desafio prático no terminal e liberou uma nova seção da sua jornada em Java!
+                Parabéns! Você concluiu os desafios e liberou uma nova seção da sua jornada em Java!
             </p>
 
             <div class="chapter-unlock-actions">
                 <a href="licao.php?cap=<?php echo $prox_cap_link; ?>&licao=1" class="chapter-btn-primary">
                     Ir para a lição <i class="fa-solid fa-arrow-right"></i>
                 </a>
-                <a href="dashboard.php" class="chapter-btn-secondary">
+                <a href="<?php echo htmlspecialchars($dashboard_retorno_url); ?>" class="chapter-btn-secondary">
                     <i class="fa-solid fa-house"></i> Voltar ao dashboard
                 </a>
             </div>
@@ -643,36 +698,163 @@ $xp_meta_alvo = 50;
     <script src="../assets/js/opus_audio.js?v=<?= time() ?>"></script>
     <script src="../assets/js/script.js"></script>
     <script>
-        // Interações sonoras e reativas na tela de Resultado
+        // Interações sonoras e fluxo encadeado na tela de Resultado
         document.addEventListener('DOMContentLoaded', function() {
-            const chapterOverlay = document.getElementById('chapterUnlockOverlay');
-            const corDestino = <?php echo json_encode($cor_destino); ?>;
-            const imgMascoteDestino = <?php echo json_encode($img_mascote_destino); ?>;
+            const duoContinueBtn   = document.getElementById('btnDuoContinue');
+            const streakOverlay    = document.getElementById('streakOverlay');
+            const chapterOverlay   = document.getElementById('chapterUnlockOverlay');
+            const opiVitoriaWrapper = document.getElementById('opiVitoriaWrapper');
 
-            function iniciarAnimacaoCapitulo() {
-                if (!chapterOverlay) return;
+            const nextLessonUrl  = "licao.php?cap=<?php echo $prox_cap_link; ?>&licao=<?php echo $prox_licao; ?>";
+            const nextSectionUrl = "licao.php?cap=<?php echo $prox_cap_link; ?>&licao=1";
+            const dashboardUrl   = "<?php echo $dashboard_retorno_url; ?>";
+            const abrirBauUrl    = "dashboard.php?abrir_bau=<?php echo $cap_atual; ?>";
+            const liberouBau     = <?php echo $liberou_bau ? 'true' : 'false'; ?>;
+
+            // Áudio alegre de conclusão da lição
+            try {
+                if (window.OpusAudio) {
+                    setTimeout(() => {
+                        if (typeof window.OpusAudio.playLessonComplete === 'function') {
+                            window.OpusAudio.playLessonComplete();
+                        } else if (typeof window.OpusAudio.playSuccess === 'function') {
+                            window.OpusAudio.playSuccess();
+                        }
+                    }, 280);
+                }
+            } catch (e) {}
+
+            // Interação cartoon ao clicar na xícara Opi
+            if (opiVitoriaWrapper) {
+                opiVitoriaWrapper.addEventListener('click', function() {
+                    if (window.OpusAudio && window.OpusAudio.playClick) window.OpusAudio.playClick();
+                    opiVitoriaWrapper.style.animation = 'none';
+                    void opiVitoriaWrapper.offsetWidth;
+                    opiVitoriaWrapper.style.animation = 'opiHopCartoon 1s ease-in-out 2';
+                    setTimeout(() => {
+                        opiVitoriaWrapper.style.animation = 'opiHopCartoon 3s ease-in-out infinite';
+                    }, 2000);
+                });
+            }
+
+            // 1. Função que executa a animação de Sequência de Fogo (Ofensiva)
+            window.iniciarAnimacaoStreak = function() {
+                if (!streakOverlay) {
+                    if (chapterOverlay) {
+                        iniciarAnimacaoCapitulo();
+                    } else if (liberouBau) {
+                        window.location.href = abrirBauUrl;
+                    } else {
+                        window.location.href = nextLessonUrl;
+                    }
+                    return;
+                }
+
+                const countEl = document.getElementById('streakCount');
+                const alvo = parseInt(countEl ? countEl.dataset.target : 1, 10) || 1;
+                const inicial = Math.max(0, alvo - 1);
+                if (countEl) countEl.textContent = inicial;
+
+                // Deixa a topbar inicialmente cinza para acender junto com a chama
+                const topbarFogo = document.getElementById('topbarStatFogo');
+                const topbarFogoCount = document.getElementById('topbarFogoCount');
+                if (topbarFogo) {
+                    topbarFogo.classList.remove('fogo-ativo');
+                    topbarFogo.classList.add('fogo-inativo');
+                }
+                if (topbarFogoCount) {
+                    topbarFogoCount.textContent = inicial;
+                }
+
+                streakOverlay.classList.remove('is-closing');
+                requestAnimationFrame(() => {
+                    streakOverlay.classList.add('is-open');
+                    streakOverlay.classList.add('show-week');
+                });
+
+                // Chama acende do cinza para o laranja/ouro cartoon após o card abrir
+                setTimeout(() => {
+                    streakOverlay.classList.add('is-lit');
+                    if (topbarFogo) {
+                        topbarFogo.classList.remove('fogo-inativo');
+                        topbarFogo.classList.add('fogo-ativo');
+                    }
+                    if (topbarFogoCount) {
+                        topbarFogoCount.textContent = alvo;
+                    }
+                    if (window.OpusAudio && window.OpusAudio.playSuccess) window.OpusAudio.playSuccess();
+
+                    // Contador sobe até o novo total de dias
+                    if (countEl) {
+                        const dur = Math.min(750, Math.max(350, 120 * alvo));
+                        const ini = performance.now();
+                        (function tick(t) {
+                            const p = Math.min(1, (t - ini) / dur);
+                            countEl.textContent = Math.round(inicial + (alvo - inicial) * p);
+                            if (p < 1) requestAnimationFrame(tick);
+                            else countEl.classList.add('pop');
+                        })(ini);
+                    }
+                }, 600);
+
+                const fecharStreak = () => {
+                    if (window.OpusAudio && window.OpusAudio.playClick) window.OpusAudio.playClick();
+                    streakOverlay.classList.remove('is-open');
+                    streakOverlay.classList.add('is-closing');
+
+                    setTimeout(() => {
+                        streakOverlay.style.display = 'none';
+                        if (chapterOverlay) {
+                            iniciarAnimacaoCapitulo();
+                        } else if (liberouBau) {
+                            window.location.href = abrirBauUrl;
+                        } else {
+                            window.location.href = nextLessonUrl;
+                        }
+                    }, 350);
+                };
+
+                const continueBtn = document.getElementById('streakContinueBtn');
+                if (continueBtn) {
+                    continueBtn.onclick = fecharStreak;
+                }
+
+                const onStreakKey = function(e) {
+                    if (streakOverlay.style.display === 'none' || !streakOverlay.classList.contains('is-open')) {
+                        document.removeEventListener('keydown', onStreakKey);
+                        return;
+                    }
+                    if (e.key === 'Escape' || e.key === 'Enter' || (e.ctrlKey && e.key === 'Enter') || e.code === 'Space') {
+                        e.preventDefault();
+                        fecharStreak();
+                        document.removeEventListener('keydown', onStreakKey);
+                    }
+                };
+                document.addEventListener('keydown', onStreakKey);
+            };
+
+            // 2. Função que executa a animação de Passar para a Próxima Seção
+            window.iniciarAnimacaoCapitulo = function() {
+                if (!chapterOverlay) {
+                    window.location.href = nextSectionUrl;
+                    return;
+                }
+
+                chapterOverlay.style.display = 'flex';
                 requestAnimationFrame(() => chapterOverlay.classList.add('is-open'));
 
-                // Inicia preenchimento da ponte Azul -> Rosa
+                // Inicia preenchimento da ponte
                 setTimeout(() => {
                     chapterOverlay.classList.add('is-bridging');
                 }, 350);
 
-                // Momento da transição do Azul para o Rosa + abertura do cadeado
+                // Momento da transição + abertura do cadeado
                 setTimeout(() => {
                     chapterOverlay.classList.add('is-morphed');
                     const lockIcon = document.getElementById('chapterLockIcon');
                     if (lockIcon) lockIcon.className = 'fa-solid fa-lock-open';
                     const nodeDestIcon = document.getElementById('nodeDestIcon');
                     if (nodeDestIcon) nodeDestIcon.className = 'fa-solid fa-unlock-keyhole';
-
-                    // Também transiciona o card principal ao fundo do Azul para o Rosa
-                    document.body.style.transition = '--cor-tema 0.8s ease';
-                    document.body.style.setProperty('--cor-tema', corDestino);
-                    const mainMascote = document.getElementById('resultMascoteImg');
-                    if (mainMascote && imgMascoteDestino) {
-                        mainMascote.src = imgMascoteDestino;
-                    }
 
                     try {
                         if (window.OpusAudio) {
@@ -684,187 +866,40 @@ $xp_meta_alvo = 50;
                         }
                     } catch (e) {}
                 }, 950);
-            }
+            };
 
-            // ── Gerenciador de sequência dos Overlays Comemorativos ──
-            const dailyGoalOverlay = document.getElementById('dailyGoalOverlay');
-            const streakOverlay = document.getElementById('streakOverlay');
-            const chapterOverlay = document.getElementById('chapterUnlockOverlay');
-
-            function iniciarStreakOuCapitulo() {
-                if (streakOverlay) {
-                    const countEl = document.getElementById('streakCount');
-                    const alvo = parseInt(countEl.dataset.target, 10) || 1;
-                    const inicial = Math.max(0, alvo - 1);
-                    countEl.textContent = inicial;
-
-                    // Deixa a topbar inicialmente cinza para acender junto com a chama
-                    const topbarFogo = document.getElementById('topbarStatFogo');
-                    const topbarFogoCount = document.getElementById('topbarFogoCount');
-                    if (topbarFogo) {
-                        topbarFogo.classList.remove('fogo-ativo');
-                        topbarFogo.classList.add('fogo-inativo');
-                    }
-                    if (topbarFogoCount) {
-                        topbarFogoCount.textContent = inicial;
-                    }
-
-                    requestAnimationFrame(() => {
-                        streakOverlay.classList.add('is-open');
-                        streakOverlay.classList.add('show-week');
-                    });
-
-                    // Chama sai do cinza para o laranja após o card abrir
-                    setTimeout(() => {
-                        streakOverlay.classList.add('is-lit');
-                        if (topbarFogo) {
-                            topbarFogo.classList.remove('fogo-inativo');
-                            topbarFogo.classList.add('fogo-ativo');
-                        }
-                        if (topbarFogoCount) {
-                            topbarFogoCount.textContent = alvo;
-                        }
-                        if (window.OpusAudio && window.OpusAudio.playSuccess) window.OpusAudio.playSuccess();
-
-                        // Contador sobe do valor anterior até o novo total de dias
-                        const dur = Math.min(700, Math.max(350, 120 * alvo));
-                        const ini = performance.now();
-                        (function tick(t) {
-                            const p = Math.min(1, (t - ini) / dur);
-                            countEl.textContent = Math.round(inicial + (alvo - inicial) * p);
-                            if (p < 1) requestAnimationFrame(tick);
-                            else countEl.classList.add('pop');
-                        })(ini);
-                    }, 650);
-
-                    const fechar = () => {
-                        if (window.OpusAudio) window.OpusAudio.playClick();
-                        streakOverlay.classList.remove('is-open');
-                        streakOverlay.classList.add('is-closing');
-                        setTimeout(() => {
-                            streakOverlay.remove();
-                            if (chapterOverlay) iniciarAnimacaoCapitulo();
-                        }, 350);
-                    };
-
-                    const continueBtn = document.getElementById('streakContinueBtn');
-                    if (continueBtn) {
-                        continueBtn.addEventListener('click', fechar);
-                    }
-
-                    const onStreakKey = function(e) {
-                        if (!document.body.contains(streakOverlay)) {
-                            document.removeEventListener('keydown', onStreakKey);
-                            return;
-                        }
-                        if (e.key === 'Escape' || e.key === 'Enter' || (e.ctrlKey && e.key === 'Enter') || e.code === 'Space') {
-                            e.preventDefault();
-                            fechar();
-                            document.removeEventListener('keydown', onStreakKey);
-                        }
-                    };
-                    document.addEventListener('keydown', onStreakKey);
-                } else if (chapterOverlay) {
-                    // Se não houve abertura da ofensiva de fogo agora, inicia direto a transição de seção
-                    iniciarAnimacaoCapitulo();
-                }
-            }
-
-            // Confetes da comemoração de Meta Diária
-            function launchDailyGoalConfetti() {
-                const container = document.getElementById('dailyGoalConfetti');
-                if (!container) return;
-                const colors = ['#ffd54f', '#ffb300', '#7c3aed', '#a855f7', '#38bdf8', '#58cc02', '#ff527b'];
-                for (let i = 0; i < 75; i++) {
-                    const piece = document.createElement('div');
-                    piece.className = 'dg-confetti-piece';
-                    piece.style.left = (Math.random() * 100) + '%';
-                    piece.style.top = (Math.random() * 20 - 25) + 'px';
-                    piece.style.width = (Math.random() * 9 + 6) + 'px';
-                    piece.style.height = (Math.random() * 9 + 6) + 'px';
-                    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
-                    const dur = Math.random() * 1.8 + 1.8;
-                    const delay = Math.random() * 0.45;
-                    piece.style.animation = `dgConfettiFall ${dur}s cubic-bezier(0.25, 1, 0.5, 1) ${delay}s forwards`;
-                    container.appendChild(piece);
-                    setTimeout(() => piece.remove(), (dur + delay + 0.5) * 1000);
-                }
-            }
-
-            // Se a Meta Diária foi alcançada nesta lição, exibe primeiro a tela da Meta
-            if (dailyGoalOverlay) {
-                requestAnimationFrame(() => {
-                    dailyGoalOverlay.classList.add('is-open');
-                });
-
-                if (window.OpusAudio) {
-                    setTimeout(() => {
-                        if (typeof window.OpusAudio.playVictory === 'function') {
-                            window.OpusAudio.playVictory();
-                        } else if (typeof window.OpusAudio.playSuccess === 'function') {
-                            window.OpusAudio.playSuccess();
-                        }
-                    }, 250);
-                }
-
-                launchDailyGoalConfetti();
-
-                const fecharDailyGoal = () => {
+            // Ação do Botão Principal "Continuar" da Tela de Final de Lição
+            if (duoContinueBtn) {
+                duoContinueBtn.addEventListener('click', function() {
                     if (window.OpusAudio && window.OpusAudio.playClick) window.OpusAudio.playClick();
-                    dailyGoalOverlay.classList.remove('is-open');
-                    dailyGoalOverlay.classList.add('is-closing');
-                    setTimeout(() => {
-                        dailyGoalOverlay.remove();
-                        iniciarStreakOuCapitulo();
-                    }, 350);
-                };
-
-                const dgBtn = document.getElementById('dailyGoalContinueBtn');
-                if (dgBtn) {
-                    dgBtn.addEventListener('click', fecharDailyGoal);
-                }
-
-                const onDailyGoalKey = function(e) {
-                    if (!document.body.contains(dailyGoalOverlay)) {
-                        document.removeEventListener('keydown', onDailyGoalKey);
-                        return;
+                    
+                    if (streakOverlay) {
+                        iniciarAnimacaoStreak();
+                    } else if (chapterOverlay) {
+                        iniciarAnimacaoCapitulo();
+                    } else if (liberouBau) {
+                        window.location.href = abrirBauUrl;
+                    } else {
+                        window.location.href = nextLessonUrl;
                     }
-                    if (e.key === 'Escape' || e.key === 'Enter' || (e.ctrlKey && e.key === 'Enter') || e.code === 'Space') {
-                        e.preventDefault();
-                        fecharDailyGoal();
-                        document.removeEventListener('keydown', onDailyGoalKey);
-                    }
-                };
-                document.addEventListener('keydown', onDailyGoalKey);
-            } else {
-                iniciarStreakOuCapitulo();
+                });
             }
 
-            // Feedback tátil em todos os botões de ação
-            document.querySelectorAll('.btn-action, .chapter-btn-primary, .chapter-btn-secondary').forEach(function(btn) {
-                btn.addEventListener('click', function() {
-                    if (window.OpusAudio) window.OpusAudio.playClick();
-                });
+            // Atalho de teclado: Enter avança
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || (e.ctrlKey && e.key === 'Enter') || e.code === 'Space') {
+                    if ((!streakOverlay || !streakOverlay.classList.contains('is-open')) &&
+                        (!chapterOverlay || !chapterOverlay.classList.contains('is-open'))) {
+                        e.preventDefault();
+                        if (duoContinueBtn) duoContinueBtn.click();
+                    }
+                }
             });
 
-            // Mascote reativo com salto
-            const mascote = document.getElementById('resultMascoteImg');
-
-            if (mascote) {
-                mascote.addEventListener('click', function() {
-                    if (window.OpusAudio) window.OpusAudio.playClick();
-                    mascote.classList.remove('mascote-jump');
-                    void mascote.offsetWidth;
-                    mascote.classList.add('mascote-jump');
-                });
-            }
-            // Popup de Desbloqueio do Baú
+            // Popup do Baú se aplicável
             <?php if ($liberou_bau): ?>
-            if (window.OpusAudio) {
-                setTimeout(function() {
-                    window.OpusAudio.playChest();
-                }, 250);
+            if (window.OpusAudio && window.OpusAudio.playChest) {
+                setTimeout(() => window.OpusAudio.playChest(), 250);
             }
             <?php endif; ?>
         });

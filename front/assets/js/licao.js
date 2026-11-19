@@ -17,6 +17,7 @@
     let totalAcertos = 0;
     let state = 'selecting'; // 'selecting' | 'checked'
     let selectedValue = null;
+    let quizStartTime = null; // Momento em que o quiz (fase de perguntas) começou
 
     const opiQuizImg = document.getElementById('opiQuizImg');
     const quizSpeechBubble = document.getElementById('quizSpeechBubble');
@@ -95,6 +96,9 @@
             if (form) form.submit();
             return;
         }
+
+        // Registra o início do quiz para calcular o tempo real gasto
+        quizStartTime = Date.now();
 
         const explPhase = document.getElementById('explanationPhase');
         const quizPhase = document.getElementById('quizPhase');
@@ -699,6 +703,12 @@
                 if (elAcertos) elAcertos.value = totalAcertos;
                 const elTotal = document.getElementById('input_total_questoes');
                 if (elTotal) elTotal.value = totalQuestions;
+                // Calcula o tempo real gasto no quiz (em segundos)
+                const elTempo = document.getElementById('input_tempo_licao');
+                if (elTempo && quizStartTime) {
+                    const segundosGastos = Math.round((Date.now() - quizStartTime) / 1000);
+                    elTempo.value = segundosGastos;
+                }
                 const form = document.getElementById('quiz-form-hidden');
                 if (form) form.submit();
             };
