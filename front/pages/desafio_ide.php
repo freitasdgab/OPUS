@@ -1387,6 +1387,10 @@ $is_concluido = !empty($desafio['concluido']);
                     if (window.OpusAudio) {
                         window.OpusAudio.playVictory();
                     }
+
+                    if (Array.isArray(data.novos_trofeus) && data.novos_trofeus.length > 0 && window.OpusTour && typeof window.OpusTour.celebrateTrophies === 'function') {
+                        setTimeout(() => window.OpusTour.celebrateTrophies(data.novos_trofeus), 650);
+                    }
                 } else {
                     status.className = 'terminal-status-badge error';
                     status.innerText = 'Requer Ajustes';
@@ -1422,5 +1426,10 @@ $is_concluido = !empty($desafio['concluido']);
             return String(text).replace(/[&<>"']/g, m => map[m]);
         }
     </script>
+
+    <?php
+    $OPUS_TOUR_EXTRA_CONFIG = ['page' => 'desafio_ide.php'];
+    include '../../back/includes/tour_opi.php';
+    ?>
 </body>
 </html>

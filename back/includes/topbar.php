@@ -52,6 +52,11 @@ $titulo_vidas = $proxima_vida_texto !== '' ? $proxima_vida_texto : ($vidas_top .
     </div>
 
     <div class="topbar-stats">
+        <!-- TOUR COM O OPI -->
+        <button type="button" class="topbar-stat stat-tour" id="btnAbrirTourOpi" title="Tour Guiado com o Opi" aria-label="Iniciar tour guiado com o Opi">
+            <i class="fa-solid fa-compass"></i>
+        </button>
+
         <!-- CHAT -->
         <a href="chat.php" class="topbar-stat stat-chat" id="btn-chat" title="Chat">
             <i class="fa-solid fa-comments"></i>

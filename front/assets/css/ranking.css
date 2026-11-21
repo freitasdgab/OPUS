@@ -458,3 +458,66 @@ body, html {
     }
 }
 
+/* =========================================================================
+   MODO CLARO (LIGHT MODE) OVERRIDES
+   ========================================================================= */
+html.light-mode .ranking-hero,
+body.light-mode .ranking-hero {
+    background: #ffffff !important;
+    border: 2px solid #e5e5e5 !important;
+    border-bottom: 4px solid #e5e5e5 !important;
+    box-shadow: none !important;
+    border-radius: 20px !important;
+}
+
+html.light-mode .ranking-hero-badge,
+body.light-mode .ranking-hero-badge {
+    background: rgba(255, 200, 0, 0.16) !important;
+    color: #b45309 !important;
+    border: 1px solid rgba(245, 158, 11, 0.35) !important;
+}
+
+html.light-mode .ranking-hero-title,
+body.light-mode .ranking-hero-title {
+    color: #4b4b4b !important;
+}
+
+html.light-mode .ranking-hero-title span,
+body.light-mode .ranking-hero-title span {
+    color: #d97706 !important;
+    background: linear-gradient(90deg, #d97706, #f59e0b) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+}
+
+html.light-mode .ranking-hero-desc,
+body.light-mode .ranking-hero-desc {
+    color: #777777 !important;
+}
+
+html.light-mode .ranking-hero-mascote img,
+body.light-mode .ranking-hero-mascote img {
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.12)) !important;
+}
+
+html.light-mode .row-user-text,
+body.light-mode .row-user-text {
+    color: #4b4b4b !important;
+}
+
+html.light-mode .user-country-tag,
+body.light-mode .user-country-tag {
+    background: #f1f5f9 !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #64748b !important;
+}
+
+html.light-mode .my-status-alert,
+body.light-mode .my-status-alert {
+    background: rgba(28, 176, 246, 0.1) !important;
+    border: 2px solid #1cb0f6 !important;
+    border-bottom: 4px solid #1899d6 !important;
+    color: #0284c7 !important;
+}
+
+

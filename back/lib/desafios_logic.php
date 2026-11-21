@@ -297,6 +297,9 @@ if (!function_exists('desafios_submeter')) {
         }
 
         // Desafio CONCLUÍDO com sucesso!
+        require_once __DIR__ . '/trofeus_catalogo.php';
+        $trofeus_antes = opus_listar_trofeus_usuario($conn, $user_id);
+
         $ja_concluido = !empty($desafio['concluido']);
         $xp_base = (int) $desafio['xp_recompensa'];
         $xp_efetivo = $ja_concluido ? 10 : $xp_base; // Se for repetição, ganha 10 XP simbólico
@@ -325,6 +328,7 @@ if (!function_exists('desafios_submeter')) {
             @opus_call($conn, "CALL sp_liga_registrar_xp(?, ?)", "ii", [$user_id, $xp_efetivo]);
             @opus_call($conn, "CALL sp_registrar_missao_progresso(?, ?, ?)", "iii", [$user_id, $xp_efetivo, 1]);
             @opus_call($conn, "CALL sp_atualizar_fogo(?)", "i", [$user_id]);
+            @opus_call($conn, "CALL sp_verificar_conquistas(?)", "i", [$user_id]);
         }
 
         // Troféu especial para o primeiro desafio de código concluído
@@ -335,6 +339,9 @@ if (!function_exists('desafios_submeter')) {
             @$conn->query("INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES ($user_id, 'primeiro_passo')");
         }
 
+        $trofeus_depois = opus_listar_trofeus_usuario($conn, $user_id);
+        $novos_trofeus = opus_montar_novos_trofeus($trofeus_antes, $trofeus_depois);
+
         return [
             'sucesso'          => true,
             'mensagem'         => $ja_concluido 
@@ -343,7 +350,8 @@ if (!function_exists('desafios_submeter')) {
             'xp_ganho'         => $xp_efetivo,
             'ja_concluido'     => $ja_concluido,
             'desafio_titulo'   => $desafio['titulo'],
-            'total_concluidos' => $total_concluidos
+            'total_concluidos' => $total_concluidos,
+            'novos_trofeus'    => $novos_trofeus
         ];
     }
 }

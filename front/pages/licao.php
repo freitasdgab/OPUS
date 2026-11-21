@@ -5,6 +5,7 @@ require_once '../../back/lib/licao_logic.php';
 require_once '../../back/lib/conteudo_logic.php';
 
 $desafio_atual = conteudo_desafio($conn, $unidade_atual) ?? conteudo_desafio($conn, 1);
+$is_primeira_licao = ((int) $unidade_atual === 1 && (int) $licao_atual === 1);
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -16,7 +17,7 @@ $desafio_atual = conteudo_desafio($conn, $unidade_atual) ?? conteudo_desafio($co
     <link rel="shortcut icon" type="image/png" href="../assets/img/LOGO.png?v=2">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Poppins:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Orbitron:wght@700;900&family=Poppins:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/licao.css?v=<?= time() ?>">
     <link rel="stylesheet" href="../assets/css/opus_alerta.css?v=<?= time() ?>">
@@ -420,7 +421,7 @@ $desafio_atual = conteudo_desafio($conn, $unidade_atual) ?? conteudo_desafio($co
         </style>
     <?php endif; ?>
 </head>
-<body class="licao-page">
+<body class="licao-page" style="--chapter-color: <?php echo htmlspecialchars($cor_capitulo); ?>;">
 
 <?php if ($licao_atual == 5): ?>
     <!-- ================================================================ -->
@@ -545,54 +546,112 @@ $desafio_atual = conteudo_desafio($conn, $unidade_atual) ?? conteudo_desafio($co
     </div>
 
 <?php else: ?>
+    <?php
+        $paragrafos_limpos = array_values(array_filter($paragrafos, function ($item) {
+            return trim($item) !== '';
+        }));
+        $total_slides_expl = count($paragrafos_limpos) + (!empty($codigo_exemplo) ? 1 : 0);
+    ?>
     <!-- ================================================================ -->
     <!-- LIÇÕES 1 A 4: SLIDES DE EXPLICAÇÃO + QUIZ DE 6 QUESTÕES          -->
     <!-- ================================================================ -->
     
-    <!-- FASE 1: SLIDES DE EXPLICAÇÃO -->
-    <div class="phase-container" id="explanationPhase" style="display: flex;">
+    <!-- FASE 1: EXPLICAÇÃO INTERATIVA COM O MASCOTE -->
+    <div class="phase-container phase-explanation" id="explanationPhase" style="display: flex;">
         <div class="phase-header">
-            <a href="dashboard.php" class="btn-close-phase"><i class="fa-solid fa-arrow-left"></i> Voltar</a>
-            <span class="lesson-title"><?php echo htmlspecialchars($dados_licao['titulo']); ?></span>
-            <div style="width: 80px;"></div>
+            <a href="dashboard.php" class="btn-close-phase" title="Voltar para a trilha">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Voltar</span>
+            </a>
+
+            <div class="explanation-steps-bar" id="explanationStepsBar" role="tablist" aria-label="Progresso da explicação">
+                <?php for ($s_i = 0; $s_i < $total_slides_expl; $s_i++): ?>
+                    <button type="button"
+                            class="explanation-step-seg <?php echo $s_i === 0 ? 'active' : ''; ?>"
+                            data-step-index="<?php echo $s_i; ?>"
+                            aria-label="Ir para etapa <?php echo $s_i + 1; ?> de <?php echo $total_slides_expl; ?>">
+                    </button>
+                <?php endfor; ?>
+            </div>
+
+            <div class="explanation-step-counter" aria-live="polite">
+                <span id="slideCounterText">1 / <?php echo max(1, $total_slides_expl); ?></span>
+            </div>
+            <?php if ($is_primeira_licao): ?>
+                <button type="button" class="btn-tutor-help" id="btnTutorLicao1Expl" title="Ajuda do Tutor Opi" aria-label="Abrir ajuda do Tutor Opi">
+                    <i class="fa-solid fa-compass"></i>
+                    <span>Tutor</span>
+                </button>
+            <?php endif; ?>
         </div>
         
         <div class="phase-body">
-            <div class="mascote-container">
-                <img src="../assets/img/<?php echo htmlspecialchars($img_mascote_explicando); ?>" alt="Mascote do capítulo" class="opi-mascote-img opi-float-animation">
+            <div class="explanation-lesson-intro">
+                <span class="lesson-unit-badge">
+                    <i class="fa-solid fa-book-open"></i>
+                    Seção <?php echo (int) $unidade_atual; ?> &bull; Lição <?php echo (int) $licao_atual; ?>
+                </span>
+                <h1 class="lesson-title"><?php echo htmlspecialchars($dados_licao['titulo']); ?></h1>
             </div>
-            
-            <div class="explanation-card-wrapper">
-                <?php foreach ($paragrafos as $idx => $p): ?>
-                    <div class="explanation-slide <?php echo $idx === 0 ? 'active' : ''; ?>" data-slide-index="<?php echo $idx; ?>">
-                        <div class="explanation-text-content">
-                            <?php echo nl2br(htmlspecialchars($p)); ?>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+
+            <div class="explanation-stage">
+                <div class="mascote-container">
+                    <div class="mascote-aura" aria-hidden="true"></div>
+                    <img src="../assets/img/<?php echo htmlspecialchars($img_mascote_explicando); ?>"
+                         alt="Mascote explicando a lição"
+                         class="opi-mascote-img opi-float-animation"
+                         id="opiExplanationImg">
+                </div>
                 
-                <?php if (!empty($codigo_exemplo)): ?>
-                    <div class="explanation-slide" data-slide-index="<?php echo count($paragrafos); ?>">
-                        <div class="explanation-text-content">
-                            <p style="margin-bottom: 10px; font-weight: 600; color: #4d66f5;">Aqui está um código prático em Java para exemplo:</p>
-                            <div class="code-editor">
-                                <div class="code-header">
-                                    <div class="dot r"></div>
-                                    <div class="dot y"></div>
-                                    <div class="dot g"></div>
-                                </div>
-                                <pre><code><?php echo htmlspecialchars($codigo_exemplo); ?></code></pre>
+                <div class="explanation-card-wrapper">
+                    <?php foreach ($paragrafos_limpos as $idx => $p): ?>
+                        <div class="explanation-slide <?php echo $idx === 0 ? 'active' : ''; ?>" data-slide-index="<?php echo $idx; ?>">
+                            <span class="slide-tag">
+                                <i class="fa-solid fa-comment-dots"></i>
+                                Explicação &bull; Parte <?php echo $idx + 1; ?>
+                            </span>
+                            <div class="explanation-text-content">
+                                <?php echo nl2br(htmlspecialchars($p)); ?>
                             </div>
                         </div>
-                    </div>
-                <?php endif; ?>
+                    <?php endforeach; ?>
+                    
+                    <?php if (!empty($codigo_exemplo)): ?>
+                        <div class="explanation-slide" data-slide-index="<?php echo count($paragrafos_limpos); ?>">
+                            <span class="slide-tag slide-tag-code">
+                                <i class="fa-solid fa-code"></i>
+                                Exemplo Prático em Java
+                            </span>
+                            <div class="explanation-text-content">
+                                <p class="explanation-code-lead">Veja como isso funciona na prática em Java:</p>
+                                <div class="code-editor explanation-code-editor">
+                                    <div class="code-header">
+                                        <div class="code-dots">
+                                            <div class="dot r"></div>
+                                            <div class="dot y"></div>
+                                            <div class="dot g"></div>
+                                        </div>
+                                        <span class="code-lang-pill">JAVA</span>
+                                    </div>
+                                    <pre><code><?php echo htmlspecialchars($codigo_exemplo); ?></code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </div>
             </div>
-        </div>
-        
-        <div class="phase-footer">
-            <button class="btn-nav" id="btnPrevSlide" onclick="changeSlide(-1)" disabled>ANTERIOR</button>
-            <div class="slide-dots" id="slideDots"></div>
-            <button class="btn-nav btn-next-slide" id="btnNextSlide" onclick="changeSlide(1)">PRÓXIMO</button>
+
+            <div class="phase-footer">
+                <button type="button" class="btn-nav btn-prev-slide" id="btnPrevSlide" onclick="changeSlide(-1)" disabled>
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Anterior</span>
+                </button>
+                <div class="slide-dots" id="slideDots" aria-label="Navegação entre etapas"></div>
+                <button type="button" class="btn-nav btn-next-slide" id="btnNextSlide" onclick="changeSlide(1)">
+                    <span>Próximo</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -608,6 +667,11 @@ $desafio_atual = conteudo_desafio($conn, $unidade_atual) ?? conteudo_desafio($co
                 <i class="fa-solid fa-volume-high"></i>
             </button>
             <span class="progress-text" id="progressText">0/<?php echo count($perguntas); ?></span>
+            <?php if ($is_primeira_licao): ?>
+                <button type="button" class="btn-tutor-help btn-tutor-help-icon" id="btnTutorLicao1Quiz" title="Ajuda do Tutor Opi" aria-label="Abrir ajuda do Tutor Opi">
+                    <i class="fa-solid fa-compass"></i>
+                </button>
+            <?php endif; ?>
         </div>
         
         <div class="quiz-grid-body"
@@ -959,12 +1023,14 @@ $desafio_atual = conteudo_desafio($conn, $unidade_atual) ?? conteudo_desafio($co
             </div>
         </div>
         
-        <!-- BARRA INFERIOR (VERIFICAR / CONTINUAR) -->
+        <!-- DOCK DE AÇÃO INFERIOR (VERIFICAR / CONTINUAR) -->
         <div class="quiz-footer" id="quizFooter">
-            <div class="feedback-message" id="feedbackMsg"></div>
-            <button class="btn-quiz-action btn-check" id="btnAction" onclick="handleAction()" disabled>
-                VERIFICAR
-            </button>
+            <div class="quiz-footer-inner">
+                <div class="feedback-message" id="feedbackMsg"></div>
+                <button class="btn-quiz-action btn-check" id="btnAction" onclick="handleAction()" disabled>
+                    VERIFICAR
+                </button>
+            </div>
         </div>
     </div>
 
@@ -1005,6 +1071,18 @@ $desafio_atual = conteudo_desafio($conn, $unidade_atual) ?? conteudo_desafio($co
     <script src="../assets/js/opus_audio.js?v=<?= time() ?>"></script>
     <script src="../assets/js/opus_alerta.js?v=<?= time() ?>"></script>
     <script src="../assets/js/script.js?v=<?= time() ?>"></script>
+
+    <?php
+    $OPUS_TOUR_EXTRA_CONFIG = [
+        'cap' => (int) $unidade_atual,
+        'licao' => (int) $licao_atual,
+        'isPrimeiraLicao' => $is_primeira_licao,
+        'licaoTitulo' => (string) ($dados_licao['titulo'] ?? ''),
+        'totalSlides' => isset($total_slides_expl) ? (int) $total_slides_expl : 0,
+        'totalQuestoes' => count($perguntas),
+    ];
+    include '../../back/includes/tour_opi.php';
+    ?>
 
     <?php if ($licao_atual == 5): ?>
         <!-- Script Específico da Lição 5 (Codédex) -->

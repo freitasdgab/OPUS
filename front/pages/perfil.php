@@ -22,8 +22,6 @@ $dados_user =$stmt_user->get_result()->fetch_assoc();
 // Personalização de Avatar e Fundo (Sem foto padrão: ou tem ou não tem)
 $foto_perfil = !empty($dados_user['foto_perfil']) ? trim($dados_user['foto_perfil']) : '';
 $cor_fundo = !empty($dados_user['cor_fundo']) ? $dados_user['cor_fundo'] : '#1cb0f6';
-$pais_usuario = !empty($dados_user['pais']) ? $dados_user['pais'] : 'Brasil';
-$pais_codigo_usuario = !empty($dados_user['pais_codigo']) ? strtolower($dados_user['pais_codigo']) : 'br';
 $is_mascot = (!empty($foto_perfil) && strpos($foto_perfil, '../assets/img/') !== false);
 
 // Dados do Usuário
@@ -53,7 +51,9 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meu Perfil - Opus</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" type="image/png" href="../assets/img/LOGO.png?v=2">
     <link rel="shortcut icon" type="image/png" href="../assets/img/LOGO.png?v=2">
@@ -87,9 +87,15 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                                     </div>
                                 <?php endif; ?>
                             </div>
-                            <button type="button" class="edit-avatar-btn" onclick="openProfileModal()" title="Editar foto de perfil">
-                                <i class="fa-solid fa-pen"></i>
-                            </button>
+                            <div class="avatar-actions-group">
+                                <button type="button" class="edit-avatar-btn" onclick="openProfileModal()" title="Editar foto de perfil">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button type="button" class="btn-add-social" onclick="document.getElementById('socialEditModal').style.display='flex'" title="Adicionar ou editar redes sociais">
+                                    <i class="fa-solid fa-share-nodes"></i>
+                                    <span>Adicionar redes sociais</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -118,11 +124,6 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                         </div>
                         <div class="user-details" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                             <span class="email-text"><?php echo htmlspecialchars($email); ?></span>
-                            <div onclick="openProfileModal()" style="display: inline-flex; align-items: center; gap: 6px; background: #191924; border: 1px solid #2e2e42; border-radius: 20px; padding: 3px 10px; font-weight: 700; font-size: 0.85rem; color: #fff; cursor: pointer; transition: 0.2s;" onmouseover="this.style.borderColor='#1cb0f6'" onmouseout="this.style.borderColor='#2e2e42'" title="Alterar país de origem">
-                                <img src="https://flagcdn.com/24x18/<?php echo htmlspecialchars($pais_codigo_usuario); ?>.png" srcset="https://flagcdn.com/48x36/<?php echo htmlspecialchars($pais_codigo_usuario); ?>.png 2x" width="18" height="13" alt="<?php echo htmlspecialchars($pais_usuario); ?>" style="border-radius: 2px;">
-                                <span><?php echo htmlspecialchars($pais_usuario); ?></span>
-                                <i class="fa-solid fa-pen" style="font-size: 0.7rem; color: #7a7a9d; margin-left: 2px;"></i>
-                            </div>
                         </div>
                         <div class="member-since">
                             <?php echo strtolower($membro_desde); ?>
@@ -134,8 +135,7 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                             <div id="listaPedidosPerfil" style="display:flex; flex-direction:column; gap:10px;"></div>
                         </div>
 
-                            <button style="width: 100%; margin-bottom: 10px; padding: 12px; border-radius: 8px; font-weight: bold; font-family: 'Nunito', sans-serif; cursor: pointer; text-transform: uppercase; background-color: #1cb0f6; color: white; border: none;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'" onclick="document.getElementById('socialEditModal').style.display='flex'">Adicionar Redes Sociais</button>
-<div class="social-links">
+                        <div class="social-links">
                             <a href="#" onclick="openSocialModal('seguindo')">seguindo <span id="lblSeguindoCount">0</span></a>
                             <a href="#" onclick="openSocialModal('seguidores')">seguidores <span id="lblSeguidoresCount">0</span></a>
                             <a href="#" onclick="openSocialModal('amigos')">amigos <span id="lblAmigosCount">0</span></a>
@@ -253,27 +253,6 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                     <div class="color-option" style="background-color: #ff9600;" data-color="#ff9600" title="Laranja"></div>
                 </div>
 
-                <div class="modal-subtitle">País de Origem</div>
-                <div style="margin-bottom: 20px;">
-                    <select name="pais_codigo" id="select-pais" style="width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #2e2e42; background: #161a24; color: #fff; font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; outline: none;">
-                        <option value="br" <?php echo ($pais_codigo_usuario === 'br') ? 'selected' : ''; ?>>🇧🇷 Brasil</option>
-                        <option value="de" <?php echo ($pais_codigo_usuario === 'de') ? 'selected' : ''; ?>>🇩🇪 Alemanha</option>
-                        <option value="us" <?php echo ($pais_codigo_usuario === 'us') ? 'selected' : ''; ?>>🇺🇸 Estados Unidos</option>
-                        <option value="pt" <?php echo ($pais_codigo_usuario === 'pt') ? 'selected' : ''; ?>>🇵🇹 Portugal</option>
-                        <option value="ar" <?php echo ($pais_codigo_usuario === 'ar') ? 'selected' : ''; ?>>🇦🇷 Argentina</option>
-                        <option value="ca" <?php echo ($pais_codigo_usuario === 'ca') ? 'selected' : ''; ?>>🇨🇦 Canadá</option>
-                        <option value="es" <?php echo ($pais_codigo_usuario === 'es') ? 'selected' : ''; ?>>🇪🇸 Espanha</option>
-                        <option value="fr" <?php echo ($pais_codigo_usuario === 'fr') ? 'selected' : ''; ?>>🇫🇷 França</option>
-                        <option value="it" <?php echo ($pais_codigo_usuario === 'it') ? 'selected' : ''; ?>>🇮🇹 Itália</option>
-                        <option value="jp" <?php echo ($pais_codigo_usuario === 'jp') ? 'selected' : ''; ?>>🇯🇵 Japão</option>
-                        <option value="gb" <?php echo ($pais_codigo_usuario === 'gb') ? 'selected' : ''; ?>>🇬🇧 Reino Unido</option>
-                        <option value="mx" <?php echo ($pais_codigo_usuario === 'mx') ? 'selected' : ''; ?>>🇲🇽 México</option>
-                        <option value="cl" <?php echo ($pais_codigo_usuario === 'cl') ? 'selected' : ''; ?>>🇨🇱 Chile</option>
-                        <option value="co" <?php echo ($pais_codigo_usuario === 'co') ? 'selected' : ''; ?>>🇨🇴 Colômbia</option>
-                        <option value="uy" <?php echo ($pais_codigo_usuario === 'uy') ? 'selected' : ''; ?>>🇺🇾 Uruguai</option>
-                    </select>
-                </div>
-
                 <div class="modal-actions">
                     <button type="button" class="btn-modal btn-cancel" onclick="closeProfileModal()">Cancelar</button>
                     <button type="submit" class="btn-modal btn-save">Salvar</button>
@@ -354,6 +333,7 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
     </div>
 
     <script src="../assets/js/script.js?v=<?= time() ?>"></script>
+    <script src="../assets/js/opus_audio.js?v=<?= time() ?>"></script>
     <script>
         // Config gerada pelo PHP: unico trecho dinamico da pagina, o resto da
         // logica mora em ../assets/js/perfil.js

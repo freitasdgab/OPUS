@@ -63,7 +63,7 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    box-shadow: 0 6px 15px rgba(88, 204, 2, 0.3);
+    box-shadow: none;
 }
 
 .btn-invite-link:hover {
@@ -110,7 +110,7 @@
     background: #1cb0f6;
     border-color: #1cb0f6;
     color: #ffffff;
-    box-shadow: 0 6px 16px rgba(28, 176, 246, 0.4);
+    box-shadow: none;
 }
 
 /* CONTEÚDO DAS ABAS */
@@ -656,7 +656,7 @@
 .btn-invite-link.zap {
     background: #25D366;
     border-bottom-color: #1b9e4b;
-    box-shadow: 0 6px 15px rgba(37, 211, 102, 0.35);
+    box-shadow: none;
 }
 
 /* QUADRADINHOS DE GRUPOS DE BATALHA */

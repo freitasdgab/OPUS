@@ -63,7 +63,7 @@ body, html {
 
 .league-node.active .league-node-icon {
     border-color: var(--gold);
-    box-shadow: 0 4px 12px rgba(255, 200, 0, 0.4);
+    box-shadow: none;
 }
 
 .league-node-icon {

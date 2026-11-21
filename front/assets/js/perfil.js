@@ -379,6 +379,12 @@ fetch('../../back/api/conquistas.php?v=' + Date.now())
                 </div>`;
         });
     }
+
+    if (Array.isArray(data.novos_trofeus) && data.novos_trofeus.length > 0 && window.OpusTour && typeof window.OpusTour.celebrateTrophies === 'function') {
+        if (typeof window.OpusTour.isOpen !== 'function' || !window.OpusTour.isOpen()) {
+            setTimeout(() => window.OpusTour.celebrateTrophies(data.novos_trofeus), 500);
+        }
+    }
 })
 .catch(err => console.error('Erro ao carregar conquistas no perfil:', err));
 
@@ -507,8 +513,101 @@ function closeSocialModal() {
     document.getElementById('socialModal').classList.remove('active');
 }
 
-// Carrega os amigos ao iniciar
+// Preferências do Perfil (Modo Claro, Efeitos Sonoros e Tour com o Opi)
+function inicializarPreferenciasPerfil() {
+    const card = document.getElementById('perfilPreferenciasCard');
+    if (!card) return;
+
+    const themeSwitch = document.getElementById('perfilThemeSwitch');
+    const themeDesc = document.getElementById('perfilThemeDesc');
+    const themeIcon = document.getElementById('perfilThemeIcon');
+
+    const soundSwitch = document.getElementById('perfilSoundSwitch');
+    const soundDesc = document.getElementById('perfilSoundDesc');
+    const soundIcon = document.getElementById('perfilSoundIcon');
+
+    const btnTourCompleto = document.getElementById('btnPerfilTourCompleto');
+    const btnTourLocal = document.getElementById('btnPerfilTourLocal');
+
+    function syncThemeUI() {
+        const isLight = typeof window.opusIsLightMode === 'function'
+            ? window.opusIsLightMode()
+            : document.body.classList.contains('light-mode');
+        if (themeSwitch) themeSwitch.checked = isLight;
+        if (themeDesc) themeDesc.textContent = isLight ? 'Tema claro ativo' : 'Tema escuro ativo';
+        if (themeIcon) {
+            themeIcon.classList.toggle('fa-sun', !isLight);
+            themeIcon.classList.toggle('fa-moon', isLight);
+        }
+    }
+
+    function syncSoundUI() {
+        const muted = (window.OpusAudio && typeof window.OpusAudio.isMuted === 'function')
+            ? window.OpusAudio.isMuted()
+            : (localStorage.getItem('opus_sound_muted') === 'true');
+        if (soundSwitch) soundSwitch.checked = !muted;
+        if (soundDesc) soundDesc.textContent = muted ? 'Sons silenciados' : 'Sons ligados';
+        if (soundIcon) {
+            soundIcon.classList.toggle('fa-volume-high', !muted);
+            soundIcon.classList.toggle('fa-volume-xmark', muted);
+        }
+    }
+
+    syncThemeUI();
+    syncSoundUI();
+
+    if (themeSwitch) {
+        themeSwitch.addEventListener('change', () => {
+            if (typeof window.opusSetTheme === 'function') {
+                window.opusSetTheme(themeSwitch.checked ? 'light' : 'dark');
+            }
+            if (window.OpusAudio && typeof window.OpusAudio.playClick === 'function') {
+                window.OpusAudio.playClick();
+            }
+            syncThemeUI();
+        });
+    }
+
+    if (soundSwitch) {
+        soundSwitch.addEventListener('change', () => {
+            const muted = !soundSwitch.checked;
+            if (window.OpusAudio && typeof window.OpusAudio.setMuted === 'function') {
+                window.OpusAudio.setMuted(muted);
+                if (!muted && typeof window.OpusAudio.playClick === 'function') {
+                    window.OpusAudio.playClick();
+                }
+            } else {
+                try { localStorage.setItem('opus_sound_muted', muted ? 'true' : 'false'); } catch (e) {}
+            }
+            syncSoundUI();
+        });
+    }
+
+    window.addEventListener('opus:theme-change', syncThemeUI);
+    window.addEventListener('opus:sound-toggle', syncSoundUI);
+
+    if (btnTourCompleto) {
+        btnTourCompleto.addEventListener('click', () => {
+            if (window.OpusTour && typeof window.OpusTour.startPrincipal === 'function') {
+                window.OpusTour.startPrincipal();
+            } else {
+                window.location.href = 'dashboard.php?tour=1';
+            }
+        });
+    }
+
+    if (btnTourLocal) {
+        btnTourLocal.addEventListener('click', () => {
+            if (window.OpusTour && typeof window.OpusTour.startPerfil === 'function') {
+                window.OpusTour.startPerfil();
+            }
+        });
+    }
+}
+
+// Carrega os amigos e preferências ao iniciar
 document.addEventListener('DOMContentLoaded', () => {
     carregarAmigosPerfil();
+    inicializarPreferenciasPerfil();
 });
 

@@ -126,7 +126,7 @@
 .btn-invite:hover {
     background: #38bdf8;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(28, 176, 246, 0.3);
+    box-shadow: none;
 }
 .btn-invite:active { transform: translateY(2px); border-bottom-width: 0; }
 

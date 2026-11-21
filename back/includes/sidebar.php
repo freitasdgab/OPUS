@@ -1,6 +1,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/light-mode.css?v=<?= time() ?>">
 <?php
 // Barra lateral única, incluída em todas as páginas internas.
@@ -43,4 +43,7 @@ $itens_menu = [
 <?php
 // Inclui o assistente flutuante Opi IA em todas as páginas com a sidebar
 include __DIR__ . '/chatbot.php';
+
+// Inclui o Tour Guiado Interativo com o Mascote Opi (estilo Duolingo)
+include __DIR__ . '/tour_opi.php';
 ?>

@@ -1,11 +1,8 @@
-// theme.js - Gerencia o carregamento do tema Claro/Escuro
-(function() {
+// theme.js - Gerencia o carregamento e sincronização do tema Claro/Escuro
+(function () {
     const currentTheme = localStorage.getItem('opus_theme') || 'dark';
     if (currentTheme === 'light') {
-        // Tenta aplicar ao HTML e Body o mais cedo possvel
         document.documentElement.classList.add('light-mode');
-        
-        // Garante que o body tambm receba a classe
         const applyToBody = () => {
             if (document.body) {
                 document.body.classList.add('light-mode');
@@ -15,45 +12,50 @@
         };
         applyToBody();
     }
-})();
 
-// Lgica de inicializao dos botes de toggle (se existirem na pgina)
-document.addEventListener('DOMContentLoaded', () => {
-    const themeBtn = document.getElementById('themeToggleBtn');
-    const themeIcon = document.getElementById('themeIcon');
-    const themeText = document.getElementById('themeText');
-    const body = document.body;
-
-    // Se estiver na página com o botão, ajusta o texto e ícone (se houver)
-    if (themeBtn && themeText) {
-        if (body.classList.contains('light-mode')) {
-            if (themeIcon) {
-                themeIcon.classList.remove('fa-sun');
-                themeIcon.classList.add('fa-moon');
-            }
-            themeText.innerText = 'Modo Escuro';
+    function syncSidebarThemeButton(isLight) {
+        const themeIcon = document.getElementById('themeIcon');
+        const themeText = document.getElementById('themeText');
+        if (themeIcon) {
+            themeIcon.classList.toggle('fa-moon', isLight);
+            themeIcon.classList.toggle('fa-sun', !isLight);
         }
-
-        themeBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            body.classList.toggle('light-mode');
-            document.documentElement.classList.toggle('light-mode');
-            
-            if (body.classList.contains('light-mode')) {
-                localStorage.setItem('opus_theme', 'light');
-                if (themeIcon) {
-                    themeIcon.classList.remove('fa-sun');
-                    themeIcon.classList.add('fa-moon');
-                }
-                themeText.innerText = 'Modo Escuro';
-            } else {
-                localStorage.setItem('opus_theme', 'dark');
-                if (themeIcon) {
-                    themeIcon.classList.remove('fa-moon');
-                    themeIcon.classList.add('fa-sun');
-                }
-                themeText.innerText = 'Modo Claro';
-            }
-        });
+        if (themeText) {
+            themeText.innerText = isLight ? 'Modo Escuro' : 'Modo Claro';
+        }
     }
-});
+
+    window.opusIsLightMode = function () {
+        return document.documentElement.classList.contains('light-mode') ||
+            (document.body && document.body.classList.contains('light-mode'));
+    };
+
+    window.opusSetTheme = function (mode) {
+        const isLight = mode === 'light';
+        document.documentElement.classList.toggle('light-mode', isLight);
+        if (document.body) {
+            document.body.classList.toggle('light-mode', isLight);
+        }
+        try {
+            localStorage.setItem('opus_theme', isLight ? 'light' : 'dark');
+        } catch (e) {}
+        syncSidebarThemeButton(isLight);
+        window.dispatchEvent(new CustomEvent('opus:theme-change', { detail: { theme: isLight ? 'light' : 'dark', isLight } }));
+    };
+
+    window.opusToggleTheme = function () {
+        window.opusSetTheme(window.opusIsLightMode() ? 'dark' : 'light');
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const themeBtn = document.getElementById('themeToggleBtn');
+        syncSidebarThemeButton(window.opusIsLightMode());
+
+        if (themeBtn) {
+            themeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.opusToggleTheme();
+            });
+        }
+    });
+})();

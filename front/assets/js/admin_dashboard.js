@@ -68,18 +68,17 @@
 
             const s = data.data;
 
-            // 1. Destaques Ampliados (Semana e Próxima Virada)
-            if (s.ligas_info) {
-                document.getElementById('destaque-semana').innerText = s.ligas_info.semana_atual || '--/--/----';
-                document.getElementById('destaque-proxima-virada').innerText = s.ligas_info.proxima_virada || '--/--/----';
+            // 1. Destaque de Próxima Virada
+            const elProximaVirada = document.getElementById('destaque-proxima-virada');
+            if (s.ligas_info && elProximaVirada) {
+                elProximaVirada.innerText = s.ligas_info.proxima_virada || '--/--/----';
             }
 
-            // 2. KPIs
-            document.getElementById('kpi-total-usuarios').innerText = Number(s.total_usuarios || 0).toLocaleString('pt-BR');
-            document.getElementById('kpi-ofensiva-ativa').innerText = Number(s.ofensivas.com_fogo || 0).toLocaleString('pt-BR');
-            document.getElementById('kpi-max-ofensiva').innerText = (s.ofensivas.max_fogo || 0);
-            document.getElementById('kpi-vidas-cheias').innerText = Number(s.vidas.cheias_3 || 0).toLocaleString('pt-BR');
-            document.getElementById('kpi-vidas-zeradas').innerText = (s.vidas.zeradas_0 || 0);
+            // 2. KPI Total de Usuários
+            const elTotalUsuarios = document.getElementById('kpi-total-usuarios');
+            if (elTotalUsuarios) {
+                elTotalUsuarios.innerText = Number(s.total_usuarios || 0).toLocaleString('pt-BR');
+            }
 
             // 3. Cards de Divisões
             renderizarCardsDivisoes(s.divisoes);
@@ -134,7 +133,6 @@
         Chart.defaults.font.family = "'Nunito', sans-serif";
         Chart.defaults.font.weight = '700';
 
-        const gridColor = isLight ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.06)';
         const chartBorderColor = isLight ? '#ffffff' : '#18272f';
 
         // 1. GRÁFICO DE LIGAS (DONUT)
@@ -163,71 +161,6 @@
                 }
             });
         }
-
-        // 2. GRÁFICO DE CONCLUSÃO DE CAPÍTULOS (BARRAS)
-        const ctxCapitulos = document.getElementById('chartCapitulos')?.getContext('2d');
-        if (ctxCapitulos) {
-            const caps = data.progresso_capitulos || [];
-            chartInstances.capitulos = new Chart(ctxCapitulos, {
-                type: 'bar',
-                data: {
-                    labels: caps.map(c => c.nome),
-                    datasets: [{
-                        label: 'Alunos que Concluíram',
-                        data: caps.map(c => c.concluidos),
-                        backgroundColor: 'rgba(34, 197, 94, 0.75)',
-                        borderColor: '#22c55e',
-                        borderWidth: 2,
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: gridColor } },
-                        x: { grid: { display: false } }
-                    }
-                }
-            });
-        }
-
-        // 3. GRÁFICO DE STATUS DE VIDAS (BARRA HORIZONTAL)
-        const ctxVidas = document.getElementById('chartStatusVidas')?.getContext('2d');
-        if (ctxVidas && data.vidas) {
-            chartInstances.vidas = new Chart(ctxVidas, {
-                type: 'bar',
-                data: {
-                    labels: ['3 Vidas (Cheias)', '2 Vidas', '1 Vida', '0 Vidas (Zeradas)'],
-                    datasets: [{
-                        data: [
-                            data.vidas.cheias_3 || 0,
-                            data.vidas.medias_2 || 0,
-                            data.vidas.baixas_1 || 0,
-                            data.vidas.zeradas_0 || 0
-                        ],
-                        backgroundColor: ['#22c55e', '#eab308', '#f97316', '#ef4444'],
-                        borderWidth: 1,
-                        borderRadius: 6
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        x: { beginAtZero: true, grid: { color: gridColor } },
-                        y: { grid: { display: false } }
-                    }
-                }
-            });
-        }
     }
 
     // ── Gerenciamento de Usuários (Tabela) ────────────────────────────────────
@@ -242,7 +175,7 @@
 
         tbody.innerHTML = `
             <tr>
-                <td colspan="7" style="text-align:center; padding: 40px; color: var(--text-muted);">
+                <td colspan="5" style="text-align:center; padding: 40px; color: var(--text-muted);">
                     <i class="fa-solid fa-spinner fa-spin" style="font-size: 22px; margin-bottom: 8px; display:block; color: var(--accent-blue);"></i>
                     Carregando usuários...
                 </td>
@@ -263,14 +196,14 @@
             const data = await res.json();
 
             if (!data.sucesso) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: #ef4444;">${escapeHtml(data.mensagem)}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 30px; color: #ef4444;">${escapeHtml(data.mensagem)}</td></tr>`;
                 return;
             }
 
             renderizarTabela(data.data);
         } catch (err) {
             console.error("Erro ao carregar lista de usuários:", err);
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: #ef4444;">Erro ao carregar dados dos usuários.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 30px; color: #ef4444;">Erro ao carregar dados dos usuários.</td></tr>`;
         }
     }
 
@@ -279,7 +212,7 @@
         const lista = data.usuarios || [];
 
         if (lista.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 40px; color: var(--text-muted);">Nenhum usuário encontrado com os filtros aplicados.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 40px; color: var(--text-muted);">Nenhum usuário encontrado com os filtros aplicados.</td></tr>`;
             document.getElementById('page-info-text').innerText = 'Mostrando 0 de 0 usuários';
             document.getElementById('page-nav-btns').innerHTML = '';
             return;
@@ -296,11 +229,6 @@
             const divSlug = (u.divisao || 'bronze').toLowerCase();
             const divNome = LIGAS_INFO[divSlug] ? LIGAS_INFO[divSlug].nome : 'Bronze';
 
-            let coracoes = '';
-            for (let i = 1; i <= 3; i++) {
-                coracoes += `<i class="fa-solid fa-heart ${i <= u.vidas ? '' : 'empty'}"></i>`;
-            }
-
             tr.innerHTML = `
                 <td style="font-family: 'Orbitron', sans-serif; font-weight: bold; color: var(--accent-blue); font-size: 0.85rem;">#${u.id}</td>
                 <td>
@@ -316,14 +244,6 @@
                     <span class="div-badge badge-${divSlug}">
                         <i class="fa-solid fa-shield"></i> ${divNome}
                     </span>
-                </td>
-                <td>
-                    <div class="hearts-box" title="${u.vidas} de 3 vidas">
-                        ${coracoes}
-                    </div>
-                </td>
-                <td style="font-family: 'Orbitron', sans-serif; font-weight: bold; color: #f97316;">
-                    <i class="fa-solid fa-fire"></i> ${u.dias_fogo}d
                 </td>
                 <td style="color: var(--text-muted); font-size: 0.82rem;">${u.criado_em}</td>
                 <td style="text-align: center;">

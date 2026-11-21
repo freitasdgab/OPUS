@@ -190,6 +190,6 @@ $_SESSION['jornada_escolhida'] = 'Java';
 // ── 7. Retorna URL de redirecionamento ────────────────────────
 echo json_encode([
     'ok'           => true,
-    'redirect_url' => 'dashboard.php',
+    'redirect_url' => ($nivel === 'admin' ? 'admin_dashboard.php' : 'dashboard.php'),
 ]);
 ?>

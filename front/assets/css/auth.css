@@ -267,7 +267,7 @@ input:autofill {
 
 .btn-auth.primary:hover {
     background: #324edc;
-    box-shadow: 0 0 12px rgba(26, 54, 202, 0.6);
+    box-shadow: none;
 }
 
 .btn-auth.secondary {

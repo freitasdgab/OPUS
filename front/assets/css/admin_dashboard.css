@@ -276,6 +276,16 @@ body:not(.light-mode) .icon-semana {
     border: 2px solid rgba(28, 176, 246, 0.35);
 }
 
+.icon-users {
+    background: #e0f2fe;
+    color: var(--duo-blue);
+    border: 2px solid #bae6fd;
+}
+body:not(.light-mode) .icon-users {
+    background: rgba(28, 176, 246, 0.18);
+    border: 2px solid rgba(28, 176, 246, 0.35);
+}
+
 .icon-virada {
     background: #f3e8ff;
     color: var(--duo-purple);
@@ -300,6 +310,13 @@ body:not(.light-mode) .icon-virada {
     font-weight: 900;
     color: var(--text-main);
     line-height: 1.2;
+}
+
+.highlight-content .sub-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-dim);
+    margin-top: 3px;
 }
 
 /* Card de Ação: Virada Semanal */
@@ -467,7 +484,30 @@ body:not(.light-mode) .kpi-box-lives .kpi-box-icon {
     margin-top: 4px;
 }
 
-/* ── 3. SEÇÃO DE DIVISÕES (LIGAS) ────────────────────────────────────────── */
+/* ── 3. SEÇÃO DE LIGAS: PROPORÇÃO (ESQUERDA) + DIVISÕES (DIREITA) ─────────── */
+.leagues-overview-grid {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.9fr) 1.35fr;
+    gap: 20px;
+    align-items: stretch;
+    margin-bottom: 30px;
+}
+
+@media (max-width: 1024px) {
+    .leagues-overview-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.divisions-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.divisions-column .section-header {
+    margin-bottom: 14px;
+}
+
 .section-header {
     font-size: 1.15rem;
     font-weight: 900;
@@ -484,9 +524,20 @@ body:not(.light-mode) .kpi-box-lives .kpi-box-icon {
 
 .ligas-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-    gap: 16px;
-    margin-bottom: 30px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.ligas-grid .liga-card-item:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 520px) {
+    .ligas-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .liga-card-item {
@@ -540,15 +591,9 @@ body:not(.light-mode) .kpi-box-lives .kpi-box-icon {
 /* ── 4. GRÁFICOS (CHARTS ROW) ────────────────────────────────────────────── */
 .charts-row {
     display: grid;
-    grid-template-columns: 1fr 1.3fr 1fr;
+    grid-template-columns: 1fr;
     gap: 18px;
     margin-bottom: 30px;
-}
-
-@media (max-width: 1100px) {
-    .charts-row {
-        grid-template-columns: 1fr;
-    }
 }
 
 .chart-panel {
@@ -577,7 +622,10 @@ body:not(.light-mode) .kpi-box-lives .kpi-box-icon {
 .chart-body {
     position: relative;
     flex: 1;
-    min-height: 220px;
+    min-height: 260px;
+    width: 100%;
+    max-width: 380px;
+    margin: 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;

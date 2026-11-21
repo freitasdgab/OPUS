@@ -83,13 +83,16 @@ Table usuarios {
   senha varchar(255) [not null]
   xp int [default: 0]
   trofeus int [default: 0]
-  dificuldade varchar(50) [default: 'Iniciante']
   foto_perfil text
   criado_em timestamp
   dias_fogo int [default: 0]
   vidas int [default: 3]
   vidas_proxima_em datetime
   ultima_atividade date
+  tour_visto boolean [default: false]
+  tour_perfil_visto boolean [default: false]
+  tour_licao1_visto boolean [default: false]
+  tour_resultado1_visto boolean [default: false]
   nivel_acesso varchar(20) [default: 'comum']
   cor_fundo varchar(20)
   username varchar(50) [unique]

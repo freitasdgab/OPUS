@@ -30,7 +30,6 @@ package "Acesso & Usuários" #F8FAFC {
         # senha : String
         # xp : int
         # trofeus : int
-        # dificuldade : String
         # fotoPerfil : String
         # diasFogo : int
         # vidas : int

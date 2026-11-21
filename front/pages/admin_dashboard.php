@@ -8,7 +8,7 @@ require_once '../../back/lib/ligas_logic.php';
 // VERIFICAÇÃO DE SEGURANÇA E ACESSO DE ADMINISTRADOR
 // ----------------------------------------------------
 if (!isset($_SESSION['user_id'])) {
-    header("Location: auth.html");
+    header("Location: auth.html?mode=login");
     exit();
 }
 
@@ -43,7 +43,7 @@ if (!$current_user || ($current_user['nivel_acesso'] ?? '') !== 'admin') {
             <i class='fa-solid fa-lock'></i>
             <h1>Ambiente Restrito</h1>
             <p>Este painel administrativo é isolado e requer privilégios de Administrador.</p>
-            <a href='auth.html'><i class='fa-solid fa-arrow-left'></i> Fazer Login como Admin</a>
+            <a href='auth.html?mode=login'><i class='fa-solid fa-arrow-left'></i> Fazer Login como Admin</a>
         </div>
     </body>
     </html>";
@@ -105,16 +105,17 @@ $email_admin = htmlspecialchars($current_user['email'] ?? '');
     <!-- ÁREA PRINCIPAL DO PAINEL ADMIN -->
     <main class="admin-container">
 
-        <!-- DESTAQUE VISUAL AMPLIADO: SEMANA DE LIGAS & PRÓXIMA VIRADA & BOTÃO -->
+        <!-- DESTAQUE VISUAL: TOTAL DE USUÁRIOS, PRÓXIMA VIRADA & BOTÃO DE VIRADA -->
         <section class="highlight-banner-grid">
-            <!-- 1. SEMANA DE LIGAS (TAMANHO MAIOR) -->
+            <!-- 1. TOTAL DE USUÁRIOS -->
             <div class="highlight-card">
-                <div class="highlight-card-icon icon-semana">
-                    <i class="fa-solid fa-calendar-week"></i>
+                <div class="highlight-card-icon icon-users">
+                    <i class="fa-solid fa-users"></i>
                 </div>
                 <div class="highlight-content">
-                    <div class="label">Semana de Ligas Atual</div>
-                    <div class="value-large" id="destaque-semana">--/--/----</div>
+                    <div class="label">Total de Usuários</div>
+                    <div class="value-large" id="kpi-total-usuarios">--</div>
+                    <div class="sub-label">Cadastrados no ecossistema</div>
                 </div>
             </div>
 
@@ -141,58 +142,9 @@ $email_admin = htmlspecialchars($current_user['email'] ?? '');
             </div>
         </section>
 
-        <!-- KPIS PRINCIPAIS (TOTAL USUÁRIOS, DIAS DE OFENSIVA, STATUS DE VIDA) -->
-        <section class="kpi-row">
-            <!-- TOTAL DE USUÁRIOS -->
-            <div class="kpi-box kpi-box-users">
-                <div class="kpi-box-icon">
-                    <i class="fa-solid fa-users"></i>
-                </div>
-                <div class="kpi-box-info">
-                    <div class="kpi-title">Total de Usuários</div>
-                    <div class="kpi-number" id="kpi-total-usuarios">--</div>
-                    <div class="kpi-sub">Cadastrados no ecossistema</div>
-                </div>
-            </div>
-
-            <!-- DIAS DE OFENSIVA -->
-            <div class="kpi-box kpi-box-streak">
-                <div class="kpi-box-icon">
-                    <i class="fa-solid fa-fire"></i>
-                </div>
-                <div class="kpi-box-info">
-                    <div class="kpi-title">Dias de Ofensiva</div>
-                    <div class="kpi-number" id="kpi-ofensiva-ativa">--</div>
-                    <div class="kpi-sub">Recorde: <strong id="kpi-max-ofensiva" style="color:#f97316;">--</strong> dias seguidos</div>
-                </div>
-            </div>
-
-            <!-- STATUS DE VIDA -->
-            <div class="kpi-box kpi-box-lives">
-                <div class="kpi-box-icon">
-                    <i class="fa-solid fa-heart-pulse"></i>
-                </div>
-                <div class="kpi-box-info">
-                    <div class="kpi-title">Status de Vida</div>
-                    <div class="kpi-number" id="kpi-vidas-cheias">--</div>
-                    <div class="kpi-sub">Com 3 vidas cheias (<strong id="kpi-vidas-zeradas" style="color:#ef4444;">--</strong> zerados)</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- SEÇÃO DE DIVISÕES / LIGAS -->
-        <div class="section-header">
-            <i class="fa-solid fa-shield-halved"></i>
-            Distribuição de Usuários por Divisão
-        </div>
-
-        <div class="ligas-grid" id="ligas-grid-container">
-            <!-- Preenchido via JavaScript -->
-        </div>
-
-        <!-- GRÁFICOS INTERATIVOS -->
-        <section class="charts-row">
-            <!-- GRÁFICO 1: PROPORÇÃO DA DISTRIBUIÇÃO DE LIGAS -->
+        <!-- SEÇÃO DE LIGAS: PROPORÇÃO (ESQUERDA) + DISTRIBUIÇÃO POR DIVISÃO (DIREITA) -->
+        <section class="leagues-overview-grid">
+            <!-- ESQUERDA: GRÁFICO PROPORÇÃO DE LIGAS -->
             <div class="chart-panel">
                 <div class="chart-panel-header">
                     <h3><i class="fa-solid fa-chart-pie" style="color: #1cb0f6;"></i> Proporção de Ligas</h3>
@@ -202,23 +154,15 @@ $email_admin = htmlspecialchars($current_user['email'] ?? '');
                 </div>
             </div>
 
-            <!-- GRÁFICO 2: DADOS DE CONCLUSÃO DE CAPÍTULOS -->
-            <div class="chart-panel">
-                <div class="chart-panel-header">
-                    <h3><i class="fa-solid fa-bars-progress" style="color: #22c55e;"></i> Conclusão de Capítulos</h3>
+            <!-- DIREITA: DISTRIBUIÇÃO DE USUÁRIOS POR DIVISÃO -->
+            <div class="divisions-column">
+                <div class="section-header">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    Distribuição de Usuários por Divisão
                 </div>
-                <div class="chart-body">
-                    <canvas id="chartCapitulos"></canvas>
-                </div>
-            </div>
 
-            <!-- GRÁFICO 3: STATUS DE VIDA DOS JOGADORES -->
-            <div class="chart-panel">
-                <div class="chart-panel-header">
-                    <h3><i class="fa-solid fa-heart" style="color: #ef4444;"></i> Status de Vidas</h3>
-                </div>
-                <div class="chart-body">
-                    <canvas id="chartStatusVidas"></canvas>
+                <div class="ligas-grid" id="ligas-grid-container">
+                    <!-- Preenchido via JavaScript -->
                 </div>
             </div>
         </section>
@@ -264,15 +208,13 @@ $email_admin = htmlspecialchars($current_user['email'] ?? '');
                             <th>ID</th>
                             <th>Aluno</th>
                             <th>Divisão de Liga</th>
-                            <th>Status de Vidas</th>
-                            <th>Ofensiva</th>
                             <th>Data de Cadastro</th>
                             <th style="text-align: center;">Ações</th>
                         </tr>
                     </thead>
                     <tbody id="admin-table-body">
                         <tr>
-                            <td colspan="7" style="text-align:center; padding: 40px; color: var(--text-muted);">
+                            <td colspan="5" style="text-align:center; padding: 40px; color: var(--text-muted);">
                                 <i class="fa-solid fa-spinner fa-spin" style="font-size: 22px; margin-bottom: 8px; display:block;"></i>
                                 Carregando usuários...
                             </td>

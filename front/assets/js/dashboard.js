@@ -228,14 +228,16 @@
             const modal = document.getElementById('modalAvisoBau');
             if (!modal) return;
             const iconBox = document.getElementById('avisoBauIconBox');
-            iconBox.style.background = '#58cc02';
-            iconBox.style.border = '3px solid #2e1800';
-            iconBox.style.borderBottom = '6px solid #225c01';
-            iconBox.style.boxShadow = 'none';
-            
-            const icon = document.getElementById('avisoBauIcone');
-            icon.className = 'fa-solid fa-box-open';
-            icon.style.color = '#fff';
+            const tplClaimed = document.getElementById('tplBauClaimedModalSvg');
+            if (iconBox) {
+                iconBox.className = 'modal-aviso-icon-wrap modal-aviso-bau-svg state-claimed';
+                iconBox.removeAttribute('style');
+                if (tplClaimed) {
+                    iconBox.innerHTML = tplClaimed.innerHTML;
+                } else {
+                    iconBox.innerHTML = '<i class="fa-solid fa-box-open" id="avisoBauIcone"></i>';
+                }
+            }
 
             document.getElementById('avisoBauTitulo').innerText = 'Baú Já Coletado!';
             document.getElementById('avisoBauSub').innerHTML = '<i class="fa-solid fa-circle-check"></i> Unidade ' + cap + (titulo ? (' · ' + titulo) : '');
@@ -267,14 +269,16 @@
             if (concluidas > 3) concluidas = 3;
 
             const iconBox = document.getElementById('avisoBauIconBox');
-            iconBox.style.background = '#ff9600';
-            iconBox.style.border = '3px solid #2e1800';
-            iconBox.style.borderBottom = '6px solid #b45309';
-            iconBox.style.boxShadow = 'none';
-
-            const icon = document.getElementById('avisoBauIcone');
-            icon.className = 'fa-solid fa-lock';
-            icon.style.color = '#fff';
+            const tplLocked = document.getElementById('tplBauLockedModalSvg');
+            if (iconBox) {
+                iconBox.className = 'modal-aviso-icon-wrap modal-aviso-bau-svg state-locked';
+                iconBox.removeAttribute('style');
+                if (tplLocked) {
+                    iconBox.innerHTML = tplLocked.innerHTML;
+                } else {
+                    iconBox.innerHTML = '<i class="fa-solid fa-lock" id="avisoBauIcone"></i>';
+                }
+            }
 
             document.getElementById('avisoBauTitulo').innerText = 'Baú Trancado';
             document.getElementById('avisoBauSub').innerHTML = '<i class="fa-solid fa-lock"></i> Unidade ' + cap + (titulo ? (' · ' + titulo) : '');
@@ -509,20 +513,24 @@
                     if (btnFechar) btnFechar.style.display = 'flex';
                     if (closeBtn) closeBtn.style.pointerEvents = 'auto';
 
-                    // Atualiza o nó 3D do baú na trilha para status "Coletado"
+                    // Atualiza o nó do baú na trilha para status "Coletado" com o SVG do baú pirata aberto
                     const chestNode = document.getElementById('chestNode_' + capAtualBau);
                     if (chestNode) {
+                        const tplClaimedTrail = document.getElementById('tplBauClaimedSvg');
+                        const claimedSvgHtml = tplClaimedTrail ? tplClaimedTrail.innerHTML : '';
                         chestNode.className = 'chest-node claimed';
+                        chestNode.setAttribute('aria-label', 'Baú da Unidade ' + capAtualBau + ' já coletado');
                         chestNode.onclick = function() { avisoBauColetado(capAtualBau, tituloAtualBau); };
-                        chestNode.innerHTML = `
-                            <div class="chest-sprite open">
-                                <div class="chest-lid"></div>
-                                <div class="chest-body"><span class="chest-interior-glow"></span></div>
-                            </div>
+                        chestNode.innerHTML = claimedSvgHtml + `
                             <span class="chest-tag-done"><i class="fa-solid fa-check"></i> Coletado</span>
                         `;
-                        const balloon = chestNode.parentElement.querySelector('.chest-balloon');
-                        if (balloon) balloon.remove();
+                        if (chestNode.parentElement) {
+                            chestNode.parentElement.classList.remove('available');
+                            chestNode.parentElement.classList.add('claimed');
+                            chestNode.parentElement.setAttribute('data-chest-state', 'claimed');
+                            const balloon = chestNode.parentElement.querySelector('.chest-balloon');
+                            if (balloon) balloon.remove();
+                        }
                         const aura = chestNode.querySelector('.chest-aura-glow');
                         if (aura) aura.remove();
                         setTimeout(renderizarTrilhasConexao, 60);
@@ -1659,6 +1667,16 @@
                         widgetOfensiva.classList.add('ofensiva-spotlight-focus');
                     });
                 }
+
+                // Acessibilidade por teclado nos baús da trilha (Enter / Espaço)
+                document.addEventListener('keydown', function(ev) {
+                    if (ev.key !== 'Enter' && ev.key !== ' ') return;
+                    const activeEl = document.activeElement;
+                    if (activeEl && activeEl.classList && activeEl.classList.contains('chest-node')) {
+                        ev.preventDefault();
+                        activeEl.click();
+                    }
+                });
             } catch (e) {}
         })();
 

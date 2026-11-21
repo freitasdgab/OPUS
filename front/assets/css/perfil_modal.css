@@ -156,7 +156,7 @@
 
 .pmodal-btn-seguir:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(28, 176, 246, 0.4);
+    box-shadow: none;
 }
 
 .pmodal-btn-seguir.following {
@@ -183,7 +183,7 @@
     border-bottom-color: #c94444;
     color: #fff;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(229, 101, 101, 0.4);
+    box-shadow: none;
 }
 
 .pmodal-actions-group {
@@ -212,7 +212,7 @@
 
 .pmodal-btn-chat:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(88, 204, 2, 0.4);
+    box-shadow: none;
 }
 
 .pmodal-btn-chat.add {
@@ -221,7 +221,7 @@
 }
 
 .pmodal-btn-chat.add:hover {
-    box-shadow: 0 4px 12px rgba(28, 176, 246, 0.4);
+    box-shadow: none;
 }
 
 .pmodal-btn-chat.pending {
@@ -497,7 +497,7 @@
 .btn-user-action:hover {
     background: #1cb0f6;
     color: #ffffff;
-    box-shadow: 0 4px 12px rgba(28, 176, 246, 0.35);
+    box-shadow: none;
     transform: translateY(-2px);
 }
 

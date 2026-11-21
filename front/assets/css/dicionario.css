@@ -48,8 +48,9 @@ body, html {
 
 .codex-header h1 {
     color: #fff;
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.8rem;
+    font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 2px;
     margin: 0 0 8px 0;
@@ -100,13 +101,13 @@ body, html {
 }
 
 .codex-hero-title {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.9rem;
-    font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+    font-size: 2.1rem;
+    font-weight: 900;
     color: #ffffff;
     margin: 0 0 12px 0;
     line-height: 1.25;
-    letter-spacing: 1px;
+    letter-spacing: -0.5px;
 }
 
 .codex-hero-title span {
@@ -221,7 +222,7 @@ body, html {
     background-color: rgba(28, 176, 246, 0.15);
     color: var(--duo-blue);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(28, 176, 246, 0.25);
+    box-shadow: none;
     z-index: 50;
 }
 
@@ -286,3 +287,46 @@ body, html {
     .comando-btn { width: 100%; text-align: center; }
     .comando-btn::after { max-width: min(240px, 80vw); }
 }
+
+/* =========================================================================
+   MODO CLARO (LIGHT MODE) OVERRIDES
+   ========================================================================= */
+html.light-mode .codex-hero,
+body.light-mode .codex-hero {
+    background: #ffffff !important;
+    border: 2px solid #e5e5e5 !important;
+    border-bottom: 4px solid #e5e5e5 !important;
+    box-shadow: none !important;
+    border-radius: 20px !important;
+}
+
+html.light-mode .codex-hero-badge,
+body.light-mode .codex-hero-badge {
+    background: rgba(28, 176, 246, 0.12) !important;
+    color: #0284c7 !important;
+    border: 1px solid rgba(28, 176, 246, 0.25) !important;
+}
+
+html.light-mode .codex-hero-title,
+body.light-mode .codex-hero-title {
+    color: #4b4b4b !important;
+}
+
+html.light-mode .codex-hero-title span,
+body.light-mode .codex-hero-title span {
+    color: #1cb0f6 !important;
+    background: linear-gradient(90deg, #0284c7, #00b4d8) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+}
+
+html.light-mode .codex-hero-desc,
+body.light-mode .codex-hero-desc {
+    color: #777777 !important;
+}
+
+html.light-mode .codex-hero-mascote img,
+body.light-mode .codex-hero-mascote img {
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.1)) !important;
+}
+

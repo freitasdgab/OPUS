@@ -188,11 +188,11 @@ if (!function_exists('opus_render_bau_svg')) {
                 $svg .= $moedaPlana(114, 69, 10.4, 3.8, 3.0);
                 $svg .= '</g>';
             } else {
-                // Baú coletado: interior oco com apenas 2 moedinhas remanescentes
+                // Baú coletado: interior vazio com apenas 2 moedinhas remanescentes repousando discretamente na borda
                 $svg .= '<g class="bau-claimed-interior">';
-                $svg .= '<rect x="42" y="64" width="102" height="6" fill="#472711" />';
-                $svg .= $moedaPlana(66, 68.5, 8.2, 3.2, 2.2);
-                $svg .= $moedaInclinada(116, 67.5, 6.4, -18);
+                $svg .= '<rect x="42" y="67.5" width="70" height="2.8" fill="#472711" />';
+                $svg .= $moedaPlana(66, 68.2, 8.0, 3.0, 2.2);
+                $svg .= $moedaInclinada(114, 68.5, 6.2, -18);
                 $svg .= '</g>';
             }
         }

@@ -41,40 +41,154 @@
     }
 
     // ====================================
-    // CONTROLE DOS SLIDES DE EXPLICAÇÃO
+    // BARRA DO TUTOR OPI (EXCLUSIVA DA LIÇÃO 1)
     // ====================================
-    function initDots() {
-        if (!dotsContainer) return;
-        dotsContainer.innerHTML = '';
-        for (let i = 0; i < totalSlides; i++) {
-            const dot = document.createElement('div');
-            dot.className = `dot-indicator ${i === 0 ? 'active' : ''}`;
-            dot.addEventListener('click', () => showSlide(i));
-            dotsContainer.appendChild(dot);
+    const lessonTutorBar = document.getElementById('opiLessonTutorBar');
+    const lessonTutorText = document.getElementById('opiLessonTutorText');
+    const lessonTutorImg = document.getElementById('opiLessonTutorImg');
+    const btnToggleLessonTutorBar = document.getElementById('btnToggleLessonTutorBar');
+
+    if (btnToggleLessonTutorBar && lessonTutorBar) {
+        btnToggleLessonTutorBar.addEventListener('click', () => {
+            playAudio('playClick');
+            const collapsed = lessonTutorBar.classList.toggle('is-collapsed');
+            btnToggleLessonTutorBar.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+            const icon = btnToggleLessonTutorBar.querySelector('i');
+            if (icon) {
+                icon.className = collapsed ? 'fa-solid fa-chevron-down' : 'fa-solid fa-chevron-up';
+            }
+        });
+    }
+
+    function getTutorTipByType(tipo) {
+        switch (tipo) {
+            case 'ordenar_codigo':
+            case 'parsons':
+                return 'Toque nas linhas abaixo na ordem certa para montar o código lógico e depois clique em VERIFICAR!';
+            case 'completar_codigo':
+                return 'Escolha o bloco abaixo que completa corretamente a lacuna (___) no código e clique em VERIFICAR!';
+            case 'predicao_saida':
+                return 'Analise o código Java acima e escolha qual será a saída exata no terminal antes de verificar!';
+            case 'spot_bug':
+                return 'Leia cada linha do código com calma e toque exatamente na linha onde está o erro!';
+            case 'pareamento':
+                return 'Toque em um item e depois no seu par correspondente até completar todos os pares!';
+            case 'multipla_escolha':
+            default:
+                return 'Leia a pergunta com atenção, escolha a opção correta (ou teclas 1, 2, 3) e clique em VERIFICAR!';
         }
     }
 
-    function showSlide(index) {
+    function updateLesson1TutorBar(mode, info) {
+        if (!lessonTutorBar || !lessonTutorText) return;
+        const data = info || {};
+        lessonTutorBar.classList.remove('is-correct', 'is-wrong');
+
+        if (mode === 'checked') {
+            const isLast = (typeof data.index === 'number' && typeof data.total === 'number' && data.index >= data.total - 1);
+            if (data.isCorrect) {
+                lessonTutorBar.classList.add('is-correct');
+                if (lessonTutorImg) lessonTutorImg.src = '../assets/img/acertoumetade.png';
+                lessonTutorText.textContent = isLast
+                    ? 'Boa! Você acertou a última questão! Clique em CONTINUAR para ver seu resumo e falar comigo no final!'
+                    : 'Mandou bem! Clique em CONTINUAR para ir para o próximo exercício!';
+            } else {
+                lessonTutorBar.classList.add('is-wrong');
+                if (lessonTutorImg) lessonTutorImg.src = '../assets/img/explicando2.png';
+                lessonTutorText.textContent = isLast
+                    ? 'Sem problema! Confira a resposta correta abaixo e clique em CONTINUAR para ver seu resumo!'
+                    : 'Quase! Dê uma olhada na resposta correta destacada abaixo para aprender e clique em CONTINUAR!';
+            }
+            return;
+        }
+
+        if (lessonTutorImg) lessonTutorImg.src = '../assets/img/explicando2.png';
+        lessonTutorText.textContent = getTutorTipByType(data.tipo);
+    }
+
+    // ====================================
+    // CONTROLE DOS SLIDES DE EXPLICAÇÃO
+    // ====================================
+    const stepSegments = document.querySelectorAll('.explanation-step-seg');
+    const slideCounterText = document.getElementById('slideCounterText');
+    const opiExplanationImg = document.getElementById('opiExplanationImg');
+
+    if (opiExplanationImg) {
+        opiExplanationImg.addEventListener('click', () => {
+            playAudio('playClick');
+            opiExplanationImg.classList.remove('opi-bounce-once');
+            void opiExplanationImg.offsetWidth;
+            opiExplanationImg.classList.add('opi-bounce-once');
+            setTimeout(() => {
+                opiExplanationImg.classList.remove('opi-bounce-once');
+            }, 680);
+        });
+    }
+
+    function initDots() {
+        if (dotsContainer) {
+            dotsContainer.innerHTML = '';
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = `dot-indicator ${i === 0 ? 'active' : ''}`;
+                dot.setAttribute('aria-label', `Etapa ${i + 1} de ${totalSlides}`);
+                dot.addEventListener('click', () => {
+                    if (i !== currentSlide) {
+                        playAudio('playClick');
+                        showSlide(i, i > currentSlide ? 1 : -1);
+                    }
+                });
+                dotsContainer.appendChild(dot);
+            }
+        }
+
+        stepSegments.forEach((seg, idx) => {
+            seg.addEventListener('click', () => {
+                if (idx !== currentSlide) {
+                    playAudio('playClick');
+                    showSlide(idx, idx > currentSlide ? 1 : -1);
+                }
+            });
+        });
+    }
+
+    function showSlide(index, direction = 1) {
         if (index < 0 || index >= totalSlides) return;
-        
-        slidesExpl[currentSlide].classList.remove('active');
+
+        slidesExpl[currentSlide].classList.remove('active', 'slide-dir-prev');
         currentSlide = index;
-        slidesExpl[currentSlide].classList.add('active');
+
+        const activeSlide = slidesExpl[currentSlide];
+        activeSlide.classList.remove('slide-dir-prev');
+        if (direction < 0) {
+            activeSlide.classList.add('slide-dir-prev');
+        }
+        activeSlide.classList.add('active');
 
         const dots = document.querySelectorAll('.dot-indicator');
         dots.forEach((dot, idx) => {
-            if (idx === currentSlide) dot.classList.add('active');
-            else dot.classList.remove('active');
+            dot.classList.toggle('active', idx === currentSlide);
         });
 
+        stepSegments.forEach((seg, idx) => {
+            seg.classList.toggle('active', idx === currentSlide);
+            seg.classList.toggle('completed', idx < currentSlide);
+            seg.setAttribute('aria-selected', idx === currentSlide ? 'true' : 'false');
+        });
+
+        if (slideCounterText) {
+            slideCounterText.textContent = `${currentSlide + 1} / ${totalSlides}`;
+        }
+
         if (btnPrev) btnPrev.disabled = currentSlide === 0;
-        
+
         if (btnNext) {
             if (currentSlide === totalSlides - 1) {
-                btnNext.textContent = 'COMEÇAR EXERCÍCIOS';
-                btnNext.className = 'btn-nav btn-next-slide';
+                btnNext.innerHTML = '<span>Começar Exercícios</span> <i class="fa-solid fa-bolt"></i>';
+                btnNext.className = 'btn-nav btn-next-slide btn-start-quiz';
             } else {
-                btnNext.textContent = 'PRÓXIMO';
+                btnNext.innerHTML = '<span>Próximo</span> <i class="fa-solid fa-arrow-right"></i>';
                 btnNext.className = 'btn-nav btn-next-slide';
             }
         }
@@ -82,10 +196,15 @@
 
     window.changeSlide = function(direction) {
         if (currentSlide === totalSlides - 1 && direction === 1) {
+            playAudio('playClick');
             startQuizPhase();
             return;
         }
-        showSlide(currentSlide + direction);
+        const targetIndex = currentSlide + direction;
+        if (targetIndex >= 0 && targetIndex < totalSlides) {
+            playAudio('playClick');
+            showSlide(targetIndex, direction);
+        }
     };
 
     function startQuizPhase() {
@@ -102,7 +221,8 @@
 
         const explPhase = document.getElementById('explanationPhase');
         const quizPhase = document.getElementById('quizPhase');
-        
+        const firstTipo = slidesQuiz[0] ? (slidesQuiz[0].getAttribute('data-tipo') || 'multipla_escolha') : 'multipla_escolha';
+
         if (explPhase) {
             explPhase.classList.add('leaving-phase');
             setTimeout(() => {
@@ -110,15 +230,19 @@
                 if (quizPhase) {
                     quizPhase.style.display = 'flex';
                     quizPhase.style.opacity = 0;
+                    updateLesson1TutorBar('question', { tipo: firstTipo, index: 0, total: totalQuestions });
                     setTimeout(() => {
                         quizPhase.style.opacity = 1;
                         quizPhase.style.transition = 'opacity 0.4s ease';
+                        window.dispatchEvent(new CustomEvent('opus:lesson-quiz-start', { detail: { totalQuestions } }));
                     }, 50);
                 }
             }, 300);
         } else if (quizPhase) {
             quizPhase.style.display = 'flex';
             quizPhase.style.opacity = 1;
+            updateLesson1TutorBar('question', { tipo: firstTipo, index: 0, total: totalQuestions });
+            window.dispatchEvent(new CustomEvent('opus:lesson-quiz-start', { detail: { totalQuestions } }));
         }
     }
 
@@ -677,6 +801,10 @@
         }
 
         state = 'checked';
+        updateLesson1TutorBar('checked', { isCorrect, index: currentIndex, total: totalQuestions, tipo });
+        window.dispatchEvent(new CustomEvent('opus:lesson-answer-checked', {
+            detail: { isCorrect, index: currentIndex, total: totalQuestions, tipo }
+        }));
     }
 
     // Continuar para próxima pergunta ou submeter resultado
@@ -772,6 +900,11 @@
         // Mostra a próxima pergunta
         if (slidesQuiz[currentIndex]) {
             slidesQuiz[currentIndex].style.display = 'flex';
+            const nextTipo = slidesQuiz[currentIndex].getAttribute('data-tipo') || 'multipla_escolha';
+            updateLesson1TutorBar('question', { tipo: nextTipo, index: currentIndex, total: totalQuestions });
+            window.dispatchEvent(new CustomEvent('opus:lesson-question-change', {
+                detail: { index: currentIndex, total: totalQuestions, tipo: nextTipo }
+            }));
         }
 
         // Reseta o botão para "VERIFICAR"
@@ -806,6 +939,9 @@
 
     // Atalhos de teclado (Enter para Verificar/Continuar, 1-3 para alternativas)
     document.addEventListener('keydown', function(e) {
+        if (window.OpusTour && typeof window.OpusTour.isOpen === 'function' && window.OpusTour.isOpen()) {
+            return;
+        }
         if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
             return;
         }

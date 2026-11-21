@@ -16,7 +16,7 @@ ALTER TABLE `progresso_usuario` ADD COLUMN IF NOT EXISTS `atualizado_em` TIMESTA
 --   Senha:  admin123
 -- ------------------------------------------------------------------------------
 INSERT INTO `usuarios` (
-    `id`, `nome`, `email`, `senha`, `nivel_acesso`, `xp`, `trofeus`, `dias_fogo`, `vidas`, `dificuldade`, `cor_fundo`, `username`
+    `id`, `nome`, `email`, `senha`, `nivel_acesso`, `xp`, `trofeus`, `dias_fogo`, `vidas`, `cor_fundo`, `username`
 ) VALUES (
     1,
     'Administrador OPUS',
@@ -27,7 +27,6 @@ INSERT INTO `usuarios` (
     12,
     14,
     3,
-    'Avançado',
     '#58cc02',
     'admin_opus'
 ) ON DUPLICATE KEY UPDATE
@@ -42,7 +41,7 @@ INSERT INTO `usuarios` (
 
 -- Administrador Secundário / Desenvolvedor
 INSERT INTO `usuarios` (
-    `id`, `nome`, `email`, `senha`, `nivel_acesso`, `xp`, `trofeus`, `dias_fogo`, `vidas`, `dificuldade`, `cor_fundo`, `username`
+    `id`, `nome`, `email`, `senha`, `nivel_acesso`, `xp`, `trofeus`, `dias_fogo`, `vidas`, `cor_fundo`, `username`
 ) VALUES (
     2,
     'Gabriel Freitas',
@@ -53,7 +52,6 @@ INSERT INTO `usuarios` (
     15,
     30,
     3,
-    'Avançado',
     '#1cb0f6',
     'gabriel_dev'
 ) ON DUPLICATE KEY UPDATE
@@ -73,39 +71,39 @@ INSERT INTO `usuarios` (
 -- ------------------------------------------------------------------------------
 
 -- BRONZE
-INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `nivel_acesso`, `xp`, `trofeus`, `dias_fogo`, `vidas`, `dificuldade`, `cor_fundo`, `username`) VALUES
-(3, 'Ana Silva', 'ana.silva@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 180, 2, 2, 3, 'Iniciante', '#ff4b4b', 'ana_silva'),
-(7, 'Pedro Rocha', 'pedro.rocha@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 90, 1, 1, 1, 'Iniciante', '#1cb0f6', 'pedro_dev'),
-(8, 'Júlia Santos', 'julia.santos@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 50, 0, 0, 0, 'Iniciante', '#ff9600', 'ju_santos')
+INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `nivel_acesso`, `xp`, `trofeus`, `dias_fogo`, `vidas`, `cor_fundo`, `username`) VALUES
+(3, 'Ana Silva', 'ana.silva@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 180, 2, 2, 3, '#ff4b4b', 'ana_silva'),
+(7, 'Pedro Rocha', 'pedro.rocha@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 90, 1, 1, 1, '#1cb0f6', 'pedro_dev'),
+(8, 'Júlia Santos', 'julia.santos@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 50, 0, 0, 0, '#ff9600', 'ju_santos')
 ON DUPLICATE KEY UPDATE `nome` = VALUES(`nome`), `xp` = VALUES(`xp`), `vidas` = VALUES(`vidas`), `dias_fogo` = VALUES(`dias_fogo`);
 
 -- PRATA
-INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `nivel_acesso`, `xp`, `trofeus`, `dias_fogo`, `vidas`, `dificuldade`, `cor_fundo`, `username`) VALUES
-(4, 'Lucas Mendes', 'lucas@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 450, 4, 4, 2, 'Iniciante', '#ce82ff', 'lucas_mendes'),
-(9, 'Felipe Oliveira', 'felipe.oliveira@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 530, 5, 6, 3, 'Intermediário', '#00cd9c', 'felipe_oli'),
-(10, 'Camila Ribeiro', 'camila.ribeiro@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 390, 3, 3, 3, 'Iniciante', '#e11d48', 'cami_rib')
+INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `nivel_acesso`, `xp`, `trofeus`, `dias_fogo`, `vidas`, `cor_fundo`, `username`) VALUES
+(4, 'Lucas Mendes', 'lucas@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 450, 4, 4, 2, '#ce82ff', 'lucas_mendes'),
+(9, 'Felipe Oliveira', 'felipe.oliveira@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 530, 5, 6, 3, '#00cd9c', 'felipe_oli'),
+(10, 'Camila Ribeiro', 'camila.ribeiro@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 390, 3, 3, 3, '#e11d48', 'cami_rib')
 ON DUPLICATE KEY UPDATE `nome` = VALUES(`nome`), `xp` = VALUES(`xp`), `vidas` = VALUES(`vidas`), `dias_fogo` = VALUES(`dias_fogo`);
 
 -- OURO
-INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `nivel_acesso`, `xp`, `trofeus`, `dias_fogo`, `vidas`, `dificuldade`, `cor_fundo`, `username`) VALUES
-(5, 'Mariana Costa', 'mariana@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 950, 7, 8, 3, 'Intermediário', '#ff9600', 'mari_costa'),
-(11, 'Bruno Carvalho', 'bruno.carvalho@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 1100, 8, 12, 2, 'Intermediário', '#d97706', 'bruno_code'),
-(12, 'Larissa Souza', 'larissa.souza@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 880, 6, 7, 3, 'Intermediário', '#9333ea', 'lari_souza'),
-(13, 'Rodrigo Lima', 'rodrigo.lima@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 820, 6, 5, 1, 'Intermediário', '#2563eb', 'rodrigo_l')
+INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `nivel_acesso`, `xp`, `trofeus`, `dias_fogo`, `vidas`, `cor_fundo`, `username`) VALUES
+(5, 'Mariana Costa', 'mariana@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 950, 7, 8, 3, '#ff9600', 'mari_costa'),
+(11, 'Bruno Carvalho', 'bruno.carvalho@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 1100, 8, 12, 2, '#d97706', 'bruno_code'),
+(12, 'Larissa Souza', 'larissa.souza@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 880, 6, 7, 3, '#9333ea', 'lari_souza'),
+(13, 'Rodrigo Lima', 'rodrigo.lima@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 820, 6, 5, 1, '#2563eb', 'rodrigo_l')
 ON DUPLICATE KEY UPDATE `nome` = VALUES(`nome`), `xp` = VALUES(`xp`), `vidas` = VALUES(`vidas`), `dias_fogo` = VALUES(`dias_fogo`);
 
 -- DIAMANTE
-INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `nivel_acesso`, `xp`, `trofeus`, `dias_fogo`, `vidas`, `dificuldade`, `cor_fundo`, `username`) VALUES
-(14, 'Rafael Duarte', 'rafael.duarte@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 2100, 10, 18, 3, 'Avançado', '#06b6d4', 'rafa_duarte'),
-(15, 'Beatriz Almeida', 'beatriz.almeida@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 2450, 11, 21, 3, 'Avançado', '#3b82f6', 'bea_almeida'),
-(16, 'Thiago Ferreira', 'thiago.ferreira@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 1950, 9, 15, 2, 'Intermediário', '#84cc16', 'thiago_f')
+INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `nivel_acesso`, `xp`, `trofeus`, `dias_fogo`, `vidas`, `cor_fundo`, `username`) VALUES
+(14, 'Rafael Duarte', 'rafael.duarte@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 2100, 10, 18, 3, '#06b6d4', 'rafa_duarte'),
+(15, 'Beatriz Almeida', 'beatriz.almeida@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 2450, 11, 21, 3, '#3b82f6', 'bea_almeida'),
+(16, 'Thiago Ferreira', 'thiago.ferreira@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 1950, 9, 15, 2, '#84cc16', 'thiago_f')
 ON DUPLICATE KEY UPDATE `nome` = VALUES(`nome`), `xp` = VALUES(`xp`), `vidas` = VALUES(`vidas`), `dias_fogo` = VALUES(`dias_fogo`);
 
 -- MESTRE
-INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `nivel_acesso`, `xp`, `trofeus`, `dias_fogo`, `vidas`, `dificuldade`, `cor_fundo`, `username`) VALUES
-(17, 'Helena Martins', 'helena.martins@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 4800, 18, 45, 3, 'Avançado', '#a855f7', 'helena_m'),
-(18, 'Vinicius Prado', 'vinicius.prado@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 3900, 14, 28, 3, 'Avançado', '#ec4899', 'vini_prado'),
-(19, 'Sophia Castro', 'sophia.castro@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 4350, 16, 35, 3, 'Avançado', '#6366f1', 'sophia_c')
+INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `nivel_acesso`, `xp`, `trofeus`, `dias_fogo`, `vidas`, `cor_fundo`, `username`) VALUES
+(17, 'Helena Martins', 'helena.martins@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 4800, 18, 45, 3, '#a855f7', 'helena_m'),
+(18, 'Vinicius Prado', 'vinicius.prado@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 3900, 14, 28, 3, '#ec4899', 'vini_prado'),
+(19, 'Sophia Castro', 'sophia.castro@email.com', '$2y$10$RzAV2gjzmmm/hCnm2iBuNOsrSpaIoq0MwyGWQKIGJWH6y9LmyQj0a', 'comum', 4350, 16, 35, 3, '#6366f1', 'sophia_c')
 ON DUPLICATE KEY UPDATE `nome` = VALUES(`nome`), `xp` = VALUES(`xp`), `vidas` = VALUES(`vidas`), `dias_fogo` = VALUES(`dias_fogo`);
 
 -- ------------------------------------------------------------------------------

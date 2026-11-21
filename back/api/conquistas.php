@@ -2,6 +2,7 @@
 session_start();
 header('Content-Type: application/json');
 require_once __DIR__ . '/../config/conexao.php';
+require_once __DIR__ . '/../lib/trofeus_catalogo.php';
 
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(["erro" => "Não autenticado"]);
@@ -44,6 +45,7 @@ if ($stmt) {
 }
 
 // Calcula o progresso (em %) para cada trofeu
+$novos_trofeus_retro = [];
 foreach ($todos_trofeus as &$t) {
     $slug = $t['slug'];
     $tipo = $t['tipo'] ?? '';
@@ -68,6 +70,9 @@ foreach ($todos_trofeus as &$t) {
         if ($prog_percent >= 100) {
             $conquistados[] = $slug;
             $conn->query("INSERT IGNORE INTO user_trofeus (user_id, trofeu_slug) VALUES ($user_id, '$slug')");
+            if ($conn->affected_rows > 0) {
+                $novos_trofeus_retro[] = opus_trofeu_info($slug);
+            }
             $prog_percent = 100;
         }
     }
@@ -78,6 +83,7 @@ foreach ($todos_trofeus as &$t) {
 // 3. Devolve os dados prontos para o JavaScript pintar a tela
 echo json_encode([
     "lista" => $todos_trofeus,
-    "conquistados" => $conquistados
+    "conquistados" => $conquistados,
+    "novos_trofeus" => $novos_trofeus_retro
 ]);
 ?>

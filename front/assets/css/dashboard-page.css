@@ -724,7 +724,7 @@
             width: 112px; height: 112px; border-radius: 50%;
             background: conic-gradient(#38bdf8 0% 72%, #13254a 72% 100%);
             border: 4px solid #091328;
-            box-shadow: 0 0 0 3px rgba(125, 211, 252, 0.4), 0 10px 24px rgba(28, 176, 246, 0.42);
+            box-shadow: none;
             display: flex; align-items: center; justify-content: center;
             position: relative; z-index: 3;
         }
@@ -818,155 +818,148 @@
         @keyframes bounce { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -8px); } }
 
         /* ==========================================================
-           BAÚ DE RECOMPENSAS NO MEIO DA TRILHA — DESIGN CARTOON OPUS
+           BAÚ DE RECOMPENSAS NO MEIO DA TRILHA — ESTILO BAÚ PIRATA FLAT-VECTOR
            ========================================================== */
         .reward-chest-container {
             margin: 35px 0 95px 0; display: flex; flex-direction: column; align-items: center;
             position: relative; z-index: 10 !important; animation: floatNode 4s ease-in-out infinite;
         }
         .chest-node {
-            width: 90px; height: 80px; border-radius: 24px; display: flex; align-items: center;
-            justify-content: center; transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-            position: relative; user-select: none;
+            width: 108px; height: 94px; border-radius: 26px; display: flex; align-items: center;
+            justify-content: center; transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease, border-color 0.22s ease;
+            position: relative; user-select: none; overflow: visible;
+        }
+        .chest-node:focus-visible {
+            outline: 3px solid #ffc800;
+            outline-offset: 4px;
         }
 
-        /* Sprite Cartunesco do Baú */
-        .chest-sprite {
-            width: 64px; height: 54px; position: relative; display: flex; flex-direction: column;
-            align-items: center; justify-content: flex-end; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        /* SVG Flat-Vector do Baú Pirata */
+        .opus-bau-svg {
+            display: block;
+            overflow: visible;
+            pointer-events: none;
+            transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.24s ease;
+        }
+        .opus-bau-svg.chest-svg-trail {
+            width: 96px;
+            height: 84px;
+            transform: translateY(-3px);
+        }
+        .opus-bau-svg.bau-state-available {
+            filter: drop-shadow(0 6px 10px rgba(45, 24, 6, 0.45));
+        }
+        .opus-bau-svg.bau-state-locked {
+            filter: drop-shadow(0 5px 8px rgba(10, 14, 24, 0.35));
+            opacity: 0.94;
+        }
+        .opus-bau-svg.chest-svg-trail.bau-state-locked {
+            transform: translateY(-10px) scale(1.04);
+        }
+        .opus-bau-svg.bau-state-claimed {
+            filter: drop-shadow(0 5px 8px rgba(10, 14, 24, 0.32)) saturate(0.88);
+            opacity: 0.92;
         }
 
-        /* Tampa Cartunesca */
-        .chest-sprite .chest-lid {
-            width: 62px; height: 26px; border-radius: 16px 16px 4px 4px; position: relative;
-            background: #ffc800; border: 3.5px solid #2e1800; border-bottom: 3.5px solid #2e1800;
-            box-shadow: inset 0 6px 0 #ffe866, inset 0 -3px 0 #d97706;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        /* Brilhos estelares 4 pontas sobre as moedas de ouro */
+        .opus-bau-svg .bau-sparkle {
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: bauSparkleTwinkle 2.1s ease-in-out infinite;
         }
-        .chest-sprite .chest-lid::before, .chest-sprite .chest-lid::after {
-            content: ''; position: absolute; top: -3.5px; width: 8px; height: calc(100% + 7px);
-            background: #ffd54f; border: 2.5px solid #2e1800; border-radius: 3px;
-        }
-        .chest-sprite .chest-lid::before { left: 9px; }
-        .chest-sprite .chest-lid::after { right: 9px; }
+        .opus-bau-svg .bau-sparkle.sp-1 { animation-delay: 0s; }
+        .opus-bau-svg .bau-sparkle.sp-2 { animation-delay: 0.45s; }
+        .opus-bau-svg .bau-sparkle.sp-3 { animation-delay: 0.85s; }
+        .opus-bau-svg .bau-sparkle.sp-4 { animation-delay: 1.2s; }
+        .opus-bau-svg .bau-sparkle.sp-5 { animation-delay: 0.6s; }
+        .opus-bau-svg .bau-sparkle.sp-6 { animation-delay: 1.45s; }
 
-        /* Fecho Cartunesco Arredondado */
-        .chest-sprite .chest-clasp {
-            position: absolute; bottom: -7px; left: 50%; transform: translateX(-50%);
-            width: 16px; height: 14px; background: #fff59d; border: 2.5px solid #2e1800;
-            border-radius: 5px; z-index: 5; box-shadow: inset 0 2px 0 #fff, 0 2px 0 rgba(0,0,0,0.25);
-        }
-        .chest-sprite .chest-clasp::after {
-            content: ''; position: absolute; top: 3px; left: 50%; transform: translateX(-50%);
-            width: 4px; height: 5px; background: #2e1800; border-radius: 2px;
+        @keyframes bauSparkleTwinkle {
+            0%, 100% { opacity: 0.55; transform: scale(0.72) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1.18) rotate(12deg); }
         }
 
-        /* Corpo Cartunesco do Baú */
-        .chest-sprite .chest-body {
-            width: 58px; height: 28px; border-radius: 4px 4px 14px 14px; position: relative;
-            background: #f59e0b; border: 3.5px solid #2e1800; border-top: none;
-            box-shadow: inset 0 -5px 0 #b45309;
+        /* Aura dourada suave atrás do baú disponível */
+        .chest-aura-glow {
+            position: absolute;
+            inset: 6px;
+            border-radius: 22px;
+            background: radial-gradient(circle at 50% 44%, rgba(249, 191, 29, 0.32) 0%, rgba(238, 157, 69, 0.08) 55%, transparent 78%);
+            pointer-events: none;
+            z-index: 0;
         }
-        .chest-sprite .chest-body::before, .chest-sprite .chest-body::after {
-            content: ''; position: absolute; top: 0; width: 8px; height: calc(100% + 1px);
-            background: #ffd54f; border: 2.5px solid #2e1800; border-top: none; border-radius: 0 0 3px 3px;
-        }
-        .chest-sprite .chest-body::before { left: 7px; }
-        .chest-sprite .chest-body::after { right: 7px; }
-
-        .chest-sprite .chest-keyhole {
-            position: absolute; top: 6px; left: 50%; transform: translateX(-50%);
-            width: 7px; height: 9px; background: #2e1800; border-radius: 2px;
+        .chest-node .opus-bau-svg {
+            position: relative;
+            z-index: 2;
         }
 
-        /* ESTADO: DISPONÍVEL (Pronto para Abrir - Estilo Cartoon Vibrante e Sólido) */
+        /* ESTADO: DISPONÍVEL (Baú aberto cheio de ouro e brilhos) */
         .chest-node.available {
-            background: #242218; border: 3px solid #ffc800;
-            box-shadow: 0 8px 0 #92400e; cursor: pointer;
-            animation: cartoonChestHop 2.2s infinite ease-in-out;
+            background: rgba(238, 157, 69, 0.14); border: 2.5px solid #ee9d45;
+            box-shadow: 0 8px 0 #7a4418; cursor: pointer;
+            animation: cartoonChestHop 2.4s infinite ease-in-out;
         }
         .chest-node.available:hover {
             transform: translateY(-5px) scale(1.06);
-            box-shadow: 0 13px 0 #92400e;
+            box-shadow: 0 13px 0 #7a4418;
         }
-        .chest-node.available:hover .chest-sprite {
-            transform: scale(1.08) rotate(-2deg);
+        .chest-node.available:hover .opus-bau-svg {
+            transform: translateY(-5px) scale(1.06) rotate(-1.5deg);
+            filter: drop-shadow(0 10px 16px rgba(249, 191, 29, 0.34));
         }
         .chest-node.available:active {
-            transform: translateY(4px); box-shadow: 0 3px 0 #92400e;
+            transform: translateY(4px); box-shadow: 0 3px 0 #7a4418;
         }
 
         @keyframes cartoonChestHop {
             0%, 100% { transform: translateY(0); }
-            45% { transform: translateY(-8px) scale(1.03, 0.97); }
-            50% { transform: translateY(-9px) scale(0.97, 1.05); }
-            55% { transform: translateY(-7px) scale(1.04, 0.96); }
+            45% { transform: translateY(-7px) scale(1.02, 0.98); }
+            50% { transform: translateY(-8px) scale(0.98, 1.03); }
+            55% { transform: translateY(-6px) scale(1.02, 0.98); }
         }
 
-        /* ESTADO: TRANCADO (Chunky Cartoon Iron/Wood) */
+        /* ESTADO: TRANCADO (Baú pirata fechado com cadeado) */
         .chest-node.locked {
-            background: #1e2029; border: 3px solid #3d4253;
+            background: #1e2029; border: 2.5px solid #3d4253;
             box-shadow: 0 8px 0 #12131a; cursor: pointer;
         }
-        .chest-node.locked .chest-sprite .chest-lid {
-            background: #475569; border-color: #1e293b;
-            box-shadow: inset 0 5px 0 #64748b, inset 0 -3px 0 #334155;
-        }
-        .chest-node.locked .chest-sprite .chest-lid::before,
-        .chest-node.locked .chest-sprite .chest-lid::after {
-            background: #64748b; border-color: #1e293b;
-        }
-        .chest-node.locked .chest-sprite .chest-body {
-            background: #334155; border-color: #1e293b;
-            box-shadow: inset 0 -5px 0 #1e293b;
-        }
-        .chest-node.locked .chest-sprite .chest-body::before,
-        .chest-node.locked .chest-sprite .chest-body::after {
-            background: #64748b; border-color: #1e293b;
-        }
-        .chest-padlock {
-            position: absolute; top: 1px; left: 50%; transform: translateX(-50%);
-            font-size: 15px; color: #ffb703; -webkit-text-stroke: 1px #1e293b;
-        }
         .chest-node.locked:hover {
-            transform: scale(1.04); border-color: #555c74;
+            transform: scale(1.04); border-color: #5d647d;
             box-shadow: 0 9px 0 #12131a;
+        }
+        .chest-node.locked:hover .opus-bau-svg {
+            transform: translateY(-4px) scale(1.04);
         }
         .chest-node.locked:active {
             transform: translateY(4px); box-shadow: 0 3px 0 #12131a;
         }
 
         .chest-progress-pill {
-            position: absolute; bottom: -12px; font-size: 0.68rem; font-weight: 900;
-            background: #1e2029; color: #ffb703; border: 2.5px solid #3d4253;
+            position: absolute; bottom: -12px; z-index: 4; font-size: 0.68rem; font-weight: 900;
+            background: #1e2029; color: #f9bf1d; border: 2px solid #3d4253;
             border-bottom: 3.5px solid #12131a;
-            padding: 2px 9px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.5px;
+            padding: 2px 10px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.5px;
             white-space: nowrap; display: inline-flex; align-items: center; gap: 4px;
         }
 
-        /* ESTADO: COLETADO / ABERTO (Cartoon Aberto) */
+        /* ESTADO: COLETADO / ABERTO */
         .chest-node.claimed {
-            background: #181d24; border: 3px solid #2e3846;
+            background: #181d24; border: 2.5px solid #2e3846;
             box-shadow: 0 8px 0 #0f1318; cursor: pointer;
-        }
-        .chest-node.claimed .chest-sprite.open .chest-lid {
-            transform: translateY(-9px) rotate(-18deg) scale(0.96);
-            background: #d97706; border-color: #2e1800; opacity: 0.85;
-        }
-        .chest-interior-glow {
-            position: absolute; top: 0; left: 10%; width: 80%; height: 9px;
-            background: #58cc02; border-radius: 4px; box-shadow: inset 0 2px 0 #86efac;
         }
         .chest-node.claimed:hover {
             transform: scale(1.04); border-color: #58cc02;
             box-shadow: 0 9px 0 #0f1318;
+        }
+        .chest-node.claimed:hover .opus-bau-svg {
+            transform: translateY(-4px) scale(1.04);
         }
         .chest-node.claimed:active {
             transform: translateY(4px); box-shadow: 0 3px 0 #0f1318;
         }
 
         .chest-tag-done {
-            position: absolute; bottom: -12px; font-size: 0.68rem; font-weight: 900;
+            position: absolute; bottom: -12px; z-index: 4; font-size: 0.68rem; font-weight: 900;
             background: #58cc02; border: 2px solid #2e7d02; border-bottom: 3.5px solid #225c01;
             color: #fff; padding: 2px 10px; border-radius: 12px;
             text-transform: uppercase; letter-spacing: 0.5px;
@@ -975,23 +968,63 @@
 
         /* Balão Cartoon Sólido */
         .chest-balloon {
-            position: absolute; top: -42px; left: 50%; transform: translateX(-50%);
-            background: #ffc800; border: 3px solid #2e1800; border-bottom: 4px solid #b45309;
-            color: #2e1800; padding: 6px 14px; border-radius: 14px; font-weight: 900; font-size: 0.78rem;
+            position: absolute; top: -44px; left: 50%; transform: translateX(-50%);
+            background: #f9bf1d; border: 2.5px solid #4f2d14; border-bottom: 4px solid #a8640b;
+            color: #3a200c; padding: 6px 14px; border-radius: 14px; font-weight: 900; font-size: 0.78rem;
             text-transform: uppercase; animation: bounce 1.8s ease-in-out infinite;
             white-space: nowrap; z-index: 10; display: inline-flex; align-items: center; gap: 6px;
         }
         .chest-balloon::after {
             content: ''; position: absolute; bottom: -7px; left: 50%; transform: translateX(-50%);
-            border-width: 6px 6px 0; border-style: solid; border-color: #2e1800 transparent transparent;
+            border-width: 6px 6px 0; border-style: solid; border-color: #4f2d14 transparent transparent;
         }
 
-        .logic-hologram { position: absolute; top: -20px; font-size: 18px; color: #ffc800; opacity: 1; }
-        .chest-node.available .logic-hologram { animation: logicFloat 1.8s infinite alternate; }
-        
-        @keyframes logicFloat {
-            0% { transform: translateY(0) scale(0.9); }
-            100% { transform: translateY(-8px) scale(1.15); }
+        /* Brasão compacto do Baú no topo do Modal da Roleta */
+        .modal-roulette-chest-crest {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: -6px auto 6px auto;
+        }
+        .opus-bau-svg.chest-svg-roulette-crest {
+            width: 86px;
+            height: 74px;
+            filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.35));
+        }
+
+        /* Ícone SVG do Baú no Modal de Aviso (Trancado / Coletado) */
+        .modal-aviso-icon-wrap.modal-aviso-bau-svg {
+            width: 108px;
+            height: 94px;
+            border-radius: 26px;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px auto;
+            overflow: visible;
+        }
+        .modal-aviso-icon-wrap.modal-aviso-bau-svg.state-locked {
+            background: rgba(238, 157, 69, 0.12);
+            border: 2px solid rgba(238, 157, 69, 0.35);
+            border-bottom: 5px solid rgba(119, 85, 62, 0.55);
+        }
+        .modal-aviso-icon-wrap.modal-aviso-bau-svg.state-claimed {
+            background: rgba(88, 204, 2, 0.12);
+            border: 2px solid rgba(88, 204, 2, 0.38);
+            border-bottom: 5px solid rgba(46, 125, 2, 0.55);
+        }
+        .opus-bau-svg.chest-svg-modal {
+            width: 96px;
+            height: 82px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .chest-node.available,
+            .opus-bau-svg .bau-sparkle,
+            .chest-balloon {
+                animation: none !important;
+            }
         }
 
         /* Spotlight de Foco quando Redirecionado de resultado.php */
@@ -1179,7 +1212,7 @@
         }
 
         .modal-bau-title {
-            font-family: 'Poppins', sans-serif; font-size: 1.65rem; font-weight: 900;
+            font-family: 'Nunito', sans-serif; font-size: 1.65rem; font-weight: 900;
             color: #fff; margin-bottom: 6px; letter-spacing: -0.3px;
         }
         .modal-bau-sub {
@@ -1238,7 +1271,7 @@
         }
 
         .reward-card .rc-val {
-            font-family: 'Poppins', sans-serif; font-size: 1.35rem; font-weight: 900;
+            font-family: 'Nunito', sans-serif; font-size: 1.35rem; font-weight: 900;
             color: #fff; letter-spacing: -0.3px;
         }
         .reward-card .rc-lbl {
@@ -1270,7 +1303,7 @@
         .btn-claim-chest {
             background: #58cc02 !important; border: none !important; border-bottom: 5px solid #46a302 !important;
             color: #fff !important; width: 100%; padding: 16px 20px; border-radius: 18px;
-            font-family: 'Poppins', sans-serif; font-size: 1.05rem; font-weight: 900; text-transform: uppercase;
+            font-family: 'Nunito', sans-serif; font-size: 1.05rem; font-weight: 900; text-transform: uppercase;
             letter-spacing: 0.5px; cursor: pointer; transition: transform 0.08s ease, border-bottom 0.08s ease;
             box-shadow: none !important; user-select: none;
             display: flex; align-items: center; justify-content: center; gap: 10px;
@@ -1486,7 +1519,7 @@
         .card-theme-red .ric-icon-box { background: #ef4444; color: #ffffff; }
 
         .ric-val {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Nunito', sans-serif;
             font-size: 1.25rem;
             font-weight: 900;
             color: #ffffff;
@@ -1540,7 +1573,7 @@
             text-align: left;
         }
         .win-val {
-            font-family: 'Poppins', sans-serif; font-size: 1.7rem; font-weight: 900;
+            font-family: 'Nunito', sans-serif; font-size: 1.7rem; font-weight: 900;
             line-height: 1.1; color: #fff;
         }
         .win-sub {
@@ -1698,7 +1731,7 @@
 
         @keyframes pulseHighlight {
             0% { transform: scale(1); filter: brightness(1); }
-            40% { transform: scale(1.22); filter: brightness(1.35) drop-shadow(0 0 20px var(--balloon-color, #1cb0f6)); }
+            40% { transform: scale(1.22); filter: brightness(1.12); }
             70% { transform: scale(0.96); }
             100% { transform: scale(1); filter: brightness(1); }
         }
@@ -1988,7 +2021,7 @@
     border-color: #bae6fd;
     border-bottom-color: #091863;
     color: #ffffff;
-    box-shadow: 0 4px 12px rgba(28, 176, 246, 0.4);
+    box-shadow: none;
     transform: translateY(-1px);
 }
 
@@ -2158,7 +2191,7 @@
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    box-shadow: 0 8px 20px rgba(28, 176, 246, 0.35);
+    box-shadow: none;
     transition: transform 0.14s ease, filter 0.15s ease, border-bottom-width 0.1s ease;
 }
 
@@ -3066,44 +3099,7 @@ body.dashboard-organic .dashboard-grid {
     z-index: 2;
 }
 
-/* ── SIDEBAR & TOPBAR MINIMALISTAS E ORGÂNICAS ──────────────────────── */
-body.dashboard-organic .sidebar {
-    background: rgba(12, 21, 28, 0.86) !important;
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border-right: 1px solid var(--org-border) !important;
-    padding: 36px 18px;
-}
-
-body.dashboard-organic .sidebar .logo {
-    letter-spacing: 5px;
-    font-size: 28px;
-    margin-bottom: 44px;
-    color: var(--org-text);
-    opacity: 0.95;
-}
-
-body.dashboard-organic .sidebar .nav-link {
-    border-radius: 14px;
-    padding: 13px 16px;
-    font-weight: 700;
-    color: var(--org-text-muted);
-    border: 1px solid transparent;
-    transition: background 0.22s ease, color 0.22s ease, border-color 0.22s ease, transform 0.18s ease;
-}
-
-body.dashboard-organic .sidebar .nav-link:hover {
-    background: rgba(255, 255, 255, 0.045);
-    color: var(--org-text);
-    transform: translateX(2px);
-}
-
-body.dashboard-organic .sidebar .nav-link.active {
-    background: var(--island-accent-soft);
-    border-color: rgba(45, 212, 191, 0.22);
-    color: #ffffff;
-}
-
+/* ── TOPBAR MINIMALISTA E ORGÂNICA (SIDEBAR PADRONIZADA VIA dashboard.css / light-mode.css) ── */
 body.dashboard-organic .top-bar {
     background: rgba(10, 18, 23, 0.72) !important;
     backdrop-filter: blur(18px);
@@ -3277,17 +3273,12 @@ body.dashboard-organic .capitulo-header {
     max-width: 680px;
     padding: 16px 22px;
     border-radius: 22px;
-    background: var(--org-surface);
-    background: linear-gradient(
-        135deg,
-        color-mix(in srgb, var(--unit-color, #1cb0f6) 15%, rgba(16, 28, 36, 0.72)) 0%,
-        rgba(16, 28, 36, 0.56) 75%
-    );
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border: 1px solid color-mix(in srgb, var(--unit-color, #1cb0f6) 28%, rgba(255, 255, 255, 0.08)) !important;
-    border-bottom: 1px solid color-mix(in srgb, var(--unit-color, #1cb0f6) 28%, rgba(255, 255, 255, 0.08)) !important;
-    box-shadow: var(--org-shadow) !important;
+    background: var(--unit-color, #1cb0f6) !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 1.5px solid rgba(255, 255, 255, 0.22) !important;
+    border-bottom: 4px solid var(--unit-shadow, #148bc4) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), 0 10px 24px rgba(0, 0, 0, 0.24) !important;
     margin-bottom: 8px;
     margin-top: 8px;
     gap: 14px;
@@ -3297,8 +3288,8 @@ body.dashboard-organic .capitulo-header-accent {
     width: 38px;
     height: 38px;
     border-radius: 44% 56% 52% 48% / 48% 44% 56% 52%;
-    background: color-mix(in srgb, var(--unit-color, #1cb0f6) 20%, transparent);
-    border: 1px solid color-mix(in srgb, var(--unit-color, #1cb0f6) 42%, transparent);
+    background: rgba(255, 255, 255, 0.22);
+    border: 1px solid rgba(255, 255, 255, 0.38);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3309,33 +3300,37 @@ body.dashboard-organic .capitulo-header-accent .cha-dot {
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: var(--unit-color, #1cb0f6);
-    box-shadow: 0 0 12px color-mix(in srgb, var(--unit-color, #1cb0f6) 55%, transparent);
+    background: #ffffff;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
-body.dashboard-organic .capitulo-header-text h2 {
+body.dashboard-organic .capitulo-header-text h2,
+body.dashboard-organic:not(.light-mode) .capitulo-header-text h2 {
     font-size: 0.76rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: var(--unit-color, #38bdf8) !important;
-    text-shadow: none;
+    color: rgba(255, 255, 255, 0.92) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
     margin-bottom: 2px;
 }
 
-body.dashboard-organic .capitulo-header-text h3 {
+body.dashboard-organic .capitulo-header-text h3,
+body.dashboard-organic:not(.light-mode) .capitulo-header-text h3 {
     font-size: 1.12rem;
     font-weight: 800;
-    color: var(--org-text) !important;
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.22);
     opacity: 1;
     margin: 0;
 }
 
-body.dashboard-organic .btn-guia {
-    background: var(--org-surface-subtle) !important;
-    border: 1px solid var(--org-border-strong) !important;
-    border-bottom: 1px solid var(--org-border-strong) !important;
-    color: var(--org-text) !important;
+body.dashboard-organic .btn-guia,
+body.dashboard-organic:not(.light-mode) .btn-guia {
+    background: rgba(0, 0, 0, 0.18) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.42) !important;
+    border-bottom: 3px solid rgba(0, 0, 0, 0.24) !important;
+    color: #ffffff !important;
     padding: 8px 16px;
     border-radius: 999px;
     font-size: 0.78rem;
@@ -3345,16 +3340,18 @@ body.dashboard-organic .btn-guia {
     transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
 }
 
-body.dashboard-organic .btn-guia:hover {
-    background: color-mix(in srgb, var(--unit-color, #1cb0f6) 18%, transparent) !important;
-    border-color: color-mix(in srgb, var(--unit-color, #1cb0f6) 45%, transparent) !important;
+body.dashboard-organic .btn-guia:hover,
+body.dashboard-organic:not(.light-mode) .btn-guia:hover {
+    background: rgba(0, 0, 0, 0.28) !important;
+    border-color: rgba(255, 255, 255, 0.72) !important;
     transform: translateY(-1px);
     filter: none;
 }
 
-body.dashboard-organic .btn-guia:active {
-    transform: translateY(0) !important;
-    border-bottom-width: 1px !important;
+body.dashboard-organic .btn-guia:active,
+body.dashboard-organic:not(.light-mode) .btn-guia:active {
+    transform: translateY(1px) !important;
+    border-bottom-width: 1.5px !important;
 }
 
 /* ── CAMINHO SVG ORGÂNICO & SUAVE DA TRILHA ─────────────────────────── */
@@ -3412,8 +3409,8 @@ body.dashboard-organic .circle-button {
     border: 2px solid rgba(255, 255, 255, 0.26);
     background: linear-gradient(155deg, var(--unit-color, #1cb0f6) 0%, var(--node-shadow, #148bc4) 100%);
     box-shadow:
-        0 10px 24px -6px color-mix(in srgb, var(--node-shadow, #148bc4) 70%, transparent),
-        inset 0 2px 0 rgba(255, 255, 255, 0.26) !important;
+        0 6px 0 var(--node-shadow, #148bc4),
+        inset 0 2px 0 rgba(255, 255, 255, 0.22) !important;
     transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease, filter 0.2s ease;
 }
 
@@ -3434,29 +3431,26 @@ body.dashboard-organic .modulo-node.current:hover .circle-button {
 
 body.dashboard-organic .modulo-node.completed:active .circle-button,
 body.dashboard-organic .modulo-node.current:active .circle-button {
-    transform: translateY(1px) scale(0.98);
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 var(--node-shadow, #148bc4) !important;
 }
 
 /* Anel orgânico suave tipo ondulação na água ao redor da lição ativa */
 body.dashboard-organic .active-ring {
     width: 98px;
     height: 98px;
-    background: radial-gradient(
-        circle,
-        color-mix(in srgb, var(--unit-color, #1cb0f6) 20%, transparent) 44%,
-        transparent 74%
-    ) !important;
+    background: transparent !important;
     border: 1.5px solid color-mix(in srgb, var(--unit-color, #1cb0f6) 48%, transparent);
-    box-shadow: 0 0 0 7px color-mix(in srgb, var(--unit-color, #1cb0f6) 10%, transparent);
+    box-shadow: none;
     animation: islandRippleHalo 3.2s ease-in-out infinite;
 }
 
 @keyframes islandRippleHalo {
     0%, 100% {
-        box-shadow: 0 0 0 5px color-mix(in srgb, var(--unit-color, #1cb0f6) 10%, transparent);
+        opacity: 0.7;
     }
     50% {
-        box-shadow: 0 0 0 12px color-mix(in srgb, var(--unit-color, #1cb0f6) 16%, transparent);
+        opacity: 1;
     }
 }
 
@@ -3500,25 +3494,35 @@ body.dashboard-organic .start-balloon::after {
 
 /* ── BAÚ DE RECOMPENSAS HARMONIZADO AO ESTILO ORGÂNICO ──────────────── */
 body.dashboard-organic .reward-chest-container {
-    margin: 26px 0 82px 0;
+    margin: 28px 0 84px 0;
     animation: organicFloatNode 4.8s ease-in-out infinite;
 }
 
 body.dashboard-organic .chest-node {
-    width: 84px;
-    height: 76px;
-    border-radius: 26px;
+    width: 106px;
+    height: 92px;
+    border-radius: 28px;
+    overflow: visible;
+}
+
+body.dashboard-organic .chest-node .opus-bau-svg.chest-svg-trail {
+    width: 98px;
+    height: 85px;
+    transform: translateY(-4px);
+}
+body.dashboard-organic .chest-node .opus-bau-svg.chest-svg-trail.bau-state-locked {
+    transform: translateY(-10px) scale(1.04);
 }
 
 body.dashboard-organic .chest-node.available {
-    background: rgba(251, 191, 36, 0.12) !important;
-    border: 1.5px solid rgba(251, 191, 36, 0.55) !important;
-    box-shadow: 0 12px 26px rgba(245, 158, 11, 0.20) !important;
+    background: radial-gradient(circle at 50% 48%, rgba(249, 191, 29, 0.22) 0%, rgba(238, 157, 69, 0.08) 72%) !important;
+    border: 1.5px solid rgba(238, 157, 69, 0.58) !important;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.22) !important;
 }
 
 body.dashboard-organic .chest-node.available:hover {
     transform: translateY(-4px) scale(1.05);
-    box-shadow: 0 16px 30px rgba(245, 158, 11, 0.28) !important;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28) !important;
 }
 
 body.dashboard-organic .chest-node.locked {
@@ -3528,18 +3532,23 @@ body.dashboard-organic .chest-node.locked {
 }
 
 body.dashboard-organic .chest-node.claimed {
-    background: rgba(52, 211, 153, 0.08) !important;
-    border: 1.5px solid rgba(52, 211, 153, 0.28) !important;
+    background: rgba(52, 211, 153, 0.09) !important;
+    border: 1.5px solid rgba(52, 211, 153, 0.30) !important;
     box-shadow: 0 10px 22px rgba(0, 0, 0, 0.16) !important;
 }
 
 body.dashboard-organic .chest-balloon {
-    background: rgba(251, 191, 36, 0.95) !important;
-    border: none !important;
+    top: -42px;
+    background: #f9bf1d !important;
+    color: #3a200c !important;
+    border: 1.5px solid rgba(120, 68, 22, 0.45) !important;
     border-radius: 999px;
     padding: 5px 13px;
     font-size: 0.72rem;
-    box-shadow: 0 8px 18px rgba(245, 158, 11, 0.25) !important;
+    box-shadow: none !important;
+}
+body.dashboard-organic .chest-balloon::after {
+    border-top-color: #f9bf1d !important;
 }
 
 body.dashboard-organic .chest-progress-pill,
@@ -3666,7 +3675,7 @@ body.dashboard-organic .btn-ir-proxima-divisao {
     padding: 11px 22px;
     font-size: 0.88rem;
     font-weight: 800;
-    box-shadow: 0 10px 24px -6px color-mix(in srgb, var(--ms-btn, #1cb0f6) 55%, transparent);
+    box-shadow: none;
 }
 
 body.dashboard-organic .btn-ir-proxima-divisao.btn-ms-gold {
@@ -3899,28 +3908,6 @@ body.dashboard-organic.light-mode .main-content {
         var(--org-bg) !important;
 }
 
-body.dashboard-organic.light-mode .sidebar {
-    background: rgba(255, 255, 255, 0.82) !important;
-    border-right: 1px solid var(--org-border) !important;
-}
-
-body.dashboard-organic.light-mode .sidebar .logo {
-    color: #0d9488 !important;
-}
-
-body.dashboard-organic.light-mode .sidebar .nav-link {
-    color: var(--org-text-muted) !important;
-    border: 1px solid transparent !important;
-    text-transform: none !important;
-}
-
-body.dashboard-organic.light-mode .sidebar .nav-link:hover,
-body.dashboard-organic.light-mode .sidebar .nav-link.active {
-    background: rgba(13, 148, 136, 0.10) !important;
-    border: 1px solid rgba(13, 148, 136, 0.20) !important;
-    color: #0f766e !important;
-}
-
 body.dashboard-organic.light-mode .top-bar {
     background: rgba(243, 248, 247, 0.78) !important;
     border-bottom: 1px solid var(--org-border) !important;
@@ -3968,27 +3955,32 @@ body.dashboard-organic.light-mode .trail-flex {
 }
 
 body.dashboard-organic.light-mode .capitulo-header {
-    background: linear-gradient(
-        135deg,
-        color-mix(in srgb, var(--unit-color, #1cb0f6) 11%, rgba(255, 255, 255, 0.88)) 0%,
-        rgba(255, 255, 255, 0.78) 76%
-    ) !important;
-    border: 1px solid color-mix(in srgb, var(--unit-color, #1cb0f6) 24%, rgba(15, 62, 72, 0.09)) !important;
-    box-shadow: var(--org-shadow) !important;
+    background: var(--unit-color, #1cb0f6) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.28) !important;
+    border-bottom: 4px solid var(--unit-shadow, #148bc4) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 8px 20px rgba(15, 52, 66, 0.14) !important;
 }
 
 body.dashboard-organic.light-mode .capitulo-header-text h2 {
-    color: color-mix(in srgb, var(--unit-color, #0284c7) 85%, #0f172a) !important;
+    color: rgba(255, 255, 255, 0.92) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
 }
 
 body.dashboard-organic.light-mode .capitulo-header-text h3 {
-    color: var(--org-text) !important;
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.22);
 }
 
 body.dashboard-organic.light-mode .btn-guia {
-    background: rgba(255, 255, 255, 0.75) !important;
-    border: 1px solid var(--org-border-strong) !important;
-    color: var(--org-text) !important;
+    background: rgba(0, 0, 0, 0.16) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.48) !important;
+    border-bottom: 3px solid rgba(0, 0, 0, 0.22) !important;
+    color: #ffffff !important;
+}
+
+body.dashboard-organic.light-mode .btn-guia:hover {
+    background: rgba(0, 0, 0, 0.26) !important;
+    border-color: rgba(255, 255, 255, 0.78) !important;
 }
 
 body.dashboard-organic.light-mode .trail-path-shadow {
@@ -4011,8 +4003,8 @@ body.dashboard-organic.light-mode .trail-path-centerline {
 
 body.dashboard-organic.light-mode .modulo-node .circle-button {
     box-shadow:
-        0 10px 22px -6px color-mix(in srgb, var(--node-shadow, #148bc4) 55%, transparent),
-        inset 0 2px 0 rgba(255, 255, 255, 0.35) !important;
+        0 6px 0 var(--node-shadow, #148bc4),
+        inset 0 2px 0 rgba(255, 255, 255, 0.3) !important;
 }
 
 body.dashboard-organic.light-mode .modulo-node.locked .circle-button {
@@ -4112,21 +4104,37 @@ body.dashboard-organic.light-mode .division-milestone-card {
 }
 
 body.dashboard-organic.light-mode .chest-node.available {
-    background: rgba(255, 251, 235, 0.92) !important;
-    border: 1.5px solid rgba(245, 158, 11, 0.45) !important;
-    box-shadow: 0 10px 22px rgba(217, 119, 6, 0.14) !important;
+    background: radial-gradient(circle at 50% 48%, rgba(255, 250, 232, 0.96) 0%, rgba(254, 240, 199, 0.88) 100%) !important;
+    border: 1.5px solid rgba(224, 144, 52, 0.52) !important;
+    box-shadow: 0 6px 14px rgba(15, 52, 66, 0.10) !important;
 }
 
 body.dashboard-organic.light-mode .chest-node.locked {
-    background: rgba(255, 255, 255, 0.82) !important;
+    background: rgba(255, 255, 255, 0.86) !important;
     border: 1.5px solid var(--org-border) !important;
-    box-shadow: 0 6px 16px rgba(15, 52, 66, 0.06) !important;
+    box-shadow: 0 6px 16px rgba(15, 52, 66, 0.08) !important;
 }
 
 body.dashboard-organic.light-mode .chest-node.claimed {
-    background: rgba(240, 253, 244, 0.85) !important;
-    border: 1.5px solid rgba(34, 197, 94, 0.25) !important;
-    box-shadow: 0 6px 16px rgba(15, 52, 66, 0.05) !important;
+    background: rgba(240, 253, 244, 0.88) !important;
+    border: 1.5px solid rgba(34, 197, 94, 0.28) !important;
+    box-shadow: 0 6px 16px rgba(15, 52, 66, 0.06) !important;
+}
+
+body.dashboard-organic.light-mode .opus-bau-svg.bau-state-available {
+    filter: drop-shadow(0 5px 8px rgba(122, 68, 24, 0.22));
+}
+
+body.dashboard-organic.light-mode .modal-aviso-icon-wrap.modal-aviso-bau-svg.state-locked {
+    background: #fffbeb !important;
+    border: 2px solid #f5c98a !important;
+    border-bottom: 5px solid #d99b4e !important;
+}
+
+body.dashboard-organic.light-mode .modal-aviso-icon-wrap.modal-aviso-bau-svg.state-claimed {
+    background: #f0fdf4 !important;
+    border: 2px solid #86efac !important;
+    border-bottom: 5px solid #4ade80 !important;
 }
 
 /* ── RESPONSIVIDADE DO ESTILO ORGÂNICO ──────────────────────────────── */

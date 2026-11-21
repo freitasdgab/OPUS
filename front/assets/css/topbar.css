@@ -72,12 +72,26 @@
     }
 }
 
-/* CHAT E NOTIFICACOES */
-.stat-chat, .stat-notificacao {
+/* CHAT, NOTIFICACOES E TOUR OPI */
+.stat-chat, .stat-notificacao, .stat-tour {
     color: #1cb0f6;
     cursor: pointer;
     position: relative;
     padding: 6px 10px;
+}
+
+.stat-tour {
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    color: #58cc02;
+}
+
+.stat-tour:hover {
+    color: #7ee82b;
+    transform: scale(1.1);
+}
     border-radius: 12px;
     text-decoration: none;
     transition: transform 0.15s ease, background 0.2s ease, color 0.2s ease;

@@ -21,7 +21,6 @@ classDiagram
         #String senha
         #int xp
         #int trofeus
-        #String dificuldade
         #String fotoPerfil
         #int diasFogo
         #int vidas

@@ -27,5 +27,11 @@ fetch('../../back/api/conquistas.php')
                 <p>${t.desc}</p>
             </div>`;
     });
+
+    if (Array.isArray(data.novos_trofeus) && data.novos_trofeus.length > 0 && window.OpusTour && typeof window.OpusTour.celebrateTrophies === 'function') {
+        if (typeof window.OpusTour.isOpen !== 'function' || !window.OpusTour.isOpen()) {
+            setTimeout(() => window.OpusTour.celebrateTrophies(data.novos_trofeus), 500);
+        }
+    }
 })
 .catch(error => console.error('Erro ao carregar conquistas:', error));

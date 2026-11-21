@@ -47,7 +47,6 @@ $usuarios_dados = [
         'trofeus' => 12,
         'dias_fogo' => 14,
         'vidas' => 3,
-        'dificuldade' => 'Avançado',
         'cor_fundo' => '#58cc02',
         'username' => 'admin_opus',
         'divisao' => 'mestre',
@@ -63,7 +62,6 @@ $usuarios_dados = [
         'trofeus' => 15,
         'dias_fogo' => 30,
         'vidas' => 3,
-        'dificuldade' => 'Avançado',
         'cor_fundo' => '#1cb0f6',
         'username' => 'gabriel_dev',
         'divisao' => 'mestre',
@@ -81,7 +79,6 @@ $usuarios_dados = [
         'trofeus' => 2,
         'dias_fogo' => 2,
         'vidas' => 3,
-        'dificuldade' => 'Iniciante',
         'cor_fundo' => '#ff4b4b',
         'username' => 'ana_silva',
         'divisao' => 'bronze',
@@ -97,7 +94,6 @@ $usuarios_dados = [
         'trofeus' => 1,
         'dias_fogo' => 1,
         'vidas' => 1,
-        'dificuldade' => 'Iniciante',
         'cor_fundo' => '#1cb0f6',
         'username' => 'pedro_dev',
         'divisao' => 'bronze',
@@ -113,7 +109,6 @@ $usuarios_dados = [
         'trofeus' => 0,
         'dias_fogo' => 0,
         'vidas' => 0,
-        'dificuldade' => 'Iniciante',
         'cor_fundo' => '#ff9600',
         'username' => 'ju_santos',
         'divisao' => 'bronze',
@@ -131,7 +126,6 @@ $usuarios_dados = [
         'trofeus' => 4,
         'dias_fogo' => 4,
         'vidas' => 2,
-        'dificuldade' => 'Iniciante',
         'cor_fundo' => '#ce82ff',
         'username' => 'lucas_mendes',
         'divisao' => 'prata',
@@ -147,7 +141,6 @@ $usuarios_dados = [
         'trofeus' => 5,
         'dias_fogo' => 6,
         'vidas' => 3,
-        'dificuldade' => 'Intermediário',
         'cor_fundo' => '#00cd9c',
         'username' => 'felipe_oli',
         'divisao' => 'prata',
@@ -163,7 +156,6 @@ $usuarios_dados = [
         'trofeus' => 3,
         'dias_fogo' => 3,
         'vidas' => 3,
-        'dificuldade' => 'Iniciante',
         'cor_fundo' => '#e11d48',
         'username' => 'cami_rib',
         'divisao' => 'prata',
@@ -181,7 +173,6 @@ $usuarios_dados = [
         'trofeus' => 7,
         'dias_fogo' => 8,
         'vidas' => 3,
-        'dificuldade' => 'Intermediário',
         'cor_fundo' => '#ff9600',
         'username' => 'mari_costa',
         'divisao' => 'ouro',
@@ -197,7 +188,6 @@ $usuarios_dados = [
         'trofeus' => 8,
         'dias_fogo' => 12,
         'vidas' => 2,
-        'dificuldade' => 'Intermediário',
         'cor_fundo' => '#d97706',
         'username' => 'bruno_code',
         'divisao' => 'ouro',
@@ -213,7 +203,6 @@ $usuarios_dados = [
         'trofeus' => 6,
         'dias_fogo' => 7,
         'vidas' => 3,
-        'dificuldade' => 'Intermediário',
         'cor_fundo' => '#9333ea',
         'username' => 'lari_souza',
         'divisao' => 'ouro',
@@ -229,7 +218,6 @@ $usuarios_dados = [
         'trofeus' => 6,
         'dias_fogo' => 5,
         'vidas' => 1,
-        'dificuldade' => 'Intermediário',
         'cor_fundo' => '#2563eb',
         'username' => 'rodrigo_l',
         'divisao' => 'ouro',
@@ -247,7 +235,6 @@ $usuarios_dados = [
         'trofeus' => 10,
         'dias_fogo' => 18,
         'vidas' => 3,
-        'dificuldade' => 'Avançado',
         'cor_fundo' => '#06b6d4',
         'username' => 'rafa_duarte',
         'divisao' => 'diamante',
@@ -263,7 +250,6 @@ $usuarios_dados = [
         'trofeus' => 11,
         'dias_fogo' => 21,
         'vidas' => 3,
-        'dificuldade' => 'Avançado',
         'cor_fundo' => '#3b82f6',
         'username' => 'bea_almeida',
         'divisao' => 'diamante',
@@ -279,7 +265,6 @@ $usuarios_dados = [
         'trofeus' => 9,
         'dias_fogo' => 15,
         'vidas' => 2,
-        'dificuldade' => 'Intermediário',
         'cor_fundo' => '#84cc16',
         'username' => 'thiago_f',
         'divisao' => 'diamante',
@@ -297,7 +282,6 @@ $usuarios_dados = [
         'trofeus' => 18,
         'dias_fogo' => 45,
         'vidas' => 3,
-        'dificuldade' => 'Avançado',
         'cor_fundo' => '#a855f7',
         'username' => 'helena_m',
         'divisao' => 'mestre',
@@ -313,7 +297,6 @@ $usuarios_dados = [
         'trofeus' => 14,
         'dias_fogo' => 28,
         'vidas' => 3,
-        'dificuldade' => 'Avançado',
         'cor_fundo' => '#ec4899',
         'username' => 'vini_prado',
         'divisao' => 'mestre',
@@ -329,7 +312,6 @@ $usuarios_dados = [
         'trofeus' => 16,
         'dias_fogo' => 35,
         'vidas' => 3,
-        'dificuldade' => 'Avançado',
         'cor_fundo' => '#6366f1',
         'username' => 'sophia_c',
         'divisao' => 'mestre',
@@ -352,24 +334,18 @@ foreach ($usuarios_dados as $u) {
         $usuario_id = (int) $existente['id'];
         $stmt_up = $conn->prepare("
             UPDATE usuarios 
-            SET nome = ?, senha = ?, nivel_acesso = ?, xp = ?, trofeus = ?, dias_fogo = ?, vidas = ?, dificuldade = ?, cor_fundo = ?, username = ?
+            SET nome = ?, senha = ?, nivel_acesso = ?, xp = ?, trofeus = ?, dias_fogo = ?, vidas = ?, cor_fundo = ?, username = ?
             WHERE id = ?
         ");
-        $stmt_up->bind_param("sssiiiisssi", 
-            $u['nome'], $u['senha'], $u['nivel_acesso'], $u['xp'], $u['trofeus'], 
-            $u['dias_fogo'], $u['vidas'], $u['dificuldade'], $u['cor_fundo'], $u['username'], $usuario_id
-        );
+        $stmt_up->bind_param("sssiiisssi", $u['nome'], $u['senha'], $u['nivel_acesso'], $u['xp'], $u['trofeus'], $u['dias_fogo'], $u['vidas'], $u['cor_fundo'], $u['username'], $usuario_id);
         $stmt_up->execute();
         echo "Usuário atualizado: {$u['nome']} ({$u['email']}) [ID $usuario_id]\n";
     } else {
         $stmt_ins = $conn->prepare("
-            INSERT INTO usuarios (nome, email, senha, nivel_acesso, xp, trofeus, dias_fogo, vidas, dificuldade, cor_fundo, username)
+            INSERT INTO usuarios (nome, email, senha, nivel_acesso, xp, trofeus, dias_fogo, vidas, cor_fundo, username)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
-        $stmt_ins->bind_param("ssssiiiisss", 
-            $u['nome'], $u['email'], $u['senha'], $u['nivel_acesso'], $u['xp'], $u['trofeus'], 
-            $u['dias_fogo'], $u['vidas'], $u['dificuldade'], $u['cor_fundo'], $u['username']
-        );
+        $stmt_ins->bind_param("ssssiiisss", $u['nome'], $u['email'], $u['senha'], $u['nivel_acesso'], $u['xp'], $u['trofeus'], $u['dias_fogo'], $u['vidas'], $u['cor_fundo'], $u['username']);
         $stmt_ins->execute();
         $usuario_id = $conn->insert_id;
         echo "Novo usuário inserido: {$u['nome']} ({$u['email']}) [ID $usuario_id]\n";

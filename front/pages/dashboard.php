@@ -20,6 +20,7 @@ require_once '../../back/lib/jogador_status.php';
 require_once '../../back/lib/ligas_logic.php';
 require_once '../../back/lib/missoes_logic.php';
 require_once '../../back/lib/conteudo_logic.php';
+require_once '../../back/includes/bau_svg.php';
 
 $user_id = (int) $_SESSION['user_id'];
 $status_jogador = opus_sincronizar_jogador($conn, $user_id);
@@ -248,14 +249,17 @@ function opus_render_island_motif(int $num_cap, int $divisao): string
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Progresso - Opus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/dashboard.css?v=2">
-    <link rel="stylesheet" href="../assets/css/topbar.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/topbar.css?v=<?= time() ?>">
     <link rel="icon" type="image/png" href="../assets/img/LOGO.png?v=2">
     <link rel="shortcut icon" type="image/png" href="../assets/img/LOGO.png?v=2">
     
     <link rel="stylesheet" href="../assets/css/dashboard-page.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/spotify_widget.css?v=<?= time() ?>">
 </head>
 <body class="dashboard-organic" data-active-island="<?php echo (int) $divisao_ativa_padrao; ?>">
     <div class="app-container">
@@ -339,6 +343,22 @@ function opus_render_island_motif(int $num_cap, int $divisao): string
                             <span class="wit-progress-meta" id="witProgressMeta"><?php echo (int) $div_ativa_info['concluidas']; ?>/<?php echo (int) $div_ativa_info['total_secoes']; ?> seções</span>
                         </div>
                     </div>
+
+                    <?php if ($progresso_porcentagem >= 100 || isset($_GET['preview_fim_curso']) || isset($_GET['curso_concluido'])): ?>
+                    <a href="resultado.php?preview_fim_curso=1" class="banner-curso-concluido-trigger" id="btnAbrirSpotifyBanner" style="text-decoration: none;">
+                        <div class="bc-left">
+                            <img src="../assets/img/mascote_vitoria_cipo_transparente.png" alt="Opi Formatura" class="bc-mascot-thumb">
+                            <div class="bc-texts">
+                                <span class="bc-badge"><i class="fa-solid fa-graduation-cap"></i> FORMAÇÃO CONCLUÍDA</span>
+                                <h3 class="bc-title">Parabéns! Você Concluiu o Curso OPUS!</h3>
+                                <p class="bc-desc">Releia a retrospectiva com o Opi e veja o seu <strong>Card Especial Spotify Wrapped</strong> para compartilhar!</p>
+                            </div>
+                        </div>
+                        <span class="bc-btn-open">
+                            <i class="fa-brands fa-spotify"></i> Ver Card Spotify Wrapped
+                        </span>
+                    </a>
+                    <?php endif; ?>
 
                     <!-- TRILHA ABERTA E ORGÂNICA DO CAPÍTULO ATIVO (SEM BORDA EXTERNA) -->
                     <div class="ocean-stage-wrapper" id="oceanStageWrapper">
@@ -476,36 +496,18 @@ function opus_render_island_motif(int $num_cap, int $divisao): string
                                                 <div class="reward-chest-container pos-chest <?php echo $chest_state; ?>" data-chest-state="<?php echo $chest_state; ?>">
                                                     <?php if ($chest_state === 'available'): ?>
                                                         <div class="chest-balloon"><i class="fa-solid fa-arrows-rotate"></i> GIRAR ROLETA!</div>
-                                                        <div class="chest-node available" id="chestNode_<?php echo $num_cap; ?>" onclick="abrirModalBau(<?php echo $num_cap; ?>, '<?php echo addslashes(htmlspecialchars($info['titulo'])); ?>')">
+                                                        <div class="chest-node available" id="chestNode_<?php echo $num_cap; ?>" onclick="abrirModalBau(<?php echo $num_cap; ?>, '<?php echo addslashes(htmlspecialchars($info['titulo'])); ?>')" role="button" tabindex="0" aria-label="Abrir Baú de Recompensas da Unidade <?php echo $num_cap; ?>">
                                                             <div class="chest-aura-glow"></div>
-                                                            <div class="chest-sprite">
-                                                                <div class="chest-lid">
-                                                                    <span class="chest-clasp"></span>
-                                                                </div>
-                                                                <div class="chest-body">
-                                                                    <span class="chest-keyhole"></span>
-                                                                </div>
-                                                            </div>
-                                                            <i class="fa-solid fa-sparkles logic-hologram"></i>
+                                                            <?php echo opus_render_bau_svg('available', ['class' => 'chest-svg-trail']); ?>
                                                         </div>
                                                     <?php elseif ($chest_state === 'claimed'): ?>
-                                                        <div class="chest-node claimed" id="chestNode_<?php echo $num_cap; ?>" onclick="avisoBauColetado(<?php echo $num_cap; ?>, '<?php echo addslashes(htmlspecialchars($info['titulo'])); ?>')">
-                                                            <div class="chest-sprite open">
-                                                                <div class="chest-lid"></div>
-                                                                <div class="chest-body">
-                                                                    <span class="chest-interior-glow"></span>
-                                                                </div>
-                                                            </div>
+                                                        <div class="chest-node claimed" id="chestNode_<?php echo $num_cap; ?>" onclick="avisoBauColetado(<?php echo $num_cap; ?>, '<?php echo addslashes(htmlspecialchars($info['titulo'])); ?>')" role="button" tabindex="0" aria-label="Baú da Unidade <?php echo $num_cap; ?> já coletado">
+                                                            <?php echo opus_render_bau_svg('claimed', ['class' => 'chest-svg-trail']); ?>
                                                             <span class="chest-tag-done"><i class="fa-solid fa-check"></i> Coletado</span>
                                                         </div>
                                                     <?php else: ?>
-                                                        <div class="chest-node locked" id="chestNode_<?php echo $num_cap; ?>" onclick="avisoBauTrancado(<?php echo $num_cap; ?>, '<?php echo addslashes(htmlspecialchars($info['titulo'])); ?>', <?php echo (int)min(3, $licoes_feitas); ?>)">
-                                                            <div class="chest-sprite locked">
-                                                                <div class="chest-lid"></div>
-                                                                <div class="chest-body">
-                                                                    <span class="chest-padlock"><i class="fa-solid fa-lock"></i></span>
-                                                                </div>
-                                                            </div>
+                                                        <div class="chest-node locked" id="chestNode_<?php echo $num_cap; ?>" onclick="avisoBauTrancado(<?php echo $num_cap; ?>, '<?php echo addslashes(htmlspecialchars($info['titulo'])); ?>', <?php echo (int)min(3, $licoes_feitas); ?>)" role="button" tabindex="0" aria-label="Baú da Unidade <?php echo $num_cap; ?> trancado (<?php echo (int)min(3, $licoes_feitas); ?> de 3 lições)">
+                                                            <?php echo opus_render_bau_svg('locked', ['class' => 'chest-svg-trail']); ?>
                                                             <span class="chest-progress-pill"><i class="fa-solid fa-lock"></i> <?php echo (int)min(3, $licoes_feitas); ?>/3</span>
                                                         </div>
                                                     <?php endif; ?>
@@ -937,6 +939,9 @@ function opus_render_island_motif(int $num_cap, int $divisao): string
             <button class="close-btn-modal" id="btnCloseModalBau" onclick="fecharModalBau()" title="Fechar"><i class="fa-solid fa-xmark"></i></button>
             
             <div class="modal-roulette-header">
+                <div class="modal-roulette-chest-crest" aria-hidden="true">
+                    <?php echo opus_render_bau_svg('available', ['class' => 'chest-svg-roulette-crest']); ?>
+                </div>
                 <h2 class="modal-bau-title" id="modalBauTitle">Roleta de Recompensas!</h2>
                 <div class="modal-bau-sub" id="modalBauSub"><i class="fa-solid fa-crown"></i> Unidade X · Baú da Trilha</div>
             </div>
@@ -1040,6 +1045,11 @@ function opus_render_island_motif(int $num_cap, int $divisao): string
             </div>
         </div>
     </div>
+
+    <!-- Templates SVG do Baú Pirata para atualizações dinâmicas via JS -->
+    <template id="tplBauClaimedSvg"><?php echo opus_render_bau_svg('claimed', ['class' => 'chest-svg-trail']); ?></template>
+    <template id="tplBauLockedModalSvg"><?php echo opus_render_bau_svg('locked', ['class' => 'chest-svg-modal']); ?></template>
+    <template id="tplBauClaimedModalSvg"><?php echo opus_render_bau_svg('claimed', ['class' => 'chest-svg-modal']); ?></template>
 
     <!-- BOTÃO FLUTUANTE COM FORMATO DE SETA PARA ROLAGEM DIRETA À LIÇÃO ATUAL -->
     <button class="btn-scroll-to-lesson" id="btnScrollToLesson" onclick="rolarAteLicaoAtual(true)" title="Ir direto para a lição atual na trilha">

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
@@ -12,12 +12,16 @@ $is_streak_preview = isset($_GET['preview_streak']);
 $is_meta_preview   = isset($_GET['preview_meta']) || isset($_GET['meta_diaria']) || isset($_GET['meta_teste']);
 $is_secao_preview  = isset($_GET['preview_secao']) || isset($_GET['secao']);
 $is_tudo_preview   = isset($_GET['preview_tudo']);
+$is_fim_curso_preview = isset($_GET['preview_fim_curso']) || isset($_GET['fim_curso']) || isset($_GET['preview_final']) || isset($_GET['preview_curso']);
 
-$is_qualquer_preview = ($is_streak_preview || $is_meta_preview || $is_secao_preview || $is_tudo_preview);
+$is_qualquer_preview = ($is_streak_preview || $is_meta_preview || $is_secao_preview || $is_tudo_preview || $is_fim_curso_preview);
 
 if (!isset($_SESSION['user_id']) && !$is_qualquer_preview) {
     header("Location: dashboard.php");
     exit();
+}
+if (!isset($_SESSION['user_id']) && $is_qualquer_preview) {
+    $_SESSION['user_id'] = 1;
 }
 
 if (!isset($_POST['acertos']) && !$is_qualquer_preview) {
@@ -45,6 +49,13 @@ if (($cap_atual <= 0 || $licao_atual <= 0) && !empty($_POST['licao_id'])) {
 }
 if ($cap_atual <= 0) $cap_atual = 1;
 if ($licao_atual <= 0) $licao_atual = 1;
+
+if ($is_fim_curso_preview) {
+    $cap_atual = 40;
+    $licao_atual = 5;
+    $acertos = 5;
+    $total_questoes = 5;
+}
 
 $attempt_token = preg_replace('/[^a-f0-9]/', '', (string) ($_POST['attempt_token'] ?? ''));
 
@@ -172,13 +183,19 @@ if ($licao_atual == 5) {
     $prox_licao = 1;
     $prox_cap_link = $cap_atual + 1;
 }
-$is_curso_finalizado = ($cap_atual >= 40 && $licao_atual == 5);
-$liberou_bau = ($licao_atual == 3 && $acertos > 0);
+$is_curso_finalizado = ($cap_atual >= 40 && $licao_atual == 5) || $is_fim_curso_preview;
+$is_curso_concluido = ($is_curso_finalizado && $acertos > 0) || $is_fim_curso_preview;
+$liberou_bau = ($licao_atual == 3 && $acertos > 0 && !$is_curso_concluido);
 $desbloqueou_secao = ($licao_atual == 5 && $acertos > 0 && !$is_curso_finalizado);
 
 // Se concluiu a última seção do Capítulo 1 (Seção 15) ou Capítulo 2 (Seção 26), aciona a viagem de barco ao retornar ao dashboard
 $dashboard_retorno_url = "dashboard.php?fogo_aceso=1";
-if ($desbloqueou_secao && $cap_atual === 15) {
+if ($is_curso_concluido) {
+    $dashboard_retorno_url = "dashboard.php?curso_concluido=1";
+    $titulo_duo = "CURSO CONCLUÍDO!";
+    $subtitulo_duo = "Você completou todas as 40 seções do OPUS!";
+    $mensagem = "Parabéns, Desenvolvedor! Você dominou o curso completo de Java & Lógica do OPUS!";
+} elseif ($desbloqueou_secao && $cap_atual === 15) {
     $dashboard_retorno_url = "dashboard.php?de_capitulo=1&viajar_capitulo=2";
 } elseif ($desbloqueou_secao && $cap_atual === 26) {
     $dashboard_retorno_url = "dashboard.php?de_capitulo=2&viajar_capitulo=3";
@@ -200,6 +217,47 @@ if ($licao_atual == 5 && $acertos > 0) {
 
 $status_atual = opus_sincronizar_jogador($conn, $user_id);
 $vidas_restantes = (int) $status_atual['vidas'];
+
+// ==============================================================================
+// DADOS DO WIDGET SPOTIFY WRAPPED (ESTATÍSTICAS DA JORNADA)
+// ==============================================================================
+$sp_nome_aluno = trim((string) ($_SESSION['user_nome'] ?? ($status_atual['nome'] ?? 'Estudante Opus')));
+if (empty($sp_nome_aluno)) $sp_nome_aluno = 'Estudante Opus';
+
+$sp_username = trim((string) ($_SESSION['user_username'] ?? ''));
+$sp_avatar_url = '../assets/img/opi pulando feliz.png';
+
+$stmt_un = $conn->prepare("SELECT username, foto_perfil, foto_google FROM usuarios WHERE id = ?");
+if ($stmt_un) {
+    $stmt_un->bind_param("i", $user_id);
+    $stmt_un->execute();
+    $row_un = $stmt_un->get_result()->fetch_assoc();
+    $stmt_un->close();
+    if ($row_un) {
+        if (!empty($row_un['username'])) $sp_username = $row_un['username'];
+        if (!empty($row_un['foto_perfil'])) $sp_avatar_url = $row_un['foto_perfil'];
+        elseif (!empty($row_un['foto_google'])) $sp_avatar_url = $row_un['foto_google'];
+    }
+}
+if (empty($sp_username)) $sp_username = 'aluno.opus';
+if ($sp_username[0] !== '@') $sp_username = '@' . $sp_username;
+
+$sp_xp_total = (int) ($status_atual['xp'] ?? 0);
+if ($is_fim_curso_preview && $sp_xp_total < 500) {
+    $sp_xp_total = 14500;
+}
+
+$sp_dias_fogo = max(1, (int) ($status_atual['dias_fogo'] ?? 1));
+if ($is_fim_curso_preview && $sp_dias_fogo <= 1) {
+    $sp_dias_fogo = 21;
+}
+
+$sp_trofeus = (int) ($status_atual['trofeus'] ?? 0);
+if ($is_fim_curso_preview && $sp_trofeus < 3) {
+    $sp_trofeus = 15;
+}
+
+$sp_licoes_total = "200 / 200";
 
 // Resultado da ofensiva após processar a lição
 $fogo_depois = $ler_ultima_atividade();
@@ -278,6 +336,7 @@ $xp_meta_alvo = 50;
     <link rel="stylesheet" href="../assets/css/dashboard.css?v=<?= time() ?>">
     <link rel="stylesheet" href="../assets/css/topbar.css?v=<?= time() ?>">
     <link rel="stylesheet" href="../assets/css/resultado.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../assets/css/spotify_widget.css?v=<?= time() ?>">
     <link rel="stylesheet" href="../assets/css/light-mode.css?v=<?= time() ?>">
     <script src="../assets/js/theme.js"></script>
 </head>
@@ -368,8 +427,14 @@ $xp_meta_alvo = 50;
                     <?php endif; ?>
 
                     <!-- Botão Continuar Marcante Duolingo -->
-                    <div class="duo-action-container">
-                        <button type="button" class="btn-duo-next" id="btnDuoContinue">
+                    <div class="duo-action-container" style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+                        <?php if ($is_curso_concluido): ?>
+                        <button type="button" class="btn-duo-next" id="btnAbrirSpotifyCardGeral" style="background: linear-gradient(135deg, #1db954, #15883e); box-shadow: 0 8px 24px rgba(29, 185, 84, 0.45); max-width: 440px; width: 100%;">
+                            <i class="fa-brands fa-spotify" style="font-size: 1.3rem;"></i>
+                            <span>Abrir Card Spotify Wrapped</span>
+                        </button>
+                        <?php endif; ?>
+                        <button type="button" class="btn-duo-next" id="btnDuoContinue" style="<?php echo $is_curso_concluido ? 'max-width: 440px; width: 100%;' : ''; ?>">
                             Continuar <i class="fa-solid fa-arrow-right"></i>
                         </button>
                     </div>
@@ -695,7 +760,179 @@ $xp_meta_alvo = 50;
     </div>
     <?php endif; ?>
 
+    <!-- =========================================================================
+         MODAL DO WIDGET SPOTIFY WRAPPED (OPUS FORMATURA)
+         ========================================================================= -->
+    <div class="spotify-modal-overlay" id="modalSpotifyWrapped" role="dialog" aria-modal="true" aria-labelledby="spTrackTitle">
+        <div class="spotify-modal-container">
+            <button type="button" class="spotify-modal-close-btn" id="spBtnCloseModal" title="Fechar (Esc)" aria-label="Fechar modal">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Card Exportável do Spotify Wrapped -->
+            <div class="spotify-card" id="spotifyCardExport">
+                
+                <!-- Topo: Marca e Selo de Conclusão -->
+                <div class="sp-header">
+                    <div class="sp-brand">
+                        <img src="../assets/img/LOGO.png" alt="OPUS" class="sp-brand-logo">
+                        <div class="sp-brand-text">
+                            <span class="sp-brand-title">OPUS <span class="sp-dot">•</span> WRAPPED</span>
+                            <span class="sp-brand-sub">Edição 2026 · Formatura</span>
+                        </div>
+                    </div>
+                    <div class="sp-badge-concluido">
+                        <i class="fa-solid fa-graduation-cap"></i> 100% Concluído
+                    </div>
+                </div>
+
+                <!-- Capa do Álbum / Disco de Vinil com Avatar do Aluno -->
+                <div class="sp-cover-stage">
+                    <div class="sp-vinyl-record" aria-hidden="true"></div>
+                    
+                    <div class="sp-avatar-wrap">
+                        <img src="<?php echo htmlspecialchars($sp_avatar_url); ?>" alt="<?php echo htmlspecialchars($sp_nome_aluno); ?>" class="sp-avatar-img" id="spAvatarImg" crossorigin="anonymous">
+                    </div>
+
+                    <!-- Mascote Opi Comemorando -->
+                    <img src="../assets/img/mascote_vitoria_cipo_transparente.png" alt="Opi Vencedor" class="sp-opi-mascot-float" id="spOpiImg">
+
+                    <!-- Equalizador Live -->
+                    <div class="sp-equalizer-live" aria-hidden="true">
+                        <span class="sp-eq-bar"></span>
+                        <span class="sp-eq-bar"></span>
+                        <span class="sp-eq-bar"></span>
+                        <span class="sp-eq-bar"></span>
+                    </div>
+
+                    <!-- Selo de Artista Verificado -->
+                    <div class="sp-verified-pill">
+                        <i class="fa-solid fa-circle-check"></i> Aluno Verificado
+                    </div>
+                </div>
+
+                <!-- Informações da Faixa / Aluno -->
+                <div class="sp-track-row">
+                    <div class="sp-track-info">
+                        <h3 class="sp-track-title" id="spTrackTitle">Graduado em Java & Lógica</h3>
+                        <p class="sp-track-artist">
+                            <span class="sp-artist-name" id="spStudentName"><?php echo htmlspecialchars($sp_nome_aluno); ?></span>
+                            <span id="spStudentUser" style="color: var(--sp-green);"><?php echo htmlspecialchars($sp_username); ?></span>
+                        </p>
+                        <span class="sp-track-album">Formação OPUS · 40 Seções Concluídas</span>
+                    </div>
+                    <button type="button" class="sp-heart-btn" title="Favorito" aria-label="Favorito">
+                        <i class="fa-solid fa-heart"></i>
+                    </button>
+                </div>
+
+                <!-- Barra de Progresso do Player -->
+                <div class="sp-player-progress">
+                    <div class="sp-progress-track">
+                        <div class="sp-progress-fill">
+                            <span class="sp-progress-thumb"></span>
+                        </div>
+                    </div>
+                    <div class="sp-progress-times">
+                        <span>40:00</span>
+                        <span>40:00 (100%)</span>
+                    </div>
+                </div>
+
+                <!-- Controles do Player -->
+                <div class="sp-controls-row">
+                    <button type="button" class="sp-control-btn is-active" title="Ordem aleatória"><i class="fa-solid fa-shuffle"></i></button>
+                    <button type="button" class="sp-control-btn" title="Anterior"><i class="fa-solid fa-backward-step"></i></button>
+                    <button type="button" class="sp-play-btn" id="spBtnPlay" title="Tocar / Pausar Música Comemorativa" aria-label="Tocar"><i class="fa-solid fa-play"></i></button>
+                    <button type="button" class="sp-control-btn" title="Próximo"><i class="fa-solid fa-forward-step"></i></button>
+                    <button type="button" class="sp-control-btn is-active" title="Repetir"><i class="fa-solid fa-repeat"></i></button>
+                </div>
+
+                <!-- Grade de Estatísticas da Jornada -->
+                <div class="sp-stats-grid">
+                    <div class="sp-stat-pill">
+                        <div class="sp-stat-icon-wrap xp"><i class="fa-solid fa-bolt"></i></div>
+                        <div class="sp-stat-content">
+                            <span class="sp-stat-val" id="spValXp"><?php echo number_format($sp_xp_total, 0, ',', '.'); ?> XP</span>
+                            <span class="sp-stat-lbl">XP Total</span>
+                        </div>
+                    </div>
+                    <div class="sp-stat-pill">
+                        <div class="sp-stat-icon-wrap streak"><i class="fa-solid fa-fire"></i></div>
+                        <div class="sp-stat-content">
+                            <span class="sp-stat-val" id="spValStreak"><?php echo $sp_dias_fogo; ?> Dias</span>
+                            <span class="sp-stat-lbl">Ofensiva</span>
+                        </div>
+                    </div>
+                    <div class="sp-stat-pill">
+                        <div class="sp-stat-icon-wrap trophy"><i class="fa-solid fa-trophy"></i></div>
+                        <div class="sp-stat-content">
+                            <span class="sp-stat-val" id="spValTrophy"><?php echo $sp_trofeus; ?> Troféus</span>
+                            <span class="sp-stat-lbl">Conquistas</span>
+                        </div>
+                    </div>
+                    <div class="sp-stat-pill">
+                        <div class="sp-stat-icon-wrap lessons"><i class="fa-solid fa-laptop-code"></i></div>
+                        <div class="sp-stat-content">
+                            <span class="sp-stat-val" id="spValLessons"><?php echo $sp_licoes_total; ?></span>
+                            <span class="sp-stat-lbl">Lições Feitas</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Código de Barras Sonoro Spotify -->
+                <div class="sp-code-bar">
+                    <div class="sp-code-logo">
+                        <img src="../assets/img/LOGO.png" alt="OPUS">
+                    </div>
+                    <div class="sp-code-bars-wrap" aria-hidden="true">
+                        <span class="sp-code-line" style="height: 10px;"></span>
+                        <span class="sp-code-line" style="height: 22px;"></span>
+                        <span class="sp-code-line" style="height: 30px;"></span>
+                        <span class="sp-code-line" style="height: 14px;"></span>
+                        <span class="sp-code-line" style="height: 28px;"></span>
+                        <span class="sp-code-line" style="height: 18px;"></span>
+                        <span class="sp-code-line" style="height: 24px;"></span>
+                        <span class="sp-code-line" style="height: 30px;"></span>
+                        <span class="sp-code-line" style="height: 12px;"></span>
+                        <span class="sp-code-line" style="height: 20px;"></span>
+                        <span class="sp-code-line" style="height: 28px;"></span>
+                        <span class="sp-code-line" style="height: 16px;"></span>
+                        <span class="sp-code-line" style="height: 26px;"></span>
+                        <span class="sp-code-line" style="height: 12px;"></span>
+                        <span class="sp-code-line" style="height: 22px;"></span>
+                        <span class="sp-code-line" style="height: 30px;"></span>
+                        <span class="sp-code-line" style="height: 14px;"></span>
+                        <span class="sp-code-line" style="height: 20px;"></span>
+                    </div>
+                    <span class="sp-code-label">OPUS.DEV/FORMATURA</span>
+                </div>
+            </div>
+
+            <!-- Botões de Ação Embaixo do Card -->
+            <div class="sp-actions-wrap">
+                <div class="sp-action-btn-main-row">
+                    <button type="button" class="sp-btn sp-btn-download" id="spBtnDownload">
+                        <i class="fa-solid fa-download"></i> Baixar Card (PNG)
+                    </button>
+                    <button type="button" class="sp-btn sp-btn-share" id="spBtnShare">
+                        <i class="fa-solid fa-share-nodes"></i> Compartilhar
+                    </button>
+                </div>
+                <div class="sp-action-btn-sub-row">
+                    <button type="button" class="sp-btn sp-btn-tour" onclick="fecharSpotifyWrappedModal(); window.OpusTour && window.OpusTour.startCursoFinalizadoTutor();">
+                        <i class="fa-solid fa-book-open"></i> Rever Retrospectiva do Opi
+                    </button>
+                    <a href="<?php echo htmlspecialchars($dashboard_retorno_url); ?>" class="sp-btn sp-btn-dashboard">
+                        <i class="fa-solid fa-house"></i> Ir ao Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="../assets/js/opus_audio.js?v=<?= time() ?>"></script>
+    <script src="../assets/js/spotify_widget.js?v=<?= time() ?>"></script>
     <script src="../assets/js/script.js"></script>
     <script>
         // Interações sonoras e fluxo encadeado na tela de Resultado
@@ -804,6 +1041,12 @@ $xp_meta_alvo = 50;
 
                     setTimeout(() => {
                         streakOverlay.style.display = 'none';
+                        <?php if ($is_curso_concluido): ?>
+                        if (typeof window.abrirSpotifyWrappedModal === 'function') {
+                            window.abrirSpotifyWrappedModal();
+                            return;
+                        }
+                        <?php endif; ?>
                         if (chapterOverlay) {
                             iniciarAnimacaoCapitulo();
                         } else if (liberouBau) {
@@ -873,6 +1116,13 @@ $xp_meta_alvo = 50;
                 duoContinueBtn.addEventListener('click', function() {
                     if (window.OpusAudio && window.OpusAudio.playClick) window.OpusAudio.playClick();
                     
+                    <?php if ($is_curso_concluido): ?>
+                    if (typeof window.abrirSpotifyWrappedModal === 'function') {
+                        window.abrirSpotifyWrappedModal();
+                        return;
+                    }
+                    <?php endif; ?>
+
                     if (streakOverlay) {
                         iniciarAnimacaoStreak();
                     } else if (chapterOverlay) {
@@ -913,5 +1163,26 @@ $xp_meta_alvo = 50;
             }
         }
     </script>
+
+    <?php
+    $OPUS_TOUR_EXTRA_CONFIG = [
+        'cap' => (int) $cap_atual,
+        'licao' => (int) $licao_atual,
+        'isPrimeiraLicao' => ((int) $cap_atual === 1 && (int) $licao_atual === 1),
+        'isCursoFinalizado' => (bool) $is_curso_concluido,
+        'isFimCursoPreview' => (bool) $is_fim_curso_preview,
+        'acertos' => (int) $acertos,
+        'totalQuestoes' => (int) $total_questoes,
+        'xpGanho' => (int) $xp_ganho,
+        'errouTodas' => (bool) $errou_todas,
+        'gabaritou' => (bool) $gabaritou,
+        'hasStreak' => (bool) $mostrar_streak,
+        'proxCap' => (int) $prox_cap_link,
+        'proxLicao' => (int) $prox_licao,
+        'proxLicaoTitulo' => (string) ($prox_licao_titulo ?? ''),
+        'proxLicaoUrl' => "licao.php?cap={$prox_cap_link}&licao={$prox_licao}",
+    ];
+    include '../../back/includes/tour_opi.php';
+    ?>
 </body>
 </html>

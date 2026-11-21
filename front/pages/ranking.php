@@ -20,7 +20,9 @@ if (!empty($_SESSION['is_admin']) || (isset($_SESSION['user_nivel_acesso']) && $
     <title>Ranking Global - Opus</title>
     <link rel="icon" type="image/png" href="../assets/img/LOGO.png?v=2">
     <link rel="shortcut icon" type="image/png" href="../assets/img/LOGO.png?v=2">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/dashboard.css?v=<?= time() ?>">
     <link rel="stylesheet" href="../assets/css/topbar.css?v=<?= time() ?>">

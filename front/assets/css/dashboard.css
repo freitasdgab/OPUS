@@ -20,40 +20,73 @@ body {
 /* SIDEBAR */
 .sidebar {
     width: 250px;
-    background-color: #161a24;
-    border-right: 1px solid rgba(255,255,255,0.1);
+    min-width: 250px;
+    flex-shrink: 0;
+    background-color: #131f24;
+    border-right: 2px solid #37464f;
     display: flex;
     flex-direction: column;
     padding: 40px 20px;
+    box-sizing: border-box;
     font-family: 'Nunito', sans-serif;
 }
 
+.sidebar .logo,
 .logo {
     font-family: 'Orbitron', sans-serif;
     font-size: 32px;
     font-weight: 900;
+    line-height: 1.2;
     letter-spacing: 4px;
     margin-bottom: 60px;
     text-align: center;
+    color: #1cb0f6;
+    text-transform: uppercase;
 }
 
-.menu { display: flex; flex-direction: column; gap: 10px; font-family: 'Nunito', sans-serif; }
+.sidebar .menu,
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-family: 'Nunito', sans-serif;
+}
+
+.sidebar .nav-link,
 .nav-link {
     text-decoration: none;
-    color: #8e95a1;
+    color: #a5b4bc;
     padding: 15px;
+    border: 2px solid transparent;
     border-radius: 12px;
-    font-weight: 700;
     font-family: 'Nunito', sans-serif;
-    transition: 0.3s;
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
     display: flex;
     align-items: center;
     gap: 15px;
+    white-space: nowrap;
 }
 
-.nav-link.active, .nav-link:hover {
-    background: rgba(26, 54, 202, 0.2);
-    color: #fff;
+.sidebar .nav-link i,
+.nav-link i {
+    width: 20px;
+    text-align: center;
+    font-size: 1.05rem;
+    flex-shrink: 0;
+}
+
+.sidebar .nav-link.active,
+.sidebar .nav-link:hover,
+.nav-link.active,
+.nav-link:hover {
+    background: rgba(28, 176, 246, 0.1);
+    color: #1cb0f6;
+    border-color: #1cb0f6;
 }
 
 /* MAIN CONTENT */
@@ -74,7 +107,7 @@ body {
 
 .stats { display: flex; gap: 30px; }
 .stat-box { font-family: 'Orbitron', sans-serif; font-size: 18px; display: flex; flex-direction: column; }
-.stat-box small { font-family: 'Poppins'; font-size: 11px; color: #8e95a1; text-transform: uppercase; }
+.stat-box small { font-family: 'Nunito', sans-serif; font-size: 11px; color: #8e95a1; text-transform: uppercase; }
 
 .stat-box i { margin-bottom: 5px; }
 .lives .hearts { display: flex; gap: 5px; font-size: 16px; line-height: 1; margin-bottom: 5px; }

@@ -32,26 +32,69 @@ body.light-mode .main-content {
 }
 
 /* SIDEBAR / MENU ESQUERDO */
+html.light-mode .sidebar,
 body.light-mode .sidebar {
+    width: 250px !important;
+    min-width: 250px !important;
+    flex-shrink: 0 !important;
+    padding: 40px 20px !important;
+    box-sizing: border-box !important;
     background-color: #ffffff !important;
+    background: #ffffff !important;
     border-right: 2px solid #e5e5e5 !important;
-}
-body.light-mode .sidebar .logo { color: #1cb0f6 !important; }
-body.light-mode .sidebar .nav-link { 
-    color: #777777 !important; 
-    font-weight: 700 !important;
-    text-transform: uppercase;
     font-family: 'Nunito', sans-serif !important;
 }
-body.light-mode .sidebar .nav-link:hover, 
+html.light-mode .sidebar .logo,
+body.light-mode .sidebar .logo {
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 32px !important;
+    font-weight: 900 !important;
+    line-height: 1.2 !important;
+    letter-spacing: 4px !important;
+    margin-bottom: 60px !important;
+    text-align: center !important;
+    text-transform: uppercase !important;
+    color: #1cb0f6 !important;
+    opacity: 1 !important;
+}
+html.light-mode .sidebar .menu,
+body.light-mode .sidebar .menu {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    font-family: 'Nunito', sans-serif !important;
+}
+html.light-mode .sidebar .nav-link,
+body.light-mode .sidebar .nav-link {
+    color: #777777 !important;
+    font-family: 'Nunito', sans-serif !important;
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    line-height: 1.25 !important;
+    letter-spacing: 0.4px !important;
+    text-transform: uppercase !important;
+    padding: 15px !important;
+    border: 2px solid transparent !important;
+    border-radius: 12px !important;
+    gap: 15px !important;
+    white-space: nowrap !important;
+    transform: none !important;
+}
+html.light-mode .sidebar .nav-link i,
+body.light-mode .sidebar .nav-link i {
+    width: 20px !important;
+    text-align: center !important;
+    font-size: 1.05rem !important;
+    flex-shrink: 0 !important;
+}
+html.light-mode .sidebar .nav-link:hover,
+html.light-mode .sidebar .nav-link.active,
+body.light-mode .sidebar .nav-link:hover,
 body.light-mode .sidebar .nav-link.active {
     background: #ddf4ff !important;
     color: #1cb0f6 !important;
     border: 2px solid #84d8ff !important;
-    border-radius: 12px;
-}
-body.light-mode .sidebar .nav-link:not(.active) {
-    border: 2px solid transparent !important;
+    border-radius: 12px !important;
 }
 
 /* NAVBAR / TOPBAR */
@@ -78,6 +121,7 @@ body.light-mode .topbar-stat.stat-fogo.fogo-ativo i,
 body.light-mode .topbar-stat.stat-fogo.fogo-ativo span { color: #ff9600 !important; } /* Fogo ativo laranja */
 body.light-mode .topbar-stat.stat-notificacao i,
 body.light-mode .topbar-stat.stat-chat i { color: #4b4b4b !important; }
+body.light-mode .topbar-stat.stat-tour i { color: #58cc02 !important; }
 body.light-mode .topbar-stat.stat-vida i { color: #ff4b4b !important; }
 
 /* =======================================================================
@@ -445,6 +489,48 @@ body.light-mode .ranking-icon {
 /* =======================================================================
    RANKING E LIGAS (Linhas estilo 3D Branco)
    ======================================================================= */
+body.light-mode .ranking-hero {
+    background: #ffffff !important;
+    border: 2px solid #e5e5e5 !important;
+    border-bottom: 4px solid #e5e5e5 !important;
+    box-shadow: none !important;
+    border-radius: 20px !important;
+}
+body.light-mode .ranking-hero-badge {
+    background: rgba(255, 200, 0, 0.16) !important;
+    color: #b45309 !important;
+    border: 1px solid rgba(245, 158, 11, 0.35) !important;
+}
+body.light-mode .ranking-hero-title {
+    color: #4b4b4b !important;
+}
+body.light-mode .ranking-hero-title span {
+    color: #d97706 !important;
+    background: linear-gradient(90deg, #d97706, #f59e0b) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+}
+body.light-mode .ranking-hero-desc {
+    color: #777777 !important;
+}
+body.light-mode .ranking-hero-mascote img {
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.12)) !important;
+}
+body.light-mode .row-user-text {
+    color: #4b4b4b !important;
+}
+body.light-mode .user-country-tag {
+    background: #f1f5f9 !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #64748b !important;
+}
+body.light-mode .my-status-alert {
+    background: rgba(28, 176, 246, 0.1) !important;
+    border: 2px solid #1cb0f6 !important;
+    border-bottom: 4px solid #1899d6 !important;
+    color: #0284c7 !important;
+}
+
 body.light-mode .ranking-header h1,
 body.light-mode .ranking-header p,
 body.light-mode .liga-badge-nome,
@@ -559,35 +645,35 @@ body.light-mode .league-node.active[data-league="bronze"] .league-node-icon {
     background: linear-gradient(135deg, #cd7f32, #a5682a) !important;
     color: #ffffff !important;
     border-color: #874e1d !important;
-    box-shadow: 0 5px 0 #693710, 0 8px 16px rgba(165, 104, 42, 0.4) !important;
+    box-shadow: 0 5px 0 #693710 !important;
 }
 
 body.light-mode .league-node.active[data-league="prata"] .league-node-icon {
     background: linear-gradient(135deg, #a1a1aa, #71717a) !important;
     color: #ffffff !important;
     border-color: #52525b !important;
-    box-shadow: 0 5px 0 #3f3f46, 0 8px 16px rgba(113, 113, 122, 0.4) !important;
+    box-shadow: 0 5px 0 #3f3f46 !important;
 }
 
 body.light-mode .league-node.active[data-league="ouro"] .league-node-icon {
     background: linear-gradient(135deg, #fbbf24, #d97706) !important;
     color: #ffffff !important;
     border-color: #b45309 !important;
-    box-shadow: 0 5px 0 #92400e, 0 8px 16px rgba(217, 119, 6, 0.4) !important;
+    box-shadow: 0 5px 0 #92400e !important;
 }
 
 body.light-mode .league-node.active[data-league="diamante"] .league-node-icon {
     background: linear-gradient(135deg, #38bdf8, #0284c7) !important;
     color: #ffffff !important;
     border-color: #0369a1 !important;
-    box-shadow: 0 5px 0 #075985, 0 8px 16px rgba(2, 132, 199, 0.4) !important;
+    box-shadow: 0 5px 0 #075985 !important;
 }
 
 body.light-mode .league-node.active[data-league="mestre"] .league-node-icon {
     background: linear-gradient(135deg, #c084fc, #9333ea) !important;
     color: #ffffff !important;
     border-color: #7e22ce !important;
-    box-shadow: 0 5px 0 #6b21a8, 0 8px 16px rgba(147, 51, 234, 0.4) !important;
+    box-shadow: 0 5px 0 #6b21a8 !important;
 }
 
 /* Nó superado no modo claro */
@@ -697,6 +783,34 @@ body.light-mode .comando-btn::before {
     border-color: #e5e5e5 transparent transparent transparent !important;
 }
 
+body.light-mode .codex-hero {
+    background: #ffffff !important;
+    border: 2px solid #e5e5e5 !important;
+    border-bottom: 4px solid #e5e5e5 !important;
+    box-shadow: none !important;
+    border-radius: 20px !important;
+}
+body.light-mode .codex-hero-badge {
+    background: rgba(28, 176, 246, 0.12) !important;
+    color: #0284c7 !important;
+    border: 1px solid rgba(28, 176, 246, 0.25) !important;
+}
+body.light-mode .codex-hero-title {
+    color: #4b4b4b !important;
+}
+body.light-mode .codex-hero-title span {
+    color: #1cb0f6 !important;
+    background: linear-gradient(90deg, #0284c7, #00b4d8) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+}
+body.light-mode .codex-hero-desc {
+    color: #777777 !important;
+}
+body.light-mode .codex-hero-mascote img {
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.1)) !important;
+}
+
 body.light-mode .codex-header,
 body.light-mode .categoria-section {
     background: #ffffff !important;
@@ -709,6 +823,7 @@ body.light-mode .codex-header h1,
 body.light-mode .codex-header p,
 body.light-mode .categoria-section h2 {
     color: #4b4b4b !important;
+    border-bottom-color: #f1f5f9 !important;
 }
 
 /* =======================================================================
@@ -733,11 +848,31 @@ body.light-mode .member-since {
 
 body.light-mode .stat-card,
 body.light-mode .interact-card,
-body.light-mode .friends-card {
+body.light-mode .friends-card,
+body.light-mode .perfil-prefs-card {
     background: #ffffff !important;
     border: 2px solid #e5e5e5 !important;
     border-bottom: 4px solid #e5e5e5 !important;
     border-radius: 16px !important;
+}
+body.light-mode .perfil-pref-info strong,
+body.light-mode .perfil-tour-head strong {
+    color: #4b4b4b !important;
+}
+body.light-mode .perfil-pref-info small,
+body.light-mode .perfil-tour-head small {
+    color: #777777 !important;
+}
+body.light-mode .perfil-pref-divider {
+    background: #e5e5e5 !important;
+}
+body.light-mode .opus-switch-slider {
+    background: #e5e5e5 !important;
+    border-color: #d4d4d4 !important;
+}
+body.light-mode .opus-switch input:checked + .opus-switch-slider {
+    background: #58cc02 !important;
+    border-color: #46a302 !important;
 }
 body.light-mode .trophy-profile-card {
     background: #ffffff !important;
@@ -1393,7 +1528,7 @@ html.light-mode .btn-chat-back:hover {
     background: #f8fafc !important;
     border-color: #1cb0f6 !important;
     color: #1cb0f6 !important;
-    box-shadow: 0 4px 10px rgba(28, 176, 246, 0.15) !important;
+    box-shadow: none !important;
 }
 body.light-mode .btn-chat-back:hover i,
 html.light-mode .btn-chat-back:hover i {
@@ -1553,25 +1688,61 @@ body:not(.light-mode) .main-content {
 
 /* SIDEBAR / MENU ESQUERDO */
 body:not(.light-mode) .sidebar {
+    width: 250px !important;
+    min-width: 250px !important;
+    flex-shrink: 0 !important;
+    padding: 40px 20px !important;
+    box-sizing: border-box !important;
     background-color: #131f24 !important;
+    background: #131f24 !important;
     border-right: 2px solid #37464f !important;
-}
-body:not(.light-mode) .sidebar .logo { color: #1cb0f6 !important; }
-body:not(.light-mode) .sidebar .nav-link { 
-    color: #a5b4bc !important; 
-    font-weight: 700 !important;
-    text-transform: uppercase;
     font-family: 'Nunito', sans-serif !important;
 }
-body:not(.light-mode) .sidebar .nav-link:hover, 
+body:not(.light-mode) .sidebar .logo {
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 32px !important;
+    font-weight: 900 !important;
+    line-height: 1.2 !important;
+    letter-spacing: 4px !important;
+    margin-bottom: 60px !important;
+    text-align: center !important;
+    text-transform: uppercase !important;
+    color: #1cb0f6 !important;
+    opacity: 1 !important;
+}
+body:not(.light-mode) .sidebar .menu {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    font-family: 'Nunito', sans-serif !important;
+}
+body:not(.light-mode) .sidebar .nav-link {
+    color: #a5b4bc !important;
+    font-family: 'Nunito', sans-serif !important;
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    line-height: 1.25 !important;
+    letter-spacing: 0.4px !important;
+    text-transform: uppercase !important;
+    padding: 15px !important;
+    border: 2px solid transparent !important;
+    border-radius: 12px !important;
+    gap: 15px !important;
+    white-space: nowrap !important;
+    transform: none !important;
+}
+body:not(.light-mode) .sidebar .nav-link i {
+    width: 20px !important;
+    text-align: center !important;
+    font-size: 1.05rem !important;
+    flex-shrink: 0 !important;
+}
+body:not(.light-mode) .sidebar .nav-link:hover,
 body:not(.light-mode) .sidebar .nav-link.active {
     background: rgba(28, 176, 246, 0.1) !important;
     color: #1cb0f6 !important;
     border: 2px solid #1cb0f6 !important;
-    border-radius: 12px;
-}
-body:not(.light-mode) .sidebar .nav-link:not(.active) {
-    border: 2px solid transparent !important;
+    border-radius: 12px !important;
 }
 
 /* NAVBAR / TOPBAR */
@@ -1698,6 +1869,7 @@ body:not(.light-mode) .categoria-section,
 body:not(.light-mode) .stat-card,
 body:not(.light-mode) .interact-card,
 body:not(.light-mode) .friends-card,
+body:not(.light-mode) .perfil-prefs-card,
 body:not(.light-mode) .trophy-profile-card,
 body:not(.light-mode) .modal-content,
 body:not(.light-mode) .modal-box,
@@ -1716,6 +1888,7 @@ body:not(.light-mode) .categoria-section,
 body:not(.light-mode) .stat-card,
 body:not(.light-mode) .interact-card,
 body:not(.light-mode) .friends-card,
+body:not(.light-mode) .perfil-prefs-card,
 body:not(.light-mode) .modal-content,
 body:not(.light-mode) .chat-hub-container,
 body:not(.light-mode) .msg-bubble.other {
@@ -1874,98 +2047,178 @@ body:not(.light-mode) .opi-chat-input-container input {
    COMPATIBILIDADE TOTAL COM TELA DE LIÇÃO (.licao-page) - MODO CLARO
    ======================================================================== */
 body.light-mode.licao-page {
-    background-color: #ffffff !important;
-    background: #ffffff !important;
-    color: #4b4b4b !important;
+    background-color: #f8fafc !important;
+    background-image: radial-gradient(
+        ellipse 80% 55% at 50% -10%,
+        rgba(28, 176, 246, 0.08),
+        transparent 70%
+    ) !important;
+    color: #334155 !important;
+}
+
+@supports (background: color-mix(in srgb, red 10%, transparent)) {
+    body.light-mode.licao-page {
+        background-image: radial-gradient(
+            ellipse 80% 55% at 50% -10%,
+            color-mix(in srgb, var(--chapter-color, #1cb0f6) 10%, transparent),
+            transparent 70%
+        ) !important;
+    }
 }
 
 body.light-mode.licao-page .phase-header,
 body.light-mode.licao-page .phase-footer {
-    background: #ffffff !important;
-    border-color: #e5e5e5 !important;
+    background: transparent !important;
+    border: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
 }
 
 body.light-mode.licao-page .btn-close-phase {
-    color: #777777 !important;
+    background: #ffffff !important;
+    border: 2px solid #e2e8f0 !important;
+    border-bottom: 4px solid #cbd5e1 !important;
+    color: #475569 !important;
 }
 body.light-mode.licao-page .btn-close-phase:hover {
+    background: #f8fafc !important;
+    border-color: #cbd5e1 !important;
     color: #1cb0f6 !important;
 }
-body.light-mode.licao-page .lesson-title {
-    color: #4b4b4b !important;
+
+body.light-mode.licao-page .explanation-step-seg {
+    background: #e2e8f0 !important;
+}
+body.light-mode.licao-page .explanation-step-seg.completed,
+body.light-mode.licao-page .explanation-step-seg.active {
+    background: var(--chapter-color, #1cb0f6) !important;
+}
+body.light-mode.licao-page .explanation-step-counter {
+    background: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    color: #475569 !important;
 }
 
-/* Card de Explicação da Lição no Modo Claro - Preto sólido sem efeito de blur */
+body.light-mode.licao-page .lesson-title {
+    color: #0f172a !important;
+}
+
+@supports (color: color-mix(in srgb, red 80%, black)) {
+    body.light-mode.licao-page .lesson-unit-badge,
+    body.light-mode.licao-page .slide-tag {
+        color: color-mix(in srgb, var(--chapter-color, #1cb0f6) 78%, #0f172a) !important;
+    }
+}
+
+/* Balão de Explicação do Mascote no Modo Claro - Card branco limpo com pontinha */
 html.light-mode body.licao-page .explanation-card-wrapper,
 body.light-mode.licao-page .explanation-card-wrapper {
-    background: #0d0d0f !important;
-    background-color: #0d0d0f !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     filter: none !important;
-    border: 2px solid #1e222d !important;
-    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.18) !important;
+    border: 2px solid #e2e8f0 !important;
+    border-bottom: 6px solid #cbd5e1 !important;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08) !important;
+}
+html.light-mode body.licao-page .explanation-card-wrapper::before,
+body.light-mode.licao-page .explanation-card-wrapper::before {
+    border-color: transparent #e2e8f0 transparent transparent !important;
+}
+html.light-mode body.licao-page .explanation-card-wrapper::after,
+body.light-mode.licao-page .explanation-card-wrapper::after {
+    border-color: transparent #ffffff transparent transparent !important;
+}
+@media (max-width: 820px) {
+    html.light-mode body.licao-page .explanation-card-wrapper::before,
+    body.light-mode.licao-page .explanation-card-wrapper::before {
+        border-color: transparent transparent #e2e8f0 transparent !important;
+    }
+    html.light-mode body.licao-page .explanation-card-wrapper::after,
+    body.light-mode.licao-page .explanation-card-wrapper::after {
+        border-color: transparent transparent #ffffff transparent !important;
+    }
 }
 
 html.light-mode body.licao-page .explanation-text-content,
 body.light-mode.licao-page .explanation-text-content {
-    color: #f1f5f9 !important;
+    color: #1e293b !important;
 }
 
 html.light-mode body.licao-page .explanation-text-content p,
 body.light-mode.licao-page .explanation-text-content p {
-    color: #f1f5f9 !important;
+    color: #334155 !important;
 }
 
 html.light-mode body.licao-page .explanation-text-content strong,
 body.light-mode.licao-page .explanation-text-content strong {
-    color: #ffffff !important;
+    color: #0f172a !important;
+}
+
+html.light-mode body.licao-page .explanation-code-lead,
+body.light-mode.licao-page .explanation-code-lead {
+    color: #475569 !important;
 }
 
 /* Botões de navegação dos slides de explicação no Modo Claro */
 body.light-mode.licao-page .btn-nav {
-    background: #f0f2f5 !important;
-    border: 2px solid #e5e5e5 !important;
-    border-bottom: 4px solid #d5d5d5 !important;
-    color: #555c68 !important;
+    background: #ffffff !important;
+    border: 2px solid #e2e8f0 !important;
+    border-bottom: 5px solid #cbd5e1 !important;
+    color: #475569 !important;
 }
 body.light-mode.licao-page .btn-nav:hover:not(:disabled) {
-    background: #e5e7eb !important;
-    color: #1f2937 !important;
+    background: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
 }
 body.light-mode.licao-page .btn-nav:disabled {
-    opacity: 0.35 !important;
-    background: #f3f4f6 !important;
-    border-color: #e5e7eb !important;
-    border-bottom-color: #e5e7eb !important;
-    color: #9ca3af !important;
+    opacity: 0.4 !important;
+    background: #f1f5f9 !important;
+    border-color: #e2e8f0 !important;
+    border-bottom-color: #e2e8f0 !important;
+    color: #94a3b8 !important;
 }
 body.light-mode.licao-page .btn-nav.btn-next-slide {
     background: #1cb0f6 !important;
-    border: 2px solid #1899d6 !important;
-    border-bottom: 4px solid #1480b3 !important;
+    border: 2px solid #1cb0f6 !important;
+    border-bottom: 5px solid #1482b8 !important;
     color: #ffffff !important;
     box-shadow: none !important;
 }
 body.light-mode.licao-page .btn-nav.btn-next-slide:hover {
-    background: #1899d6 !important;
+    background: #1cb0f6 !important;
+    filter: brightness(1.06);
+}
+body.light-mode.licao-page .btn-nav.btn-next-slide.btn-start-quiz,
+body.light-mode.licao-page .btn-nav.btn-next-slide.btn-start-quiz:hover {
+    background: #58cc02 !important;
+    border: 2px solid #58cc02 !important;
+    border-bottom: 5px solid #46a302 !important;
+    color: #ffffff !important;
+}
+body.light-mode.licao-page .btn-nav.btn-next-slide.btn-start-quiz:hover {
+    filter: brightness(1.06);
 }
 body.light-mode.licao-page .dot-indicator {
-    background: #e5e5e5 !important;
+    background: #cbd5e1 !important;
 }
 body.light-mode.licao-page .dot-indicator.active {
-    background: #1cb0f6 !important;
+    background: var(--chapter-color, #1cb0f6) !important;
     box-shadow: none !important;
 }
 
 /* Quiz Progress Bar no Modo Claro */
 body.light-mode.licao-page .btn-close-quiz {
-    color: #afafaf !important;
+    background: #ffffff !important;
+    border: 2px solid #e2e8f0 !important;
+    border-bottom: 4px solid #cbd5e1 !important;
+    color: #64748b !important;
 }
 body.light-mode.licao-page .btn-close-quiz:hover {
-    color: #4b4b4b !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
 }
 body.light-mode.licao-page .progress-track {
     background: #e5e5e5 !important;
@@ -2117,23 +2370,35 @@ body.light-mode.licao-page .duo-option.reveal-correct .option-text {
     color: #357a01 !important;
 }
 
-/* Rodapé do Quiz no Modo Claro */
+/* Rodapé do Quiz no Modo Claro (sem barra inferior quando ocioso) */
 body.light-mode.licao-page .quiz-footer {
-    background: #ffffff !important;
-    border-top: 2px solid #e5e5e5 !important;
+    background: transparent !important;
+    border-top: none !important;
 }
 body.light-mode.licao-page .quiz-footer.feedback-correct {
-    background: #d7ffb8 !important;
-    border-top-color: #58cc02 !important;
+    background: transparent !important;
+    border-top: none !important;
+}
+body.light-mode.licao-page .quiz-footer.feedback-correct .quiz-footer-inner {
+    background: #e7ffcf !important;
+    border: 2px solid #58cc02 !important;
+    border-bottom: 5px solid #46a302 !important;
+    box-shadow: 0 12px 28px rgba(88, 204, 2, 0.14) !important;
 }
 body.light-mode.licao-page .quiz-footer.feedback-wrong {
-    background: #ffdfe0 !important;
-    border-top-color: #ff4b4b !important;
+    background: transparent !important;
+    border-top: none !important;
+}
+body.light-mode.licao-page .quiz-footer.feedback-wrong .quiz-footer-inner {
+    background: #ffe4e6 !important;
+    border: 2px solid #ff4b4b !important;
+    border-bottom: 5px solid #cc3c3c !important;
+    box-shadow: 0 12px 28px rgba(255, 75, 75, 0.14) !important;
 }
 body.light-mode.licao-page .btn-quiz-action.btn-check:disabled {
-    background: #e5e5e5 !important;
-    border-bottom: 5px solid #d0d0d0 !important;
-    color: #afafaf !important;
+    background: #e2e8f0 !important;
+    border-bottom: 5px solid #cbd5e1 !important;
+    color: #94a3b8 !important;
 }
 
 /* Modal de Aviso de Saída no Modo Claro */
@@ -2371,19 +2636,19 @@ body.light-mode .divisao-tab-btn.active {
     background: #f0f9ff !important;
     border-color: #1cb0f6 !important;
     border-bottom-color: #148bc4 !important;
-    box-shadow: 0 4px 14px rgba(28, 176, 246, 0.18) !important;
+    box-shadow: none !important;
 }
 body.light-mode .divisao-tab-btn#tabDivisao_2.active {
     background: #faf4ff !important;
     border-color: #ce82ff !important;
     border-bottom-color: #9f49d9 !important;
-    box-shadow: 0 4px 14px rgba(206, 130, 255, 0.18) !important;
+    box-shadow: none !important;
 }
 body.light-mode .divisao-tab-btn#tabDivisao_3.active {
     background: #fffdf0 !important;
     border-color: #ffc800 !important;
     border-bottom-color: #cc9b00 !important;
-    box-shadow: 0 4px 14px rgba(255, 200, 0, 0.18) !important;
+    box-shadow: none !important;
 }
 body.light-mode .divisao-tab-btn.tab-todas .divisao-tab-badge {
     background: #e2e8f0 !important;

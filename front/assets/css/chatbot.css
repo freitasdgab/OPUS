@@ -25,7 +25,7 @@
 }
 
 .opi-trigger-text {
-    font-family: 'Poppins', 'Nunito', sans-serif;
+    font-family: 'Nunito', sans-serif;
     font-weight: 800;
     font-size: 1.1rem;
     color: #ffffff;
@@ -134,7 +134,7 @@
     border-radius: 10px;
     border-bottom: 2px solid #1482b8;
     color: #ffffff;
-    font-family: 'Poppins', 'Nunito', sans-serif;
+    font-family: 'Nunito', sans-serif;
     font-weight: 800;
     font-size: 0.85rem;
     display: flex;
@@ -160,7 +160,7 @@
 }
 
 .opi-chat-name {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Nunito', sans-serif;
     font-weight: 800;
     font-size: 1.05rem;
     color: #ffffff;
@@ -245,7 +245,7 @@
     border-radius: 8px;
     border-bottom: 2px solid #1482b8;
     color: #ffffff;
-    font-family: 'Poppins', 'Nunito', sans-serif;
+    font-family: 'Nunito', sans-serif;
     font-weight: 800;
     font-size: 0.75rem;
     display: flex;
@@ -258,7 +258,7 @@
 .opi-msg-bubble {
     padding: 12px 16px;
     border-radius: 18px;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Nunito', sans-serif;
     font-size: 0.9rem;
     line-height: 1.5;
     word-break: break-word;
@@ -406,7 +406,7 @@
     background: #222232;
     border: 1px solid #323248;
     color: #cbd5e1;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Nunito', sans-serif;
     font-size: 0.78rem;
     font-weight: 600;
     padding: 6px 14px;
@@ -447,7 +447,7 @@
     border-radius: 16px;
     padding: 12px 16px;
     color: #ffffff;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Nunito', sans-serif;
     font-size: 0.88rem;
     outline: none;
     transition: border-color 0.2s;

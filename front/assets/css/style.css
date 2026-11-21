@@ -94,7 +94,7 @@ body, html {
 .topbar-btn.btn-login:hover {
     background: rgba(26, 54, 202, 0.2);
     border-color: #264be3;
-    box-shadow: 0 0 15px rgba(26, 54, 202, 0.4);
+    box-shadow: none;
     transform: translateY(-2px);
 }
 
@@ -102,13 +102,13 @@ body, html {
     background: #1a36ca;
     color: #ffffff;
     border: 2px solid #1a36ca;
-    box-shadow: 0 4px 15px rgba(26, 54, 202, 0.4);
+    box-shadow: none;
 }
 
 .topbar-btn.btn-signup:hover {
     background: #264be3;
     border-color: #264be3;
-    box-shadow: 0 6px 20px rgba(38, 75, 227, 0.6);
+    box-shadow: none;
     transform: translateY(-2px);
 }
 
@@ -230,7 +230,7 @@ body, html {
     border-radius: 8px;
     border: none;
     cursor: pointer;
-    box-shadow: 0 5px 15px rgba(26, 54, 202, 0.4);
+    box-shadow: none;
     transition: all 0.3s ease;
     letter-spacing: 2px;
 }
@@ -238,7 +238,7 @@ body, html {
 .btn-start:hover {
     background-color: #264be3;
     transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(38, 75, 227, 0.6);
+    box-shadow: none;
 }
 
 @keyframes float {

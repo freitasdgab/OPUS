@@ -139,74 +139,47 @@
             background: #32364c; color: #fff; transform: scale(1.08);
         }
 
-        /* Palco com Baú Cartunesco no Popup */
+        /* Palco com Baú Pirata Flat-Vector no Popup */
         .popup-bau-stage {
-            width: 100%; height: 95px; position: relative; display: flex;
-            align-items: center; justify-content: center; margin-bottom: 12px;
+            width: 100%; height: 136px; position: relative; display: flex;
+            align-items: center; justify-content: center; margin-bottom: 10px;
         }
         .cartoon-chest-preview {
-            width: 72px; height: 60px; position: relative; display: flex;
-            flex-direction: column; align-items: center; justify-content: flex-end;
-            animation: cartoonHopModal 1.8s infinite ease-in-out;
+            width: 146px; height: 126px; position: relative; display: flex;
+            align-items: center; justify-content: center;
+            animation: cartoonHopModal 2.2s infinite ease-in-out;
         }
         @keyframes cartoonHopModal {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px) scale(1.05, 0.95); }
+            50% { transform: translateY(-9px) scale(1.03, 0.97); }
         }
-        .cartoon-chest-preview .cc-lid {
-            width: 70px; height: 28px; border-radius: 18px 18px 4px 4px;
-            background: #ffc800; border: 3.5px solid #2e1800; border-bottom: 3.5px solid #2e1800;
-            box-shadow: inset 0 7px 0 #ffe866, inset 0 -3px 0 #d97706; position: relative;
+        .cartoon-chest-preview .opus-bau-svg.chest-svg-popup {
+            width: 146px;
+            height: 126px;
+            display: block;
+            overflow: visible;
+            filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.42));
         }
-        .cartoon-chest-preview .cc-lid::before,
-        .cartoon-chest-preview .cc-lid::after {
-            content: ''; position: absolute; top: -3.5px; width: 9px; height: calc(100% + 7px);
-            background: #ffd54f; border: 2.5px solid #2e1800; border-radius: 3px;
+        .cartoon-chest-preview .opus-bau-svg .bau-sparkle {
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: bauPopupSparkle 1.8s ease-in-out infinite;
         }
-        .cartoon-chest-preview .cc-lid::before { left: 10px; }
-        .cartoon-chest-preview .cc-lid::after { right: 10px; }
-
-        .cartoon-chest-preview .cc-body {
-            width: 66px; height: 32px; border-radius: 4px 4px 16px 16px;
-            background: #f59e0b; border: 3.5px solid #2e1800; border-top: none;
-            box-shadow: inset 0 -6px 0 #b45309; position: relative;
+        .cartoon-chest-preview .opus-bau-svg .bau-sparkle.sp-1 { animation-delay: 0s; }
+        .cartoon-chest-preview .opus-bau-svg .bau-sparkle.sp-2 { animation-delay: 0.35s; }
+        .cartoon-chest-preview .opus-bau-svg .bau-sparkle.sp-3 { animation-delay: 0.7s; }
+        .cartoon-chest-preview .opus-bau-svg .bau-sparkle.sp-4 { animation-delay: 1.05s; }
+        .cartoon-chest-preview .opus-bau-svg .bau-sparkle.sp-5 { animation-delay: 0.5s; }
+        .cartoon-chest-preview .opus-bau-svg .bau-sparkle.sp-6 { animation-delay: 1.3s; }
+        @keyframes bauPopupSparkle {
+            0%, 100% { opacity: 0.55; transform: scale(0.75) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1.22) rotate(14deg); }
         }
-        .cartoon-chest-preview .cc-body::before,
-        .cartoon-chest-preview .cc-body::after {
-            content: ''; position: absolute; top: 0; width: 9px; height: calc(100% + 1px);
-            background: #ffd54f; border: 2.5px solid #2e1800; border-top: none; border-radius: 0 0 3px 3px;
-        }
-        .cartoon-chest-preview .cc-body::before { left: 8px; }
-        .cartoon-chest-preview .cc-body::after { right: 8px; }
-
-        .cartoon-chest-preview .cc-clasp {
-            position: absolute; top: -7px; left: 50%; transform: translateX(-50%);
-            width: 18px; height: 16px; background: #fff59d; border: 2.5px solid #2e1800;
-            border-radius: 5px; z-index: 5; box-shadow: inset 0 2px 0 #fff;
-        }
-        .cartoon-chest-preview .cc-clasp::after {
-            content: ''; position: absolute; top: 4px; left: 50%; transform: translateX(-50%);
-            width: 4px; height: 6px; background: #2e1800; border-radius: 2px;
-        }
-
-        .popup-bau-sparkles {
-            position: absolute; width: 100%; height: 100%; pointer-events: none;
-        }
-        .popup-bau-sparkles .s1 {
-            position: absolute; top: 10px; left: 24%; color: #ffd700; font-size: 16px;
-            animation: starTwinkle 1.4s infinite alternate;
-        }
-        .popup-bau-sparkles .s2 {
-            position: absolute; top: 15px; right: 24%; color: #ffd700; font-size: 20px;
-            animation: starTwinkle 1.8s infinite alternate 0.3s;
-        }
-        .popup-bau-sparkles .s3 {
-            position: absolute; bottom: 10px; right: 20%; color: #fff; font-size: 15px;
-            animation: starTwinkle 1.2s infinite alternate 0.6s;
-        }
-        @keyframes starTwinkle {
-            0% { transform: scale(0.8) rotate(0deg); opacity: 0.6; }
-            100% { transform: scale(1.25) rotate(45deg); opacity: 1; }
+        @media (prefers-reduced-motion: reduce) {
+            .cartoon-chest-preview,
+            .cartoon-chest-preview .opus-bau-svg .bau-sparkle {
+                animation: none !important;
+            }
         }
 
         .popup-bau-badge {
@@ -681,7 +654,7 @@
 .streak-continue-btn:hover {
     filter: brightness(1.08);
     transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(28, 176, 246, 0.35);
+    box-shadow: none;
 }
 
 .streak-continue-btn:active {
@@ -1090,7 +1063,7 @@ body.light-mode .streak-hero-subtitle {
 .chapter-unlock-overlay.is-morphed .chapter-btn-primary {
     background: var(--cor-destino);
     border-bottom-color: #b82b4f !important;
-    box-shadow: 0 6px 22px rgba(255, 82, 123, 0.4);
+    box-shadow: none;
 }
 .chapter-btn-primary:hover {
     filter: brightness(1.1);
@@ -1449,7 +1422,7 @@ body.light-mode .chapter-btn-secondary:hover {
     font-size: 1.05rem;
     font-weight: 800;
     cursor: pointer;
-    box-shadow: 0 4px 18px rgba(124, 58, 237, 0.35);
+    box-shadow: none;
     transition: filter 0.15s ease, transform 0.1s ease;
     user-select: none;
 }

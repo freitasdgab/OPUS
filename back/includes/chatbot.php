@@ -60,5 +60,5 @@
     </div>
 </div>
 
-<link rel="stylesheet" href="../assets/css/chatbot.css?v=2.5">
+<link rel="stylesheet" href="../assets/css/chatbot.css?v=<?= time() ?>">
 <script src="../assets/js/chatbot.js?v=2.5"></script>
