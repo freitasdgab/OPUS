@@ -43,9 +43,10 @@ $registro = $result->fetch_assoc();
 $id_recuperacao = $registro['id'];
 $stmt->close();
 
-// 3. Atualiza a senha do usuário
+// 3. Atualiza a senha do usuário com hash seguro
+$senha_hash = password_hash($nova_senha, PASSWORD_DEFAULT);
 $stmt_update = $conn->prepare("UPDATE usuarios SET senha = ? WHERE LOWER(email) = ?");
-$stmt_update->bind_param("ss", $nova_senha, $email);
+$stmt_update->bind_param("ss", $senha_hash, $email);
 $stmt_update->execute();
 $stmt_update->close();
 

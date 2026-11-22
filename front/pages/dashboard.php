@@ -588,7 +588,7 @@ function opus_render_island_motif(int $num_cap, int $divisao): string
                             <div class="vidas-info">
                                 <h4>Você ficou sem vidas!</h4>
                                 <p>Próxima vida em: <span>
-                                    <?php echo !empty($status_jogador['proxima_vida_texto']) ? htmlspecialchars($status_jogador['proxima_vida_texto']) : '05:00'; ?>
+                                    <?php echo !empty($status_jogador['proxima_vida_texto']) ? htmlspecialchars($status_jogador['proxima_vida_texto']) : '30min'; ?>
                                 </span></p>
                             </div>
                         </div>

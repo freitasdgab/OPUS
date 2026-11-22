@@ -94,7 +94,7 @@ $tour_primeiro_nome = !empty($partes_nome[0]) ? $partes_nome[0] : 'Estudante';
             <div class="opi-tour-bubble-header">
                 <div class="opi-tour-badge-wrap">
                     <span class="opi-tour-badge" id="opiTourBadge">TOUR OPUS</span>
-                    <span class="opi-tour-counter" id="opiTourCounter">1 / 27</span>
+                    <span class="opi-tour-counter" id="opiTourCounter">1 / 26</span>
                 </div>
 
                 <div class="opi-tour-controls-mini">

@@ -35,6 +35,8 @@ body, html {
 .profile-avatar-header {
     display: flex;
     align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
     margin-bottom: 22px;
     padding-top: 8px;
 }
@@ -89,14 +91,7 @@ body, html {
     font-size: 2.8rem;
 }
 
-/* Lapizinho e ações ao lado do círculo */
-.avatar-actions-group {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
+/* Lapizinho e botão de redes sociais ao lado do círculo */
 .edit-avatar-btn {
     width: 40px;
     height: 40px;

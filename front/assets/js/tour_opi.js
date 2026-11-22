@@ -22,7 +22,7 @@
     const SESSION_KEY_CONTINUO = 'opus_tour_continuo_u' + USER_ID;
 
     const FULL_TOUR_STAGES = [
-        { page: 'dashboard.php',  label: 'Aprender',   count: 6 },
+        { page: 'dashboard.php',  label: 'Aprender',   count: 5 },
         { page: 'desafios.php',   label: 'Desafios',   count: 3 },
         { page: 'ranking.php',    label: 'Ranking',    count: 3 },
         { page: 'ligas.php',      label: 'Ligas',      count: 3 },
@@ -156,17 +156,7 @@
                 text: 'Prefere estudar no claro ou no escuro? Clicando aqui você alterna entre o **Modo Claro** e o **Modo Escuro** na hora!',
                 mascot: 'vistodecimaazul.png',
                 accent: '#ffc800',
-                accentDark: '#c99700'
-            },
-            {
-                selector: '#opiChatTrigger',
-                pointer: 'Opi IA',
-                badge: 'INTELIGÊNCIA ARTIFICIAL',
-                title: 'Assistente Opi IA',
-                text: 'Travou em alguma lição ou quer tirar uma dúvida sobre **Java**? Clique aqui no botão **IA** para conversar comigo no **Opi IA** e acompanhar seu progresso!',
-                mascot: 'opi_dicionario.png',
-                accent: '#1cb0f6',
-                accentDark: '#148bc4',
+                accentDark: '#c99700',
                 nextText: fullMode ? 'Próximo' : 'Concluir!'
             }
         ];
@@ -465,14 +455,24 @@
                 accentDark: '#148bc4'
             },
             {
-                selector: '.social-links',
-                pointer: 'Conexões',
-                badge: 'REDES & AMIGOS',
-                title: 'Redes Sociais e Conexões',
-                text: 'Aqui você adiciona links das suas redes (**GitHub, LinkedIn, Instagram** e mais) e acompanha quantas pessoas você está **seguindo**, seus **seguidores** e **amigos**.',
+                selector: '.btn-add-social',
+                pointer: 'Redes Sociais',
+                badge: 'REDES SOCIAIS',
+                title: 'Suas Redes Sociais',
+                text: 'Clique em **Adicionar redes sociais** para vincular seus links do **GitHub, LinkedIn, Instagram, Facebook, YouTube** ou **e-mail público** diretamente no seu perfil!',
                 mascot: 'explicando2.png',
                 accent: '#ce82ff',
                 accentDark: '#9b4de0'
+            },
+            {
+                selector: '.social-links',
+                pointer: 'Conexões',
+                badge: 'SEGUIDORES & AMIGOS',
+                title: 'Seguindo, Seguidores e Amigos',
+                text: 'Aqui você acompanha quantas pessoas está **seguindo**, seus **seguidores** e seus **amigos** — clique em qualquer um desses contadores para ver a lista completa!',
+                mascot: 'vistodecimaazul.png',
+                accent: '#58cc02',
+                accentDark: '#46a302'
             },
             {
                 selector: '.stats-grid',
@@ -586,17 +586,7 @@
                 text: 'Use **Próximo** (ou as setas do teclado) para avançar entre os slides. Quando chegar ao final, este botão vira **Começar Exercícios** e eu volto rapidinho para te guiar nas perguntas!',
                 mascot: 'acertoumetade.png',
                 accent: '#58cc02',
-                accentDark: '#46a302'
-            },
-            {
-                selector: '#opiChatTrigger',
-                pointer: 'Tira-dúvidas',
-                badge: 'OPI IA',
-                title: 'Precisou de ajuda extra?',
-                text: 'Ficou com alguma dúvida sobre **System.out.println()** ou qualquer comando Java? Clique no botão do **Opi IA** aqui do lado para conversar comigo a qualquer momento!',
-                mascot: 'opi_dicionario.png',
-                accent: '#ce82ff',
-                accentDark: '#9b4de0',
+                accentDark: '#46a302',
                 nextText: 'Entendi!'
             }
         ];
@@ -631,7 +621,7 @@
                 pointer: 'Seu avanço',
                 badge: 'REGRAS & FOCO',
                 title: 'Acompanhe sua Barra!',
-                text: 'Aqui em cima ficam o seu **progresso** e o controle de **som**. Evite sair pelo **X** no meio dos exercícios para não perder **15 XP**. No final, eu te explico seus resultados e libero a **Lição 2**!',
+                text: 'Aqui em cima ficam o seu **progresso** e o controle de **som**. Evite sair pelo **X** no meio dos exercícios para não perder **1 vida**. No final, eu te explico seus resultados e libero a **Lição 2**!',
                 mascot: 'opi_ranking.png',
                 accent: '#ff9600',
                 accentDark: '#cc7800',
@@ -693,7 +683,7 @@
                 pointer: 'Vidas & XP',
                 badge: 'COMO FUNCIONA',
                 title: 'Suas Vidas e Energia',
-                text: 'Quando zeramos todas as questões, perdemos **1 coração de vida** (cada coração volta a cada 5 horas). Revise a explicação com calma — na próxima tentativa você já vai mandar bem!',
+                text: 'Quando zeramos todas as questões, perdemos **1 coração de vida** (cada coração volta a cada 30 minutos). Revise a explicação com calma — na próxima tentativa você já vai mandar bem!',
                 mascot: 'acertoumetade.png',
                 accent: '#ff4b4b',
                 accentDark: '#cc3c3c'

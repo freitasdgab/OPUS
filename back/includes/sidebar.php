@@ -41,9 +41,6 @@ $itens_menu = [
 <script src="../assets/js/theme.js"></script>
 
 <?php
-// Inclui o assistente flutuante Opi IA em todas as páginas com a sidebar
-include __DIR__ . '/chatbot.php';
-
 // Inclui o Tour Guiado Interativo com o Mascote Opi (estilo Duolingo)
 include __DIR__ . '/tour_opi.php';
 ?>

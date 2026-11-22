@@ -6,7 +6,6 @@ const btnSubmit = document.getElementById('btnSubmit');
 const inputNome = document.getElementById('nome');
 const inputConfirmar = document.getElementById('confirme_senha');
 const authForm = document.getElementById('authForm');
-const inputSenha = document.getElementById('senha');
 
 function setAuthMode(mode) {
     if (mode === 'login') {
@@ -66,43 +65,9 @@ document.querySelectorAll('.input-with-icon input').forEach(input => {
     });
 });
 
-// --- VALIDAÇÃO DE SENHA FORTE NO CADASTRO E MARCAÇÃO DE CADASTRO ---
+// --- MARCAÇÃO DE CADASTRO / LOGIN NO NAVEGADOR ---
 if (authForm) {
-    authForm.addEventListener('submit', (e) => {
-        if (authAction && authAction.value === 'cadastro' && inputSenha) {
-            const senha = inputSenha.value;
-            
-            // Expressão regular para validar os critérios da senha
-            const regexLetraMaiuscula = /[A-Z]/;
-            const regexLetraMinuscula = /[a-z]/;
-            const regexNumero = /[0-9]/;
-            const regexCaractereEspecial = /[!@#$%^&*(),.?":{}|<>_+\-=\[\]\\\/]/;
-
-            let erros = [];
-
-            if (senha.length < 8) erros.push("Ter pelo menos 8 caracteres.");
-            if (!regexLetraMaiuscula.test(senha)) erros.push("Conter pelo menos uma letra maiúscula.");
-            if (!regexLetraMinuscula.test(senha)) erros.push("Conter pelo menos uma letra minúscula.");
-            if (!regexNumero.test(senha)) erros.push("Conter pelo menos um número.");
-            if (!regexCaractereEspecial.test(senha)) erros.push("Conter pelo menos um caractere especial (ex: @, #, $, %, !, *).");
-
-            if (erros.length > 0) {
-                e.preventDefault(); // Impede o envio do formulário
-                if (typeof opusAlerta === 'function') {
-                    opusAlerta({
-                        tipo: 'warning',
-                        titulo: 'Requisitos de Senha',
-                        mensagem: 'Para sua segurança, ajuste os seguintes pontos:',
-                        detalhes: erros,
-                        botaoTexto: 'AJUSTAR SENHA'
-                    });
-                } else {
-                    alert("Sua senha precisa melhorar nos seguintes pontos:\n\n- " + erros.join("\n- "));
-                }
-                return;
-            }
-        }
-
+    authForm.addEventListener('submit', () => {
         // Registra no navegador que o usuário já foi cadastrado ou tentou logar
         localStorage.setItem('opus_cadastrado', 'true');
         document.cookie = "opus_cadastrado=1; path=/; max-age=31536000";

@@ -497,30 +497,8 @@
 }
 
 /* =========================================================================
-   INTEGRAÇÃO VISUAL DO CHATBOT OPI IA E CONFETES NO CODÉDEX
+   INTEGRAÇÃO VISUAL DOS CONFETES NO CODÉDEX
    ========================================================================= */
-body.licao-page .opi-chat-trigger,
-.licao-page .opi-chat-trigger {
-    top: 50% !important;
-    bottom: auto !important;
-    right: 18px !important;
-    transform: translateY(-50%) !important;
-    z-index: 100000 !important;
-}
-body.licao-page .opi-chat-trigger:hover,
-.licao-page .opi-chat-trigger:hover {
-    transform: translateY(-50%) scale(1.08) !important;
-}
-body.licao-page .opi-chat-window,
-.licao-page .opi-chat-window {
-    top: 50% !important;
-    bottom: auto !important;
-    right: 76px !important;
-    transform: translateY(-50%) !important;
-    max-height: 85vh !important;
-    z-index: 100001 !important;
-}
-
 #confettiContainer,
 .confetti-container {
     z-index: 100002 !important;

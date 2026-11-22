@@ -116,28 +116,6 @@ $is_primeira_licao = ((int) $unidade_atual === 1 && (int) $licao_atual === 1);
             .codedex-success-card.active {
                 display: flex !important;
             }
-            /* Reposiciona Chatbot Opi IA na lateral para não cobrir o XP no topo direito */
-            body.licao-page .opi-chat-trigger,
-            .licao-page .opi-chat-trigger {
-                top: 50% !important;
-                bottom: auto !important;
-                right: 18px !important;
-                transform: translateY(-50%) !important;
-                z-index: 100000 !important;
-            }
-            body.licao-page .opi-chat-trigger:hover,
-            .licao-page .opi-chat-trigger:hover {
-                transform: translateY(-50%) scale(1.08) !important;
-            }
-            body.licao-page .opi-chat-window,
-            .licao-page .opi-chat-window {
-                top: 50% !important;
-                bottom: auto !important;
-                right: 76px !important;
-                transform: translateY(-50%) !important;
-                max-height: 85vh !important;
-                z-index: 100001 !important;
-            }
             #confettiContainer,
             .confetti-container {
                 z-index: 100002 !important;
@@ -1039,7 +1017,7 @@ $is_primeira_licao = ((int) $unidade_atual === 1 && (int) $licao_atual === 1);
         <div class="exit-warning-card">
             <i class="fa-solid fa-triangle-exclamation exit-warning-icon"></i>
             <h3 class="exit-warning-title">Sair da lição agora?</h3>
-            <p class="exit-warning-text">Se você sair no meio dos exercícios, seu progresso nesta lição não será salvo e você perderá 15 XP.</p>
+            <p class="exit-warning-text">Se você sair no meio dos exercícios, seu progresso nesta lição não será salvo e você perderá 1 vida.</p>
             <div class="exit-warning-actions">
                 <button type="button" class="btn-exit-warning btn-exit-cancel" onclick="fecharAvisoSaida()">Continuar respondendo</button>
                 <button type="button" class="btn-exit-warning btn-exit-confirm" onclick="confirmarSaida()">Sair mesmo assim</button>
@@ -1065,8 +1043,6 @@ $is_primeira_licao = ((int) $unidade_atual === 1 && (int) $licao_atual === 1);
 
     <!-- CONFETTI -->
     <div class="confetti-container" id="confettiContainer"></div>
-
-    <?php include '../../back/includes/chatbot.php'; ?>
 
     <script src="../assets/js/opus_audio.js?v=<?= time() ?>"></script>
     <script src="../assets/js/opus_alerta.js?v=<?= time() ?>"></script>

@@ -318,7 +318,7 @@
             // Mensagem motivacional de acordo com o progresso
             let desc = '';
             if (concluidas === 0) {
-                desc = 'Conclua as 3 primeiras lições da <strong>Unidade ' + cap + '</strong> para desbloquear este baú mágico de recompensas com <strong>+100 XP</strong> e <strong>Corações de Vida</strong>!';
+                desc = 'Conclua as 3 primeiras lições da <strong>Unidade ' + cap + '</strong> para desbloquear este baú mágico de recompensas com prêmios de <strong>até +25 XP</strong> ou <strong>+1 Coração de Vida</strong> na Roleta da Sorte!';
             } else if (concluidas === 1) {
                 desc = 'Faltam apenas <strong>2 lições</strong> nesta unidade para abrir o baú e garantir seu bônus de XP e corações!';
             } else {

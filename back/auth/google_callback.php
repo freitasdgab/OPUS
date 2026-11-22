@@ -169,7 +169,7 @@ if ($usuario) {
     $uid = (int) $stmt_insert->insert_id;
 
     // Cria progresso inicial
-    $conn->query("INSERT INTO progresso_usuario (usuario_id, unidade_numero, status, licoes_concluidas) VALUES
+    $conn->query("INSERT IGNORE INTO progresso_usuario (usuario_id, unidade_numero, status, licoes_concluidas) VALUES
         ($uid, 1, 'corrente', 0),
         ($uid, 2, 'trancado',  0),
         ($uid, 3, 'trancado',  0),

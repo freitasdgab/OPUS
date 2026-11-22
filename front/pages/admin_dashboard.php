@@ -21,6 +21,7 @@ $stmt_admin->execute();
 $current_user = $stmt_admin->get_result()->fetch_assoc();
 
 if (!$current_user || ($current_user['nivel_acesso'] ?? '') !== 'admin') {
+    http_response_code(403);
     echo "<!DOCTYPE html>
     <html lang='pt-BR'>
     <head>

@@ -1,7 +1,6 @@
 // =============================================================================
-// PROJETO OPUS - DIAGRAMA DE ENTIDADE E RELACIONAMENTO (DER ATUALIZADO)
-// Tabelas ativas e 100% interligadas para documentação do TCC
-// (Removidos: batalhas_amigos, vw_amigos_usuario, grupos_batalha, grupo_membros)
+// PROJETO OPUS - DIAGRAMA DE ENTIDADE E RELACIONAMENTO (DER COMPLETO - 24 TABELAS)
+// 24 tabelas ativas e 100% interligadas (espelhando database/opus.sql)
 // Cole todo este código diretamente no editor do site: https://dbdiagram.io
 // =============================================================================
 
@@ -70,6 +69,42 @@ Table perguntas {
   alternativa_c varchar(500)
   alternativa_correta varchar(255)
   criado_em timestamp
+}
+
+Table desafios_projetos {
+  id int [pk, increment]
+  slug varchar(60) [unique, not null]
+  titulo varchar(120) [not null]
+  subtitulo varchar(255) [not null]
+  descricao text [not null]
+  secao_requerida int [not null]
+  requisitos_titulo varchar(120) [not null]
+  requisitos_desc text [not null]
+  categoria varchar(50) [not null]
+  dificuldade varchar(20) [default: 'facil']
+  xp_recompensa int [default: 50]
+  icone varchar(50) [default: 'fa-code']
+  cor varchar(10) [default: '#1cb0f6']
+  arquivo_nome varchar(60) [default: 'Main.java']
+  codigo_inicial text [not null]
+  missao_detalhada text [not null]
+  exemplo_saida text [not null]
+  dica text [not null]
+  validador_tipo varchar(30) [default: 'saida_contem']
+  validador_regra text [not null]
+  ordem int [default: 1]
+}
+
+Table desafios_projetos_usuario {
+  id int [pk, increment]
+  usuario_id int [not null]
+  desafio_id int [not null]
+  status varchar(20) [default: 'disponivel']
+  codigo_salvo text
+  concluido_em datetime
+  xp_ganho int [default: 0]
+  tentativas int [default: 0]
+  atualizado_em timestamp
 }
 
 // -----------------------------------------------------------------------------
@@ -252,6 +287,21 @@ Table chat_mensagens {
   data_envio datetime
 }
 
+Table grupos_batalha {
+  id int [pk, increment]
+  nome varchar(100) [not null]
+  codigo_convite varchar(20) [unique, not null]
+  criador_id int [not null]
+  data_criacao datetime
+}
+
+Table grupo_membros {
+  id int [pk, increment]
+  grupo_id int [not null]
+  usuario_id int [not null]
+  data_entrada datetime
+}
+
 // =============================================================================
 // RELACIONAMENTOS (CARDINALIDADES E CHAVES ESTRANGEIRAS)
 // =============================================================================
@@ -261,6 +311,9 @@ Ref: unidades.divisao_id > divisoes.id
 Ref: desafios.unidade_numero - unidades.numero
 Ref: licoes.unidade_numero > unidades.numero
 Ref: perguntas.licao_id > licoes.id
+Ref: desafios_projetos.secao_requerida > unidades.numero
+Ref: desafios_projetos_usuario.usuario_id > usuarios.id
+Ref: desafios_projetos_usuario.desafio_id > desafios_projetos.id
 
 // Progresso e Usuário
 Ref: progresso_usuario.usuario_id > usuarios.id
@@ -289,3 +342,6 @@ Ref: pedidos_conexao.remetente_id > usuarios.id
 Ref: pedidos_conexao.destinatario_id > usuarios.id
 Ref: chat_mensagens.remetente_id > usuarios.id
 Ref: chat_mensagens.destinatario_id > usuarios.id
+Ref: grupos_batalha.criador_id > usuarios.id
+Ref: grupo_membros.grupo_id > grupos_batalha.id
+Ref: grupo_membros.usuario_id > usuarios.id

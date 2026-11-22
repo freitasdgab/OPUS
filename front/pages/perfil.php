@@ -87,16 +87,14 @@ if (!empty($dados_user['data_criacao'])) {$timestamp = strtotime($dados_user['da
                                     </div>
                                 <?php endif; ?>
                             </div>
-                            <div class="avatar-actions-group">
-                                <button type="button" class="edit-avatar-btn" onclick="openProfileModal()" title="Editar foto de perfil">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
-                                <button type="button" class="btn-add-social" onclick="document.getElementById('socialEditModal').style.display='flex'" title="Adicionar ou editar redes sociais">
-                                    <i class="fa-solid fa-share-nodes"></i>
-                                    <span>Adicionar redes sociais</span>
-                                </button>
-                            </div>
+                            <button type="button" class="edit-avatar-btn" onclick="openProfileModal()" title="Editar foto de perfil">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
                         </div>
+                        <button type="button" class="btn-add-social" id="btnAddSocial" onclick="document.getElementById('socialEditModal').style.display='flex'" title="Adicionar ou editar redes sociais">
+                            <i class="fa-solid fa-share-nodes"></i>
+                            <span>Adicionar redes sociais</span>
+                        </button>
                     </div>
 
                     <div class="user-info">

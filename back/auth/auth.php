@@ -87,21 +87,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!empty($codigo_grupo)) $redirect_base .= "&grupo=" . urlencode($codigo_grupo);
         if ($convite_id > 0) $redirect_base .= "&convite=" . $convite_id;
 
-        // 1. Validação de senhas iguais
-        if ($senha !== $confirme_senha) {
-            $msg_erro = urlencode('As senhas digitadas não coincidem!');
+        // 1. Validação de senha preenchida e senhas iguais
+        if ($senha === '') {
+            $msg_erro = urlencode('Por favor, informe uma senha!');
             header("Location: {$redirect_base}&erro={$msg_erro}");
             exit();
         }
 
-        // 2. NOVA VALIDAÇÃO: Forçar Senha Forte no Servidor
-        $maiuscula = preg_match('@[A-Z]@', $senha);
-        $minuscula = preg_match('@[a-z]@', $senha);
-        $numero    = preg_match('@[0-9]@', $senha);
-        $especial  = preg_match('@[^\w]@', $senha); // Verifica se há caracteres que não sejam letras ou números
-
-        if (!$maiuscula || !$minuscula || !$numero || !$especial || strlen($senha) < 8) {
-            $msg_erro = urlencode('A senha deve ter pelo menos 8 caracteres e conter letra maiúscula, minúscula, número e caractere especial.');
+        if ($senha !== $confirme_senha) {
+            $msg_erro = urlencode('As senhas digitadas não coincidem!');
             header("Location: {$redirect_base}&erro={$msg_erro}");
             exit();
         }
@@ -119,9 +113,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Garante que as colunas de jogador existam
         require_once __DIR__ . '/../lib/jogador_status.php';
 
-        // Insere o usuário com 3 vidas e status zerado no banco
+        // Insere o usuário com senha em hash seguro, 3 vidas e status zerado no banco
+        $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
         $stmt_insert = $conn->prepare("INSERT INTO usuarios (nome, email, senha, xp, trofeus, vidas, vidas_proxima_em, dias_fogo) VALUES (?, ?, ?, 0, 0, 3, NULL, 0)");
-        $stmt_insert->bind_param("sss", $nome, $email, $senha);
+        $stmt_insert->bind_param("sss", $nome, $email, $senha_hash);
 
         if ($stmt_insert->execute()) {
             $novo_id = $stmt_insert->insert_id;
@@ -135,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             setcookie('opus_cadastrado', '1', time() + 31536000, '/');
 
             // Cria o mapa de progresso inicial
-            $conn->query("INSERT INTO progresso_usuario (usuario_id, unidade_numero, status, licoes_concluidas) VALUES 
+            $conn->query("INSERT IGNORE INTO progresso_usuario (usuario_id, unidade_numero, status, licoes_concluidas) VALUES 
                 ($novo_id, 1, 'corrente', 0),
                 ($novo_id, 2, 'trancado', 0),
                 ($novo_id, 3, 'trancado', 0),
