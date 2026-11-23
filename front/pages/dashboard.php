@@ -347,15 +347,15 @@ function opus_render_island_motif(int $num_cap, int $divisao): string
                     <?php if ($progresso_porcentagem >= 100 || isset($_GET['preview_fim_curso']) || isset($_GET['curso_concluido'])): ?>
                     <a href="resultado.php?preview_fim_curso=1" class="banner-curso-concluido-trigger" id="btnAbrirSpotifyBanner" style="text-decoration: none;">
                         <div class="bc-left">
-                            <img src="../assets/img/mascote_vitoria_cipo_transparente.png" alt="Opi Formatura" class="bc-mascot-thumb">
+                            <img src="../assets/img/medalha.png" alt="Medalha Oficial OPUS" class="bc-mascot-thumb">
                             <div class="bc-texts">
                                 <span class="bc-badge"><i class="fa-solid fa-graduation-cap"></i> FORMAÇÃO CONCLUÍDA</span>
                                 <h3 class="bc-title">Parabéns! Você Concluiu o Curso OPUS!</h3>
-                                <p class="bc-desc">Releia a retrospectiva com o Opi e veja o seu <strong>Card Especial Spotify Wrapped</strong> para compartilhar!</p>
+                                <p class="bc-desc">Releia a retrospectiva com o Opi e emita o seu <strong>Certificado Oficial de Conclusão</strong> em alta resolução!</p>
                             </div>
                         </div>
                         <span class="bc-btn-open">
-                            <i class="fa-brands fa-spotify"></i> Ver Card Spotify Wrapped
+                            <i class="fa-solid fa-award"></i> Ver Meu Certificado
                         </span>
                     </a>
                     <?php endif; ?>

@@ -822,7 +822,7 @@
                 badge: 'CURSO CONCLUÍDO! 🏆',
                 title: 'Você Zerou o Curso, ' + USER_NAME + '! 🎓',
                 text: 'É OFICIAL! Você completou **todas as 40 seções** e alcançou a linha de chegada da nossa formação completa em programação! Pouquíssimos estudantes chegam até aqui — você agora é um mestre!',
-                mascot: 'mascote_vitoria_cipo_transparente.png',
+                mascot: 'opi_ranking.png',
                 accent: '#1db954',
                 accentDark: '#15883e',
                 nextText: 'Rever Minha Jornada'
@@ -867,13 +867,13 @@
                 selector: null,
                 fallbackSelector: '#duoLessonScreen',
                 pointer: 'Seu Presente',
-                badge: 'SEU SPOTIFY WRAPPED 🎧',
-                title: 'Seu Cartão Oficial de Formatura!',
-                text: 'Para coroar essa conquista histórica, preparei o seu **Cartão Especial estilo Spotify Wrapped**! Ele reúne suas estatísticas completas e está pronto para você **baixar em alta resolução** ou **compartilhar direto**!',
-                mascot: 'mascote_vitoria_cipo_transparente.png',
-                accent: '#1db954',
-                accentDark: '#15883e',
-                nextText: 'Abrir Meu Card Spotify! 🎧',
+                badge: 'SEU CERTIFICADO OFICIAL 🎓',
+                title: 'Seu Certificado Oficial de Formatura!',
+                text: 'Para coroar essa conquista histórica, preparei o seu **Certificado Oficial de Conclusão OPUS**! Ele reúne suas estatísticas de mérito, selo dourado e código de autenticidade, pronto para **baixar em alta resolução**, **imprimir em PDF** ou **compartilhar**!',
+                mascot: 'medalha.png',
+                accent: '#d4af37',
+                accentDark: '#a67c1e',
+                nextText: 'Emitir Meu Certificado! 🎓',
                 onComplete: function () {
                     isTransitioning = true;
                     if (spotlight) spotlight.classList.add('is-auto-clicking');

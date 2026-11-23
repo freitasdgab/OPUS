@@ -1,810 +1,1034 @@
 /* =========================================================================
-   WIDGET OPUS SPOTIFY WRAPPED - TELA FINAL DE CURSO
-   Design inspirado no Spotify Player & Spotify Wrapped
+   WIDGET CERTIFICADO OFICIAL OPUS - TELA FINAL DE CURSO & DASHBOARD
+   Design de Diploma Clássico & Edição Azul Noturno com Selo Dourado
    ========================================================================= */
 
 :root {
-    --sp-green: #1db954;
-    --sp-green-hover: #1ed760;
-    --sp-green-dark: #15883e;
-    --sp-bg-dark: #121212;
-    --sp-bg-card: #181b20;
-    --sp-surface: #22272e;
-    --sp-surface-hover: #2d333b;
-    --sp-text-main: #ffffff;
-    --sp-text-sub: #b3b3b3;
-    --sp-text-muted: #71767b;
-    --sp-gold: #ffc800;
-    --sp-purple: #8b5cf6;
-    --sp-blue: #1cb0f6;
-    --sp-radius-card: 28px;
-    --sp-radius-inner: 18px;
+    /* Tokens de Tipografia */
+    --cert-font-display: 'Cinzel', Georgia, 'Times New Roman', serif;
+    --cert-font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    --cert-font-script: 'Great Vibes', 'Brush Script MT', cursive;
+    --cert-font-sans: 'Poppins', 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+
+    /* Tokens de Paleta - Tema Padrão (Marfim Clássico) */
+    --cert-bg-center: #fffdf8;
+    --cert-bg-edge: #f3ead6;
+    --cert-ink: #0f1d3a;
+    --cert-ink-soft: #43506b;
+    --cert-accent: #1453b8;
+    --cert-gold: #b8892c;
+    --cert-gold-light: #ebd07f;
+    --cert-gold-dark: #8c6417;
+    --cert-outer-band: #0f1d3a;
+    --cert-metric-bg: rgba(15, 29, 58, 0.035);
+    --cert-metric-border: rgba(184, 137, 44, 0.34);
+    --cert-watermark-opacity: 0.045;
+
+    /* Tokens da UI do Modal */
+    --cert-ui-surface: rgba(16, 23, 38, 0.88);
+    --cert-ui-border: rgba(255, 255, 255, 0.14);
+    --cert-ui-text: #f8fafc;
+    --cert-ui-muted: #cbd5e1;
+    --cert-radius-sheet: 10px;
+    --cert-radius-btn: 14px;
 }
 
 /* -------------------------------------------------------------------------
-   1. OVERLAY MODAL
+   1. DIALOG MODAL NATIVO
    ------------------------------------------------------------------------- */
-.spotify-modal-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 199990;
-    background: rgba(8, 10, 14, 0.86);
+dialog.cert-modal-dialog {
+    width: min(1140px, calc(100vw - 1.5rem));
+    max-width: 1140px;
+    max-height: calc(100dvh - 1rem);
+    margin: auto;
+    padding: 0.25rem;
+    border: none;
+    background: transparent;
+    color: var(--cert-ui-text);
+    overflow-y: auto;
+    box-sizing: border-box;
+    font-family: var(--cert-font-sans);
+}
+
+dialog.cert-modal-dialog[open] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+dialog.cert-modal-dialog:modal {
+    overscroll-behavior: contain;
+}
+
+dialog.cert-modal-dialog::backdrop {
+    background: rgba(6, 10, 18, 0.84);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    overflow-y: auto;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-                visibility 0.35s ease;
+    overflow: hidden;
+    overscroll-behavior: contain;
 }
 
-.spotify-modal-overlay.is-active {
-    display: flex;
-    opacity: 1;
-    visibility: visible;
-}
-
-.spotify-modal-container {
-    position: relative;
-    max-width: 480px;
-    width: 100%;
-    margin: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    animation: spotifyModalEntrance 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.2) forwards;
-}
-
-@keyframes spotifyModalEntrance {
-    0% {
-        opacity: 0;
-        transform: scale(0.88) translateY(24px);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-.spotify-modal-close-btn {
-    position: absolute;
-    top: -14px;
-    right: -10px;
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background: #22272e;
-    border: 2px solid rgba(255, 255, 255, 0.15);
-    color: #ffffff;
-    font-size: 1.15rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
-    z-index: 20;
-}
-
-.spotify-modal-close-btn:hover {
-    background: #2d333b;
-    border-color: var(--sp-green);
-    color: var(--sp-green);
-    transform: rotate(90deg) scale(1.08);
+.cert-step-form[hidden],
+.cert-modal-shell[hidden],
+.cert-field-error[hidden] {
+    display: none !important;
 }
 
 /* -------------------------------------------------------------------------
-   2. CARD PRINCIPAL SPOTIFY WRAPPED (ESTILO PLAYER DE MÚSICA & WRAPPED)
+   1B. ETAPA 1: FORMULÁRIO DE SOLICITAÇÃO DO NOME COMPLETO
    ------------------------------------------------------------------------- */
-.spotify-card {
+.cert-step-form {
+    width: min(100%, 580px);
+    display: flex;
+    justify-content: center;
+    animation: certEntrance 0.36s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.cert-form-card {
     position: relative;
     width: 100%;
-    border-radius: var(--sp-radius-card);
-    background: radial-gradient(circle at 15% 15%, rgba(29, 185, 84, 0.25) 0%, transparent 45%),
-                radial-gradient(circle at 85% 85%, rgba(139, 92, 246, 0.3) 0%, transparent 55%),
-                radial-gradient(circle at 50% 50%, rgba(28, 176, 246, 0.15) 0%, transparent 60%),
-                linear-gradient(175deg, #181d24 0%, #101318 60%, #0a0c0f 100%);
-    border: 2px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.9),
-                0 0 50px -10px rgba(29, 185, 84, 0.3),
-                inset 0 1px 1px rgba(255, 255, 255, 0.15);
-    padding: 24px;
-    color: var(--sp-text-main);
+    background: radial-gradient(circle at 50% 0%, rgba(235, 208, 127, 0.14), transparent 58%),
+                linear-gradient(160deg, #132240 0%, #0b1428 100%);
+    border: 1.5px solid rgba(235, 208, 127, 0.45);
+    border-radius: 16px;
+    padding: clamp(1.2rem, 2.4dvh, 1.9rem) clamp(1.35rem, 2.5vw, 2.2rem);
+    box-shadow: 0 32px 72px -18px rgba(0, 0, 0, 0.85),
+                inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    text-align: center;
+    color: var(--cert-ui-text);
     box-sizing: border-box;
-    overflow: hidden;
-    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
-    user-select: none;
 }
 
-/* Efeito de brilho de borda holográfica */
-.spotify-card::before {
-    content: '';
+.cert-form-close {
     position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 2px;
-    background: linear-gradient(135deg, rgba(29, 185, 84, 0.5), rgba(139, 92, 246, 0.5), rgba(28, 176, 246, 0.5), rgba(255, 200, 0, 0.5));
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-    opacity: 0.6;
+    top: 0.9rem;
+    right: 0.9rem;
 }
 
-/* -------------------------------------------------------------------------
-   3. TOPO DO CARD: BRANDING OPUS & SELO WRAPPED
-   ------------------------------------------------------------------------- */
-.sp-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    position: relative;
-    z-index: 2;
-}
-
-.sp-brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.sp-brand-logo {
-    width: 32px;
-    height: 32px;
+.cert-form-medal {
+    display: block;
+    width: 58px;
+    height: 58px;
+    margin: 0 auto 0.45rem auto;
     object-fit: contain;
-    filter: drop-shadow(0 2px 8px rgba(29, 185, 84, 0.4));
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
 }
 
-.sp-brand-text {
-    display: flex;
-    flex-direction: column;
-}
-
-.sp-brand-title {
-    font-size: 0.95rem;
-    font-weight: 900;
-    letter-spacing: 1px;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    text-transform: uppercase;
-}
-
-.sp-brand-title .sp-dot {
-    color: var(--sp-green);
-    font-size: 1.2rem;
-}
-
-.sp-brand-sub {
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: var(--sp-text-sub);
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-}
-
-.sp-badge-concluido {
-    background: linear-gradient(135deg, #1db954, #15883e);
-    color: #ffffff;
-    font-size: 0.75rem;
-    font-weight: 900;
-    letter-spacing: 0.8px;
-    padding: 6px 12px;
-    border-radius: 999px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    box-shadow: 0 4px 14px rgba(29, 185, 84, 0.4);
-    text-transform: uppercase;
-    animation: spBadgePulse 2.5s infinite ease-in-out;
-}
-
-@keyframes spBadgePulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.04); box-shadow: 0 6px 18px rgba(29, 185, 84, 0.6); }
-}
-
-/* -------------------------------------------------------------------------
-   4. CAPA DO ÁLBUM / VINIL (ESTILO SPOTIFY ART COVER)
-   ------------------------------------------------------------------------- */
-.sp-cover-stage {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    max-height: 270px;
-    margin: 0 auto 20px auto;
-    border-radius: var(--sp-radius-inner);
-    background: linear-gradient(145deg, #232932, #14171d);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    position: relative;
-    z-index: 2;
-}
-
-/* Disco de Vinil com rotação suave */
-.sp-vinyl-record {
-    position: absolute;
-    width: 86%;
-    height: 86%;
-    border-radius: 50%;
-    background: radial-gradient(circle, #0e1115 15%, #181d24 16%, #0e1115 28%, #1f252f 29%, #0e1115 42%, #222933 43%, #0e1115 58%, #202631 59%, #0e1115 70%);
-    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 0, 0, 0.6);
-    animation: spVinylSpin 14s linear infinite;
-    animation-play-state: running;
-    opacity: 0.9;
-}
-
-.spotify-card.is-paused .sp-vinyl-record {
-    animation-play-state: paused;
-}
-
-@keyframes spVinylSpin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-/* Avatar central no miolo do disco */
-.sp-avatar-wrap {
-    position: relative;
-    width: 130px;
-    height: 130px;
-    border-radius: 50%;
-    background: #111;
-    border: 4px solid #ffffff;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 25px rgba(29, 185, 84, 0.4);
-    overflow: hidden;
-    z-index: 5;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.sp-avatar-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* Mascote Opi de comemoração flutuando na capa */
-.sp-opi-mascot-float {
-    position: absolute;
-    bottom: 8px;
-    right: 10px;
-    width: 82px;
-    height: 82px;
-    object-fit: contain;
-    z-index: 6;
-    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.6));
-    animation: spOpiFloat 3s ease-in-out infinite;
-}
-
-@keyframes spOpiFloat {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-7px) rotate(4deg); }
-}
-
-/* Equalizador animado no canto da capa */
-.sp-equalizer-live {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    display: flex;
-    align-items: flex-end;
-    gap: 3px;
-    height: 24px;
-    background: rgba(0, 0, 0, 0.55);
-    backdrop-filter: blur(4px);
-    padding: 4px 8px;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    z-index: 6;
-}
-
-.sp-eq-bar {
-    width: 4px;
-    background: var(--sp-green);
-    border-radius: 99px;
-    animation: spEqDance 1s ease-in-out infinite alternate;
-}
-
-.sp-eq-bar:nth-child(1) { height: 16px; animation-duration: 0.6s; }
-.sp-eq-bar:nth-child(2) { height: 22px; animation-duration: 0.8s; animation-delay: 0.2s; }
-.sp-eq-bar:nth-child(3) { height: 12px; animation-duration: 0.5s; animation-delay: 0.4s; }
-.sp-eq-bar:nth-child(4) { height: 18px; animation-duration: 0.7s; animation-delay: 0.1s; }
-
-.spotify-card.is-paused .sp-eq-bar {
-    animation-play-state: paused;
-    height: 5px !important;
-}
-
-@keyframes spEqDance {
-    0% { height: 5px; }
-    100% { height: 22px; }
-}
-
-/* Selo de Artista Verificado */
-.sp-verified-pill {
-    position: absolute;
-    top: 14px;
-    left: 14px;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(4px);
-    color: #ffffff;
+.cert-form-eyebrow {
+    display: inline-block;
     font-size: 0.72rem;
     font-weight: 800;
-    padding: 4px 10px;
-    border-radius: 999px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    border: 1px solid rgba(29, 185, 84, 0.4);
-    z-index: 6;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--cert-gold-light);
+    margin-bottom: 0.3rem;
 }
 
-.sp-verified-pill i {
-    color: var(--sp-green);
-}
-
-/* -------------------------------------------------------------------------
-   5. INFORMAÇÕES DA FAIXA MUSICAL / ALUNO
-   ------------------------------------------------------------------------- */
-.sp-track-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-    position: relative;
-    z-index: 2;
-}
-
-.sp-track-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.sp-track-title {
-    font-size: 1.28rem;
-    font-weight: 900;
-    color: #ffffff;
-    margin: 0 0 3px 0;
-    line-height: 1.25;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    letter-spacing: -0.3px;
-}
-
-.sp-track-artist {
-    font-size: 0.95rem;
+.cert-form-title {
+    margin: 0 0 0.45rem 0;
+    font-family: var(--cert-font-serif);
+    font-size: clamp(1.35rem, 1rem + 1.2vw, 1.85rem);
     font-weight: 700;
-    color: var(--sp-text-sub);
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.sp-track-artist .sp-artist-name {
+    line-height: 1.2;
     color: #ffffff;
+    text-wrap: balance;
 }
 
-.sp-track-album {
-    font-size: 0.76rem;
+.cert-form-subtitle {
+    margin: 0 auto 1.25rem auto;
+    max-width: 44ch;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--cert-ui-muted);
+    text-wrap: pretty;
+}
+
+.cert-emit-form {
+    text-align: start;
+}
+
+.cert-field {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.35rem;
+    margin-block-end: 1rem;
+}
+
+.cert-field label {
+    display: inline-block;
+    font-size: 0.88rem;
+    font-weight: 700;
+    line-height: 1.35;
+    color: #f8fafc;
+    padding: 0.25rem 0;
+}
+
+.cert-field label span {
+    color: var(--cert-gold-light);
+}
+
+.cert-field input {
+    width: 100%;
+    font: inherit;
+    font-size: max(1rem, 1em);
+    line-height: 1.4;
+    min-height: 48px;
+    padding: 0.75rem 0.95rem;
+    border-radius: 12px;
+    border: 1.5px solid rgba(255, 255, 255, 0.28);
+    background: rgba(7, 13, 27, 0.78);
+    color: #ffffff;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cert-field input::placeholder {
+    color: #94a3b8;
+}
+
+.cert-field input:focus-visible {
+    outline: 3px solid var(--cert-gold-light);
+    outline-offset: 2px;
+    border-color: var(--cert-gold-light);
+}
+
+.cert-field input:user-invalid,
+.cert-field input[aria-invalid="true"] {
+    border-color: #f87171;
+    box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.18);
+}
+
+.cert-field-hint {
+    font-size: 0.78rem;
+    line-height: 1.4;
+    color: #94a3b8;
+}
+
+.cert-field-error {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.82rem;
     font-weight: 600;
-    color: var(--sp-text-muted);
-    margin-top: 2px;
+    line-height: 1.4;
+    color: #fca5a5;
 }
 
-.sp-heart-btn {
-    width: 38px;
-    height: 38px;
+.cert-form-date-box {
     display: flex;
     align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: none;
-    color: var(--sp-green);
-    font-size: 1.45rem;
-    cursor: pointer;
-    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    gap: 0.65rem;
+    padding: 0.75rem 0.95rem;
+    margin-block-end: 1.15rem;
+    border-radius: 12px;
+    background: rgba(235, 208, 127, 0.08);
+    border: 1px solid rgba(235, 208, 127, 0.32);
+    font-size: 0.84rem;
+    line-height: 1.4;
+    color: var(--cert-ui-muted);
 }
 
-.sp-heart-btn:hover {
-    transform: scale(1.22);
-}
-
-/* -------------------------------------------------------------------------
-   6. BARRA DE PROGRESSO DO PLAYER (100% CONCLUÍDO)
-   ------------------------------------------------------------------------- */
-.sp-player-progress {
-    margin-bottom: 14px;
-    position: relative;
-    z-index: 2;
-}
-
-.sp-progress-track {
-    width: 100%;
-    height: 6px;
-    background: #383c44;
-    border-radius: 999px;
-    overflow: visible;
-    position: relative;
-    cursor: pointer;
-}
-
-.sp-progress-fill {
-    height: 100%;
-    width: 100%;
-    background: linear-gradient(90deg, #1cb0f6, #8b5cf6 50%, #1db954 100%);
-    border-radius: inherit;
-    position: relative;
-    box-shadow: 0 0 10px rgba(29, 185, 84, 0.5);
-}
-
-.sp-progress-thumb {
-    position: absolute;
-    right: -5px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 14px;
-    height: 14px;
-    background: #ffffff;
-    border: 2px solid var(--sp-green);
-    border-radius: 50%;
-    box-shadow: 0 0 10px rgba(29, 185, 84, 0.8);
-}
-
-.sp-progress-times {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--sp-text-sub);
-    margin-top: 5px;
-}
-
-/* -------------------------------------------------------------------------
-   7. CONTROLES DO PLAYER (ESTILO SPOTIFY)
-   ------------------------------------------------------------------------- */
-.sp-controls-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 22px;
-    padding: 0 10px;
-    position: relative;
-    z-index: 2;
-}
-
-.sp-control-btn {
-    background: transparent;
-    border: none;
-    color: var(--sp-text-sub);
-    font-size: 1.15rem;
-    cursor: pointer;
-    transition: color 0.2s ease, transform 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 6px;
-}
-
-.sp-control-btn:hover {
-    color: #ffffff;
-    transform: scale(1.15);
-}
-
-.sp-control-btn.is-active {
-    color: var(--sp-green);
-    position: relative;
-}
-
-.sp-control-btn.is-active::after {
-    content: '';
-    position: absolute;
-    bottom: 0px;
-    width: 4px;
-    height: 4px;
-    background: var(--sp-green);
-    border-radius: 50%;
-}
-
-.sp-play-btn {
-    width: 54px;
-    height: 54px;
-    border-radius: 50%;
-    background: #ffffff;
-    color: #000000;
-    border: none;
-    font-size: 1.35rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 20px rgba(29, 185, 84, 0.4);
-    transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.2s ease;
-}
-
-.sp-play-btn:hover {
-    transform: scale(1.1);
-    background: var(--sp-green);
-    color: #ffffff;
-}
-
-.sp-play-btn:active {
-    transform: scale(0.95);
-}
-
-/* -------------------------------------------------------------------------
-   8. GRADE DE ESTATÍSTICAS DA JORNADA (WRAPPED HIGHLIGHTS)
-   ------------------------------------------------------------------------- */
-.sp-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
-    position: relative;
-    z-index: 2;
-}
-
-.sp-stat-pill {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.09);
-    backdrop-filter: blur(8px);
-    border-radius: 14px;
-    padding: 10px 14px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
-}
-
-.sp-stat-pill:hover {
-    transform: translateY(-2px);
-    background: rgba(255, 255, 255, 0.09);
-    border-color: rgba(255, 255, 255, 0.18);
-}
-
-.sp-stat-icon-wrap {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
+.cert-form-date-box i {
+    color: var(--cert-gold-light);
+    font-size: 1rem;
     flex-shrink: 0;
 }
 
-.sp-stat-icon-wrap.xp {
-    background: rgba(255, 200, 0, 0.15);
-    color: #ffc800;
+.cert-form-date-box strong {
+    color: #fff6d6;
 }
 
-.sp-stat-icon-wrap.streak {
-    background: rgba(255, 82, 123, 0.15);
-    color: #ff527b;
+.cert-form-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    padding: 0.78rem 0.95rem;
+    margin-block-end: 1.15rem;
+    border-radius: 12px;
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.42);
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: #fde68a;
 }
 
-.sp-stat-icon-wrap.trophy {
-    background: rgba(139, 92, 246, 0.15);
-    color: #a78bfa;
+.cert-form-warning i {
+    color: #fbbf24;
+    font-size: 0.98rem;
+    margin-top: 0.12rem;
+    flex-shrink: 0;
 }
 
-.sp-stat-icon-wrap.lessons {
-    background: rgba(29, 185, 84, 0.15);
-    color: #1db954;
+.cert-form-warning strong {
+    color: #fef3c7;
 }
 
-.sp-stat-content {
+.cert-form-actions {
     display: flex;
     flex-direction: column;
-    min-width: 0;
+    gap: 0.6rem;
 }
 
-.sp-stat-val {
-    font-size: 1.05rem;
-    font-weight: 900;
-    color: #ffffff;
-    line-height: 1.2;
+.cert-form-submit {
+    width: 100%;
+    min-block-size: 3.1rem;
+    font-size: 0.95rem;
 }
 
-.sp-stat-lbl {
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: var(--sp-text-sub);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+@media (pointer: coarse) {
+    .cert-field input {
+        min-height: 52px;
+    }
+}
+
+.cert-modal-shell {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.55rem;
+    animation: certEntrance 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes certEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
 }
 
 /* -------------------------------------------------------------------------
-   9. CÓDIGO DE BARRAS SONORO SPOTIFY (SPOTIFY SOUNDWAVE CODE)
+   2. BARRA SUPERIOR DO MODAL (SELETOR DE TEMA + UTILITÁRIOS)
    ------------------------------------------------------------------------- */
-.sp-code-bar {
-    background: #000000;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 14px;
-    padding: 10px 16px;
+.cert-modal-topbar {
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    position: relative;
-    z-index: 2;
+    gap: 0.5rem;
+    flex-wrap: wrap;
 }
 
-.sp-code-logo {
-    display: flex;
+.cert-theme-switcher {
+    display: inline-flex;
     align-items: center;
-    gap: 6px;
-    color: var(--sp-green);
-    font-size: 1.2rem;
+    gap: 0.35rem;
+    padding: 0.24rem;
+    background: var(--cert-ui-surface);
+    border: 1px solid var(--cert-ui-border);
+    border-radius: 999px;
+    backdrop-filter: blur(10px);
 }
 
-.sp-code-logo img {
-    width: 22px;
-    height: 22px;
-    object-fit: contain;
+.cert-theme-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.42rem;
+    min-block-size: 2.05rem;
+    padding: 0.3rem 0.8rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--cert-ui-muted);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
-.sp-code-bars-wrap {
-    flex: 1;
-    display: flex;
+.cert-theme-btn:hover:not(:disabled) {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.cert-theme-btn.is-active {
+    background: linear-gradient(135deg, rgba(235, 208, 127, 0.22), rgba(184, 137, 44, 0.26));
+    border-color: rgba(235, 208, 127, 0.55);
+    color: #fff6d6;
+}
+
+.cert-swatch {
+    width: 0.85rem;
+    height: 0.85rem;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255, 255, 255, 0.65);
+    flex-shrink: 0;
+}
+
+.swatch-ivory {
+    background: linear-gradient(135deg, #fffdf8, #e9d9b4);
+}
+
+.swatch-obsidian {
+    background: linear-gradient(135deg, #1b315e, #091124);
+}
+
+.cert-modal-tools {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+}
+
+.cert-tool-btn,
+.spotify-modal-close-btn {
+    min-inline-size: 2.28rem;
+    min-block-size: 2.28rem;
+    padding: 0.42rem;
+    border-radius: 50%;
+    background: var(--cert-ui-surface);
+    border: 1px solid var(--cert-ui-border);
+    color: var(--cert-ui-text);
+    font-size: 0.95rem;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 3px;
-    height: 32px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-.sp-code-line {
-    width: 3px;
-    background: #ffffff;
-    border-radius: 99px;
-    transition: height 0.3s ease;
+.cert-tool-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: var(--cert-gold-light);
+    color: var(--cert-gold-light);
+    transform: translateY(-1px);
 }
 
-.sp-code-label {
-    font-size: 0.65rem;
-    font-weight: 800;
-    color: var(--sp-text-sub);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    white-space: nowrap;
+.spotify-modal-close-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: var(--cert-gold-light);
+    color: var(--cert-gold-light);
+    transform: rotate(90deg) scale(1.06);
 }
 
 /* -------------------------------------------------------------------------
-   10. BARRA DE AÇÕES INFERIOR (BAIXAR, COMPARTILHAR, VOLTAR)
+   3. FOLHA OFICIAL DO CERTIFICADO (MARFIM CLÁSSICO & AZUL NOTURNO)
+   ------------------------------------------------------------------------- */
+.cert-sheet {
+    position: relative;
+    width: 100%;
+    border-radius: var(--cert-radius-sheet);
+    background: radial-gradient(ellipse at 50% 44%, var(--cert-bg-center) 0%, var(--cert-bg-edge) 100%);
+    color: var(--cert-ink);
+    padding: clamp(1.2rem, 2.4dvh, 2.25rem) clamp(1.35rem, 3vw, 3.4rem);
+    box-sizing: border-box;
+    overflow: hidden;
+    box-shadow:
+        0 32px 80px -16px rgba(0, 0, 0, 0.78),
+        0 0 0 1px rgba(212, 175, 55, 0.3);
+    font-family: var(--cert-font-sans);
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.cert-sheet[data-cert-theme="ivory"] {
+    --cert-bg-center: #fffdf8;
+    --cert-bg-edge: #f3ead6;
+    --cert-ink: #0f1d3a;
+    --cert-ink-soft: #43506b;
+    --cert-accent: #1453b8;
+    --cert-gold: #b8892c;
+    --cert-gold-light: #ebd07f;
+    --cert-gold-dark: #8c6417;
+    --cert-outer-band: #0f1d3a;
+    --cert-metric-bg: rgba(15, 29, 58, 0.035);
+    --cert-metric-border: rgba(184, 137, 44, 0.35);
+    --cert-watermark-opacity: 0.045;
+}
+
+.cert-sheet[data-cert-theme="obsidian"] {
+    --cert-bg-center: #142240;
+    --cert-bg-edge: #070d1b;
+    --cert-ink: #fbf6eb;
+    --cert-ink-soft: #b8c5dc;
+    --cert-accent: #56c8ff;
+    --cert-gold: #e2bd62;
+    --cert-gold-light: #fff0b8;
+    --cert-gold-dark: #a67c24;
+    --cert-outer-band: #1a2c50;
+    --cert-metric-bg: rgba(255, 255, 255, 0.04);
+    --cert-metric-border: rgba(226, 189, 98, 0.36);
+    --cert-watermark-opacity: 0.065;
+}
+
+/* Textura sutil de papel de segurança */
+.cert-sheet::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+        135deg,
+        transparent 0,
+        transparent 14px,
+        rgba(184, 137, 44, 0.025) 14px,
+        rgba(184, 137, 44, 0.025) 15px
+    );
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Faixa e molduras duplas douradas */
+.cert-outer-band {
+    position: absolute;
+    inset: 0;
+    border: 8px solid var(--cert-outer-band);
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.cert-frame-outer {
+    position: absolute;
+    inset: 12px;
+    border: 2px solid var(--cert-gold);
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.cert-frame-inner {
+    position: absolute;
+    inset: 18px;
+    border: 1px solid rgba(184, 137, 44, 0.65);
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Marca d'água guilhochê central */
+.cert-watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(56%, 410px);
+    height: auto;
+    transform: translate(-50%, -50%);
+    color: var(--cert-gold);
+    opacity: var(--cert-watermark-opacity);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* 4 Ornamentos de Canto */
+.cert-corner {
+    position: absolute;
+    width: clamp(40px, 5vw, 60px);
+    height: clamp(40px, 5vw, 60px);
+    color: var(--cert-gold);
+    pointer-events: none;
+    z-index: 3;
+}
+
+.cert-corner.tl {
+    top: 20px;
+    left: 20px;
+}
+
+.cert-corner.tr {
+    top: 20px;
+    right: 20px;
+    transform: scaleX(-1);
+}
+
+.cert-corner.bl {
+    bottom: 20px;
+    left: 20px;
+    transform: scaleY(-1);
+}
+
+.cert-corner.br {
+    bottom: 20px;
+    right: 20px;
+    transform: scale(-1);
+}
+
+/* Conteúdo interno do certificado */
+.cert-content {
+    position: relative;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* -------------------------------------------------------------------------
+   4. CABEÇALHO INSTITUCIONAL & TÍTULO CERIMONIAL
+   ------------------------------------------------------------------------- */
+.cert-header {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-bottom: clamp(0.35rem, 0.9dvh, 0.68rem);
+}
+
+.cert-brand-logo {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    object-fit: cover;
+    border: 1.5px solid var(--cert-gold);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+}
+
+.cert-brand-name {
+    font-family: var(--cert-font-display);
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    color: var(--cert-ink);
+}
+
+.cert-brand-divider {
+    width: 1px;
+    height: 0.95rem;
+    background: var(--cert-gold);
+    opacity: 0.7;
+}
+
+.cert-brand-sub {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--cert-ink-soft);
+}
+
+.cert-title-block {
+    margin-bottom: clamp(0.4rem, 1dvh, 0.8rem);
+}
+
+.cert-heading {
+    margin: 0;
+    font-family: var(--cert-font-display);
+    font-size: clamp(1.55rem, 1.05rem + 2vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: 0.18em;
+    color: var(--cert-ink);
+    text-wrap: balance;
+}
+
+.cert-subheading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 0.25rem;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--cert-gold-dark);
+}
+
+.cert-sheet[data-cert-theme="obsidian"] .cert-subheading {
+    color: var(--cert-gold-light);
+}
+
+.cert-subheading .cert-line {
+    width: clamp(24px, 5vw, 56px);
+    height: 1.5px;
+    background: linear-gradient(90deg, transparent, var(--cert-gold), transparent);
+}
+
+/* -------------------------------------------------------------------------
+   5. DESTINATÁRIO & CORPO DO CERTIFICADO
+   ------------------------------------------------------------------------- */
+.cert-recipient-block {
+    width: 100%;
+    max-width: 860px;
+    margin-bottom: clamp(0.4rem, 1dvh, 0.75rem);
+}
+
+.cert-preamble {
+    margin: 0 0 0.22rem 0;
+    font-family: var(--cert-font-serif);
+    font-style: italic;
+    font-size: 0.94rem;
+    font-weight: 500;
+    line-height: 1.35;
+    color: var(--cert-ink-soft);
+}
+
+.cert-student-name {
+    margin: 0;
+    font-family: var(--cert-font-serif);
+    font-size: clamp(1.5rem, 1rem + 2vw, 2.45rem);
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--cert-ink);
+    overflow-wrap: break-word;
+    text-wrap: balance;
+}
+
+.cert-name-rule {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    width: min(100%, 520px);
+    margin: 0.35rem auto 0.3rem auto;
+}
+
+.cert-name-rule span {
+    flex: 1;
+    height: 1.5px;
+    background: linear-gradient(90deg, transparent, var(--cert-gold), transparent);
+}
+
+.cert-name-rule i {
+    display: block;
+    width: 7px;
+    height: 7px;
+    background: var(--cert-gold);
+    transform: rotate(45deg);
+    flex-shrink: 0;
+}
+
+.cert-student-meta {
+    margin: 0;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--cert-ink-soft);
+}
+
+.cert-student-meta #spStudentUser {
+    color: var(--cert-accent);
+    font-weight: 700;
+}
+
+.cert-body-copy {
+    margin: 0 auto clamp(0.55rem, 1.3dvh, 0.95rem) auto;
+    max-width: 72ch;
+    font-size: 0.88rem;
+    font-weight: 400;
+    line-height: 1.48;
+    color: var(--cert-ink-soft);
+    text-wrap: pretty;
+}
+
+.cert-course-name {
+    display: block;
+    margin: 0.14rem 0;
+    font-family: var(--cert-font-serif);
+    font-size: 1.06rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--cert-accent);
+}
+
+/* -------------------------------------------------------------------------
+   6. FAIXA GRAVADA DE MÉRITO (ESTATÍSTICAS)
+   ------------------------------------------------------------------------- */
+.cert-metrics-strip {
+    width: min(100%, 880px);
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    background: var(--cert-metric-bg);
+    border-top: 1px solid var(--cert-metric-border);
+    border-bottom: 1px solid var(--cert-metric-border);
+    margin-bottom: clamp(0.55rem, 1.3dvh, 0.95rem);
+}
+
+.cert-metric-item {
+    padding: 0.45rem 0.55rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.12rem;
+    position: relative;
+}
+
+.cert-metric-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 20%;
+    bottom: 20%;
+    width: 1px;
+    background: var(--cert-metric-border);
+}
+
+.cert-metric-val {
+    font-family: var(--cert-font-serif);
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--cert-ink);
+}
+
+.cert-metric-lbl {
+    font-size: 0.67rem;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--cert-ink-soft);
+}
+
+/* -------------------------------------------------------------------------
+   7. RODAPÉ CERIMONIAL: ASSINATURA, SELO DOURADO E AUTENTICAÇÃO
+   ------------------------------------------------------------------------- */
+.cert-footer {
+    width: min(100%, 920px);
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: end;
+    gap: 1.25rem;
+}
+
+.cert-sig-col,
+.cert-meta-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-bottom: 0.28rem;
+}
+
+.cert-signature-script {
+    font-family: var(--cert-font-script);
+    font-size: clamp(1.65rem, 1.1rem + 1.6vw, 2.25rem);
+    font-weight: 400;
+    line-height: 1.05;
+    color: var(--cert-ink);
+    transform: rotate(-2deg);
+    margin-bottom: 0.2rem;
+    user-select: none;
+}
+
+.cert-issue-label {
+    font-size: 0.64rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    line-height: 1.2;
+    color: var(--cert-gold-dark);
+    margin-bottom: 0.12rem;
+}
+
+.cert-sheet[data-cert-theme="obsidian"] .cert-issue-label {
+    color: var(--cert-gold-light);
+}
+
+.cert-issue-date {
+    font-family: var(--cert-font-serif);
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--cert-ink);
+    margin-bottom: 0.45rem;
+}
+
+.cert-footer-rule {
+    width: min(100%, 200px);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--cert-gold), transparent);
+    margin-bottom: 0.4rem;
+}
+
+.cert-sig-col strong,
+.cert-meta-col strong {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1.35;
+    color: var(--cert-ink);
+}
+
+.cert-sig-col span:last-child,
+.cert-meta-col span:last-child {
+    font-size: 0.69rem;
+    font-weight: 500;
+    line-height: 1.35;
+    color: var(--cert-ink-soft);
+}
+
+.cert-seal-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cert-seal-svg {
+    width: clamp(82px, 12.2dvh, 106px);
+    height: auto;
+    display: block;
+}
+
+/* -------------------------------------------------------------------------
+   8. BARRA DE AÇÕES DO CERTIFICADO
    ------------------------------------------------------------------------- */
 .sp-actions-wrap {
     width: 100%;
-    margin-top: 18px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    z-index: 10;
+    gap: 0.5rem;
 }
 
 .sp-action-btn-main-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-
-.sp-btn {
-    border-radius: 16px;
-    font-size: 0.95rem;
-    font-weight: 900;
-    padding: 14px 18px;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, filter 0.2s ease;
-    font-family: inherit;
-    text-decoration: none;
-    user-select: none;
-}
-
-.sp-btn:active {
-    transform: scale(0.97);
-}
-
-.sp-btn-download {
-    background: linear-gradient(135deg, #1db954, #15883e);
-    color: #ffffff;
-    box-shadow: 0 6px 20px rgba(29, 185, 84, 0.4);
-}
-
-.sp-btn-download:hover {
-    filter: brightness(1.1);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(29, 185, 84, 0.55);
-}
-
-.sp-btn-share {
-    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-    color: #ffffff;
-    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
-}
-
-.sp-btn-share:hover {
-    filter: brightness(1.1);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(139, 92, 246, 0.55);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
 }
 
 .sp-action-btn-sub-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+}
+
+.sp-btn {
+    min-block-size: 2.55rem;
+    padding: 0.52rem 0.88rem;
+    border-radius: var(--cert-radius-btn);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1.2;
+    border: 1px solid transparent;
+    cursor: pointer;
+    display: inline-flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 10px;
+    justify-content: center;
+    gap: 0.45rem;
+    text-decoration: none;
+    text-align: center;
+    user-select: none;
+    transition: transform 0.18s ease, box-shadow 0.2s ease, filter 0.2s ease, background-color 0.2s ease;
 }
 
-.sp-btn-tour {
-    flex: 1;
-    background: rgba(255, 255, 255, 0.08);
+.sp-btn:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.sp-btn:disabled {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+.sp-btn-download {
+    background: linear-gradient(135deg, #f3d26c 0%, #d4af37 55%, #b58620 100%);
+    color: #0f1d3a;
+    font-weight: 800;
+    box-shadow: 0 8px 22px rgba(212, 175, 55, 0.35);
+}
+
+.sp-btn-download:hover:not(:disabled) {
+    filter: brightness(1.06);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(212, 175, 55, 0.45);
+}
+
+.sp-btn-print {
+    background: #173a7a;
+    border-color: rgba(235, 208, 127, 0.35);
     color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    font-size: 0.82rem;
-    padding: 10px 14px;
+    box-shadow: 0 6px 18px rgba(15, 29, 58, 0.45);
 }
 
-.sp-btn-tour:hover {
-    background: rgba(255, 255, 255, 0.14);
-    border-color: rgba(255, 255, 255, 0.25);
+.sp-btn-print:hover:not(:disabled) {
+    background: #1e4996;
+    transform: translateY(-2px);
 }
 
+.sp-btn-share {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #ffffff;
+    box-shadow: 0 6px 18px rgba(79, 70, 229, 0.38);
+}
+
+.sp-btn-share:hover:not(:disabled) {
+    filter: brightness(1.08);
+    transform: translateY(-2px);
+}
+
+.sp-btn-tour,
 .sp-btn-dashboard {
-    flex: 1;
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--sp-text-sub);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    font-size: 0.82rem;
-    padding: 10px 14px;
+    min-block-size: 2.55rem;
+    padding: 0.52rem 0.88rem;
+    background: var(--cert-ui-surface);
+    color: var(--cert-ui-muted);
+    border-color: var(--cert-ui-border);
+    font-size: 0.8rem;
 }
 
-.sp-btn-dashboard:hover {
-    background: rgba(255, 255, 255, 0.14);
+@media (min-width: 960px) {
+    .sp-actions-wrap {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.55rem;
+        flex-wrap: wrap;
+    }
+
+    .sp-action-btn-main-row {
+        display: flex;
+        flex: 1 1 auto;
+        gap: 0.5rem;
+    }
+
+    .sp-action-btn-main-row .sp-btn {
+        flex: 1 1 auto;
+    }
+
+    .sp-action-btn-sub-row {
+        display: flex;
+        flex: 0 1 auto;
+        gap: 0.5rem;
+    }
+}
+
+.sp-btn-tour:hover:not(:disabled),
+.sp-btn-dashboard:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.28);
     color: #ffffff;
 }
 
 /* -------------------------------------------------------------------------
-   11. TOAST NOTIFICAÇÃO (COPIADO COM SUCESSO)
+   9. TOAST NOTIFICAÇÃO (NO TOP LAYER DENTRO DO DIALOG)
    ------------------------------------------------------------------------- */
 .sp-toast {
     position: fixed;
-    bottom: 28px;
+    bottom: 24px;
     left: 50%;
-    transform: translateX(-50%) translateY(30px);
-    background: #1db954;
-    color: #ffffff;
-    font-weight: 800;
-    font-size: 0.9rem;
-    padding: 12px 24px;
+    transform: translateX(-50%) translateY(26px);
+    background: #0f1d3a;
+    color: #fff6d6;
+    border: 1.5px solid #d4af37;
+    font-family: var(--cert-font-sans);
+    font-weight: 700;
+    font-size: 0.88rem;
+    line-height: 1.3;
+    padding: 0.72rem 1.35rem;
     border-radius: 999px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(29, 185, 84, 0.6);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 0.55rem;
     opacity: 0;
     pointer-events: none;
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
-    z-index: 200050;
+    transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.25s ease;
+    z-index: 20;
+}
+
+.sp-toast i {
+    color: #ebd07f;
 }
 
 .sp-toast.show {
@@ -813,11 +1037,24 @@
 }
 
 /* -------------------------------------------------------------------------
-   12. BANNER DE DESTAQUE NA TELA DE RESULTADO & DASHBOARD
+   10. BOTÃO CTA NA TELA DE RESULTADO & BANNER NO DASHBOARD
    ------------------------------------------------------------------------- */
+.btn-duo-next.btn-certificado-cta {
+    max-width: 440px;
+    width: 100%;
+    background: linear-gradient(135deg, #f3d26c 0%, #d4af37 52%, #b58620 100%);
+    border-bottom: 5px solid #8a6211;
+    color: #0f1d3a;
+    box-shadow: 0 10px 28px rgba(212, 175, 55, 0.35);
+}
+
+.btn-duo-next.btn-certificado-cta:hover:not(:disabled) {
+    filter: brightness(1.06);
+}
+
 .banner-curso-concluido-trigger {
-    background: linear-gradient(135deg, rgba(29, 185, 84, 0.18), rgba(139, 92, 246, 0.22));
-    border: 2px solid rgba(29, 185, 84, 0.45);
+    background: linear-gradient(135deg, rgba(15, 29, 58, 0.94), rgba(24, 46, 92, 0.96));
+    border: 2px solid rgba(212, 175, 55, 0.55);
     border-radius: 20px;
     padding: 18px 24px;
     margin: 20px 0;
@@ -826,14 +1063,14 @@
     justify-content: space-between;
     gap: 18px;
     cursor: pointer;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3), 0 0 25px rgba(29, 185, 84, 0.2);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.36), 0 0 28px rgba(212, 175, 55, 0.16);
     transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .banner-curso-concluido-trigger:hover {
     transform: translateY(-3px);
-    border-color: var(--sp-green);
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), 0 0 35px rgba(29, 185, 84, 0.35);
+    border-color: #ebd07f;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45), 0 0 34px rgba(212, 175, 55, 0.3);
 }
 
 .bc-left {
@@ -846,8 +1083,13 @@
     width: 64px;
     height: 64px;
     object-fit: contain;
-    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.4));
-    animation: spOpiFloat 3s ease-in-out infinite;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.45));
+    animation: certMedalFloat 3.2s ease-in-out infinite;
+}
+
+@keyframes certMedalFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-6px) rotate(3deg); }
 }
 
 .bc-texts {
@@ -858,8 +1100,8 @@
 .bc-badge {
     font-size: 0.72rem;
     font-weight: 900;
-    color: var(--sp-green);
-    letter-spacing: 0.8px;
+    color: #ebd07f;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
 }
 
@@ -871,54 +1113,109 @@
 }
 
 .bc-desc {
-    font-size: 0.82rem;
-    color: #a0aec0;
+    font-size: 0.84rem;
+    color: #cbd5e1;
 }
 
 .bc-btn-open {
-    background: var(--sp-green);
-    color: #ffffff;
+    background: linear-gradient(135deg, #f3d26c 0%, #d4af37 100%);
+    color: #0f1d3a;
     font-weight: 900;
     font-size: 0.88rem;
     padding: 12px 20px;
     border-radius: 999px;
     border: none;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 8px;
-    box-shadow: 0 4px 15px rgba(29, 185, 84, 0.4);
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.4);
     white-space: nowrap;
 }
 
 /* -------------------------------------------------------------------------
-   13. RESPONSIVIDADE
+   11. RESPONSIVIDADE & PREFERÊNCIA DE MOVIMENTO REDUZIDO
    ------------------------------------------------------------------------- */
-@media (max-width: 520px) {
-    .spotify-card {
-        padding: 18px;
+@media (max-width: 720px) {
+    dialog.cert-modal-dialog {
+        width: calc(100vw - 1rem);
+        max-height: calc(100dvh - 1rem);
+        padding: 0.25rem;
     }
-    .sp-cover-stage {
-        max-height: 220px;
+
+    .cert-outer-band {
+        border-width: 6px;
     }
-    .sp-avatar-wrap {
-        width: 100px;
-        height: 100px;
+
+    .cert-frame-outer {
+        inset: 10px;
     }
-    .sp-opi-mascot-float {
-        width: 64px;
-        height: 64px;
+
+    .cert-frame-inner {
+        inset: 15px;
     }
-    .sp-track-title {
-        font-size: 1.1rem;
+
+    .cert-corner {
+        width: 38px;
+        height: 38px;
     }
-    .sp-action-btn-main-row {
+
+    .cert-corner.tl { top: 17px; left: 17px; }
+    .cert-corner.tr { top: 17px; right: 17px; }
+    .cert-corner.bl { bottom: 17px; left: 17px; }
+    .cert-corner.br { bottom: 17px; right: 17px; }
+
+    .cert-metrics-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cert-metric-item:nth-child(2)::after {
+        display: none;
+    }
+
+    .cert-metric-item:nth-child(1),
+    .cert-metric-item:nth-child(2) {
+        border-bottom: 1px solid var(--cert-metric-border);
+    }
+
+    .cert-footer {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.9rem 0.75rem;
+    }
+
+    .cert-seal-col {
+        grid-column: 1 / -1;
+        order: -1;
+    }
+
+    .cert-seal-svg {
+        width: 96px;
+    }
+
+    .sp-action-btn-main-row,
+    .sp-action-btn-sub-row {
         grid-template-columns: 1fr;
     }
+
     .banner-curso-concluido-trigger {
         flex-direction: column;
         text-align: center;
     }
+
     .bc-left {
         flex-direction: column;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cert-step-form,
+    .cert-modal-shell,
+    .bc-mascot-thumb {
+        animation: none;
+    }
+    .sp-btn,
+    .cert-theme-btn,
+    .cert-tool-btn,
+    .spotify-modal-close-btn {
+        transition: none;
     }
 }

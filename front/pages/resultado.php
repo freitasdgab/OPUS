@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('America/Sao_Paulo');
 session_start();
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
@@ -21,7 +22,9 @@ if (!isset($_SESSION['user_id']) && !$is_qualquer_preview) {
     exit();
 }
 if (!isset($_SESSION['user_id']) && $is_qualquer_preview) {
-    $_SESSION['user_id'] = 1;
+    $res_prev = $conn->query("SELECT id FROM usuarios WHERE nivel_acesso <> 'admin' ORDER BY id ASC LIMIT 1");
+    $row_prev = $res_prev ? $res_prev->fetch_assoc() : null;
+    $_SESSION['user_id'] = $row_prev ? (int) $row_prev['id'] : 2;
 }
 
 if (!isset($_POST['acertos']) && !$is_qualquer_preview) {
@@ -258,6 +261,50 @@ if ($is_fim_curso_preview && $sp_trofeus < 3) {
 }
 
 $sp_licoes_total = "200 / 200";
+if (empty($_SESSION['cert_csrf_token'])) {
+    $_SESSION['cert_csrf_token'] = bin2hex(random_bytes(32));
+}
+
+$meses_pt = [1 => 'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+$sp_cert_emitido = false;
+$sp_nome_certificado = '';
+$sp_ano_formatura = date('Y');
+$sp_data_emissao = sprintf('%d de %s de %s', (int) date('j'), $meses_pt[(int) date('n')], $sp_ano_formatura);
+$sp_hash_verif = strtoupper(substr(hash('sha256', 'OPUS-CERT-' . $user_id . '-' . $sp_username), 0, 6));
+$sp_codigo_certificado = sprintf('OPUS-%s-%04d-%s', $sp_ano_formatura, $user_id, $sp_hash_verif);
+
+try {
+    $conn->query("CREATE TABLE IF NOT EXISTS `certificados_emitidos` (
+        `id` INT AUTO_INCREMENT PRIMARY KEY,
+        `usuario_id` INT NOT NULL,
+        `nome_completo` VARCHAR(140) NOT NULL,
+        `codigo_validacao` VARCHAR(40) NOT NULL,
+        `emitido_em` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `atualizado_em` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        UNIQUE KEY `uq_cert_usuario` (`usuario_id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
+
+    $stmt_cert = $conn->prepare('SELECT nome_completo, codigo_validacao, emitido_em FROM certificados_emitidos WHERE usuario_id = ? LIMIT 1');
+    if ($stmt_cert) {
+        $stmt_cert->bind_param('i', $user_id);
+        $stmt_cert->execute();
+        $row_cert = $stmt_cert->get_result()->fetch_assoc();
+        $stmt_cert->close();
+
+        if ($row_cert && !empty($row_cert['nome_completo'])) {
+            $sp_cert_emitido = true;
+            $sp_nome_certificado = trim((string) $row_cert['nome_completo']);
+            $sp_codigo_certificado = trim((string) $row_cert['codigo_validacao']);
+            $ts_emissao = strtotime((string) $row_cert['emitido_em']) ?: time();
+            $sp_ano_formatura = date('Y', $ts_emissao);
+            $sp_data_emissao = sprintf('%d de %s de %s', (int) date('j', $ts_emissao), $meses_pt[(int) date('n', $ts_emissao)], $sp_ano_formatura);
+        }
+    }
+} catch (Throwable $e) {
+    // Fallback silencioso caso o banco esteja indisponível para DDL
+}
+
+$sp_nome_exibicao_cert = ($sp_nome_certificado !== '') ? $sp_nome_certificado : $sp_nome_aluno;
 
 // Resultado da ofensiva após processar a lição
 $fogo_depois = $ler_ultima_atividade();
@@ -331,7 +378,7 @@ $xp_meta_alvo = 50;
     <title>Resultado - Opus</title>
     <link rel="icon" type="image/png" href="../assets/img/LOGO.png?v=2">
     <link rel="shortcut icon" type="image/png" href="../assets/img/LOGO.png?v=2">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Great+Vibes&family=Orbitron:wght@700&family=Playfair+Display:ital,wght@0,600;0,700;1,500;1,600&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/dashboard.css?v=<?= time() ?>">
     <link rel="stylesheet" href="../assets/css/topbar.css?v=<?= time() ?>">
@@ -429,9 +476,9 @@ $xp_meta_alvo = 50;
                     <!-- Botão Continuar Marcante Duolingo -->
                     <div class="duo-action-container" style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
                         <?php if ($is_curso_concluido): ?>
-                        <button type="button" class="btn-duo-next" id="btnAbrirSpotifyCardGeral" style="background: linear-gradient(135deg, #1db954, #15883e); box-shadow: 0 8px 24px rgba(29, 185, 84, 0.45); max-width: 440px; width: 100%;">
-                            <i class="fa-brands fa-spotify" style="font-size: 1.3rem;"></i>
-                            <span>Abrir Card Spotify Wrapped</span>
+                        <button type="button" class="btn-duo-next btn-certificado-cta" id="btnAbrirSpotifyCardGeral">
+                            <i class="fa-solid fa-award" style="font-size: 1.3rem;"></i>
+                            <span>Ver Meu Certificado Oficial</span>
                         </button>
                         <?php endif; ?>
                         <button type="button" class="btn-duo-next" id="btnDuoContinue" style="<?php echo $is_curso_concluido ? 'max-width: 440px; width: 100%;' : ''; ?>">
@@ -761,159 +808,293 @@ $xp_meta_alvo = 50;
     <?php endif; ?>
 
     <!-- =========================================================================
-         MODAL DO WIDGET SPOTIFY WRAPPED (OPUS FORMATURA)
+         MODAL DO CERTIFICADO OFICIAL DE CONCLUSÃO (OPUS FORMATURA)
          ========================================================================= -->
-    <div class="spotify-modal-overlay" id="modalSpotifyWrapped" role="dialog" aria-modal="true" aria-labelledby="spTrackTitle">
-        <div class="spotify-modal-container">
-            <button type="button" class="spotify-modal-close-btn" id="spBtnCloseModal" title="Fechar (Esc)" aria-label="Fechar modal">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
+    <dialog class="cert-modal-dialog" id="modalSpotifyWrapped" closedby="any" data-cert-issued="<?php echo $sp_cert_emitido ? '1' : '0'; ?>" aria-labelledby="<?php echo $sp_cert_emitido ? 'spTrackTitle' : 'certFormTitle'; ?>">
 
-            <!-- Card Exportável do Spotify Wrapped -->
-            <div class="spotify-card" id="spotifyCardExport">
-                
-                <!-- Topo: Marca e Selo de Conclusão -->
-                <div class="sp-header">
-                    <div class="sp-brand">
-                        <img src="../assets/img/LOGO.png" alt="OPUS" class="sp-brand-logo">
-                        <div class="sp-brand-text">
-                            <span class="sp-brand-title">OPUS <span class="sp-dot">•</span> WRAPPED</span>
-                            <span class="sp-brand-sub">Edição 2026 · Formatura</span>
-                        </div>
-                    </div>
-                    <div class="sp-badge-concluido">
-                        <i class="fa-solid fa-graduation-cap"></i> 100% Concluído
-                    </div>
-                </div>
+        <?php if (!$sp_cert_emitido): ?>
+        <!-- ETAPA 1: Solicitação do Nome Completo antes de entregar o certificado -->
+        <section class="cert-step-form" id="certStepForm">
+            <div class="cert-form-card">
+                <button type="button" class="spotify-modal-close-btn cert-form-close" data-cert-close title="Fechar (Esc)" aria-label="Fechar janela">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
 
-                <!-- Capa do Álbum / Disco de Vinil com Avatar do Aluno -->
-                <div class="sp-cover-stage">
-                    <div class="sp-vinyl-record" aria-hidden="true"></div>
-                    
-                    <div class="sp-avatar-wrap">
-                        <img src="<?php echo htmlspecialchars($sp_avatar_url); ?>" alt="<?php echo htmlspecialchars($sp_nome_aluno); ?>" class="sp-avatar-img" id="spAvatarImg" crossorigin="anonymous">
-                    </div>
+                <img src="../assets/img/medalha.png" alt="" class="cert-form-medal" aria-hidden="true">
+                <span class="cert-form-eyebrow">Emissão Oficial · OPUS</span>
+                <h2 class="cert-form-title" id="certFormTitle" tabindex="-1">Informe seu nome completo</h2>
+                <p class="cert-form-subtitle">Antes de entregar seu certificado, digite seu nome completo exatamente como deseja que ele apareça no diploma oficial.</p>
 
-                    <!-- Mascote Opi Comemorando -->
-                    <img src="../assets/img/mascote_vitoria_cipo_transparente.png" alt="Opi Vencedor" class="sp-opi-mascot-float" id="spOpiImg">
+                <form id="certEmitForm" class="cert-emit-form" action="../../back/api/certificado.php" method="POST" aria-labelledby="certFormTitle" novalidate>
+                    <input type="hidden" name="csrf_token" id="certCsrfToken" value="<?php echo htmlspecialchars($_SESSION['cert_csrf_token']); ?>">
 
-                    <!-- Equalizador Live -->
-                    <div class="sp-equalizer-live" aria-hidden="true">
-                        <span class="sp-eq-bar"></span>
-                        <span class="sp-eq-bar"></span>
-                        <span class="sp-eq-bar"></span>
-                        <span class="sp-eq-bar"></span>
+                    <div class="cert-field">
+                        <label for="certFullNameInput">Nome completo <span aria-hidden="true">*</span></label>
+                        <input
+                            type="text"
+                            id="certFullNameInput"
+                            name="nome_completo"
+                            value=""
+                            placeholder="Ex.: Maria Clara Ferreira da Silva"
+                            autocomplete="name"
+                            enterkeyhint="done"
+                            minlength="5"
+                            maxlength="120"
+                            required
+                            aria-describedby="certFullNameHint certFullNameError">
+                        <span id="certFullNameHint" class="cert-field-hint">Informe nome e sobrenome (5 a 120 caracteres).</span>
+                        <span id="certFullNameError" class="cert-field-error" role="alert" aria-live="polite" hidden></span>
                     </div>
 
-                    <!-- Selo de Artista Verificado -->
-                    <div class="sp-verified-pill">
-                        <i class="fa-solid fa-circle-check"></i> Aluno Verificado
+                    <div class="cert-form-date-box">
+                        <i class="fa-regular fa-calendar-check" aria-hidden="true"></i>
+                        <span>Data de emissão no certificado: <strong id="certFormDatePreview"><?php echo htmlspecialchars($sp_data_emissao); ?></strong></span>
                     </div>
-                </div>
 
-                <!-- Informações da Faixa / Aluno -->
-                <div class="sp-track-row">
-                    <div class="sp-track-info">
-                        <h3 class="sp-track-title" id="spTrackTitle">Graduado em Java & Lógica</h3>
-                        <p class="sp-track-artist">
-                            <span class="sp-artist-name" id="spStudentName"><?php echo htmlspecialchars($sp_nome_aluno); ?></span>
-                            <span id="spStudentUser" style="color: var(--sp-green);"><?php echo htmlspecialchars($sp_username); ?></span>
-                        </p>
-                        <span class="sp-track-album">Formação OPUS · 40 Seções Concluídas</span>
+                    <div class="cert-form-warning" role="note">
+                        <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+                        <span><strong>Atenção:</strong> confira a grafia com cuidado. Após a emissão, o nome ficará registrado de forma definitiva e <strong>não poderá ser alterado</strong>.</span>
                     </div>
-                    <button type="button" class="sp-heart-btn" title="Favorito" aria-label="Favorito">
-                        <i class="fa-solid fa-heart"></i>
+
+                    <div class="cert-form-actions">
+                        <button type="submit" class="sp-btn sp-btn-download cert-form-submit" id="certBtnEmitir">
+                            <i class="fa-solid fa-award" aria-hidden="true"></i>
+                            <span>Confirmar e Emitir Certificado</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+        <?php endif; ?>
+
+        <!-- ETAPA 2: Diploma Oficial Emitido -->
+        <div class="cert-modal-shell" id="certStepView" <?php echo $sp_cert_emitido ? '' : 'hidden'; ?>>
+            <!-- Barra superior do modal: Seletor de Estilo e Fechar -->
+            <div class="cert-modal-topbar">
+                <div class="cert-theme-switcher" role="group" aria-label="Estilo do certificado">
+                    <button type="button" class="cert-theme-btn is-active" data-cert-theme-btn="ivory" aria-pressed="true">
+                        <span class="cert-swatch swatch-ivory" aria-hidden="true"></span>
+                        <span>Marfim Clássico</span>
+                    </button>
+                    <button type="button" class="cert-theme-btn" data-cert-theme-btn="obsidian" aria-pressed="false">
+                        <span class="cert-swatch swatch-obsidian" aria-hidden="true"></span>
+                        <span>Azul Noturno</span>
                     </button>
                 </div>
 
-                <!-- Barra de Progresso do Player -->
-                <div class="sp-player-progress">
-                    <div class="sp-progress-track">
-                        <div class="sp-progress-fill">
-                            <span class="sp-progress-thumb"></span>
-                        </div>
-                    </div>
-                    <div class="sp-progress-times">
-                        <span>40:00</span>
-                        <span>40:00 (100%)</span>
-                    </div>
-                </div>
-
-                <!-- Controles do Player -->
-                <div class="sp-controls-row">
-                    <button type="button" class="sp-control-btn is-active" title="Ordem aleatória"><i class="fa-solid fa-shuffle"></i></button>
-                    <button type="button" class="sp-control-btn" title="Anterior"><i class="fa-solid fa-backward-step"></i></button>
-                    <button type="button" class="sp-play-btn" id="spBtnPlay" title="Tocar / Pausar Música Comemorativa" aria-label="Tocar"><i class="fa-solid fa-play"></i></button>
-                    <button type="button" class="sp-control-btn" title="Próximo"><i class="fa-solid fa-forward-step"></i></button>
-                    <button type="button" class="sp-control-btn is-active" title="Repetir"><i class="fa-solid fa-repeat"></i></button>
-                </div>
-
-                <!-- Grade de Estatísticas da Jornada -->
-                <div class="sp-stats-grid">
-                    <div class="sp-stat-pill">
-                        <div class="sp-stat-icon-wrap xp"><i class="fa-solid fa-bolt"></i></div>
-                        <div class="sp-stat-content">
-                            <span class="sp-stat-val" id="spValXp"><?php echo number_format($sp_xp_total, 0, ',', '.'); ?> XP</span>
-                            <span class="sp-stat-lbl">XP Total</span>
-                        </div>
-                    </div>
-                    <div class="sp-stat-pill">
-                        <div class="sp-stat-icon-wrap streak"><i class="fa-solid fa-fire"></i></div>
-                        <div class="sp-stat-content">
-                            <span class="sp-stat-val" id="spValStreak"><?php echo $sp_dias_fogo; ?> Dias</span>
-                            <span class="sp-stat-lbl">Ofensiva</span>
-                        </div>
-                    </div>
-                    <div class="sp-stat-pill">
-                        <div class="sp-stat-icon-wrap trophy"><i class="fa-solid fa-trophy"></i></div>
-                        <div class="sp-stat-content">
-                            <span class="sp-stat-val" id="spValTrophy"><?php echo $sp_trofeus; ?> Troféus</span>
-                            <span class="sp-stat-lbl">Conquistas</span>
-                        </div>
-                    </div>
-                    <div class="sp-stat-pill">
-                        <div class="sp-stat-icon-wrap lessons"><i class="fa-solid fa-laptop-code"></i></div>
-                        <div class="sp-stat-content">
-                            <span class="sp-stat-val" id="spValLessons"><?php echo $sp_licoes_total; ?></span>
-                            <span class="sp-stat-lbl">Lições Feitas</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Código de Barras Sonoro Spotify -->
-                <div class="sp-code-bar">
-                    <div class="sp-code-logo">
-                        <img src="../assets/img/LOGO.png" alt="OPUS">
-                    </div>
-                    <div class="sp-code-bars-wrap" aria-hidden="true">
-                        <span class="sp-code-line" style="height: 10px;"></span>
-                        <span class="sp-code-line" style="height: 22px;"></span>
-                        <span class="sp-code-line" style="height: 30px;"></span>
-                        <span class="sp-code-line" style="height: 14px;"></span>
-                        <span class="sp-code-line" style="height: 28px;"></span>
-                        <span class="sp-code-line" style="height: 18px;"></span>
-                        <span class="sp-code-line" style="height: 24px;"></span>
-                        <span class="sp-code-line" style="height: 30px;"></span>
-                        <span class="sp-code-line" style="height: 12px;"></span>
-                        <span class="sp-code-line" style="height: 20px;"></span>
-                        <span class="sp-code-line" style="height: 28px;"></span>
-                        <span class="sp-code-line" style="height: 16px;"></span>
-                        <span class="sp-code-line" style="height: 26px;"></span>
-                        <span class="sp-code-line" style="height: 12px;"></span>
-                        <span class="sp-code-line" style="height: 22px;"></span>
-                        <span class="sp-code-line" style="height: 30px;"></span>
-                        <span class="sp-code-line" style="height: 14px;"></span>
-                        <span class="sp-code-line" style="height: 20px;"></span>
-                    </div>
-                    <span class="sp-code-label">OPUS.DEV/FORMATURA</span>
+                <div class="cert-modal-tools">
+                    <button type="button" class="cert-tool-btn" id="spBtnPlay" title="Reproduzir fanfarra comemorativa" aria-label="Reproduzir fanfarra comemorativa">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                    <button type="button" class="spotify-modal-close-btn" id="spBtnCloseModal" data-cert-close title="Fechar (Esc)" aria-label="Fechar certificado">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
                 </div>
             </div>
 
-            <!-- Botões de Ação Embaixo do Card -->
+            <!-- Folha Oficial do Certificado (Diploma Paisagem) -->
+            <article class="cert-sheet" id="spotifyCardExport" data-cert-theme="ivory">
+                <div class="cert-outer-band" aria-hidden="true"></div>
+                <div class="cert-frame-outer" aria-hidden="true"></div>
+                <div class="cert-frame-inner" aria-hidden="true"></div>
+
+                <!-- Marca d'água guilhochê vetorial -->
+                <svg class="cert-watermark" viewBox="0 0 400 400" aria-hidden="true">
+                    <g fill="none" stroke="currentColor" stroke-width="0.9">
+                        <circle cx="200" cy="200" r="180" />
+                        <circle cx="200" cy="200" r="154" stroke-dasharray="4 4" />
+                        <circle cx="200" cy="200" r="126" />
+                        <circle cx="200" cy="200" r="96" stroke-dasharray="2 5" />
+                        <ellipse cx="200" cy="200" rx="172" ry="58" transform="rotate(0 200 200)" />
+                        <ellipse cx="200" cy="200" rx="172" ry="58" transform="rotate(22.5 200 200)" />
+                        <ellipse cx="200" cy="200" rx="172" ry="58" transform="rotate(45 200 200)" />
+                        <ellipse cx="200" cy="200" rx="172" ry="58" transform="rotate(67.5 200 200)" />
+                        <ellipse cx="200" cy="200" rx="172" ry="58" transform="rotate(90 200 200)" />
+                        <ellipse cx="200" cy="200" rx="172" ry="58" transform="rotate(112.5 200 200)" />
+                        <ellipse cx="200" cy="200" rx="172" ry="58" transform="rotate(135 200 200)" />
+                        <ellipse cx="200" cy="200" rx="172" ry="58" transform="rotate(157.5 200 200)" />
+                    </g>
+                </svg>
+
+                <!-- 4 Ornamentos de Canto -->
+                <svg class="cert-corner tl" viewBox="0 0 90 90" aria-hidden="true">
+                    <path d="M8 78 V20 C8 13 13 8 20 8 H78" fill="none" stroke="currentColor" stroke-width="2.2" />
+                    <path d="M16 66 V24 C16 19.5 19.5 16 24 16 H66" fill="none" stroke="currentColor" stroke-width="1.2" />
+                    <path d="M8 38 C22 38 38 22 38 8" fill="none" stroke="currentColor" stroke-width="1.4" />
+                    <path d="M16 16 L28 28 M24 12 L28 16 L24 20 L20 16 Z" fill="currentColor" stroke="currentColor" stroke-width="0.6" />
+                    <circle cx="16" cy="16" r="3" fill="currentColor" />
+                </svg>
+                <svg class="cert-corner tr" viewBox="0 0 90 90" aria-hidden="true">
+                    <path d="M8 78 V20 C8 13 13 8 20 8 H78" fill="none" stroke="currentColor" stroke-width="2.2" />
+                    <path d="M16 66 V24 C16 19.5 19.5 16 24 16 H66" fill="none" stroke="currentColor" stroke-width="1.2" />
+                    <path d="M8 38 C22 38 38 22 38 8" fill="none" stroke="currentColor" stroke-width="1.4" />
+                    <path d="M16 16 L28 28 M24 12 L28 16 L24 20 L20 16 Z" fill="currentColor" stroke="currentColor" stroke-width="0.6" />
+                    <circle cx="16" cy="16" r="3" fill="currentColor" />
+                </svg>
+                <svg class="cert-corner bl" viewBox="0 0 90 90" aria-hidden="true">
+                    <path d="M8 78 V20 C8 13 13 8 20 8 H78" fill="none" stroke="currentColor" stroke-width="2.2" />
+                    <path d="M16 66 V24 C16 19.5 19.5 16 24 16 H66" fill="none" stroke="currentColor" stroke-width="1.2" />
+                    <path d="M8 38 C22 38 38 22 38 8" fill="none" stroke="currentColor" stroke-width="1.4" />
+                    <path d="M16 16 L28 28 M24 12 L28 16 L24 20 L20 16 Z" fill="currentColor" stroke="currentColor" stroke-width="0.6" />
+                    <circle cx="16" cy="16" r="3" fill="currentColor" />
+                </svg>
+                <svg class="cert-corner br" viewBox="0 0 90 90" aria-hidden="true">
+                    <path d="M8 78 V20 C8 13 13 8 20 8 H78" fill="none" stroke="currentColor" stroke-width="2.2" />
+                    <path d="M16 66 V24 C16 19.5 19.5 16 24 16 H66" fill="none" stroke="currentColor" stroke-width="1.2" />
+                    <path d="M8 38 C22 38 38 22 38 8" fill="none" stroke="currentColor" stroke-width="1.4" />
+                    <path d="M16 16 L28 28 M24 12 L28 16 L24 20 L20 16 Z" fill="currentColor" stroke="currentColor" stroke-width="0.6" />
+                    <circle cx="16" cy="16" r="3" fill="currentColor" />
+                </svg>
+
+                <div class="cert-content">
+                    <!-- 1. Cabeçalho Institucional -->
+                    <header class="cert-header">
+                        <img src="../assets/img/LOGO.png" alt="OPUS" class="cert-brand-logo" id="certLogoImg">
+                        <span class="cert-brand-name">OPUS</span>
+                        <span class="cert-brand-divider" aria-hidden="true"></span>
+                        <span class="cert-brand-sub">Academia de Programação</span>
+                    </header>
+
+                    <!-- 2. Título Cerimonial -->
+                    <div class="cert-title-block">
+                        <h2 class="cert-heading" id="spTrackTitle" tabindex="-1">CERTIFICADO</h2>
+                        <div class="cert-subheading">
+                            <span class="cert-line" aria-hidden="true"></span>
+                            <span>DE CONCLUSÃO DE CURSO</span>
+                            <span class="cert-line" aria-hidden="true"></span>
+                        </div>
+                    </div>
+
+                    <!-- 3. Declaração e Nome do Formando -->
+                    <div class="cert-recipient-block">
+                        <p class="cert-preamble">Certificamos para os devidos fins que</p>
+                        <p class="cert-student-name" id="spStudentName"><?php echo htmlspecialchars($sp_nome_exibicao_cert); ?></p>
+                        <div class="cert-name-rule" aria-hidden="true">
+                            <span></span>
+                            <i></i>
+                            <span></span>
+                        </div>
+                        <p class="cert-student-meta">
+                            <span id="spStudentUser"><?php echo htmlspecialchars($sp_username); ?></span> · Turma <span id="certCohortYear"><?php echo htmlspecialchars($sp_ano_formatura); ?></span>
+                        </p>
+                    </div>
+
+                    <!-- 4. Citação Formal da Formação -->
+                    <p class="cert-body-copy">
+                        concluiu com êxito e 100% de aproveitamento a formação completa
+                        <strong class="cert-course-name">Java &amp; Lógica de Programação — OPUS Bootcamp</strong>
+                        cumprindo integralmente todas as 40 seções, 200 lições interativas e desafios práticos em terminal.
+                    </p>
+
+                    <!-- 5. Faixa Gravada de Mérito -->
+                    <div class="cert-metrics-strip">
+                        <div class="cert-metric-item">
+                            <span class="cert-metric-val" id="spValXp"><?php echo number_format($sp_xp_total, 0, ',', '.'); ?> XP</span>
+                            <span class="cert-metric-lbl">XP Acumulado</span>
+                        </div>
+                        <div class="cert-metric-item">
+                            <span class="cert-metric-val" id="spValStreak"><?php echo $sp_dias_fogo; ?> Dias</span>
+                            <span class="cert-metric-lbl">Ofensiva</span>
+                        </div>
+                        <div class="cert-metric-item">
+                            <span class="cert-metric-val" id="spValTrophy"><?php echo $sp_trofeus; ?> Troféus</span>
+                            <span class="cert-metric-lbl">Conquistas</span>
+                        </div>
+                        <div class="cert-metric-item">
+                            <span class="cert-metric-val" id="spValLessons"><?php echo $sp_licoes_total; ?></span>
+                            <span class="cert-metric-lbl">Lições (100%)</span>
+                        </div>
+                    </div>
+
+                    <!-- 6. Rodapé Cerimonial: Assinatura, Selo Dourado com Fitas e Autenticação -->
+                    <footer class="cert-footer">
+                        <div class="cert-sig-col">
+                            <span class="cert-signature-script" aria-hidden="true">Equipe OPUS</span>
+                            <div class="cert-footer-rule" aria-hidden="true"></div>
+                            <strong>Diretoria Acadêmica OPUS</strong>
+                            <span>Coordenação · Java &amp; Lógica</span>
+                        </div>
+
+                        <div class="cert-seal-col" aria-hidden="true">
+                            <svg class="cert-seal-svg" viewBox="0 0 220 245">
+                                <defs>
+                                    <linearGradient id="sealGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#9e7322" />
+                                        <stop offset="28%" stop-color="#f6de8d" />
+                                        <stop offset="52%" stop-color="#c99732" />
+                                        <stop offset="76%" stop-color="#fff1b8" />
+                                        <stop offset="100%" stop-color="#8b5e14" />
+                                    </linearGradient>
+                                    <linearGradient id="sealGoldFace" x1="15%" y1="10%" x2="85%" y2="90%">
+                                        <stop offset="0%" stop-color="#ebd077" />
+                                        <stop offset="48%" stop-color="#c6932e" />
+                                        <stop offset="100%" stop-color="#976a18" />
+                                    </linearGradient>
+                                    <linearGradient id="sealRibbonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#173c85" />
+                                        <stop offset="55%" stop-color="#0f2859" />
+                                        <stop offset="100%" stop-color="#09193a" />
+                                    </linearGradient>
+                                    <filter id="sealShadow" x="-15%" y="-15%" width="130%" height="135%">
+                                        <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000000" flood-opacity="0.32" />
+                                    </filter>
+                                    <path id="sealArcTop" d="M 57.4,121.2 A 56,56 0 1,1 162.6,121.2" />
+                                    <path id="sealArcBottom" d="M 53.8,128.2 A 62,62 0 0,0 166.2,128.2" />
+                                </defs>
+
+                                <!-- Fitas azul-marinho com corte em V -->
+                                <g filter="url(#sealShadow)">
+                                    <polygon points="78,150 105,158 84,234 65,216 42,226" fill="url(#sealRibbonGrad)" stroke="#d4af37" stroke-width="1.2" />
+                                    <line x1="74" y1="166" x2="54" y2="219" stroke="#f0d379" stroke-width="1.1" opacity="0.85" />
+                                    <line x1="92" y1="170" x2="73" y2="224" stroke="#f0d379" stroke-width="1.1" opacity="0.85" />
+
+                                    <polygon points="142,150 115,158 136,234 155,216 178,226" fill="url(#sealRibbonGrad)" stroke="#d4af37" stroke-width="1.2" />
+                                    <line x1="146" y1="166" x2="166" y2="219" stroke="#f0d379" stroke-width="1.1" opacity="0.85" />
+                                    <line x1="128" y1="170" x2="147" y2="224" stroke="#f0d379" stroke-width="1.1" opacity="0.85" />
+                                </g>
+
+                                <!-- Rosácea serrilhada dourada de 28 pontas -->
+                                <g filter="url(#sealShadow)">
+                                    <polygon fill="url(#sealGoldGrad)" stroke="#7a5310" stroke-width="1.2" points="196.0,102.0 187.1,110.6 193.9,121.0 183.3,127.4 187.5,139.1 175.8,142.8 177.2,155.2 164.9,156.2 163.5,168.5 151.4,166.7 147.2,178.4 135.8,173.8 129.1,184.2 119.0,177.2 110.0,186.0 101.0,177.2 90.9,184.2 84.2,173.8 72.8,178.4 68.6,166.7 56.5,168.5 55.1,156.2 42.8,155.2 44.2,142.8 32.5,139.1 36.7,127.4 26.1,121.0 32.9,110.6 24.0,102.0 32.9,93.4 26.1,83.0 36.7,76.6 32.5,64.9 44.2,61.2 42.8,48.8 55.1,47.8 56.5,35.5 68.6,37.3 72.8,25.6 84.2,30.2 90.9,19.8 101.0,26.8 110.0,18.0 119.0,26.8 129.1,19.8 135.8,30.2 147.2,25.6 151.4,37.3 163.5,35.5 164.9,47.8 177.2,48.8 175.8,61.2 187.5,64.9 183.3,76.6 193.9,83.0 187.1,93.4" />
+                                    <circle cx="110" cy="102" r="71" fill="url(#sealGoldFace)" stroke="#fff3c4" stroke-width="1.8" />
+                                    <circle cx="110" cy="102" r="67" fill="none" stroke="#6c480c" stroke-width="1" stroke-dasharray="2 3" />
+                                    <circle cx="110" cy="102" r="46" fill="#0f2859" stroke="url(#sealGoldGrad)" stroke-width="3" />
+                                    <circle cx="110" cy="102" r="41" fill="none" stroke="#f4d981" stroke-width="0.9" opacity="0.7" />
+                                </g>
+
+                                <!-- Texto curvado do selo -->
+                                <text fill="#382304" font-family="Cinzel, Georgia, serif" font-size="8.2" font-weight="800" letter-spacing="1.1">
+                                    <textPath href="#sealArcTop" startOffset="50%" text-anchor="middle">OPUS • CERTIFICADO OFICIAL</textPath>
+                                </text>
+                                <text fill="#382304" font-family="Cinzel, Georgia, serif" font-size="8.5" font-weight="800" letter-spacing="1.4">
+                                    <textPath href="#sealArcBottom" startOffset="50%" text-anchor="middle">100% CONCLUÍDO</textPath>
+                                </text>
+
+                                <!-- Emblema central -->
+                                <polygon points="110,72 115.4,83.2 127.8,85.0 118.9,93.7 121.0,106.0 110.0,100.2 99.0,106.0 101.1,93.7 92.2,85.0 104.6,83.2" fill="url(#sealGoldGrad)" />
+                                <text x="110" y="128" id="certSealYear" text-anchor="middle" fill="#f7e29c" font-family="Cinzel, Georgia, serif" font-size="14" font-weight="800" letter-spacing="1.5"><?php echo htmlspecialchars($sp_ano_formatura); ?></text>
+                            </svg>
+                        </div>
+
+                        <div class="cert-meta-col">
+                            <span class="cert-issue-label">Emitido em</span>
+                            <span class="cert-issue-date" id="certIssueDate"><?php echo htmlspecialchars($sp_data_emissao); ?></span>
+                            <div class="cert-footer-rule" aria-hidden="true"></div>
+                            <strong id="certAuthCode"><?php echo htmlspecialchars($sp_codigo_certificado); ?></strong>
+                            <span>opus.dev/certificados</span>
+                        </div>
+                    </footer>
+                </div>
+            </article>
+
+            <!-- Botões de Ação Embaixo do Certificado -->
             <div class="sp-actions-wrap">
                 <div class="sp-action-btn-main-row">
                     <button type="button" class="sp-btn sp-btn-download" id="spBtnDownload">
-                        <i class="fa-solid fa-download"></i> Baixar Card (PNG)
+                        <i class="fa-solid fa-download"></i> Baixar PNG (Alta Res.)
+                    </button>
+                    <button type="button" class="sp-btn sp-btn-print" id="spBtnPrint">
+                        <i class="fa-solid fa-print"></i> Imprimir / PDF
                     </button>
                     <button type="button" class="sp-btn sp-btn-share" id="spBtnShare">
                         <i class="fa-solid fa-share-nodes"></i> Compartilhar
@@ -929,7 +1110,9 @@ $xp_meta_alvo = 50;
                 </div>
             </div>
         </div>
-    </div>
+
+        <div id="spToast" class="sp-toast" role="status" aria-live="polite"></div>
+    </dialog>
 
     <script src="../assets/js/opus_audio.js?v=<?= time() ?>"></script>
     <script src="../assets/js/spotify_widget.js?v=<?= time() ?>"></script>
@@ -1137,6 +1320,9 @@ $xp_meta_alvo = 50;
 
             // Atalho de teclado: Enter avança
             document.addEventListener('keydown', function(e) {
+                const certModal = document.getElementById('modalSpotifyWrapped');
+                if (certModal && (certModal.open || certModal.classList.contains('is-active'))) return;
+
                 if (e.key === 'Enter' || (e.ctrlKey && e.key === 'Enter') || e.code === 'Space') {
                     if ((!streakOverlay || !streakOverlay.classList.contains('is-open')) &&
                         (!chapterOverlay || !chapterOverlay.classList.contains('is-open'))) {
